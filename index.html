@@ -240,7 +240,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .progress .of small { font: 700 12px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; margin-left: 6px; color: var(--navy); }
 .bar { width: 100%; height: 8px; border-radius: 99px; background: rgba(9,47,128,.18); overflow: hidden; }
 .bar i { display: block; height: 100%; background: var(--blue); border-radius: 99px; transition: width .3s; }
-.flip { width: min(100%, 360px); aspect-ratio: 5 / 7.4; perspective: 1400px; max-width: 100%; }
+.flip { width: min(100%, 360px, max(230px, calc((100svh - 330px) / 1.5))); aspect-ratio: 2 / 3; perspective: 1400px; max-width: 100%; }
 .flip-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.3,.8,.25,1); }
 .flip.open .flip-inner { transform: rotateY(180deg); }
 .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 26px; container-type: inline-size; }
@@ -280,6 +280,10 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .team-city .pass-stub, .pass-icon.team-city { background: var(--red); }
 .team-mafia .pass-stub, .pass-icon.team-mafia { background: var(--ink); }
 .team-solo .pass-stub, .pass-icon.team-solo { background: var(--blue); }
+.art { background: var(--ink); overflow: hidden; box-shadow: 0 18px 36px -16px rgba(7,27,77,.7); }
+.art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.desc { margin: -4px 0 0; text-align: center; font-weight: 700; font-size: 14px; color: var(--navy-ink); max-width: 36ch; text-wrap: balance; }
+.r-ic img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; object-position: 50% 22%; display: block; }
 .hint { text-align: center; font: italic 800 15px/1.3 var(--f-display); color: var(--navy-ink); max-width: 30ch; text-wrap: balance; margin: 0; min-height: 2.6em; }
 .stage .linkish { margin-top: auto; }
 
@@ -511,6 +515,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
           <div class="face front pass" id="front"></div>
         </div>
       </div>
+      <p class="desc" id="dealDesc" hidden></p>
       <p class="hint" id="dealHint"></p>
       <button class="linkish" id="cancelDeal">Отменить раздачу</button>
     </div>
@@ -598,15 +603,15 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
     solo: { label: "Сам за себя", long: "Играет сам за себя", stub: "Соло" },
   };
   const BASE = [
-    { id: "maf", name: "Мафия", code: "MAF", team: "mafia", desc: "Ночью вместе с семьёй выбираешь, кого убрать. Днём притворяйся мирным и уводи подозрения." },
+    { id: "maf", name: "Мафия", code: "MAF", team: "mafia", art: "cards/maf.jpg", desc: "Ночью вместе с семьёй выбираешь, кого убрать. Днём притворяйся мирным и уводи подозрения." },
     { id: "don", name: "Дон мафии", code: "DON", team: "mafia", desc: "Глава семьи. Ночью стреляешь с мафией, а потом ищешь комиссара: проверяешь одного игрока." },
-    { id: "kom", name: "Комиссар", code: "KOM", team: "city", desc: "Ночью проверяешь одного игрока и узнаёшь, мафия он или нет. Не спались раньше времени." },
+    { id: "kom", name: "Комиссар", code: "KOM", team: "city", art: "cards/kom.jpg", desc: "Ночью проверяешь одного игрока и узнаёшь, мафия он или нет. Не спались раньше времени." },
     { id: "pat", name: "Патрульный", code: "PAT", team: "city", desc: "Напарник комиссара. Ночью тоже проверяешь игрока. Если комиссара убьют, занимаешь его место." },
-    { id: "kur", name: "Куртизанка", code: "KUR", team: "city", desc: "Ночью приходишь к игроку. Его ночной ход пропадает, а выстрел мафии по нему не проходит." },
-    { id: "doc", name: "Доктор", code: "DOC", team: "city", desc: "Ночью лечишь одного игрока: если по нему стреляли, он выживет. Себя можно лечить один раз." },
+    { id: "kur", name: "Любовница", code: "LUB", team: "city", art: "cards/kur.jpg", desc: "Ночью приходишь к игроку. Его ночной ход пропадает, а выстрел мафии по нему не проходит." },
+    { id: "doc", name: "Доктор", code: "DOC", team: "city", art: "cards/doc.jpg", desc: "Ночью лечишь одного игрока: если по нему стреляли, он выживет. Себя можно лечить один раз." },
     { id: "man", name: "Маньяк", code: "MAN", team: "solo", desc: "Ты ни за кого. Каждую ночь убиваешь одного игрока. Победа, если останешься в живых последним." },
   ];
-  const CIVIL = { id: "mir", name: "Мирный житель", code: "MIR", team: "city", desc: "Ночью спишь. Днём слушай, спорь и голосуй, чтобы выгнать мафию из города." };
+  const CIVIL = { id: "mir", name: "Мирный житель", code: "MIR", team: "city", art: "cards/mir.jpg", desc: "Ночью спишь. Днём слушай, спорь и голосуй, чтобы выгнать мафию из города." };
 
   const TR = { а:"A",б:"B",в:"V",г:"G",д:"D",е:"E",ё:"E",ж:"ZH",з:"Z",и:"I",й:"Y",к:"K",л:"L",м:"M",н:"N",о:"O",п:"P",р:"R",с:"S",т:"T",у:"U",ф:"F",х:"H",ц:"C",ч:"CH",ш:"SH",щ:"SH",ы:"Y",э:"E",ю:"YU",я:"YA" };
   const codeOf = (name) => {
@@ -736,7 +741,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
     const row = (r, custom) => {
       const k = c[r.id] || 0;
       return `<div class="role team-${r.team}${k ? "" : " is-zero"}">
-        <div class="r-ic">${icon(custom ? "custom" : r.id)}</div>
+        <div class="r-ic">${r.art ? `<img src="${r.art}" alt="">` : icon(custom ? "custom" : r.id)}</div>
         <div style="min-width:0">
           <div class="r-name">${esc(r.name)} <span class="r-code">${esc(r.code)}</span></div>
           <div class="r-meta">${TEAM[r.team].label}${custom ? ` · <button class="x-btn" data-del="${r.id}">удалить</button>` : ""}</div>
@@ -750,7 +755,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
     };
     $("rolesList").innerHTML = BASE.map((r) => row(r, false)).join("") + S.custom.map((r) => row(r, true)).join("") +
       `<div class="role team-city${civ > 0 ? "" : " is-zero"}">
-        <div class="r-ic">${icon("mir")}</div>
+        <div class="r-ic"><img src="${CIVIL.art}" alt=""></div>
         <div style="min-width:0"><div class="r-name">${CIVIL.name} <span class="r-code">MIR</span></div><div class="r-meta">Город · остальные места</div></div>
         <div class="auto-n">${Math.max(0, civ)}</div>
       </div>`;
@@ -824,19 +829,28 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
       ? "Запомни роль и нажми, чтобы закрыть карту"
       : h.idx === 0 ? `Игрок 1, нажми на экран, чтобы открыть свою карту` : `Передай телефон игроку ${seat}. Нажми, чтобы открыть карту`;
     $("cancelDeal").hidden = isOpen;
+    const r = roleById(h.deal[h.idx]);
+    $("dealDesc").hidden = !(isOpen && r.art);
+    $("dealDesc").textContent = isOpen && r.art ? r.desc : "";
+  };
+  const showFront = (r, seat) => {
+    const f = $("front");
+    f.className = "face front " + (r.art ? "art" : "pass");
+    f.innerHTML = r.art ? `<img src="${r.art}" alt="${esc(r.name)}">` : passHTML(r, seat);
   };
   $("stage").addEventListener("click", (e) => {
     if (e.target.closest("button")) return;
     if (Date.now() < lockUntil) return;
     const h = S.host;
     if (!isOpen) {
-      $("front").innerHTML = passHTML(roleById(h.deal[h.idx]), h.idx + 1);
+      showFront(roleById(h.deal[h.idx]), h.idx + 1);
       isOpen = true; lockUntil = Date.now() + 450; renderDeal();
     } else {
       isOpen = false; lockUntil = Date.now() + 700;
       const last = h.idx >= h.deal.length - 1;
       $("flip").classList.remove("open");
       $("dealHint").textContent = "";
+      $("dealDesc").hidden = true;
       setTimeout(() => {
         $("front").innerHTML = "";
         if (last) { h.idx = h.deal.length; setPhase("done"); }
@@ -973,6 +987,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
   $("quickFill").onclick = (e) => { const b = e.target.closest("[data-fill]"); if (!b) return; fillNumbers(+b.dataset.fill); renderNotes(false); save(); };
 
   /* ---------- boot ---------- */
+  [...BASE, CIVIL].forEach((r) => { if (r.art) new Image().src = r.art; });
   const start = (data) => {
     S = data && data.v === 1 ? data : load() || fresh();
     if (!S.custom) S.custom = [];
