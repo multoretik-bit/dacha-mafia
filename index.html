@@ -476,6 +476,56 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .toast:not(:has(button)) { padding-right: 18px; }
 .toast button { background: var(--blue); color: #fff; border-radius: 99px; padding: 7px 12px; font-weight: 800; }
 
+/* ---------- GreenEx ad ---------- */
+.ad { position: relative; width: 100%; max-width: 440px; margin: 4px auto 0; }
+.ad-btn { display: block; position: relative; width: 100%; aspect-ratio: 1100 / 375; -webkit-tap-highlight-color: transparent; }
+.ad-btn:active .ad-art { transform: scale(.96); }
+.ad-art { position: absolute; inset: 0; display: block; transition: transform .12s; animation: adFloat 3.4s ease-in-out infinite; }
+.ad-art img { display: block; width: 100%; height: 100%; filter: drop-shadow(0 10px 14px rgba(7,27,77,.32)); user-select: none; -webkit-user-drag: none; }
+.ad-shine {
+  position: absolute; inset: 0; pointer-events: none;
+  -webkit-mask: url(ads/greenex.webp) center / 100% 100% no-repeat; mask: url(ads/greenex.webp) center / 100% 100% no-repeat;
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.62) 48%, rgba(255,255,255,.15) 53%, transparent 60%) 160% 0 / 260% 100% no-repeat;
+  animation: adShine 3s ease-in-out infinite;
+}
+.ad-bill {
+  position: absolute; left: 9%; top: 58%; width: 7.5%; aspect-ratio: 2 / 1.1; border-radius: 3px; pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, #7fb77f 0 22%, transparent 24%), linear-gradient(#e3f3de, #b9dcb2);
+  box-shadow: inset 0 0 0 1.5px #4f8a4f, 0 3px 6px rgba(0,0,0,.18); opacity: 0;
+  animation: adBill 2.8s cubic-bezier(.2,.7,.3,1) infinite;
+}
+.ad-bill:nth-of-type(2) { animation-delay: .55s; --dx: -38px; --rot: -40deg; }
+.ad-bill:nth-of-type(3) { animation-delay: 1.1s; --dx: 26px; --rot: 30deg; }
+.ad-bill:nth-of-type(4) { animation-delay: 1.65s; --dx: -14px; --rot: -18deg; }
+.ad-bill:nth-of-type(5) { animation-delay: 2.2s; --dx: 44px; --rot: 52deg; }
+.ad-tag { position: absolute; top: 34%; right: 4%; z-index: 2; font: 800 8.5px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--navy); opacity: .7; pointer-events: none; }
+.ad-x {
+  position: absolute; top: 18%; left: -2px; z-index: 3; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--ink); color: #fff; font: 800 16px/1 var(--f-body); box-shadow: 0 0 0 2px var(--paper);
+}
+.ad.float {
+  position: fixed; left: 50%; z-index: 45; margin: 0; width: min(calc(100vw - 24px), 430px);
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px) + var(--ad-lift, 0px));
+  --from: 190%; transform: translate(-50%, var(--from)); pointer-events: none; visibility: hidden;
+}
+.ad.float.top { top: calc(env(safe-area-inset-top, 0px) + 64px); bottom: auto; --from: -230%; }
+.ad.float.in { transform: translate(-50%, 0); visibility: visible; pointer-events: auto; animation: adIn .95s cubic-bezier(.2,1.3,.3,1) both; }
+.ad.float.out { transform: translate(-50%, var(--from)); visibility: visible; animation: adOut .5s cubic-bezier(.6,0,.8,.4) both; }
+@keyframes adIn {
+  0% { transform: translate(-50%, var(--from)) rotate(5deg) scale(.9); }
+  55% { transform: translate(-50%, -7%) rotate(-2deg) scale(1.02); }
+  78% { transform: translate(-50%, 2%) rotate(.6deg); }
+  100% { transform: translate(-50%, 0) rotate(0) scale(1); }
+}
+@keyframes adOut { from { transform: translate(-50%, 0); } to { transform: translate(-50%, var(--from)) rotate(-4deg); visibility: hidden; } }
+@keyframes adFloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -3px; } }
+@keyframes adShine { 0% { background-position: 160% 0; } 55%, 100% { background-position: -60% 0; } }
+@keyframes adBill {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0) scale(.6); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx, 18px), -150%) rotate(var(--rot, 24deg)) scale(1.05); translate: 0 -40px; }
+}
+
 @media (max-width: 380px) {
   .pl-in { grid-template-columns: 38px minmax(0,1fr) minmax(0,1.15fr); gap: 8px; padding: 8px; }
   .pl-badge { width: 38px; height: 38px; font-size: 20px; }
@@ -550,6 +600,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         </div></div>
       </button>
     </div>
+    <div data-ad-slot></div>
     <div class="row-btns" style="margin-top:6px">
       <button class="pill ghost" id="goPeople">дачники</button>
       <button class="pill" id="newLobbyHome">новое лобби</button>
@@ -692,6 +743,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       <div id="liveSeats"></div>
       <div class="stub"><span id="liveStub"></span><b>NIGHT 1</b></div>
     </div></div>
+    <div data-ad-slot></div>
     <div class="row-btns">
       <button class="pill" id="liveFinish">завершить игру</button>
       <button class="pill ghost sm" id="liveRedeal">перераздать</button>
@@ -732,6 +784,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       <div class="layout-list" id="layoutList" hidden></div>
       <div class="stub"><span id="doneStub"></span><b>NIGHT 1</b></div>
     </div></div>
+    <div data-ad-slot></div>
     <div class="row-btns">
       <button class="pill ghost sm" id="redeal">раздать заново</button>
       <button class="pill ghost sm" id="toNotesFromDeal">в блокнот</button>
@@ -779,6 +832,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         </div>
       </div></div>
       <div class="players" id="players"></div>
+      <div data-ad-slot></div>
       <div class="row-btns"><button class="linkish" id="newLobbyNotes">Новое лобби</button></div>
     </div>
   </section>
@@ -791,7 +845,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261022114015"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261022114620"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -950,6 +1004,40 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (a && tg?.openTelegramLink) { e.preventDefault(); tg.openTelegramLink(a.href); }
   });
 
+  /* ---------- GreenEx ad ---------- */
+  const AD_URL = "https://t.me/tigranich?text=" + encodeURIComponent("Привет, хочу обменять валюту");
+  const adHTML = (cls) => `<div class="ad ${cls}" role="complementary" aria-label="Реклама: GreenEx, обмен валют в Таиланде">
+      ${cls === "float" ? '<button class="ad-x" type="button" aria-label="Скрыть рекламу">×</button>' : ""}
+      <a class="ad-btn" href="${AD_URL}" target="_blank" rel="noopener" data-tglink data-ad>
+        <span class="ad-art"><img src="ads/greenex.webp" alt="GreenEx — обмен валют, Таиланд. Написать @tigranich" draggable="false"><span class="ad-shine"></span>${'<i class="ad-bill"></i>'.repeat(5)}<span class="ad-tag">реклама</span></span>
+      </a></div>`;
+  document.querySelectorAll("[data-ad-slot]").forEach((el) => (el.innerHTML = adHTML("")));
+  document.body.insertAdjacentHTML("beforeend", adHTML("float"));
+  const adFloat = document.querySelector(".ad.float");
+  let adShownAt = 0, adHideT = 0;
+  // never over an open role card or a dialog
+  const adBlocked = () => my.open || isOpen || !!document.querySelector(".veil");
+  const hideAd = () => {
+    clearTimeout(adHideT);
+    if (!adFloat.classList.contains("in")) return;
+    adFloat.classList.remove("in"); adFloat.classList.add("out");
+  };
+  const showAd = (force) => {
+    if (adFloat.classList.contains("in") || adBlocked()) return;
+    if (!force && Date.now() - adShownAt < 25000) return;
+    const typing = !!document.activeElement?.matches?.("input, textarea");
+    const dock = [...document.querySelectorAll("main > section:not([hidden]) .dock")][0];
+    adFloat.classList.toggle("top", typing);
+    adFloat.style.setProperty("--ad-lift", dock && !typing ? `${Math.round(dock.getBoundingClientRect().height)}px` : "0px");
+    adFloat.classList.remove("out"); void adFloat.offsetWidth; adFloat.classList.add("in");
+    adShownAt = Date.now();
+    clearTimeout(adHideT); adHideT = setTimeout(hideAd, 8000);
+  };
+  adFloat.querySelector(".ad-x").onclick = (e) => { e.stopPropagation(); hideAd(); };
+  document.addEventListener("click", (e) => { if (e.target.closest(".ad.float [data-ad]")) setTimeout(hideAd, 300); });
+  document.addEventListener("focusin", (e) => { if (e.target.matches?.("textarea, .pl-name")) setTimeout(() => showAd(), 1500); });
+  setInterval(() => { if (document.visibilityState === "visible") showAd(); }, 30000);
+
   /* ---------- toast & sheets ---------- */
   let toastT;
   const toast = (msg, action) => {
@@ -1020,6 +1108,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     })[id]();
     save();
     window.scrollTo({ top: 0 });
+    setTimeout(() => showAd(), 1600);
   };
   const setPhase = (p) => { if (online()) S.on.phase = p; else S.host.phase = p; go("host"); };
 
@@ -1489,6 +1578,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (Date.now() < lockUntil) return;
     const h = S.host;
     if (!isOpen) {
+      hideAd();
       showFront($("front"), dealRole(h.idx), h.idx + 1);
       isOpen = true; lockUntil = Date.now() + 450; renderDeal();
     } else {
@@ -1500,7 +1590,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       setTimeout(() => {
         $("front").innerHTML = "";
         if (last) { h.idx = h.deal.length; setPhase("done"); }
-        else { h.idx++; renderDeal(); save(); }
+        else { h.idx++; renderDeal(); save(); showAd(true); }
       }, 620);
     }
   });
@@ -1568,7 +1658,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         : `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">Ждём раздачи</h1>
             <div class="wait"><span class="pulse"></span>На связи как ${esc(me.nick)}</div>
             <p class="lead">Как только ведущий отметит тебя и нажмёт «Разослать карты», карта появится здесь, а бот пришлёт сообщение. Обновлять ничего не нужно.</p></div>
-            <div class="stub"><span>Карта придёт сама</span><b>GATE</b></div></div></div>`;
+            <div class="stub"><span>Карта придёт сама</span><b>GATE</b></div></div></div>${adHTML("")}`;
       return;
     }
     empty.hidden = true; stage.hidden = false;
@@ -1591,9 +1681,10 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     my.open = !my.open;
     if (my.open) {
       haptic("tap");
+      hideAd();
       showFront($("cFront"), seatRole(my.seat), my.seat.seat);
       if (!my.seat.seen_at) { my.seat.seen_at = new Date().toISOString(); sb.rpc("mark_seen", { seat_id: my.seat.id }).then(() => {}); $("cardDot").hidden = true; }
-    } else setTimeout(() => { if (!my.open) $("cFront").innerHTML = ""; }, 650);
+    } else setTimeout(() => { if (!my.open) $("cFront").innerHTML = ""; showAd(true); }, 650);
     renderCard();
   });
 
@@ -1716,6 +1807,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       p.out = !p.out; p.outAt = p.out ? Date.now() : 0;
       renderNotes(true, p.id); save();
       if (p.out) toast(`${p.name} выбыл`);
+      setTimeout(() => showAd(true), 900);
     }
   });
   $("players").addEventListener("input", (e) => {
