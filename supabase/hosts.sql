@@ -46,3 +46,20 @@ grant execute on function public.leaderboard() to authenticated;
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('avatars', 'avatars', true, 1048576, array['image/jpeg', 'image/png', 'image/webp'])
 on conflict (id) do update set public = true;
+
+-- roster of a game for the notes screen: names, Telegram handle and avatar, never roles
+drop function if exists public.game_roster(uuid);
+create function public.game_roster(g uuid)
+returns table (seat int, name text, user_id uuid, tg_username text, tg_photo text)
+language sql stable security definer set search_path = public as $$
+  select s.seat, coalesce(p.nick, s.guest_name), s.user_id, p.tg_username, p.tg_photo
+  from seats s left join profiles p on p.id = s.user_id
+  where s.game_id = g and (public.is_player(g) or public.is_host(g))
+  order by s.seat;
+$$;
+revoke all on function public.game_roster(uuid) from public, anon;
+grant execute on function public.game_roster(uuid) to authenticated;
+
+-- deleting an account removes its seats (a seat must have a player or a guest name)
+alter table public.seats drop constraint if exists seats_user_id_fkey;
+alter table public.seats add constraint seats_user_id_fkey foreign key (user_id) references public.profiles (id) on delete cascade;

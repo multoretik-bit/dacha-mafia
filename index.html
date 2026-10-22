@@ -448,7 +448,14 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .pl-note:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 2px rgba(9,47,128,.15); }
 .pl-note::placeholder { color: #9AA2B3; }
 .pl.is-out { opacity: .38; filter: saturate(.2); }
-.pl.is-out .pl-name { text-decoration: line-through; text-decoration-thickness: 2px; }
+.pl.is-out .pl-who b { text-decoration: line-through; text-decoration-thickness: 2px; }
+.pl-who { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.pl-who .ava { width: 30px; height: 30px; font-size: 15px; box-shadow: none; }
+.pl-who div { min-width: 0; }
+.pl-who b { display: block; font-weight: 800; font-size: 15.5px; color: var(--ink); line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pl-who small { display: block; font-weight: 700; font-size: 11.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pl.is-self .pl-in { border-style: dashed; }
+.notes-status { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 13.5px; color: var(--navy-ink); background: var(--paper); border-radius: 99px; padding: 9px 14px; box-shadow: 0 0 0 2px var(--ink); }
 .pl.is-out .pl-out { background: var(--ink); color: var(--paper); }
 .pl.is-out .trust { pointer-events: none; }
 .out-label { font: 700 11px/1 var(--f-body); letter-spacing: .16em; text-transform: uppercase; color: var(--navy-ink); text-align: center; opacity: .7; padding: 4px 0 0; }
@@ -548,7 +555,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     <div class="tabs" role="tablist">
       <button role="tab" id="tabHost" aria-selected="false" hidden>ведущий</button>
       <button role="tab" id="tabCard" aria-selected="false">карта<i class="new-dot" id="cardDot" hidden></i></button>
-      <button role="tab" id="tabNotes" aria-selected="false">блокнот</button>
+      <button role="tab" id="tabNotes" aria-selected="false">записи</button>
     </div>
     <button class="icon-btn" id="meBtn" aria-label="Профиль"></button>
   </header>
@@ -592,8 +599,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         <div class="ticket"><div class="ticket-in">
           <div class="mode-main">
             <div class="mode-code">PLR</div>
-            <div class="mode-title">Блокнот</div>
-            <div class="mode-text">Цвет доверия и заметки про каждого за столом</div>
+            <div class="mode-title">Записи</div>
+            <div class="mode-text">Игроки из раздачи подставятся сами: цвет доверия и заметки про каждого</div>
             <div class="resume" id="resumeNotes" hidden></div>
           </div>
           <div class="mode-stub"><span>Notes</span></div>
@@ -737,7 +744,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         <div class="bar"><i id="liveBar"></i></div>
         <div class="row-btns" style="justify-content:flex-start">
           <button class="pill sm ghost" id="liveRolesBtn">показать роли</button>
-          <button class="pill sm ghost" id="liveNotes">в блокнот</button>
+          <button class="pill sm ghost" id="liveNotes">записи</button>
         </div>
       </div>
       <div id="liveSeats"></div>
@@ -787,7 +794,6 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     <div data-ad-slot></div>
     <div class="row-btns">
       <button class="pill ghost sm" id="redeal">раздать заново</button>
-      <button class="pill ghost sm" id="toNotesFromDeal">в блокнот</button>
       <button class="pill sm" id="newLobbyDone">новое лобби</button>
     </div>
   </section>
@@ -819,17 +825,9 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         <div class="board-n"><b id="aliveN">0</b><span>в игре<br>из <em id="totalN">0</em></span></div>
         <div class="tally" id="tally"></div>
       </div>
-      <form class="add-player" id="addPlayerForm" autocomplete="off">
-        <input class="field" id="plName" maxlength="24" placeholder="Имя игрока">
-        <button class="round" type="submit" aria-label="Добавить игрока">+</button>
-      </form>
+      <div class="notes-status" id="notesStatus" hidden></div>
       <div class="ticket empty" id="notesEmpty" hidden><div class="ticket-in">
-        <div class="t-body">
-          <h2 class="h2">Впиши всех, кто за столом</h2>
-          <p class="lead">По одному через поле выше или сразу номерами. Цвет меняй по ходу игры: серый — не знаю, чёрный — мафия, красный — верю.</p>
-          <div class="row-btns" id="rosterFill" hidden><button class="pill sm" id="rosterBtn">игроки из текущей игры</button></div>
-          <div class="chips" id="quickFill"></div>
-        </div>
+        <div class="t-body" id="notesEmptyBody"></div>
       </div></div>
       <div class="players" id="players"></div>
       <div data-ad-slot></div>
@@ -845,7 +843,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261022114620"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261022115534"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -918,14 +916,14 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     host: { n: 10, counts: null, phase: "count", deal: [], idx: 0 },
     on: { lineup: [], counts: null, phase: "pick", mafiaSees: true, gameId: null },
     custom: [],
-    notes: { players: [] },
+    notes: { gameId: null, players: [] },
   });
   let S;
   const load = () => {
     try {
       const d = JSON.parse(localStorage.getItem(KEY));
       if (!d) return null;
-      if (d.v === 2) return Object.assign(fresh(), d);
+      if (d.v === 2) { const f = Object.assign(fresh(), d); if (!("gameId" in (f.notes || {}))) f.notes = { gameId: null, players: [] }; return f; }
       if (d.v === 1) { const f = fresh(); f.host = d.host; f.custom = d.custom || []; f.notes = d.notes || f.notes; return f; }
     } catch {}
     return null;
@@ -1064,7 +1062,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 
   const askNewLobby = () => sheet({
     eyebrow: "Новое лобби", title: "Начать новую игру?",
-    text: "Раздача, выбор игроков и записи в блокноте сотрутся. Идущая онлайн-игра отменится без записи в статистику. Свои роли останутся.",
+    text: "Раздача, выбор игроков и записи сотрутся. Идущая онлайн-игра отменится без записи в статистику. Свои роли останутся.",
     ok: "начать заново",
     onOk: async () => {
       if (S.on.gameId && sb && me) await sb.from("games").update({ status: "cancelled", finished_at: new Date().toISOString() }).eq("id", S.on.gameId);
@@ -1138,7 +1136,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   /* ---------- home ---------- */
   const renderHome = () => {
     const box = $("homeMe");
-    if (!sb) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><h2 class="h2">Нет связи с сервером</h2><p class="lead">Аккаунты и карты на телефон не работают без интернета. Раздача с одного телефона и блокнот работают.</p></div></div></div>`;
+    if (!sb) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><h2 class="h2">Нет связи с сервером</h2><p class="lead">Аккаунты и карты на телефон не работают без интернета. Раздача с одного телефона работает.</p></div></div></div>`;
     else if (!me && inTG) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>${authError ? esc(authError) : "Входим через Telegram…"}</div></div></div></div>`;
     else if (!me) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body">
         <h2 class="h2">Заходи через Telegram</h2>
@@ -1430,7 +1428,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       });
       const { error: e2 } = await sb.from("seats").insert(rows);
       if (e2) { await sb.from("games").delete().eq("id", g.id); throw e2; }
-      S.on.gameId = g.id; live.showRoles = false; save();
+      S.on.gameId = g.id; live.showRoles = false; save(); syncNotesGame();
       sb.functions.invoke("tg", { body: { action: "notify", game_id: g.id } }).catch(() => {});
       go("host"); toast("Карты разлетелись по телефонам");
     } catch (x) { toast("Не получилось разослать: " + humanErr(x)); }
@@ -1484,10 +1482,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const s = live.seats.find((x) => x.id === +b.dataset.guest); if (!s) return;
     showGuestCard(s);
   };
-  $("liveNotes").onclick = async () => {
-    if (!S.notes.players.length) S.notes.players = live.seats.map((s) => mkPlayer(seatName(s)));
-    go("notes");
-  };
+  $("liveNotes").onclick = () => go("notes");
   const endGame = async (patch, msg) => {
     const { error } = await sb.from("games").update({ ...patch, finished_at: new Date().toISOString() }).eq("id", S.on.gameId);
     if (error) return toast("Не получилось: " + humanErr(error));
@@ -1611,7 +1606,6 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     eyebrow: "Раздача", title: "Раздать заново?", text: "Те же роли перемешаются, и каждому придётся посмотреть карту ещё раз.",
     ok: "перемешать", onOk: dealOffline,
   });
-  $("toNotesFromDeal").onclick = () => { if (!S.notes.players.length) fillNumbers(S.host.deal.length); go("notes"); };
 
   /* ---------- player: my card ---------- */
   const my = { seat: null, family: [], hostNick: "", open: false, gameChan: null };
@@ -1646,6 +1640,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     $("cardDot").hidden = !(my.seat && !my.seat.seen_at);
     if (S.view === "card") renderCard();
     if (S.view === "home") renderHome();
+    if (S.view === "notes") renderNotes(false);
   };
   const renderCard = () => {
     const empty = $("cardEmpty"), stage = $("cStage");
@@ -1695,6 +1690,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "seats", filter: `user_id=eq.${me.id}` }, async () => {
         const changed = await loadMyCard();
         if (!changed || !my.seat) return;
+        syncNotesGame();
         try { navigator.vibrate?.([120, 60, 120]); } catch {}
         haptic("card");
         if (["home", "card", "profile", "people"].includes(S.view)) go("card");
@@ -1723,10 +1719,31 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   setInterval(checkUpdate, 3 * 60 * 1000);
   setTimeout(checkUpdate, 4000);
 
-  /* ---------- notes ---------- */
+  /* ---------- notes: the players of the current online game ---------- */
   const rowEls = new Map();
-  const mkPlayer = (name) => ({ id: uid(), name, c: "gray", note: "", out: false, outAt: 0 });
-  const fillNumbers = (k) => { for (let i = 1; i <= k; i++) S.notes.players.push(mkPlayer(`Игрок ${i}`)); };
+  const notesGameId = () => (canHost() && S.on.gameId) || my.seat?.game_id || null;
+  let rosterLoading = null;
+  // pulls the roster of a new game; marks of the previous game are replaced
+  const syncNotesGame = async () => {
+    const gid = notesGameId();
+    if (!gid || !sb || !me || rosterLoading === gid) return false;
+    if (S.notes.gameId === gid && S.notes.players.length) return false;
+    rosterLoading = gid;
+    const { data, error } = await sb.rpc("game_roster", { g: gid });
+    rosterLoading = null;
+    if (error || !data?.length || notesGameId() !== gid) return false;
+    rowEls.forEach((el) => el.remove()); rowEls.clear();
+    S.notes = {
+      gameId: gid,
+      players: data.map((x) => ({
+        id: "s" + x.seat, seat: x.seat, name: x.name, uid: x.user_id, photo: x.tg_photo || "",
+        handle: x.user_id ? (x.tg_username ? "@" + x.tg_username : "") : "гость",
+        self: x.user_id === me.id, c: "gray", note: "", out: false, outAt: 0,
+      })),
+    };
+    save();
+    return true;
+  };
   const ordered = () => {
     const ps = S.notes.players;
     return [...ps.filter((p) => !p.out), ...ps.filter((p) => p.out).sort((a, b) => a.outAt - b.outAt)];
@@ -1737,7 +1754,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     el.innerHTML = `<div class="pl-in">
       <div class="pl-badge"></div>
       <div class="pl-main">
-        <input class="pl-name" maxlength="24" aria-label="Имя игрока">
+        <div class="pl-who">${ava(p.name, p.uid || p.name, "", p.photo)}<div><b>${esc(p.name)}</b><small>${esc([p.self ? "это ты" : "", p.handle].filter(Boolean).join(" · "))}</small></div></div>
         <div class="trust" role="group" aria-label="Доверие">
           <button data-c="gray" aria-label="Серый: не знаю"><i></i></button>
           <button data-c="black" aria-label="Чёрный: мафия"><i></i></button>
@@ -1745,28 +1762,38 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         </div>
         <button class="pl-out"></button>
       </div>
-      <textarea class="pl-note" placeholder="Что говорил, за кого голосовал…" aria-label="Записи"></textarea>
+      <textarea class="pl-note" placeholder="Что говорил, за кого голосовал…" aria-label="Записи про ${esc(p.name)}"></textarea>
     </div>`;
-    el.querySelector(".pl-name").value = p.name;
     el.querySelector(".pl-note").value = p.note;
     return el;
   };
-  const syncRow = (el, p, num) => {
+  const syncRow = (el, p) => {
     el.dataset.c = p.c;
     el.classList.toggle("is-out", p.out);
-    el.querySelector(".pl-badge").textContent = num;
+    el.classList.toggle("is-self", !!p.self);
+    el.querySelector(".pl-badge").textContent = p.seat;
     el.querySelectorAll(".trust button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.c === p.c));
     el.querySelector(".pl-out").textContent = p.out ? "вернуть" : "выбыл";
   };
   const renderNotes = (animate, movedId) => {
-    const ps = S.notes.players, box = $("players");
+    if (!animate) syncNotesGame().then((changed) => { if (changed && S.view === "notes") renderNotes(false); });
+    const ps = S.notes.players || [], box = $("players");
     const alive = ps.filter((p) => !p.out);
     $("aliveN").textContent = alive.length; $("totalN").textContent = ps.length;
     const cnt = (c) => alive.filter((p) => p.c === c).length;
     $("tally").innerHTML = ps.length ? [["red", "Красные"], ["black", "Чёрные"], ["gray", "Серые"]].map(([c, l]) => `<span title="${l}"><i style="background:var(--${c === "black" ? "ink" : c})"></i>${cnt(c)}</span>`).join("") : "";
+    $("board").hidden = !ps.length;
+    const liveNow = !!notesGameId() && notesGameId() === S.notes.gameId;
+    $("notesStatus").hidden = !ps.length;
+    $("notesStatus").innerHTML = liveNow ? `<span class="pulse"></span>Игра идёт · записи видишь только ты` : "Игра завершена · это записи прошлой игры. Новые появятся с новой раздачей";
     $("notesEmpty").hidden = ps.length > 0;
-    $("rosterFill").hidden = !(my.seat || S.on.gameId);
-    $("quickFill").innerHTML = [6, 8, 10, 12].map((k) => `<button class="chip" data-fill="${k}">1–${k}</button>`).join("");
+    if (!ps.length) {
+      $("notesEmptyBody").innerHTML = !sb || !me
+        ? `<h2 class="h2">Записи работают в игре через Telegram</h2><p class="lead">Открой бота @dacha_gay и нажми «Играть». Когда ведущий раздаст карты, здесь появятся все игроки за столом.</p><div class="row-btns"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`
+        : notesGameId()
+        ? `<div class="wait"><span class="pulse"></span>Загружаю игроков…</div>`
+        : `<h2 class="h2">Записи появятся с раздачей</h2><p class="lead">Как только ведущий разошлёт карты, здесь сами появятся все, кто в игре. Цвет меняй по ходу: серый — не знаю, чёрный — мафия, красный — верю. Записи видишь только ты.</p>`;
+    }
 
     const first = new Map();
     if (animate) rowEls.forEach((el, id) => first.set(id, el.getBoundingClientRect().top));
@@ -1777,7 +1804,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     order.forEach((p) => {
       let el = rowEls.get(p.id);
       if (!el) { el = makeRow(p); rowEls.set(p.id, el); }
-      syncRow(el, p, ps.indexOf(p) + 1);
+      syncRow(el, p);
       if (p.out && order.find((q) => q.out) === p) {
         if (!outLabel) { outLabel = document.createElement("div"); outLabel.className = "out-label"; }
         outLabel.textContent = "Выбыли"; box.append(outLabel);
@@ -1812,30 +1839,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   });
   $("players").addEventListener("input", (e) => {
     const row = e.target.closest(".pl"); const p = row && pById(row.dataset.id); if (!p) return;
-    if (e.target.classList.contains("pl-note")) p.note = e.target.value;
-    if (e.target.classList.contains("pl-name")) p.name = e.target.value;
-    save(true);
+    if (e.target.classList.contains("pl-note")) { p.note = e.target.value; save(true); }
   });
-  $("players").addEventListener("change", (e) => {
-    if (!e.target.classList.contains("pl-name")) return;
-    const row = e.target.closest(".pl"), p = pById(row.dataset.id);
-    if (p && !p.name.trim()) { p.name = `Игрок ${S.notes.players.indexOf(p) + 1}`; e.target.value = p.name; save(); }
-  });
-  $("addPlayerForm").onsubmit = (e) => {
-    e.preventDefault();
-    const name = $("plName").value.trim() || `Игрок ${S.notes.players.length + 1}`;
-    S.notes.players.push(mkPlayer(name));
-    $("plName").value = "";
-    renderNotes(true); save();
-  };
-  $("quickFill").onclick = (e) => { const b = e.target.closest("[data-fill]"); if (!b) return; fillNumbers(+b.dataset.fill); renderNotes(false); save(); };
-  $("rosterBtn").onclick = async () => {
-    const gid = my.seat?.game_id || S.on.gameId; if (!gid) return;
-    const { data, error } = await sb.rpc("game_roster", { g: gid });
-    if (error || !data?.length) return toast("Не получилось загрузить игроков");
-    S.notes.players = data.map((x) => mkPlayer(x.name + (x.user_id === me?.id ? " (я)" : "")));
-    renderNotes(false); save();
-  };
 
   /* ---------- session ---------- */
   const afterLogin = async () => {
