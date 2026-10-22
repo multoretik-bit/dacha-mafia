@@ -75,25 +75,12 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .col { display: flex; flex-direction: column; gap: 16px; }
 
 /* ---------- logo ---------- */
-.logo { position: relative; width: 100%; aspect-ratio: 501 / 433; container-type: inline-size; max-width: 100%; }
+.logo { position: relative; width: 100%; aspect-ratio: 1200 / 1028; container-type: inline-size; max-width: 100%; }
 .logo img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; }
-.tix {
-  position: absolute; left: 43.9%; top: 61.9%; width: 52.9%; height: 38.1%;
-  background: var(--paper); border-radius: 4.4cqw; padding: 1.35cqw; box-sizing: border-box;
-}
-.tix-in {
-  height: 100%; box-sizing: border-box; border: .5cqw solid var(--ink); border-radius: 3.1cqw;
-  display: flex; overflow: hidden; background: var(--paper);
-}
-.tix-main { flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 2.2cqw 2.4cqw 2cqw 3.4cqw; color: var(--ink); }
 .tix-top { display: flex; justify-content: flex-end; align-items: center; gap: 1.6cqw; height: 4.6cqw; }
 .tix-top svg { width: 4.4cqw; height: 4.4cqw; fill: var(--ink); }
 .flag { width: 6.4cqw; height: 4.2cqw; border: .25cqw solid var(--ink); box-sizing: border-box;
   background: linear-gradient(180deg, var(--red) 0 16.6%, #fff 0 33.3%, var(--ink) 0 66.6%, #fff 0 83.3%, var(--red) 0); }
-.tix-code { font: 600 19.5cqw/0.92 var(--f-code); letter-spacing: -.01em; margin-top: .4cqw; }
-.tix-sub { margin-top: auto; font: 600 2.15cqw/1 var(--f-body); letter-spacing: .12em; white-space: nowrap; }
-.tix-stub { width: 9.4cqw; background: var(--ink); color: var(--paper); display: grid; place-items: center; }
-.tix-stub span { writing-mode: vertical-rl; font: 600 3.1cqw/1 var(--f-body); letter-spacing: .14em; }
 
 .wordmark { width: 78%; margin: 3% auto 0; display: block; overflow: visible; }
 .wordmark text { font-family: var(--f-display); font-weight: 900; font-style: italic; letter-spacing: .02em; }
@@ -798,15 +785,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 </main>
 
 <template id="logoTpl">
-  <img src="logo-dacha.png" alt="dacha" draggable="false">
-  <div class="tix" aria-hidden="true"><div class="tix-in">
-    <div class="tix-main">
-      <div class="tix-top"><svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z" transform="rotate(90 12 12)"/></svg><span class="flag"></span></div>
-      <div class="tix-code">MAF</div>
-      <div class="tix-sub">DACHA INTERNATIONAL MAFIA</div>
-    </div>
-    <div class="tix-stub"><span>MAFIA</span></div>
-  </div></div>
+  <img src="logo-dacha.png" alt="DACHA MAFIA" draggable="false">
 </template>
 
 <script>
@@ -841,6 +820,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     custom: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.9.7c0 1.7-2.5 2.1-2.5 3.6"/><path d="M12 16.9v.1"/>',
     user: '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.4 7.5-5.4s6.3 1.8 7.5 5.4"/>',
   };
+  const PLANE = '<svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z" transform="rotate(90 12 12)"/></svg>';
   const icon = (k) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">${ICONS[k] || ICONS.custom}</svg>`;
 
   const TEAM = {
@@ -1392,7 +1372,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const custom = String(r.id).startsWith("c_");
     return `<div class="pass-in team-${r.team}">
       <div class="pass-main">
-        <div class="pass-head"><span>Dacha Mafia · посадочный</span><span class="tix-top">${$("logoTpl").content.querySelector(".tix-top svg").outerHTML}<span class="flag"></span></span></div>
+        <div class="pass-head"><span>Dacha Mafia · посадочный</span><span class="tix-top">${PLANE}<span class="flag"></span></span></div>
         <div class="pass-route"><div class="pass-code">${esc(r.code)}</div><div class="pass-icon team-${r.team}">${icon(custom ? "custom" : r.id)}</div></div>
         <div class="pass-name">${esc(r.name)}</div>
         <p class="pass-desc">${esc(r.desc)}</p>
