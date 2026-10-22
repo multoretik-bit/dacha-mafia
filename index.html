@@ -336,8 +336,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .team-city .pass-stub, .pass-icon.team-city { background: var(--red); }
 .team-mafia .pass-stub, .pass-icon.team-mafia { background: var(--ink); }
 .team-solo .pass-stub, .pass-icon.team-solo { background: var(--blue); }
-.art { background: var(--ink); overflow: hidden; box-shadow: 0 18px 36px -16px rgba(7,27,77,.7); }
-.art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.face.art { background: none; border-radius: 0; overflow: visible; }
+.art img { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 16px 20px rgba(7,27,77,.42)); }
 .desc { margin: -4px 0 0; text-align: center; font-weight: 700; font-size: 14px; color: var(--navy-ink); max-width: 36ch; text-wrap: balance; }
 .hint { text-align: center; font: italic 800 15px/1.3 var(--f-display); color: var(--navy-ink); max-width: 30ch; text-wrap: balance; margin: 0; min-height: 2.6em; }
 .stage .linkish { margin-top: auto; }
@@ -829,23 +829,25 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     solo: { label: "Сам за себя", long: "Играет сам за себя", stub: "Соло", won: "Маньяк победил" },
   };
   const BASE = [
-    { id: "maf", name: "Мафия", code: "MAF", team: "mafia", art: "cards/maf.jpg", desc: "Ночью вместе с семьёй выбираешь, кого убрать. Днём притворяйся мирным и уводи подозрения." },
-    { id: "don", name: "Дон мафии", code: "DON", team: "mafia", desc: "Глава семьи. Ночью стреляешь с мафией, а потом ищешь комиссара: проверяешь одного игрока." },
-    { id: "kom", name: "Комиссар", code: "KOM", team: "city", art: "cards/kom.jpg", desc: "Ночью проверяешь одного игрока и узнаёшь, мафия он или нет. Не спались раньше времени." },
+    { id: "maf", name: "Мафия", code: "MAF", team: "mafia", art: "cards/maf.webp", desc: "Ночью вместе с семьёй выбираешь, кого убрать. Днём притворяйся мирным и уводи подозрения." },
+    { id: "don", name: "Дон мафии", code: "DON", team: "mafia", art: "cards/don.webp", desc: "Глава семьи. Ночью стреляешь с мафией, а потом ищешь комиссара: проверяешь одного игрока." },
+    { id: "kom", name: "Комиссар", code: "COM", team: "city", art: "cards/kom.webp", desc: "Ночью проверяешь одного игрока и узнаёшь, мафия он или нет. Не спались раньше времени." },
     { id: "pat", name: "Патрульный", code: "PAT", team: "city", desc: "Напарник комиссара. Ночью тоже проверяешь игрока. Если комиссара убьют, занимаешь его место." },
-    { id: "kur", name: "Любовница", code: "LUB", team: "city", art: "cards/kur.jpg", desc: "Ночью приходишь к игроку. Его ночной ход пропадает, а выстрел мафии по нему не проходит." },
+    { id: "kur", name: "Любовница", code: "LVR", team: "city", art: "cards/kur.webp", desc: "Ночью приходишь к игроку. Его ночной ход пропадает, а выстрел мафии по нему не проходит." },
     { id: "doc", name: "Доктор", code: "DOC", team: "city", art: "cards/doc.jpg", desc: "Ночью лечишь одного игрока: если по нему стреляли, он выживет. Себя можно лечить один раз." },
-    { id: "man", name: "Маньяк", code: "MAN", team: "solo", desc: "Ты ни за кого. Каждую ночь убиваешь одного игрока. Победа, если останешься в живых последним." },
+    { id: "man", name: "Маньяк", code: "MAN", team: "solo", art: "cards/man.webp", desc: "Ты ни за кого. Каждую ночь убиваешь одного игрока. Победа, если останешься в живых последним." },
   ];
-  const CIVIL = { id: "mir", name: "Мирный житель", code: "MIR", team: "city", art: "cards/mir.jpg", desc: "Ночью спишь. Днём слушай, спорь и голосуй, чтобы выгнать мафию из города." };
+  const CIVIL = { id: "mir", name: "Мирный житель", code: "CIV", team: "city", art: "cards/mir-1.webp", desc: "Ночью спишь. Днём слушай, спорь и голосуй, чтобы выгнать мафию из города." };
   const ART = Object.fromEntries([...BASE, CIVIL].filter((r) => r.art).map((r) => [r.id, r.art]));
   // every card variant per role; one is picked at random on each deal (the role's `art` is the thumbnail)
   const CARD_ART = {
-    maf: ["cards/maf.jpg"],
-    kom: ["cards/kom.jpg"],
-    kur: ["cards/kur.jpg"],
+    maf: ["cards/maf.webp"],
+    don: ["cards/don.webp"],
+    kom: ["cards/kom.webp"],
+    kur: ["cards/kur.webp"],
+    man: ["cards/man.webp"],
     doc: ["cards/doc.jpg"],
-    mir: ["cards/mir.jpg"],
+    mir: ["cards/mir-1.webp", "cards/mir-2.webp"],
   };
 
   const TR = { а:"A",б:"B",в:"V",г:"G",д:"D",е:"E",ё:"E",ж:"ZH",з:"Z",и:"I",й:"Y",к:"K",л:"L",м:"M",н:"N",о:"O",п:"P",р:"R",с:"S",т:"T",у:"U",ф:"F",х:"H",ц:"C",ч:"CH",ш:"SH",щ:"SH",ы:"Y",э:"E",ю:"YU",я:"YA" };
@@ -1245,7 +1247,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     $("rolesList").innerHTML = BASE.map((r) => row(r, false)).join("") + S.custom.map((r) => row(r, true)).join("") +
       `<div class="role team-city${civ > 0 ? "" : " is-zero"}">
         <div class="r-ic"><img src="${CIVIL.art}" alt=""></div>
-        <div style="min-width:0"><div class="r-name">${CIVIL.name} <span class="r-code">MIR</span></div><div class="r-meta">Город · остальные места</div></div>
+        <div style="min-width:0"><div class="r-name">${CIVIL.name} <span class="r-code">CIV</span></div><div class="r-meta">Город · остальные места</div></div>
         <div class="auto-n">${Math.max(0, civ)}</div>
       </div>`;
     $("famToggle").hidden = !online();
