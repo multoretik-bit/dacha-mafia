@@ -153,6 +153,9 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 }
 .tabs button[aria-selected="true"] { background: var(--blue); color: #fff; box-shadow: inset 0 0 0 2px var(--paper); }
 .tabs .new-dot { position: absolute; top: 4px; right: 8px; width: 9px; height: 9px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 2px var(--navy); }
+.top-title { flex: 1; min-width: 0; text-align: center; font: italic 800 15px/1 var(--f-display); color: var(--navy-ink); text-transform: lowercase; }
+.tabs button { font-size: 12px; }
+.ev-go { display: flex; justify-content: space-between; align-items: center; width: 100%; color: var(--paper); }
 .icon-btn {
   width: 44px; height: 44px; flex: none; border-radius: 50%; background: var(--paper); color: var(--navy);
   display: grid; place-items: center; box-shadow: 0 0 0 2.5px var(--navy), 0 3px 0 2.5px var(--navy); overflow: hidden;
@@ -588,12 +591,13 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <main class="app" id="app">
   <header class="topbar" id="topbar" hidden>
     <button class="mini" id="goHome" aria-label="На главную"><div class="logo" data-logo></div></button>
-    <div class="tabs" role="tablist">
-      <button role="tab" id="tabHost" aria-selected="false" hidden>ведущий</button>
-      <button role="tab" id="tabEvents" aria-selected="false">игры</button>
-      <button role="tab" id="tabCard" aria-selected="false">карта<i class="new-dot" id="cardDot" hidden></i></button>
-      <button role="tab" id="tabNotes" aria-selected="false">записи</button>
+    <div class="tabs" role="tablist" id="tabsBox">
+      <button role="tab" id="tabHost" aria-selected="false" hidden>раздача</button>
+      <button role="tab" id="tabEvents" aria-selected="false" hidden>запись</button>
+      <button role="tab" id="tabCard" aria-selected="false" hidden>карта<i class="new-dot" id="cardDot" hidden></i></button>
+      <button role="tab" id="tabNotes" aria-selected="false" hidden>заметки</button>
     </div>
+    <div class="top-title" id="topTitle" hidden></div>
     <button class="icon-btn" id="meBtn" aria-label="Профиль"></button>
   </header>
 
@@ -609,35 +613,46 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       <p class="tagline">Роли приходят прямо на телефон каждого дачника, а статистика копится в профиле</p>
     </div>
     <div id="homeMe"></div>
+    <div id="homeEvent"></div>
     <div class="modes">
-      <button class="mode hot" id="goEvents">
-        <div class="ticket"><div class="ticket-in">
-          <div class="mode-main">
-            <div class="mode-code">SAT</div>
-            <div class="mode-title">Записаться на мафию</div>
-            <div class="mode-text" id="nextEventText">Каждую субботу на даче. Выбери дату и отметься</div>
-            <div class="resume" id="resumeEvents" hidden></div>
-          </div>
-          <div class="mode-stub"><span>Saturday</span></div>
-        </div></div>
-      </button>
       <button class="mode" id="goHost" hidden>
         <div class="ticket"><div class="ticket-in">
           <div class="mode-main">
             <div class="mode-code">HST</div>
             <div class="mode-title">Я ведущий</div>
-            <div class="mode-text">Выбери дачников и роли, карты разлетятся по телефонам</div>
+            <div class="mode-text">Раздача ролей, запись и оплата игроков</div>
             <div class="resume" id="resumeHost" hidden></div>
           </div>
           <div class="mode-stub"><span>Host</span></div>
         </div></div>
       </button>
+      <button class="mode" id="goPlayer">
+        <div class="ticket"><div class="ticket-in">
+          <div class="mode-main">
+            <div class="mode-code">PLR</div>
+            <div class="mode-title">Я игрок</div>
+            <div class="mode-text">Получить карту роли и вести заметки по игре</div>
+            <div class="resume" id="resumePlayer" hidden></div>
+          </div>
+          <div class="mode-stub"><span>Player</span></div>
+        </div></div>
+      </button>
+    </div>
+    <div data-ad-slot></div>
+    <div class="row-btns" style="margin-top:6px">
+      <button class="pill ghost" id="goPeople">дачники</button>
+    </div>
+  </section>
+
+  <!-- PLAYER HUB -->
+  <section id="vPlayer" class="col" hidden>
+    <div class="modes">
       <button class="mode" id="goCard">
         <div class="ticket"><div class="ticket-in">
           <div class="mode-main">
             <div class="mode-code">CRD</div>
-            <div class="mode-title">Моя карта</div>
-            <div class="mode-text">Здесь появится твоя роль, когда ведущий раздаст</div>
+            <div class="mode-title">Получить карту</div>
+            <div class="mode-text">Твоя роль придёт сюда, когда ведущий раздаст</div>
             <div class="resume" id="resumeCard" hidden></div>
           </div>
           <div class="mode-stub"><span>Card</span></div>
@@ -646,9 +661,9 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       <button class="mode" id="goNotes">
         <div class="ticket"><div class="ticket-in">
           <div class="mode-main">
-            <div class="mode-code">PLR</div>
-            <div class="mode-title">Записи</div>
-            <div class="mode-text">Игроки из раздачи подставятся сами: цвет доверия и заметки про каждого</div>
+            <div class="mode-code">NTS</div>
+            <div class="mode-title">Заметки</div>
+            <div class="mode-text">Все из раздачи подставятся сами: цвет доверия и записи про каждого</div>
             <div class="resume" id="resumeNotes" hidden></div>
           </div>
           <div class="mode-stub"><span>Notes</span></div>
@@ -656,10 +671,6 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       </button>
     </div>
     <div data-ad-slot></div>
-    <div class="row-btns" style="margin-top:6px">
-      <button class="pill ghost" id="goPeople">дачники</button>
-      <button class="pill" id="newLobbyHome">новое лобби</button>
-    </div>
   </section>
 
   <!-- AUTH -->
@@ -738,6 +749,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     <div class="dock">
       <div class="sum" id="pickSum"></div>
       <button class="pill wide" id="pickNext">дальше: роли</button>
+      <button class="linkish" id="newLobbyPick">Новое лобби</button>
     </div>
   </section>
 
@@ -757,7 +769,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       </div>
       <div class="stub"><span>Телефон передают по кругу</span><b>DACHA</b></div>
     </div></div>
-    <div class="row-btns"><button class="pill wide" id="toRoles">дальше: роли</button></div>
+    <div class="row-btns"><button class="pill wide" id="toRoles">дальше: роли</button><button class="linkish" id="newLobbyCount">Новое лобби</button></div>
   </section>
 
   <!-- HOST: ROLES -->
@@ -815,6 +827,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     <div class="row-btns">
       <button class="pill" id="liveFinish">завершить игру</button>
       <button class="pill ghost sm" id="liveRedeal">перераздать</button>
+      <button class="linkish" id="newLobbyLive">Новое лобби</button>
     </div>
   </section>
 
@@ -892,7 +905,6 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       </div></div>
       <div class="players" id="players"></div>
       <div data-ad-slot></div>
-      <div class="row-btns"><button class="linkish" id="newLobbyNotes">Новое лобби</button></div>
     </div>
   </section>
 </main>
@@ -904,7 +916,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261022172913"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261022173301"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1134,7 +1146,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   });
 
   /* ---------- navigation ---------- */
-  const VIEWS = ["vHome", "vAuth", "vProfile", "vPeople", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents"];
+  const VIEWS = ["vHome", "vAuth", "vProfile", "vPeople", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
   let profileId = null;
   const online = () => S.hostMode === "online";
   const hostView = () => {
@@ -1153,18 +1165,15 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (view === "profile") profileId = arg || me?.id;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", host: null, card: "vCard", notes: "vNotes", events: "vEvents" }[view] || hostView();
+    const id = { home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "home";
-    $("tabHost").setAttribute("aria-selected", view === "host");
-    $("tabCard").setAttribute("aria-selected", view === "card");
-    $("tabNotes").setAttribute("aria-selected", view === "notes");
-    $("tabEvents").setAttribute("aria-selected", view === "events");
+    renderTabs(view);
     if (id !== "vLive") stopLive();
     ({
       vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople,
       vPick: renderPick, vCount: renderCount, vRoles: renderRoles, vLive: renderLive, vDeal: renderDeal, vDone: renderDone,
-      vCard: renderCard, vNotes: () => renderNotes(false), vEvents: renderEvents,
+      vCard: renderCard, vNotes: () => renderNotes(false), vEvents: renderEvents, vPlayer: renderPlayer,
     })[id]();
     save();
     window.scrollTo({ top: 0 });
@@ -1176,20 +1185,34 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   $("goHost").onclick = () => go("host");
   $("goCard").onclick = () => go("card");
   $("goNotes").onclick = () => go("notes");
-  $("goEvents").onclick = () => go("events");
+  $("goPlayer").onclick = () => go("player");
   $("tabEvents").onclick = () => go("events");
   $("goPeople").onclick = () => (me ? go("people") : go("auth"));
   $("tabHost").onclick = () => go("host");
   $("tabCard").onclick = () => go("card");
   $("tabNotes").onclick = () => go("notes");
   $("meBtn").onclick = () => (me ? go("profile", me.id) : go("auth"));
-  $("newLobbyHome").onclick = askNewLobby;
-  $("newLobbyDone").onclick = askNewLobby;
-  $("newLobbyNotes").onclick = askNewLobby;
+  ["newLobbyDone", "newLobbyPick", "newLobbyCount", "newLobbyLive"].forEach((id) => ($(id).onclick = askNewLobby));
+
+  // only the two tabs of the current section, so labels never overlap
+  const renderTabs = (view) => {
+    let set = [];
+    if (view === "card" || view === "notes" || view === "player") set = ["tabCard", "tabNotes"];
+    else if (view === "host" || (view === "events" && canHost())) set = ["tabHost", "tabEvents"];
+    else if (view === "events") set = ["tabEvents"];
+    ["tabHost", "tabEvents", "tabCard", "tabNotes"].forEach((id) => {
+      $(id).hidden = !set.includes(id);
+      $(id).setAttribute("aria-selected", { tabHost: "host", tabEvents: "events", tabCard: "card", tabNotes: "notes" }[id] === view);
+    });
+    $("tabEvents").textContent = canHost() ? "запись" : "запись на игру";
+    $("tabsBox").hidden = !set.length;
+    $("topTitle").hidden = !!set.length;
+    $("topTitle").textContent = { profile: "профиль", people: "дачники", auth: "вход" }[view] || "";
+  };
 
   const renderHostAccess = () => {
-    $("tabHost").hidden = !canHost();
     $("goHost").hidden = !canHost();
+    if (S?.view) renderTabs(S.view);
   };
   const renderMeBtn = () => {
     renderHostAccess();
@@ -1217,14 +1240,22 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       $("homeProfile").onclick = () => go("profile", me.id);
       if (!row) loadPeople().then(() => { if (S.view === "home" && people.some((p) => p.id === me.id)) renderHome(); });
     }
-    const h = S.host, rh = $("resumeHost"), rc = $("resumeCard"), rn = $("resumeNotes");
-    rh.hidden = rc.hidden = rn.hidden = true;
+    const h = S.host, rh = $("resumeHost"), rp = $("resumePlayer");
+    rh.hidden = true;
     if (online() && S.on.gameId) { rh.hidden = false; rh.textContent = "Идёт онлайн-игра"; }
     else if (!online() && h.phase === "deal") { rh.hidden = false; rh.textContent = `Идёт раздача: карта ${h.idx + 1} из ${h.deal.length}`; }
-    if (my.seat) { rc.hidden = false; rc.textContent = my.seat.seen_at ? `Место ${pad(my.seat.seat)} · карта открыта` : "Пришла карта, открой её"; }
+    const fresh = !!(my.seat && !my.seat.seen_at), ps = S.notes.players;
+    rp.hidden = !(my.seat || ps.length);
+    rp.textContent = fresh ? "Пришла карта, открой её" : my.seat ? `Место ${pad(my.seat.seat)} · игра идёт` : `Заметки: в игре ${ps.filter((p) => !p.out).length} из ${ps.length}`;
+    $("goPlayer").classList.toggle("hot", fresh);
+  };
+  const renderPlayer = () => {
+    const rc = $("resumeCard"), rn = $("resumeNotes"), ps = S.notes.players;
+    rc.hidden = !my.seat;
+    if (my.seat) rc.textContent = my.seat.seen_at ? `Место ${pad(my.seat.seat)} · карта открыта` : "Пришла карта, открой её";
     $("goCard").classList.toggle("hot", !!(my.seat && !my.seat.seen_at));
-    const ps = S.notes.players;
-    if (ps.length) { rn.hidden = false; rn.textContent = `В игре ${ps.filter((p) => !p.out).length} из ${ps.length}`; }
+    rn.hidden = !ps.length;
+    if (ps.length) rn.textContent = `В игре ${ps.filter((p) => !p.out).length} из ${ps.length}`;
   };
 
   /* ---------- auth ---------- */
@@ -1705,6 +1736,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     $("cardDot").hidden = !(my.seat && !my.seat.seen_at);
     if (S.view === "card") renderCard();
     if (S.view === "home") renderHome();
+    if (S.view === "player") renderPlayer();
     if (S.view === "notes") renderNotes(false);
   };
   const renderCard = () => {
@@ -1758,7 +1790,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         syncNotesGame();
         try { navigator.vibrate?.([120, 60, 120]); } catch {}
         haptic("card");
-        if (["home", "card", "profile", "people"].includes(S.view)) go("card");
+        if (["home", "card", "profile", "people", "player", "events"].includes(S.view)) go("card");
         else toast("Пришла твоя карта", { label: "открыть", run: () => go("card") });
       })
       .subscribe();
@@ -1809,12 +1841,25 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     ev.loaded = true;
   };
   const drawHomeEvent = () => {
-    const e = ev.list.find((x) => x.status === "open"), txt = $("nextEventText"), res = $("resumeEvents");
-    if (!e) { res.hidden = true; return; }
-    const { d, m } = dayParts(e.day), n = e.signups.length, mine = me && e.signups.some((x) => x.user_id === me.id);
-    txt.textContent = `Сб ${d} ${MON[m - 1]} · сбор ${hm(e.gather_time)} · начало ${hm(e.start_time)}`;
-    res.hidden = false;
-    res.textContent = mine ? `Ты записан · идут ${n}` : n ? `Идут ${n} · запишись` : "Пока никто не записался";
+    const box = $("homeEvent");
+    const e = ev.list.find((x) => x.status === "open");
+    if (!me || !e) {
+      box.innerHTML = `<button class="mode hot" data-goev><div class="ticket"><div class="ticket-in"><div class="mode-main">
+        <div class="mode-code">SAT</div><div class="mode-title">Запись на мафию</div><div class="mode-text">Каждую субботу на даче. Выбери дату и отметься</div>
+        </div><div class="mode-stub"><span>Saturday</span></div></div></div></button>`;
+      return;
+    }
+    const { d, m } = dayParts(e.day), mine = e.signups.some((x) => x.user_id === me.id);
+    const crew = e.signups.map((x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP(x.profiles || {})}<span>${esc(x.profiles?.nick || "Дачник")}</span></span>`).join("");
+    box.innerHTML = `<article class="ticket ev is-next" data-ev="${e.id}"><div class="ticket-in">
+      <div class="ev-head"><div class="ev-date"><small>сб</small><b>${d}</b><small>${MON[m - 1]}</small></div>
+        <div style="min-width:0"><div class="eyebrow">Следующая игра</div>
+          <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
+          ${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
+      <div class="ev-crew">${crew || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
+      <div class="ev-act">${mine ? `<span class="tag ok">ты идёшь</span><button class="linkish" data-goev>оплата</button>` : `<button class="pill sm" data-join>я буду</button>`}<span class="ev-count">идут: ${e.signups.length}</span></div>
+      <button class="stub ev-go" data-goev><span>Все субботы и оплата</span><b>→</b></button>
+    </div></article>`;
   };
   const payState = (e, pay) => {
     if (pay?.confirmed_at) return `<span class="tag ok">оплачено ✓</span>`;
@@ -1958,6 +2003,17 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     else if (b.dataset.confirm) evAction(() => sb.rpc("confirm_payment", { e: id, u: b.dataset.confirm, ok: b.dataset.ok === "1" }));
     else if (b.hasAttribute("data-edit")) { ev.editing = ev.editing === id ? null : id; drawEvents(); }
     else if (b.hasAttribute("data-evstatus")) evAction(() => sb.from("events").update({ status: event.status === "open" ? "cancelled" : "open" }).eq("id", id), event.status === "open" ? "Игра отменена" : "Игра снова в расписании");
+  });
+  $("homeEvent").addEventListener("click", async (e) => {
+    if (e.target.closest("[data-goev]")) return go("events");
+    const card = e.target.closest("[data-ev]");
+    if (card && e.target.closest("[data-join]")) {
+      haptic("tap");
+      const { error } = await sb.from("signups").insert({ event_id: card.dataset.ev, user_id: me.id });
+      if (error) return toast("Не получилось: " + humanErr(error));
+      await loadEvents(); drawHomeEvent();
+      toast("Записал тебя на субботу", { label: "оплатить", run: () => go("events") });
+    }
   });
   $("eventsList").addEventListener("submit", (e) => {
     const f = e.target.closest("[data-evform]"); if (!f) return;
