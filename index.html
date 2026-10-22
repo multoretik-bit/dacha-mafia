@@ -904,7 +904,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261022172407"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261022172913"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1832,7 +1832,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       </div>`}
       ${m === "qr" && !pay?.confirmed_at ? (qr
         ? `<div class="qr-box"><img src="${esc(qr)}" alt="QR-код для оплаты"><p class="lead">Отсканируй код в приложении банка и переведи ${e.price} бат.${ev.set?.qr_note ? " " + esc(ev.set.qr_note) : ""}</p>
-           ${pay?.claimed_at ? "" : `<button class="pill sm" data-claim>я перевёл</button>`}</div>`
+           <div class="row-btns"><button class="pill ghost sm" data-qrdl>скачать QR</button>${pay?.claimed_at ? "" : `<button class="pill sm" data-claim>я перевёл</button>`}</div></div>`
         : `<p class="lead">Ведущий ещё не добавил QR-код. Пока можно оплатить наличными.</p>`) : ""}
       ${m === "cash" && !pay?.confirmed_at ? `<p class="lead">Отдай ${e.price} бат ведущему на месте. Он отметит, что получил.</p>` : ""}
       ${!m ? `<p class="lead">Выбери, как удобнее заплатить: переводом по QR или наличными на месте.</p>` : ""}
@@ -1921,6 +1921,24 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       .on("postgres_changes", { event: "*", schema: "public", table: "events" }, reloadEventsSoon)
       .subscribe();
   };
+  // Telegram shows its own save dialog; a browser gets the file through a blob link
+  const downloadQR = async () => {
+    const url = ev.set?.qr_url; if (!url) return;
+    const ext = (url.split("?")[0].match(/\.(png|jpe?g|webp)$/i)?.[1] || "png").toLowerCase();
+    const name = `dacha-mafia-qr.${ext}`;
+    const dl = url + (url.includes("?") ? "&" : "?") + "download=" + encodeURIComponent(name);
+    if (tg?.downloadFile && tg.isVersionAtLeast?.("8.0")) {
+      try { tg.downloadFile({ url: dl, file_name: name }, (ok) => { if (ok) toast("QR сохраняется на телефон"); }); return; } catch {}
+    }
+    try {
+      const blob = await (await fetch(url)).blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.append(a); a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+      toast("QR скачан");
+    } catch { window.open(dl, "_blank"); }
+  };
   const evAction = async (fn, okMsg) => {
     const { error } = await fn();
     if (error) return toast("Не получилось: " + humanErr(error));
@@ -1935,6 +1953,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     else if (b.hasAttribute("data-leave")) sheet({ eyebrow: "Запись", title: "Не сможешь прийти?", text: "Запись на эту субботу отменится. Если ты уже перевёл деньги, скажи ведущему.", ok: "отменить запись",
       onOk: () => evAction(() => sb.from("signups").delete().eq("event_id", id).eq("user_id", me.id), "Запись отменена") });
     else if (b.dataset.m) evAction(() => sb.rpc("set_payment", { e: id, m: b.dataset.m, claimed: false }));
+    else if (b.hasAttribute("data-qrdl")) downloadQR();
     else if (b.hasAttribute("data-claim")) evAction(() => sb.rpc("set_payment", { e: id, m: "qr", claimed: true }), "Отметил перевод. Ведущий подтвердит");
     else if (b.dataset.confirm) evAction(() => sb.rpc("confirm_payment", { e: id, u: b.dataset.confirm, ok: b.dataset.ok === "1" }));
     else if (b.hasAttribute("data-edit")) { ev.editing = ev.editing === id ? null : id; drawEvents(); }
