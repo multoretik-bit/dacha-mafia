@@ -1,0 +1,7 @@
+#!/bin/sh
+# stamps a fresh build id into index.html so open copies of the app know to reload
+if git diff --cached --name-only | grep -q .; then
+  stamp=$(date -u +%Y%m%d%H%M%S)
+  sed -i "s/const BUILD = \"[^\"]*\";/const BUILD = \"$stamp\";/" index.html
+  git add index.html
+fi

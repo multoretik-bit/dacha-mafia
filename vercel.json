@@ -1,0 +1,19 @@
+{
+  "headers": [
+    {
+      "source": "/",
+      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
+    },
+    {
+      "source": "/index.html",
+      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
+    }
+  ],
+  "redirects": [
+    { "source": "/cards/maf.jpg", "destination": "/cards/maf.webp", "permanent": false },
+    { "source": "/cards/kom.jpg", "destination": "/cards/kom.webp", "permanent": false },
+    { "source": "/cards/kur.jpg", "destination": "/cards/kur.webp", "permanent": false },
+    { "source": "/cards/doc.jpg", "destination": "/cards/doc.webp", "permanent": false },
+    { "source": "/cards/mir.jpg", "destination": "/cards/mir-1.webp", "permanent": false }
+  ]
+}

@@ -791,6 +791,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
+  const BUILD = "20261022111739"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1613,6 +1614,23 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   // fallback when the phone slept and the socket dropped
   setInterval(() => { if (me && document.visibilityState === "visible" && (S.view === "card" || S.view === "home")) loadMyCard(); }, 12000);
   document.addEventListener("visibilitychange", () => { if (me && document.visibilityState === "visible") loadMyCard(); });
+
+  // Telegram keeps the mini app alive in the background; reload quietly when a new version is out
+  let updateReady = false;
+  const busy = () => my.open || isOpen || !!document.querySelector(".veil") || !!document.activeElement?.matches?.("input, textarea");
+  const applyUpdate = () => { if (updateReady && !busy()) location.reload(); };
+  const checkUpdate = async () => {
+    if (updateReady || BUILD === "dev" || !location.protocol.startsWith("http")) return applyUpdate();
+    try {
+      const html = await (await fetch("/?build=" + Date.now(), { cache: "no-store" })).text();
+      const live = html.match(/const BUILD = "([^"]+)"/)?.[1];
+      if (live && live !== BUILD) { updateReady = true; applyUpdate(); }
+    } catch {}
+  };
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkUpdate(); });
+  document.addEventListener("focusout", () => setTimeout(applyUpdate, 300));
+  setInterval(checkUpdate, 3 * 60 * 1000);
+  setTimeout(checkUpdate, 4000);
 
   /* ---------- notes ---------- */
   const rowEls = new Map();
