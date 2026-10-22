@@ -791,7 +791,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261022112755"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261022114015"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -842,7 +842,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const ART = Object.fromEntries([...BASE, CIVIL].filter((r) => r.art).map((r) => [r.id, r.art]));
   // every card variant per role; one is picked at random on each deal (the role's `art` is the thumbnail)
   const CARD_ART = {
-    maf: ["cards/maf.webp"],
+    maf: ["cards/maf.webp", "cards/maf-2.webp"],
     don: ["cards/don.webp"],
     kom: ["cards/kom.webp"],
     kur: ["cards/kur.webp"],
