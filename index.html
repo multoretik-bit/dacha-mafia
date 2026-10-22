@@ -496,7 +496,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   <header class="topbar" id="topbar" hidden>
     <button class="mini" id="goHome" aria-label="На главную"><div class="logo" data-logo></div></button>
     <div class="tabs" role="tablist">
-      <button role="tab" id="tabHost" aria-selected="false">ведущий</button>
+      <button role="tab" id="tabHost" aria-selected="false" hidden>ведущий</button>
       <button role="tab" id="tabCard" aria-selected="false">карта<i class="new-dot" id="cardDot" hidden></i></button>
       <button role="tab" id="tabNotes" aria-selected="false">блокнот</button>
     </div>
@@ -516,7 +516,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     </div>
     <div id="homeMe"></div>
     <div class="modes">
-      <button class="mode" id="goHost">
+      <button class="mode" id="goHost" hidden>
         <div class="ticket"><div class="ticket-in">
           <div class="mode-main">
             <div class="mode-code">HST</div>
@@ -889,6 +889,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const avaClass = (key) => { let h = 0; for (const c of String(key)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return "c" + (h % 4); };
   const ava = (nick, key, extra = "", photo = "") => `<span class="ava ${avaClass(key || nick)} ${extra}">${esc([...(nick || "?")][0])}${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}</span>`;
   const avaP = (p, extra = "") => ava(p?.nick, p?.id, extra, p?.tg_photo);
+  const canHost = () => !!me?.canHost;
   const tgLine = (p) => (p?.tg_username ? "@" + p.tg_username : p?.tg_name || "");
   const humanErr = (e) => {
     const m = String(e?.message || e || "");
@@ -905,7 +906,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (!session) { me = null; return; }
     const { data } = await sb.from("profiles").select("id,nick,color,tg_id,tg_username,tg_name,tg_photo").eq("id", session.user.id).maybeSingle();
     if (!data || !data.tg_id) { me = null; await sb.auth.signOut().catch(() => {}); return; }
-    me = data;
+    const { data: ch } = await sb.rpc("can_host");
+    me = { ...data, canHost: !!ch };
   };
   const loadPeople = async () => {
     if (!sb || !me) return people;
@@ -973,6 +975,10 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     return { count: "vCount", roles: "vRoles", deal: "vDeal", done: "vDone" }[S.host.phase];
   };
   const go = (view, arg) => {
+    if (view === "host" && !canHost()) {
+      if (me) toast("Раздавать карты может только ведущий");
+      view = "home";
+    }
     if (view === "profile") profileId = arg || me?.id;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
@@ -1006,7 +1012,12 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   $("newLobbyDone").onclick = askNewLobby;
   $("newLobbyNotes").onclick = askNewLobby;
 
+  const renderHostAccess = () => {
+    $("tabHost").hidden = !canHost();
+    $("goHost").hidden = !canHost();
+  };
   const renderMeBtn = () => {
+    renderHostAccess();
     $("meBtn").innerHTML = me ? avaP(me) : icon("user");
     $("meBtn").setAttribute("aria-label", me ? `Профиль: ${me.nick}` : "Войти");
   };
@@ -1058,7 +1069,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const row = people.find((p) => p.id === id) || (id === me.id ? { ...me, games: 0, wins: 0, hosted: 0 } : { nick: "Дачник", games: 0, wins: 0, hosted: 0 });
     const isMe = id === me.id;
     const handle = tgLine(row);
-    $("profHead").innerHTML = `${avaP({ ...row, id }, "lg")}<div><div class="eyebrow">${isMe ? "Это ты" : "Дачник"}</div><h1 class="h1" style="margin-top:6px">${esc(row.nick)}</h1>
+    $("profHead").innerHTML = `${avaP({ ...row, id }, "lg")}<div><div class="eyebrow">${[isMe ? "Это ты" : "Дачник", row.is_host || (isMe && canHost()) ? "ведущий" : ""].filter(Boolean).join(" · ")}</div><h1 class="h1" style="margin-top:6px">${esc(row.nick)}</h1>
       ${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}</div>
       ${isMe ? `<button class="linkish" id="editNick">изменить ник</button>` : ""}`;
     if (isMe) $("editNick").onclick = () => {
@@ -1100,7 +1111,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const list = [...people].sort((a, b) => b.wins - a.wins || b.games - a.games || a.nick.localeCompare(b.nick));
     $("peopleList").innerHTML = list.map((p, i) => `<button class="lb-row" data-id="${p.id}">
         <span class="rank">${i + 1}</span>${avaP(p)}
-        <span class="nm">${esc(p.nick)}${p.id === me.id ? " · ты" : ""}<small>${[tgLine(p), `${p.games} ${plural(p.games, "игра", "игры", "игр")}`, p.hosted ? `вёл ${p.hosted}` : ""].filter(Boolean).map(esc).join(" · ")}</small></span>
+        <span class="nm">${esc(p.nick)}${p.id === me.id ? " · ты" : ""}<small>${[tgLine(p), p.is_host ? "ведущий" : "", `${p.games} ${plural(p.games, "игра", "игры", "игр")}`, p.hosted ? `вёл ${p.hosted}` : ""].filter(Boolean).map(esc).join(" · ")}</small></span>
         <span class="rs-num">${p.wins}<small>${plural(p.wins, "победа", "победы", "побед")}</small></span></button>`).join("");
     $("peopleStub").textContent = `${list.length} ${plural(list.length, "дачник", "дачника", "дачников")}`;
   };
