@@ -887,7 +887,27 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   let me = null;
   let people = [];
   const avaClass = (key) => { let h = 0; for (const c of String(key)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return "c" + (h % 4); };
-  const ava = (nick, key, extra = "", photo = "") => `<span class="ava ${avaClass(key || nick)} ${extra}">${esc([...(nick || "?")][0])}${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}</span>`;
+  // avatars are kept as data URLs (memory + localStorage), so re-renders and restarts show them instantly
+  const AVA_KEY = "dachaMafia.ava";
+  const avaMem = new Map((() => { try { return Object.entries(JSON.parse(localStorage.getItem(AVA_KEY)) || {}); } catch { return []; } })());
+  const avaPending = new Set();
+  const avaSave = () => { try { localStorage.setItem(AVA_KEY, JSON.stringify(Object.fromEntries([...avaMem].slice(-80)))); } catch {} };
+  const avaSrc = (url) => {
+    const hit = avaMem.get(url);
+    if (hit) return hit;
+    if (!avaPending.has(url) && url.startsWith(SB_URL)) {
+      avaPending.add(url);
+      fetch(url).then((r) => (r.ok ? r.blob() : Promise.reject()))
+        .then((b) => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); }))
+        .then((data) => {
+          avaMem.set(url, data); avaSave();
+          document.querySelectorAll("img[data-ava]").forEach((i) => { if (i.dataset.ava === url) i.src = data; });
+        })
+        .catch(() => {});
+    }
+    return url;
+  };
+  const ava = (nick, key, extra = "", photo = "") => `<span class="ava ${avaClass(key || nick)} ${extra}">${esc([...(nick || "?")][0])}${photo ? `<img src="${esc(avaSrc(photo))}" data-ava="${esc(photo)}" alt="" decoding="sync" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}</span>`;
   const avaP = (p, extra = "") => ava(p?.nick, p?.id, extra, p?.tg_photo);
   const canHost = () => !!me?.canHost;
   const tgLine = (p) => (p?.tg_username ? "@" + p.tg_username : p?.tg_name || "");

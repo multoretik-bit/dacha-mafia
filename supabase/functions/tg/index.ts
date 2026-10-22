@@ -47,19 +47,40 @@ async function verifyInitData(initData: string): Promise<TgUser | null> {
   try { return JSON.parse(p.get("user") || "null"); } catch { return null; }
 }
 
+// copies the Telegram avatar into our public bucket so the app can cache it for a long time;
+// the ?v= part changes only when the photo itself changes
+async function mirrorPhoto(userId: string, photoUrl: string | undefined, current: string | null) {
+  if (!photoUrl) {
+    if (current) await admin.from("profiles").update({ tg_photo: null }).eq("id", userId);
+    return;
+  }
+  const res = await fetch(photoUrl);
+  if (!res.ok) return;
+  const bytes = new Uint8Array(await res.arrayBuffer());
+  const v = hex(new Uint8Array(await crypto.subtle.digest("SHA-1", bytes))).slice(0, 12);
+  const url = `${SB_URL}/storage/v1/object/public/avatars/${userId}.jpg?v=${v}`;
+  if (current === url) return;
+  const up = await admin.storage.from("avatars").upload(`${userId}.jpg`, bytes, { contentType: res.headers.get("content-type") || "image/jpeg", cacheControl: "31536000", upsert: true });
+  if (!up.error) await admin.from("profiles").update({ tg_photo: url }).eq("id", userId);
+}
+const later = (p: Promise<unknown>) => {
+  const rt = (globalThis as any).EdgeRuntime;
+  rt?.waitUntil ? rt.waitUntil(p.catch(() => {})) : p.catch(() => {});
+};
+
 async function auth(initData: string) {
   const u = await verifyInitData(initData || "");
   if (!u?.id) return json({ error: "Telegram не подтвердил вход. Открой приложение заново из бота." }, 401);
   const email = `tg${u.id}@tg.dacha-mafia.app`;
   const password = hex(await hmac(PEPPER, String(u.id)));
   const tgName = [u.first_name, u.last_name].filter(Boolean).join(" ");
-  const tg = { tg_username: u.username || null, tg_name: tgName || null, tg_photo: u.photo_url || null };
+  const tg = { tg_username: u.username || null, tg_name: tgName || null };
   const signer = createClient(SB_URL, SERVICE, { auth: { persistSession: false, autoRefreshToken: false } });
   let res = await signer.auth.signInWithPassword({ email, password });
   if (res.error) {
     const created = await admin.auth.admin.createUser({
       email, password, email_confirm: true,
-      user_metadata: { nick: (u.first_name || u.username || "Дачник").slice(0, 24), tg_id: String(u.id), tg_username: tg.tg_username || "", tg_name: tg.tg_name || "", tg_photo: tg.tg_photo || "" },
+      user_metadata: { nick: (u.first_name || u.username || "Дачник").slice(0, 24), tg_id: String(u.id), tg_username: tg.tg_username || "", tg_name: tg.tg_name || "" },
     });
     if (created.error) return json({ error: created.error.message }, 500);
     res = await signer.auth.signInWithPassword({ email, password });
@@ -67,6 +88,9 @@ async function auth(initData: string) {
   } else {
     await admin.from("profiles").update(tg).eq("id", res.data.user.id);
   }
+  const userId = res.data.user.id;
+  const { data: prof } = await admin.from("profiles").select("tg_photo").eq("id", userId).maybeSingle();
+  later(mirrorPhoto(userId, u.photo_url, prof?.tg_photo ?? null));
   const s = res.data.session!;
   return json({ access_token: s.access_token, refresh_token: s.refresh_token });
 }

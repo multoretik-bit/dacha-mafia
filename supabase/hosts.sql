@@ -41,3 +41,8 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.leaderboard() from public, anon;
 grant execute on function public.leaderboard() to authenticated;
+
+-- avatars copied from Telegram by the tg function (public read, long cache)
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('avatars', 'avatars', true, 1048576, array['image/jpeg', 'image/png', 'image/webp'])
+on conflict (id) do update set public = true;
