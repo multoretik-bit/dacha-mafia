@@ -15,6 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Oswald:wght@500;600;700&family=Unbounded:wght@700;800;900&display=swap">
+<script src="https://telegram.org/js/telegram-web-app.js?59"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -180,6 +181,13 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 }
 .ava.c1 { background: var(--red); } .ava.c2 { background: var(--ink); } .ava.c3 { background: var(--navy); }
 .ava.guest { background: var(--gray); }
+.ava { position: relative; overflow: hidden; }
+.ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+a.pill { text-decoration: none; box-sizing: border-box; }
+.tg-line { font-weight: 700; color: var(--blue); font-size: 14px; text-decoration: none; }
+.nick-edit { display: flex; gap: 8px; width: 100%; max-width: 320px; }
+.nick-edit .field { flex: 1; min-width: 0; text-align: center; }
+.pick .nm small { display: block; font-weight: 700; font-size: 11.5px; opacity: .72; overflow: hidden; text-overflow: ellipsis; }
 .ava.lg { width: 88px; height: 88px; font-size: 46px; box-shadow: 0 0 0 4px var(--paper), 0 0 0 6.5px var(--navy); }
 
 /* ---------- home ---------- */
@@ -565,20 +573,13 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
   <section id="vAuth" class="col" hidden>
     <div class="ticket"><div class="ticket-in">
       <div class="t-body">
-        <div class="seg" id="authSeg">
-          <button type="button" data-auth="login" aria-pressed="true">Вход</button>
-          <button type="button" data-auth="signup" aria-pressed="false">Регистрация</button>
-        </div>
-        <h1 class="h1" id="authTitle">С возвращением на дачу</h1>
-        <p class="lead" id="authLead">Войди под своим ником, чтобы получать карты на телефон.</p>
-        <form class="col" id="authForm" autocomplete="on" style="gap:12px">
-          <input class="field" id="auNick" name="username" autocomplete="username" maxlength="20" placeholder="Ник" required>
-          <input class="field" id="auPass" name="password" type="password" autocomplete="current-password" minlength="6" placeholder="Пароль, от 6 символов" required>
-          <p class="err" id="auErr" role="alert"></p>
-          <button class="pill wide" type="submit" id="auBtn">войти</button>
-        </form>
+        <div class="eyebrow">Вход</div>
+        <h1 class="h1" id="authTitle">Заходи через Telegram</h1>
+        <p class="lead" id="authLead">Аккаунты дачников живут в Telegram-боте. Открой бота и нажми «Играть»: ты сразу окажешься в списке участников, регистрация не нужна.</p>
+        <a class="pill wide" href="https://t.me/dacha_gay" target="_blank" rel="noopener" data-tglink>открыть @dacha_gay</a>
+        <p class="err" id="auErr" role="alert"></p>
       </div>
-      <div class="stub"><span>Почта не нужна</span><b>DACHA</b></div>
+      <div class="stub"><span>Без паролей и почты</span><b>@DACHA_GAY</b></div>
     </div></div>
   </section>
 
@@ -814,6 +815,13 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
+  const tg = window.Telegram?.WebApp;
+  // Telegram also passes the signed data in the URL hash, so sign-in works even if telegram.org is slow
+  const tgInit = tg?.initData || new URLSearchParams(location.hash.slice(1)).get("tgWebAppData") || "";
+  const inTG = !!tgInit;
+  const tgId = (() => { try { return String(JSON.parse(new URLSearchParams(tgInit).get("user") || "{}").id || ""); } catch { return ""; } })();
+  const haptic = (kind) => { try { kind === "card" ? tg?.HapticFeedback?.notificationOccurred("success") : tg?.HapticFeedback?.impactOccurred("medium"); } catch {} };
+  const BOT_URL = "https://t.me/dacha_gay";
 
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -891,24 +899,25 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
   let me = null;
   let people = [];
   const avaClass = (key) => { let h = 0; for (const c of String(key)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return "c" + (h % 4); };
-  const ava = (nick, key, extra = "") => `<span class="ava ${avaClass(key || nick)} ${extra}">${esc([...(nick || "?")][0])}</span>`;
-  const nickEmail = async (nick) => {
-    const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(nick.trim().toLowerCase()));
-    return "n" + [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("").slice(0, 32) + "@dacha-mafia.app";
-  };
+  const ava = (nick, key, extra = "", photo = "") => `<span class="ava ${avaClass(key || nick)} ${extra}">${esc([...(nick || "?")][0])}${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}</span>`;
+  const avaP = (p, extra = "") => ava(p?.nick, p?.id, extra, p?.tg_photo);
+  const tgLine = (p) => (p?.tg_username ? "@" + p.tg_username : p?.tg_name || "");
   const humanErr = (e) => {
     const m = String(e?.message || e || "");
-    if (/invalid login|invalid credentials/i.test(m)) return "Неверный ник или пароль";
-    if (/already registered|already exists/i.test(m)) return "Этот ник уже занят";
     if (/rate limit|too many/i.test(m)) return "Слишком много попыток. Подожди минуту";
-    if (/password/i.test(m)) return "Пароль от 6 символов";
     if (/fetch|network/i.test(m)) return "Нет связи с сервером. Проверь интернет";
     return m || "Что-то пошло не так";
   };
+  const tgAuth = async () => {
+    const { data, error } = await sb.functions.invoke("tg", { body: { action: "auth", initData: tgInit } });
+    if (error || !data?.access_token) throw new Error("Не получилось войти через Telegram. Закрой приложение и открой снова из бота.");
+    await sb.auth.setSession({ access_token: data.access_token, refresh_token: data.refresh_token });
+  };
   const loadMe = async (session) => {
     if (!session) { me = null; return; }
-    const { data } = await sb.from("profiles").select("id,nick,color").eq("id", session.user.id).maybeSingle();
-    me = data || { id: session.user.id, nick: session.user.user_metadata?.nick || "Дачник" };
+    const { data } = await sb.from("profiles").select("id,nick,color,tg_id,tg_username,tg_name,tg_photo").eq("id", session.user.id).maybeSingle();
+    if (!data || !data.tg_id) { me = null; await sb.auth.signOut().catch(() => {}); return; }
+    me = data;
   };
   const loadPeople = async () => {
     if (!sb || !me) return people;
@@ -916,11 +925,15 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
     if (data) people = data;
     return people;
   };
-  const nickOf = (id) => people.find((p) => p.id === id)?.nick || (me && me.id === id ? me.nick : "Дачник");
 
   /* ---------- logos ---------- */
   document.querySelectorAll("[data-logo]").forEach((el) => el.append($("logoTpl").content.cloneNode(true)));
   [...BASE, CIVIL].forEach((r) => { if (r.art) new Image().src = r.art; });
+
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("[data-tglink]");
+    if (a && tg?.openTelegramLink) { e.preventDefault(); tg.openTelegramLink(a.href); }
+  });
 
   /* ---------- toast & sheets ---------- */
   let toastT;
@@ -1005,7 +1018,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
   $("newLobbyNotes").onclick = askNewLobby;
 
   const renderMeBtn = () => {
-    $("meBtn").innerHTML = me ? ava(me.nick, me.id) : icon("user");
+    $("meBtn").innerHTML = me ? avaP(me) : icon("user");
     $("meBtn").setAttribute("aria-label", me ? `Профиль: ${me.nick}` : "Войти");
   };
 
@@ -1013,20 +1026,21 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
   const renderHome = () => {
     const box = $("homeMe");
     if (!sb) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><h2 class="h2">Нет связи с сервером</h2><p class="lead">Аккаунты и карты на телефон не работают без интернета. Раздача с одного телефона и блокнот работают.</p></div></div></div>`;
+    else if (!me && inTG) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>${authError ? esc(authError) : "Входим через Telegram…"}</div></div></div></div>`;
     else if (!me) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body">
-        <h2 class="h2">Заведи аккаунт дачника</h2>
-        <p class="lead">Ник и пароль, без почты. С аккаунтом карта роли приходит прямо на твой телефон, а в профиле копятся игры и победы.</p>
-        <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" data-auth-go="signup">регистрация</button><button class="pill sm ghost" data-auth-go="login">вход</button></div>
+        <h2 class="h2">Заходи через Telegram</h2>
+        <p class="lead">Открой бота @dacha_gay и нажми «Играть»: ты сразу появишься в списке дачников, карты ролей будут приходить на телефон, а в профиле копятся игры и победы.</p>
+        <div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>
       </div></div></div>`;
     else {
       const row = people.find((p) => p.id === me.id);
+      const line = [tgLine(me), row ? `${row.games} ${plural(row.games, "игра", "игры", "игр")} · ${row.wins} ${plural(row.wins, "победа", "победы", "побед")}` : ""].filter(Boolean).join(" · ");
       box.innerHTML = `<button class="ticket" style="display:block;width:100%" id="homeProfile"><div class="ticket-in"><div class="me-card">
-        ${ava(me.nick, me.id)}<div class="who"><b>${esc(me.nick)}</b><span>${row ? `${row.games} ${plural(row.games, "игра", "игры", "игр")} · ${row.wins} ${plural(row.wins, "победа", "победы", "побед")}` : "Профиль и статистика"}</span></div><span class="go">→</span>
+        ${avaP(me)}<div class="who"><b>${esc(me.nick)}</b><span>${esc(line || "Профиль и статистика")}</span></div><span class="go">→</span>
       </div></div></button>`;
       $("homeProfile").onclick = () => go("profile", me.id);
       if (!row) loadPeople().then(() => { if (S.view === "home" && people.some((p) => p.id === me.id)) renderHome(); });
     }
-    box.querySelectorAll("[data-auth-go]").forEach((b) => (b.onclick = () => { authMode = b.dataset.authGo; go("auth"); }));
     const h = S.host, rh = $("resumeHost"), rc = $("resumeCard"), rn = $("resumeNotes");
     rh.hidden = rc.hidden = rn.hidden = true;
     if (online() && S.on.gameId) { rh.hidden = false; rh.textContent = "Идёт онлайн-игра"; }
@@ -1038,42 +1052,10 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
   };
 
   /* ---------- auth ---------- */
-  let authMode = "login";
+  let authError = "";
   const renderAuth = () => {
-    const up = authMode === "signup";
-    $("authSeg").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.auth === authMode));
-    $("authTitle").textContent = up ? "Новый дачник" : "С возвращением на дачу";
-    $("authLead").textContent = up ? "Придумай ник, под которым тебя знают за столом, и пароль. Почта не нужна." : "Войди под своим ником, чтобы получать карты на телефон.";
-    $("auBtn").textContent = up ? "создать аккаунт" : "войти";
-    $("auPass").autocomplete = up ? "new-password" : "current-password";
-    $("auErr").textContent = sb ? "" : "Нет связи с сервером. Проверь интернет и обнови страницу.";
-  };
-  $("authSeg").onclick = (e) => { const b = e.target.closest("[data-auth]"); if (b) { authMode = b.dataset.auth; renderAuth(); } };
-  $("authForm").onsubmit = async (e) => {
-    e.preventDefault();
-    if (!sb) return;
-    const nick = $("auNick").value.trim().replace(/\s+/g, " "), pass = $("auPass").value;
-    const err = (m) => { $("auErr").textContent = m; };
-    if (nick.length < 2 || nick.length > 20) return err("Ник от 2 до 20 символов");
-    if (pass.length < 6) return err("Пароль от 6 символов");
-    $("auBtn").disabled = true; err("");
-    try {
-      if (authMode === "signup") {
-        const { data: taken, error: te } = await sb.rpc("nick_taken", { n: nick });
-        if (te) throw te;
-        if (taken) throw new Error("Этот ник уже занят");
-        const { error } = await sb.auth.signUp({ email: await nickEmail(nick), password: pass, options: { data: { nick } } });
-        if (error) throw error;
-      } else {
-        const { error } = await sb.auth.signInWithPassword({ email: await nickEmail(nick), password: pass });
-        if (error) throw error;
-      }
-      $("auPass").value = "";
-      await afterLogin();
-      toast(authMode === "signup" ? `Добро пожаловать, ${me.nick}` : `Привет, ${me.nick}`);
-      go("home");
-    } catch (x) { err(humanErr(x)); }
-    finally { $("auBtn").disabled = false; }
+    $("auErr").textContent = !sb ? "Нет связи с сервером. Проверь интернет и обнови страницу." : authError;
+    $("authTitle").textContent = inTG ? "Входим через Telegram" : "Заходи через Telegram";
   };
 
   /* ---------- profile & people ---------- */
@@ -1084,9 +1066,24 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
     if (!sb || !me) return;
     const [{ data: stats }] = await Promise.all([sb.rpc("player_stats", { p: id }), loadPeople()]);
     if (S.view !== "profile" || profileId !== id) return;
-    const row = people.find((p) => p.id === id) || { nick: id === me.id ? me.nick : "Дачник", games: 0, wins: 0, hosted: 0 };
+    const row = people.find((p) => p.id === id) || (id === me.id ? { ...me, games: 0, wins: 0, hosted: 0 } : { nick: "Дачник", games: 0, wins: 0, hosted: 0 });
     const isMe = id === me.id;
-    $("profHead").innerHTML = `${ava(row.nick, id, "lg")}<div><div class="eyebrow">${isMe ? "Это ты" : "Дачник"}</div><h1 class="h1" style="margin-top:6px">${esc(row.nick)}</h1></div>`;
+    const handle = tgLine(row);
+    $("profHead").innerHTML = `${avaP({ ...row, id }, "lg")}<div><div class="eyebrow">${isMe ? "Это ты" : "Дачник"}</div><h1 class="h1" style="margin-top:6px">${esc(row.nick)}</h1>
+      ${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}</div>
+      ${isMe ? `<button class="linkish" id="editNick">изменить ник</button>` : ""}`;
+    if (isMe) $("editNick").onclick = () => {
+      $("editNick").outerHTML = `<form class="nick-edit" id="nickForm"><input class="field" id="nickInput" maxlength="24" value="${esc(row.nick)}" aria-label="Новый ник"><button class="round sm" type="submit" aria-label="Сохранить ник">✓</button></form>`;
+      $("nickInput").focus(); $("nickInput").select();
+      $("nickForm").onsubmit = async (e) => {
+        e.preventDefault();
+        const nick = $("nickInput").value.trim().replace(/\s+/g, " ");
+        if (!nick) return toast("Ник не может быть пустым");
+        const { error } = await sb.from("profiles").update({ nick }).eq("id", me.id);
+        if (error) return toast("Не получилось сохранить: " + humanErr(error));
+        me.nick = nick; people = []; renderMeBtn(); toast("Ник сохранён"); renderProfile();
+      };
+    };
     const rate = row.games ? Math.round((row.wins / row.games) * 100) : 0;
     $("profStats").innerHTML = `<div><b>${row.games}</b><small>${plural(row.games, "игра", "игры", "игр")}</small></div><div><b>${row.wins}</b><small>${plural(row.wins, "победа", "победы", "побед")}</small></div><div><b>${rate}%</b><small>побед</small></div>`;
     $("profRoles").innerHTML = (stats || []).length
@@ -1099,7 +1096,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
         }).join("")
       : `<div class="empty-note" style="padding-top:4px">Пока нет завершённых игр. Статистика появится, когда ведущий завершит игру и отметит победителя.</div>`;
     $("profStub").textContent = `Вёл игр: ${row.hosted || 0}`;
-    $("profBtns").innerHTML = `<button class="pill ghost sm" data-p="people">все дачники</button>${isMe ? `<button class="pill dark sm" data-p="out">выйти</button>` : ""}`;
+    $("profBtns").innerHTML = `<button class="pill ghost sm" data-p="people">все дачники</button>${isMe && !inTG ? `<button class="pill dark sm" data-p="out">выйти</button>` : ""}`;
     $("profBtns").onclick = async (e) => {
       const b = e.target.closest("[data-p]"); if (!b) return;
       if (b.dataset.p === "people") go("people");
@@ -1113,8 +1110,8 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
     if (S.view !== "people") return;
     const list = [...people].sort((a, b) => b.wins - a.wins || b.games - a.games || a.nick.localeCompare(b.nick));
     $("peopleList").innerHTML = list.map((p, i) => `<button class="lb-row" data-id="${p.id}">
-        <span class="rank">${i + 1}</span>${ava(p.nick, p.id)}
-        <span class="nm">${esc(p.nick)}${p.id === me.id ? " · ты" : ""}<small>${p.games} ${plural(p.games, "игра", "игры", "игр")}${p.hosted ? ` · вёл ${p.hosted}` : ""}</small></span>
+        <span class="rank">${i + 1}</span>${avaP(p)}
+        <span class="nm">${esc(p.nick)}${p.id === me.id ? " · ты" : ""}<small>${[tgLine(p), `${p.games} ${plural(p.games, "игра", "игры", "игр")}`, p.hosted ? `вёл ${p.hosted}` : ""].filter(Boolean).map(esc).join(" · ")}</small></span>
         <span class="rs-num">${p.wins}<small>${plural(p.wins, "победа", "победы", "побед")}</small></span></button>`).join("");
     $("peopleStub").textContent = `${list.length} ${plural(list.length, "дачник", "дачника", "дачников")}`;
   };
@@ -1136,8 +1133,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
     const list = $("pickList"), empty = $("pickEmpty");
     if (!sb || !me) {
       list.innerHTML = ""; empty.hidden = false;
-      empty.innerHTML = sb ? `Онлайн-раздача работает с аккаунтами. <button class="linkish" data-auth-go2>Войти или зарегистрироваться</button>` : "Нет связи с сервером. Включи интернет или выбери «один телефон».";
-      empty.querySelector("[data-auth-go2]")?.addEventListener("click", () => go("auth"));
+      empty.innerHTML = sb ? `Онлайн-раздача работает через Telegram. <a class="linkish" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>Открой бота @dacha_gay</a> и нажми «Играть».` : "Нет связи с сервером. Включи интернет или выбери «один телефон».";
       $("guestForm").hidden = true; drawPickSum(); return;
     }
     $("guestForm").hidden = false;
@@ -1150,10 +1146,10 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
     const sorted = [...people].sort((a, b) => (a.id === me.id) - (b.id === me.id) || a.nick.localeCompare(b.nick));
     list.innerHTML = sorted.map((p) => {
       const i = L.findIndex((x) => x.u === p.id);
-      return `<button class="pick" data-u="${p.id}" aria-pressed="${i >= 0}">${ava(p.nick, p.id)}<span class="nm">${esc(p.nick)}${p.id === me.id ? " (ты)" : ""}</span><span class="ord">${i >= 0 ? i + 1 : ""}</span></button>`;
+      return `<button class="pick" data-u="${p.id}" aria-pressed="${i >= 0}">${avaP(p)}<span class="nm">${esc(p.nick)}${p.id === me.id ? " (ты)" : ""}${tgLine(p) ? `<small>${esc(tgLine(p))}</small>` : ""}</span><span class="ord">${i >= 0 ? i + 1 : ""}</span></button>`;
     }).join("");
     empty.hidden = people.length > 1;
-    empty.textContent = "Пока зарегистрирован только ты. Скинь друзьям ссылку dacha-mafia.vercel.app: как только они заведут аккаунты, появятся здесь.";
+    empty.textContent = "Пока в списке только ты. Скинь друзьям бота @dacha_gay: как только они нажмут «Играть», появятся здесь.";
     $("guestChips").innerHTML = L.map((x, i) => (x.g ? `<span class="gchip"><b>${i + 1}</b>${esc(x.g)}<button type="button" data-rmg="${i}" aria-label="Убрать гостя">×</button></span>` : "")).join("");
     drawPickSum();
   };
@@ -1307,6 +1303,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
       const { error: e2 } = await sb.from("seats").insert(rows);
       if (e2) { await sb.from("games").delete().eq("id", g.id); throw e2; }
       S.on.gameId = g.id; live.showRoles = false; save();
+      sb.functions.invoke("tg", { body: { action: "notify", game_id: g.id } }).catch(() => {});
       go("host"); toast("Карты разлетелись по телефонам");
     } catch (x) { toast("Не получилось разослать: " + humanErr(x)); }
     finally { dealing = false; $("toDeal").disabled = false; $("toDeal").textContent = "разослать карты"; }
@@ -1319,7 +1316,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
     $("liveSeats").innerHTML = `<div class="empty-note"><div class="wait"><span class="pulse"></span>Загружаю игру…</div></div>`;
     const [{ data: game }, { data: seats }] = await Promise.all([
       sb.from("games").select("*").eq("id", gid).maybeSingle(),
-      sb.from("seats").select("*, profiles(nick)").eq("game_id", gid).order("seat"),
+      sb.from("seats").select("*, profiles(nick,tg_username)").eq("game_id", gid).order("seat"),
     ]);
     if (S.on.gameId !== gid) return;
     if (!game || game.status !== "live") { S.on.gameId = null; S.on.phase = "pick"; save(); return go("host"); }
@@ -1347,7 +1344,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
         : `<button class="tag btn" data-guest="${s.id}">${s.seen_at ? "ещё раз" : "показать"}</button>`;
       return `<div class="srow"><span class="seat">${pad(s.seat)}</span>
         <div style="min-width:0"><div class="nm">${esc(seatName(s))}</div>
-        <div class="sub">${s.user_id ? "" : "гость · "}${live.showRoles ? `<span class="dot team-${r.team}" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span>${esc(r.name)}` : "роль скрыта"}</div></div>
+        <div class="sub">${s.user_id ? (s.profiles?.tg_username ? esc("@" + s.profiles.tg_username) + " · " : "") : "гость · "}${live.showRoles ? `<span class="dot team-${r.team}" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span>${esc(r.name)}` : "роль скрыта"}</div></div>
         ${status}</div>`;
     }).join("");
     const maf = ss.filter((s) => s.team === "mafia").length;
@@ -1527,12 +1524,11 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
       empty.innerHTML = !sb
         ? `<div class="ticket"><div class="ticket-in"><div class="t-body"><h1 class="h1">Нет связи</h1><p class="lead">Карта приходит через интернет. Проверь связь и обнови страницу.</p></div></div></div>`
         : !me
-        ? `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">Войди, чтобы получить карту</h1><p class="lead">Ведущий выбирает дачников по аккаунтам. Заведи аккаунт, и карта роли придёт прямо сюда.</p><div class="row-btns" style="justify-content:flex-start"><button class="pill sm" data-ag="signup">регистрация</button><button class="pill sm ghost" data-ag="login">вход</button></div></div></div></div>`
+        ? `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">${inTG ? "Входим через Telegram…" : "Карты приходят в Telegram"}</h1><p class="lead">${inTG ? esc(authError || "Секунду, подключаемся к даче.") : "Открой бота @dacha_gay и нажми «Играть». Ведущий отметит тебя, и карта роли придёт прямо туда."}</p>${inTG ? "" : `<div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`}</div></div></div>`
         : `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">Ждём раздачи</h1>
             <div class="wait"><span class="pulse"></span>На связи как ${esc(me.nick)}</div>
-            <p class="lead">Как только ведущий отметит тебя и нажмёт «Разослать карты», карта появится здесь. Обновлять страницу не нужно.</p></div>
-            <div class="stub"><span>Держи экран включённым</span><b>GATE</b></div></div></div>`;
-      empty.querySelectorAll("[data-ag]").forEach((b) => (b.onclick = () => { authMode = b.dataset.ag; go("auth"); }));
+            <p class="lead">Как только ведущий отметит тебя и нажмёт «Разослать карты», карта появится здесь, а бот пришлёт сообщение. Обновлять ничего не нужно.</p></div>
+            <div class="stub"><span>Карта придёт сама</span><b>GATE</b></div></div></div>`;
       return;
     }
     empty.hidden = true; stage.hidden = false;
@@ -1554,6 +1550,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
     lockUntil = Date.now() + 450;
     my.open = !my.open;
     if (my.open) {
+      haptic("tap");
       showFront($("cFront"), seatRole(my.seat), my.seat.seat);
       if (!my.seat.seen_at) { my.seat.seen_at = new Date().toISOString(); sb.rpc("mark_seen", { seat_id: my.seat.id }).then(() => {}); $("cardDot").hidden = true; }
     } else setTimeout(() => { if (!my.open) $("cFront").innerHTML = ""; }, 650);
@@ -1568,6 +1565,7 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
         const changed = await loadMyCard();
         if (!changed || !my.seat) return;
         try { navigator.vibrate?.([120, 60, 120]); } catch {}
+        haptic("card");
         if (["home", "card", "profile", "people"].includes(S.view)) go("card");
         else toast("Пришла твоя карта", { label: "открыть", run: () => go("card") });
       })
@@ -1719,8 +1717,26 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
     if (S.host.phase !== "count" && !S.host.counts) S.host.counts = suggest(S.host.n);
     if (S.on.phase === "roles" && !S.on.counts) S.on.phase = "pick";
     renderMeBtn();
-    const startView = S.view === "auth" || S.view === "profile" || S.view === "people" ? "home" : S.view || "home";
+    let startView = S.view === "auth" || S.view === "profile" || S.view === "people" ? "home" : S.view || "home";
+    if (new URLSearchParams(location.search).get("v") === "card" || tg?.initDataUnsafe?.start_param === "card") startView = "card";
+    if (inTG) {
+      try { tg?.ready(); tg?.expand(); tg?.setHeaderColor?.("#FFDD86"); tg?.setBackgroundColor?.("#FEC948"); tg?.setBottomBarColor?.("#E2A612"); tg?.disableVerticalSwipes?.(); } catch {}
+    }
     if (sb) {
+      if (inTG) {
+        const { data: { session } } = await sb.auth.getSession();
+        const same = session && String(session.user?.user_metadata?.tg_id || "") === tgId;
+        if (!same) {
+          go(startView);
+          try { if (session) await sb.auth.signOut(); await tgAuth(); } catch (x) { authError = humanErr(x); }
+        } else {
+          // refresh avatar and @username in the background
+          tgAuth().then(async () => {
+            const { data: { session: s2 } } = await sb.auth.getSession();
+            if (s2) { await sb.realtime.setAuth(s2.access_token); await loadMe(s2); renderMeBtn(); if (S.view === "home") renderHome(); }
+          }).catch(() => {});
+        }
+      }
       try { await afterLogin(); } catch {}
       sb.auth.onAuthStateChange((ev, session) => {
         if (ev === "TOKEN_REFRESHED" && session) sb.realtime.setAuth(session.access_token);

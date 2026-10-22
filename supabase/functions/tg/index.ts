@@ -1,0 +1,122 @@
+// DACHA MAFIA · Telegram edge function
+// POST {action:"auth", initData}   -> verifies Telegram mini app data, returns a Supabase session
+// POST {action:"notify", game_id}  -> host only: bot tells every player their card has arrived
+// POST ?hook=1 (Telegram webhook)  -> answers /start with an "Играть" button
+import { createClient } from "npm:@supabase/supabase-js@2.117.0";
+
+const BOT = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
+const PEPPER = Deno.env.get("TG_AUTH_PEPPER")!;
+const HOOK_SECRET = Deno.env.get("TG_HOOK_SECRET")!;
+const SB_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const APP = "https://dacha-mafia.vercel.app/";
+const MAX_AGE = 60 * 60 * 24; // initData older than a day is rejected
+
+const cors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
+
+const enc = new TextEncoder();
+const hmac = async (key: Uint8Array | string, msg: string) => {
+  const k = await crypto.subtle.importKey("raw", typeof key === "string" ? enc.encode(key) : key, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return new Uint8Array(await crypto.subtle.sign("HMAC", k, enc.encode(msg)));
+};
+const hex = (b: Uint8Array) => [...b].map((x) => x.toString(16).padStart(2, "0")).join("");
+
+// service-role client for data; never signs in, so it keeps the service role
+const admin = createClient(SB_URL, SERVICE, { auth: { persistSession: false, autoRefreshToken: false } });
+const tgApi = (method: string, body: unknown) =>
+  fetch(`https://api.telegram.org/bot${BOT}/${method}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }).then((r) => r.json());
+
+type TgUser = { id: number; first_name?: string; last_name?: string; username?: string; photo_url?: string };
+
+async function verifyInitData(initData: string): Promise<TgUser | null> {
+  const p = new URLSearchParams(initData);
+  const hash = p.get("hash");
+  if (!hash) return null;
+  p.delete("hash");
+  const check = [...p.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([k, v]) => `${k}=${v}`).join("\n");
+  const secret = await hmac("WebAppData", BOT);
+  if (hex(await hmac(secret, check)) !== hash) return null;
+  const age = Date.now() / 1000 - Number(p.get("auth_date") || 0);
+  if (!(age < MAX_AGE)) return null;
+  try { return JSON.parse(p.get("user") || "null"); } catch { return null; }
+}
+
+async function auth(initData: string) {
+  const u = await verifyInitData(initData || "");
+  if (!u?.id) return json({ error: "Telegram не подтвердил вход. Открой приложение заново из бота." }, 401);
+  const email = `tg${u.id}@tg.dacha-mafia.app`;
+  const password = hex(await hmac(PEPPER, String(u.id)));
+  const tgName = [u.first_name, u.last_name].filter(Boolean).join(" ");
+  const tg = { tg_username: u.username || null, tg_name: tgName || null, tg_photo: u.photo_url || null };
+  const signer = createClient(SB_URL, SERVICE, { auth: { persistSession: false, autoRefreshToken: false } });
+  let res = await signer.auth.signInWithPassword({ email, password });
+  if (res.error) {
+    const created = await admin.auth.admin.createUser({
+      email, password, email_confirm: true,
+      user_metadata: { nick: (u.first_name || u.username || "Дачник").slice(0, 24), tg_id: String(u.id), tg_username: tg.tg_username || "", tg_name: tg.tg_name || "", tg_photo: tg.tg_photo || "" },
+    });
+    if (created.error) return json({ error: created.error.message }, 500);
+    res = await signer.auth.signInWithPassword({ email, password });
+    if (res.error) return json({ error: res.error.message }, 500);
+  } else {
+    await admin.from("profiles").update(tg).eq("id", res.data.user.id);
+  }
+  const s = res.data.session!;
+  return json({ access_token: s.access_token, refresh_token: s.refresh_token });
+}
+
+async function notify(req: Request, gameId: string) {
+  const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const { data: { user } } = await admin.auth.getUser(jwt);
+  if (!user) return json({ error: "Нужно войти" }, 401);
+  const { data: g } = await admin.from("games").select("id,host_id,status,notified_at").eq("id", gameId).maybeSingle();
+  if (!g || g.host_id !== user.id || g.status !== "live") return json({ error: "Это не твоя игра" }, 403);
+  if (g.notified_at) return json({ sent: 0 });
+  await admin.from("games").update({ notified_at: new Date().toISOString() }).eq("id", g.id);
+  const [{ data: host }, { data: seats }] = await Promise.all([
+    admin.from("profiles").select("nick").eq("id", user.id).maybeSingle(),
+    admin.from("seats").select("seat,user_id,profiles(tg_id)").eq("game_id", g.id).not("user_id", "is", null),
+  ]);
+  let sent = 0;
+  await Promise.all((seats || []).map(async (s: any) => {
+    const chat = s.profiles?.tg_id;
+    if (!chat || s.user_id === user.id) return;
+    const r = await tgApi("sendMessage", {
+      chat_id: chat,
+      text: `🃏 Тебе пришла карта. Место ${s.seat}, ведущий: ${host?.nick || "ведущий"}.\nОткрой, когда никто не смотрит.`,
+      reply_markup: { inline_keyboard: [[{ text: "Открыть карту", web_app: { url: APP + "?v=card" } }]] },
+    });
+    if (r.ok) sent++;
+  }));
+  return json({ sent });
+}
+
+async function hook(req: Request) {
+  if (req.headers.get("X-Telegram-Bot-Api-Secret-Token") !== HOOK_SECRET) return new Response("forbidden", { status: 401 });
+  const upd = await req.json().catch(() => ({}));
+  const msg = upd.message;
+  if (msg?.chat?.type === "private") {
+    await tgApi("sendMessage", {
+      chat_id: msg.chat.id,
+      text: "Добро пожаловать на дачу! Жми «Играть»: ты сразу появишься в списке дачников. Когда ведущий раздаст роли, карта придёт сюда.",
+      reply_markup: { inline_keyboard: [[{ text: "Играть", web_app: { url: APP } }]] },
+    });
+  }
+  return new Response("ok");
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+  if (req.method !== "POST") return json({ error: "POST only" }, 405);
+  if (new URL(req.url).searchParams.has("hook")) return hook(req);
+  const body = await req.json().catch(() => ({}));
+  if (body.action === "auth") return auth(body.initData);
+  if (body.action === "notify") return notify(req, body.game_id);
+  return json({ error: "unknown action" }, 400);
+});
