@@ -135,3 +135,38 @@ end $$;
 -- first run: create the coming Saturdays; the next one starts earlier
 select public.ensure_events();
 update public.events set gather_time = '18:30', start_time = '19:00' where day = date '2026-10-24' and gather_time = '19:30';
+
+-- host can also mark "не получил"; a method may be unknown when the host marks someone
+alter table public.payments add column if not exists rejected_at timestamptz;
+alter table public.payments alter column method drop not null;
+
+create or replace function public.set_pay_status(e uuid, u uuid, st text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.can_host() then raise exception 'hosts only'; end if;
+  if st not in ('paid', 'unpaid', 'none') then raise exception 'bad status'; end if;
+  if not exists (select 1 from signups where event_id = e and user_id = u) then raise exception 'not signed up'; end if;
+  insert into payments (event_id, user_id, method, confirmed_at, confirmed_by, rejected_at)
+  values (e, u, null, case when st = 'paid' then now() end, case when st = 'paid' then auth.uid() end, case when st = 'unpaid' then now() end)
+  on conflict (event_id, user_id) do update
+    set confirmed_at = case when st = 'paid' then now() end,
+        confirmed_by = case when st = 'paid' then auth.uid() end,
+        rejected_at = case when st = 'unpaid' then now() end;
+end $$;
+revoke all on function public.set_pay_status(uuid, uuid, text) from public, anon;
+grant execute on function public.set_pay_status(uuid, uuid, text) to authenticated;
+
+-- a fresh "я перевёл" after a rejection clears it
+create or replace function public.set_payment(e uuid, m text, claimed boolean default false)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if m not in ('qr', 'cash') then raise exception 'bad method'; end if;
+  if not exists (select 1 from signups where event_id = e and user_id = auth.uid()) then raise exception 'not signed up'; end if;
+  insert into payments (event_id, user_id, method, claimed_at)
+  values (e, auth.uid(), m, case when claimed then now() end)
+  on conflict (event_id, user_id) do update
+    set method = excluded.method,
+        claimed_at = case when claimed then now() when payments.method is distinct from excluded.method then null else payments.claimed_at end,
+        confirmed_at = case when payments.method is distinct from excluded.method and payments.method is not null then null else payments.confirmed_at end,
+        rejected_at = case when claimed or payments.method is distinct from excluded.method then null else payments.rejected_at end;
+end $$;

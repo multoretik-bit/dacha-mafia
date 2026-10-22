@@ -571,6 +571,18 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .ev-form .field { min-height: 44px; padding: 8px 10px; }
 .ev-form .wide { grid-column: 1 / -1; }
 .pay-set { display: grid; gap: 12px; }
+.ev-days { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; }
+.ev-days .chip { flex: none; font-size: 16px; background: var(--paper); }
+.ev-days .chip[aria-pressed="true"] { background: var(--ink); }
+.ev-stats b.bad { color: var(--red); }
+.pay-break { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 16px; border-top: 1.5px dashed var(--line); }
+.pay-break span { font: 700 12px/1 var(--f-body); padding: 7px 10px; border-radius: 99px; background: #E9F0F2; color: var(--ink); }
+.pay-break span b { font: 600 14px/1 var(--f-code); margin-right: 4px; }
+.prow { padding: 10px 16px; border-top: 1.5px dashed var(--line); display: grid; gap: 8px; }
+.prow .hrow { padding: 0; }
+.prow .seg button { min-height: 36px; font-size: 12.5px; }
+.prow .seg button[data-st="unpaid"][aria-pressed="true"] { background: var(--red); }
+.tag.bad { background: var(--red); border-color: var(--red); color: #fff; }
 
 @media (max-width: 380px) {
   .pl-in { grid-template-columns: 38px minmax(0,1fr) minmax(0,1.15fr); gap: 8px; padding: 8px; }
@@ -692,8 +704,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     <div class="ticket"><div class="ticket-in">
       <div class="t-body" style="padding-bottom:16px">
         <div class="eyebrow">Субботы на даче</div>
-        <h1 class="h1">Записаться на мафию</h1>
-        <p class="lead">Выбери дату и нажми «Я буду». Все увидят, кто идёт.</p>
+        <h1 class="h1" id="evTitle">Записаться на мафию</h1>
+        <p class="lead" id="evLead">Выбери дату и нажми «Я буду». Все увидят, кто идёт.</p>
       </div>
     </div></div>
     <div class="col" id="eventsList"></div>
@@ -916,7 +928,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261022173301"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261022174008"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1863,6 +1875,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   };
   const payState = (e, pay) => {
     if (pay?.confirmed_at) return `<span class="tag ok">оплачено ✓</span>`;
+    if (pay?.rejected_at) return `<span class="tag bad">ведущий не получил</span>`;
     if (pay?.method === "qr" && pay.claimed_at) return `<span class="tag">перевёл · ждём ведущего</span>`;
     if (pay?.method === "cash") return `<span class="tag">наличными на месте</span>`;
     return `<span class="tag">не оплачено</span>`;
@@ -1877,34 +1890,71 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       </div>`}
       ${m === "qr" && !pay?.confirmed_at ? (qr
         ? `<div class="qr-box"><img src="${esc(qr)}" alt="QR-код для оплаты"><p class="lead">Отсканируй код в приложении банка и переведи ${e.price} бат.${ev.set?.qr_note ? " " + esc(ev.set.qr_note) : ""}</p>
-           <div class="row-btns"><button class="pill ghost sm" data-qrdl>скачать QR</button>${pay?.claimed_at ? "" : `<button class="pill sm" data-claim>я перевёл</button>`}</div></div>`
+           <div class="row-btns"><button class="pill ghost sm" data-qrdl>скачать QR</button>${pay?.claimed_at && !pay?.rejected_at ? "" : `<button class="pill sm" data-claim>я перевёл</button>`}</div></div>`
         : `<p class="lead">Ведущий ещё не добавил QR-код. Пока можно оплатить наличными.</p>`) : ""}
       ${m === "cash" && !pay?.confirmed_at ? `<p class="lead">Отдай ${e.price} бат ведущему на месте. Он отметит, что получил.</p>` : ""}
       ${!m ? `<p class="lead">Выбери, как удобнее заплатить: переводом по QR или наличными на месте.</p>` : ""}
+      ${pay?.rejected_at ? `<p class="lead" style="color:var(--red)">Ведущий отметил, что не получил оплату. ${m === "qr" ? "Проверь перевод и нажми «я перевёл» ещё раз или отдай наличными." : "Подойди к ведущему и отдай наличные или переведи по QR."}</p>` : ""}
     </div>`;
   };
-  const hostBlock = (e) => {
-    const rows = e.signups.map((x) => {
-      const p = x.profiles || {}, pay = payOf(e.id, x.user_id);
-      const how = pay?.method === "qr" ? (pay.claimed_at ? "QR · перевёл" : "QR · ещё не перевёл") : pay?.method === "cash" ? "наличными" : "способ не выбран";
-      return `<div class="hrow">${avaP(p)}<div style="min-width:0"><b>${esc(p.nick || "Дачник")}</b><small>${esc(how)}</small></div>
-        <button class="tag ${pay?.confirmed_at ? "ok" : "btn"}" data-confirm="${x.user_id}" data-ok="${pay?.confirmed_at ? 0 : 1}">${pay?.confirmed_at ? "получено ✓" : "получил"}</button></div>`;
-    }).join("");
-    const paid = e.signups.filter((x) => payOf(e.id, x.user_id)?.confirmed_at).length;
-    const form = ev.editing === e.id ? `<form class="ev-form" data-evform>
+  const editHTML = (e) => `<div class="row-btns" style="justify-content:flex-start;padding:4px 16px 0"><button class="linkish" data-edit>${ev.editing === e.id ? "свернуть" : "изменить время, цену, заметку"}</button></div>
+    ${ev.editing === e.id ? `<form class="ev-form" data-evform style="padding:0 16px 14px">
         <label>сбор<input class="field" type="time" name="g" value="${hm(e.gather_time)}" required></label>
         <label>начало<input class="field" type="time" name="s" value="${hm(e.start_time)}" required></label>
         <label>цена, бат<input class="field" type="number" name="p" min="0" step="10" value="${e.price}" required></label>
         <label class="wide">заметка для всех<input class="field" name="n" maxlength="200" value="${esc(e.note || "")}" placeholder="Например: берём настолку, адрес тот же"></label>
         <div class="row-btns wide" style="justify-content:flex-start"><button class="pill sm" type="submit">сохранить</button>
         <button class="pill sm ${e.status === "open" ? "red" : "ghost"}" type="button" data-evstatus>${e.status === "open" ? "отменить игру" : "вернуть игру"}</button></div>
-      </form>` : "";
-    return `<div class="ev-host"><div class="eyebrow">Для ведущего · оплатили ${paid} из ${e.signups.length} · ${paid * e.price} бат</div>
-      ${rows || `<div class="ev-empty">Записей пока нет.</div>`}
-      <div class="row-btns" style="justify-content:flex-start"><button class="linkish" data-edit>${ev.editing === e.id ? "свернуть" : "изменить время, цену, заметку"}</button></div>${form}</div>`;
+      </form>` : ""}`;
+  const howPays = (pay) => pay?.method === "qr" ? (pay.claimed_at ? "QR · говорит, что перевёл" : "QR · ещё не перевёл") : pay?.method === "cash" ? "наличными на месте" : "способ не выбран";
+  // the host's own screen: one Saturday at a time, who comes and who paid
+  const drawHostEvents = () => {
+    const box = $("eventsList");
+    if (!ev.list.some((x) => x.id === ev.sel)) ev.sel = (ev.list.find((x) => x.status === "open") || ev.list[0]).id;
+    const e = ev.list.find((x) => x.id === ev.sel), { d, m } = dayParts(e.day), off = e.status !== "open";
+    const ps = e.signups.map((x) => ({ x, p: x.profiles || {}, pay: payOf(e.id, x.user_id) }));
+    const paid = ps.filter((r) => r.pay?.confirmed_at).length, bad = ps.filter((r) => r.pay?.rejected_at).length;
+    const cnt = (f) => ps.filter(f).length;
+    const days = ev.list.map((x) => { const q = dayParts(x.day); return `<button class="chip" data-sel="${x.id}" aria-pressed="${x.id === e.id}">${q.d} ${MON[q.m - 1]}${x.status !== "open" ? " ✕" : ""} · ${x.signups.length}</button>`; }).join("");
+    const rows = ps.map(({ x, p, pay }) => {
+      const st = pay?.confirmed_at ? "paid" : pay?.rejected_at ? "unpaid" : "none";
+      const tag = st === "paid" ? `<span class="tag ok">получено ✓</span>` : st === "unpaid" ? `<span class="tag bad">не получено</span>` : pay?.method === "qr" && pay.claimed_at ? `<span class="tag btn">проверь перевод</span>` : `<span class="tag">ждём</span>`;
+      return `<div class="prow"><div class="hrow">${avaP(p)}<div style="min-width:0"><b>${esc(p.nick || "Дачник")}</b><small>${esc([tgLine(p), howPays(pay)].filter(Boolean).join(" · "))}</small></div>${tag}</div>
+        <div class="seg" role="group" aria-label="Оплата ${esc(p.nick || "")}">
+          <button type="button" data-st="paid" data-u="${x.user_id}" aria-pressed="${st === "paid"}">получил ${e.price} ฿</button>
+          <button type="button" data-st="unpaid" data-u="${x.user_id}" aria-pressed="${st === "unpaid"}">не получил</button>
+        </div></div>`;
+    }).join("");
+    box.innerHTML = `<div class="ev-days" role="group" aria-label="Выбор субботы">${days}</div>
+      <article class="ticket ev is-next ${off ? "is-cancelled" : ""}" data-ev="${e.id}"><div class="ticket-in">
+        <div class="ev-head"><div class="ev-date"><small>сб</small><b>${d}</b><small>${MON[m - 1]}</small></div>
+          <div style="min-width:0"><div class="eyebrow">${off ? "Игра отменена" : "Для ведущего"}</div>
+            <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
+            ${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
+        <div class="stats ev-stats">
+          <div><b>${ps.length}</b><small>${plural(ps.length, "придёт", "придут", "придут")}</small></div>
+          <div><b>${paid * e.price}</b><small>получено ฿ · ${paid} из ${ps.length}</small></div>
+          <div><b class="${bad ? "bad" : ""}">${bad}</b><small>не получено</small></div>
+        </div>
+        <div class="pay-break">
+          <span><b>${cnt((r) => r.pay?.method === "qr" && r.pay.claimed_at)}</b>QR перевели</span>
+          <span><b>${cnt((r) => r.pay?.method === "qr" && !r.pay.claimed_at)}</b>QR ещё нет</span>
+          <span><b>${cnt((r) => r.pay?.method === "cash")}</b>наличными</span>
+          <span><b>${cnt((r) => !r.pay?.method)}</b>не выбрали</span>
+          <span><b>${ps.length * e.price}</b>฿ ждём всего</span>
+        </div>
+        <div class="sec-label eyebrow">Кто придёт</div>
+        ${rows || `<div class="empty-note">На эту субботу пока никто не записался.</div>`}
+        ${editHTML(e)}
+        <div class="stub"><span>Суббота, ${d} ${MON_FULL[m - 1]}</span><b>SAT ${pad(d)}.${pad(m)}</b></div>
+      </div></article>`;
+    drawPaySettings();
   };
   const drawEvents = () => {
     const box = $("eventsList");
+    $("evTitle").textContent = canHost() ? "Запись и оплата" : "Записаться на мафию";
+    $("evLead").textContent = canHost() ? "Выбери субботу: кто придёт, как платит и от кого ты получил деньги." : "Выбери дату и нажми «Я буду». Все увидят, кто идёт.";
+    if (ev.list.length && canHost()) return drawHostEvents();
     if (!ev.list.length) { box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">Ближайших суббот пока нет.</p></div></div></div>`; return; }
     const nextId = ev.list.find((x) => x.status === "open")?.id;
     box.innerHTML = ev.list.map((e) => {
@@ -1919,7 +1969,6 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         <div class="ev-act">${mine ? `<span class="tag ok">ты идёшь</span><button class="linkish" data-leave>не смогу</button>` : `<button class="pill sm" data-join ${off ? "disabled" : ""}>я буду</button>`}
           <span class="ev-count">идут: ${e.signups.length}</span></div>
         ${mine && !off ? payBlock(e) : ""}
-        ${canHost() ? hostBlock(e) : ""}
         <div class="stub"><span>Суббота, ${d} ${MON_FULL[m - 1]}</span><b>SAT ${pad(d)}.${pad(m)}</b></div>
       </div></article>`;
     }).join("");
@@ -1991,6 +2040,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     await loadEvents(); if (S.view === "events") drawEvents();
   };
   $("eventsList").addEventListener("click", (e) => {
+    const day = e.target.closest("[data-sel]");
+    if (day) { ev.sel = day.dataset.sel; ev.editing = null; drawEvents(); return; }
     const card = e.target.closest("[data-ev]"); if (!card) return;
     const id = card.dataset.ev, b = e.target.closest("button"); if (!b) return;
     const event = ev.list.find((x) => x.id === id);
@@ -2000,7 +2051,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     else if (b.dataset.m) evAction(() => sb.rpc("set_payment", { e: id, m: b.dataset.m, claimed: false }));
     else if (b.hasAttribute("data-qrdl")) downloadQR();
     else if (b.hasAttribute("data-claim")) evAction(() => sb.rpc("set_payment", { e: id, m: "qr", claimed: true }), "Отметил перевод. Ведущий подтвердит");
-    else if (b.dataset.confirm) evAction(() => sb.rpc("confirm_payment", { e: id, u: b.dataset.confirm, ok: b.dataset.ok === "1" }));
+    else if (b.dataset.st) evAction(() => sb.rpc("set_pay_status", { e: id, u: b.dataset.u, st: b.getAttribute("aria-pressed") === "true" ? "none" : b.dataset.st }));
     else if (b.hasAttribute("data-edit")) { ev.editing = ev.editing === id ? null : id; drawEvents(); }
     else if (b.hasAttribute("data-evstatus")) evAction(() => sb.from("events").update({ status: event.status === "open" ? "cancelled" : "open" }).eq("id", id), event.status === "open" ? "Игра отменена" : "Игра снова в расписании");
   });
