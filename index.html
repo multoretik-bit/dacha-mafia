@@ -832,9 +832,9 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     { id: "maf", name: "Мафия", code: "MAF", team: "mafia", art: "cards/maf.webp", desc: "Ночью вместе с семьёй выбираешь, кого убрать. Днём притворяйся мирным и уводи подозрения." },
     { id: "don", name: "Дон мафии", code: "DON", team: "mafia", art: "cards/don.webp", desc: "Глава семьи. Ночью стреляешь с мафией, а потом ищешь комиссара: проверяешь одного игрока." },
     { id: "kom", name: "Комиссар", code: "COM", team: "city", art: "cards/kom.webp", desc: "Ночью проверяешь одного игрока и узнаёшь, мафия он или нет. Не спались раньше времени." },
-    { id: "pat", name: "Патрульный", code: "PAT", team: "city", desc: "Напарник комиссара. Ночью тоже проверяешь игрока. Если комиссара убьют, занимаешь его место." },
+    { id: "pat", name: "Патрульный", code: "PTR", team: "city", art: "cards/pat.webp", desc: "Напарник комиссара. Ночью тоже проверяешь игрока. Если комиссара убьют, занимаешь его место." },
     { id: "kur", name: "Любовница", code: "LVR", team: "city", art: "cards/kur.webp", desc: "Ночью приходишь к игроку. Его ночной ход пропадает, а выстрел мафии по нему не проходит." },
-    { id: "doc", name: "Доктор", code: "DOC", team: "city", art: "cards/doc.jpg", desc: "Ночью лечишь одного игрока: если по нему стреляли, он выживет. Себя можно лечить один раз." },
+    { id: "doc", name: "Доктор", code: "DOC", team: "city", art: "cards/doc.webp", desc: "Ночью лечишь одного игрока: если по нему стреляли, он выживет. Себя можно лечить один раз." },
     { id: "man", name: "Маньяк", code: "MAN", team: "solo", art: "cards/man.webp", desc: "Ты ни за кого. Каждую ночь убиваешь одного игрока. Победа, если останешься в живых последним." },
   ];
   const CIVIL = { id: "mir", name: "Мирный житель", code: "CIV", team: "city", art: "cards/mir-1.webp", desc: "Ночью спишь. Днём слушай, спорь и голосуй, чтобы выгнать мафию из города." };
@@ -846,7 +846,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     kom: ["cards/kom.webp"],
     kur: ["cards/kur.webp"],
     man: ["cards/man.webp"],
-    doc: ["cards/doc.jpg"],
+    pat: ["cards/pat.webp"],
+    doc: ["cards/doc.webp"],
     mir: ["cards/mir-1.webp", "cards/mir-2.webp"],
   };
 
