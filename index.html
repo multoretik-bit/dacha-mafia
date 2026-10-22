@@ -839,6 +839,14 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   ];
   const CIVIL = { id: "mir", name: "Мирный житель", code: "MIR", team: "city", art: "cards/mir.jpg", desc: "Ночью спишь. Днём слушай, спорь и голосуй, чтобы выгнать мафию из города." };
   const ART = Object.fromEntries([...BASE, CIVIL].filter((r) => r.art).map((r) => [r.id, r.art]));
+  // every card variant per role; one is picked at random on each deal (the role's `art` is the thumbnail)
+  const CARD_ART = {
+    maf: ["cards/maf.jpg"],
+    kom: ["cards/kom.jpg"],
+    kur: ["cards/kur.jpg"],
+    doc: ["cards/doc.jpg"],
+    mir: ["cards/mir.jpg"],
+  };
 
   const TR = { а:"A",б:"B",в:"V",г:"G",д:"D",е:"E",ё:"E",ж:"ZH",з:"Z",и:"I",й:"Y",к:"K",л:"L",м:"M",н:"N",о:"O",п:"P",р:"R",с:"S",т:"T",у:"U",ф:"F",х:"H",ц:"C",ч:"CH",ш:"SH",щ:"SH",ы:"Y",э:"E",ю:"YU",я:"YA" };
   const codeOf = (name) => {
@@ -908,7 +916,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 
   /* ---------- logos ---------- */
   document.querySelectorAll("[data-logo]").forEach((el) => el.append($("logoTpl").content.cloneNode(true)));
-  [...BASE, CIVIL].forEach((r) => { if (r.art) new Image().src = r.art; });
+  const preload = (srcs) => srcs.forEach((src) => { if (src) new Image().src = src; });
+  preload(Object.values(ART));
 
   document.addEventListener("click", (e) => {
     const a = e.target.closest("[data-tglink]");
@@ -1259,12 +1268,27 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const deck = [];
     allRoles().forEach((r) => { for (let i = 0; i < (counts[r.id] || 0); i++) deck.push(r.id); });
     while (deck.length < n) deck.push("mir");
-    for (let i = deck.length - 1; i > 0; i--) { const j = rnd(i + 1); [deck[i], deck[j]] = [deck[j], deck[i]]; }
-    return deck;
+    return shuffle(deck);
   };
+  const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  // one random variant per seat; within a game variants of a role repeat only after all of them are used
+  const pickArts = (deck) => {
+    const pools = {};
+    return deck.map((id) => {
+      const all = CARD_ART[id];
+      if (!all?.length) return null;
+      if (!pools[id]?.length) pools[id] = shuffle([...all]);
+      return pools[id].pop();
+    });
+  };
+  const dealOffline = () => {
+    S.host.deal = buildDeck(S.host.counts, S.host.n); S.host.arts = pickArts(S.host.deal); S.host.idx = 0;
+    preload(S.host.arts); setPhase("deal");
+  };
+  const dealRole = (i) => { const r = roleById(S.host.deal[i]); return { ...r, art: S.host.arts?.[i] || r.art }; };
   $("toDeal").onclick = () => {
     if (online()) return dealOnline();
-    S.host.deal = buildDeck(S.host.counts, S.host.n); S.host.idx = 0; setPhase("deal");
+    dealOffline();
   };
 
   /* ---------- host online: deal & live ---------- */
@@ -1273,12 +1297,12 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (dealing || !sb || !me) return;
     dealing = true; $("toDeal").disabled = true; $("toDeal").textContent = "рассылаю…";
     try {
-      const L = S.on.lineup, deck = buildDeck(S.on.counts, L.length);
+      const L = S.on.lineup, deck = buildDeck(S.on.counts, L.length), arts = pickArts(deck);
       const { data: g, error } = await sb.from("games").insert({ host_id: me.id, mafia_sees_family: S.on.mafiaSees }).select().single();
       if (error) throw error;
       const rows = L.map((x, i) => {
         const r = roleById(deck[i]);
-        return { game_id: g.id, seat: i + 1, user_id: x.u || null, guest_name: x.g || null, role_id: r.id, role_name: r.name, role_code: r.code, team: r.team, role_desc: r.desc, role_art: r.art || null };
+        return { game_id: g.id, seat: i + 1, user_id: x.u || null, guest_name: x.g || null, role_id: r.id, role_name: r.name, role_code: r.code, team: r.team, role_desc: r.desc, role_art: arts[i] || r.art || null };
       });
       const { error: e2 } = await sb.from("seats").insert(rows);
       if (e2) { await sb.from("games").delete().eq("id", g.id); throw e2; }
@@ -1421,7 +1445,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       ? "Запомни роль и нажми, чтобы закрыть карту"
       : h.idx === 0 ? `Игрок 1, нажми на экран, чтобы открыть свою карту` : `Передай телефон игроку ${seat}. Нажми, чтобы открыть карту`;
     $("cancelDeal").hidden = isOpen;
-    const r = roleById(h.deal[h.idx]);
+    const r = dealRole(h.idx);
     $("dealDesc").hidden = !(isOpen && r.art);
     $("dealDesc").textContent = isOpen && r.art ? r.desc : "";
   };
@@ -1430,7 +1454,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (Date.now() < lockUntil) return;
     const h = S.host;
     if (!isOpen) {
-      showFront($("front"), roleById(h.deal[h.idx]), h.idx + 1);
+      showFront($("front"), dealRole(h.idx), h.idx + 1);
       isOpen = true; lockUntil = Date.now() + 450; renderDeal();
     } else {
       isOpen = false; lockUntil = Date.now() + 700;
@@ -1460,7 +1484,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   $("toggleLayout").onclick = () => { const l = $("layoutList"); l.hidden = !l.hidden; $("toggleLayout").textContent = l.hidden ? "показать раскладку" : "скрыть раскладку"; };
   $("redeal").onclick = () => sheet({
     eyebrow: "Раздача", title: "Раздать заново?", text: "Те же роли перемешаются, и каждому придётся посмотреть карту ещё раз.",
-    ok: "перемешать", onOk: () => { S.host.deal = buildDeck(S.host.counts, S.host.n); S.host.idx = 0; setPhase("deal"); },
+    ok: "перемешать", onOk: dealOffline,
   });
   $("toNotesFromDeal").onclick = () => { if (!S.notes.players.length) fillNumbers(S.host.deal.length); go("notes"); };
 
@@ -1479,6 +1503,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     }
     my.seat = s;
     if (s && changed) {
+      preload([s.role_art]);
       const tasks = [sb.from("profiles").select("nick").eq("id", s.games.host_id).maybeSingle().then(({ data }) => (my.hostNick = data?.nick || ""))];
       if (s.team === "mafia" && s.games.mafia_sees_family)
         tasks.push(sb.from("seats").select("seat,role_name,user_id,guest_name,profiles(nick)").eq("game_id", s.game_id).eq("team", "mafia").order("seat").then(({ data }) => (my.family = data || [])));
