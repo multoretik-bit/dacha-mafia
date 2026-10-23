@@ -603,8 +603,13 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .ev-who.paid { background: #1F9D55; color: #fff; box-shadow: none; }
 .ev-who.paid::after { content: "✓"; font-weight: 900; margin-left: -2px; }
 .ev-count b { color: #1F9D55; }
-.prow.is-paid { background: #EAF8EF; }
-.prow.is-claimed { background: #F3FBF6; }
+.prow.is-paid { background: #BFEBCF; box-shadow: inset 6px 0 0 #1F9D55; }
+.prow.is-paid b { color: #0B4D28; }
+.prow.is-paid .tag.ok { background: #1F9D55; border-color: #1F9D55; color: #fff; }
+.prow.is-paid .seg { border-color: #1F9D55; }
+.prow .seg button[data-st="paid"][aria-pressed="true"] { background: #1F9D55; color: #fff; }
+.prow.is-claimed { background: #E1F6E8; box-shadow: inset 6px 0 0 #7CD39C; }
+.prow.is-claimed .tag.btn { background: #1F9D55; border-color: #1F9D55; }
 .ev-empty { font-weight: 600; font-size: 13.5px; color: var(--muted); }
 .ev-act { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; padding: 0 16px 14px; }
 .ev-act .pill { margin: 4px 6px 9px; }
@@ -986,7 +991,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261023133524"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261023134157"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
