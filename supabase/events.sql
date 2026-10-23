@@ -170,3 +170,11 @@ begin
         confirmed_at = case when payments.method is distinct from excluded.method and payments.method is not null then null else payments.confirmed_at end,
         rejected_at = case when claimed or payments.method is distinct from excluded.method then null else payments.rejected_at end;
 end $$;
+
+-- which accounts are hosts, to show them apart from players on a date
+create or replace function public.host_ids()
+returns setof uuid language sql stable security definer set search_path = public as $$
+  select pr.id from profiles pr join host_allowlist h on h.tg_username = lower(pr.tg_username);
+$$;
+revoke all on function public.host_ids() from public, anon;
+grant execute on function public.host_ids() to authenticated;

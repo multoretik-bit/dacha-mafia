@@ -571,6 +571,11 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .ev-form .field { min-height: 44px; padding: 8px 10px; }
 .ev-form .wide { grid-column: 1 / -1; }
 .pay-set { display: grid; gap: 12px; }
+.ev-hosts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0 16px 12px; padding: 8px 10px; border-radius: 14px; background: var(--ink); }
+.ev-hosts .eyebrow { color: var(--sky); margin-right: 2px; }
+.ev-hosts .ev-who { background: var(--paper); box-shadow: none; }
+.ev-hosts .ev-who.me { background: var(--blue); }
+.ev-hosts .ev-empty { color: var(--sky); font-size: 12.5px; }
 .ev-days { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; }
 .ev-days .chip { flex: none; font-size: 16px; background: var(--paper); }
 .ev-days .chip[aria-pressed="true"] { background: var(--ink); }
@@ -928,7 +933,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261022174008"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261023104728"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1835,15 +1840,25 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const hm = (t) => String(t || "").slice(0, 5);
   const dayParts = (iso) => { const [y, m, d] = iso.split("-").map(Number); return { d, m, y }; };
   const ev = { list: [], pays: {}, set: null, chan: null, editing: null, loaded: false };
+  const isMine = (e) => [...e.signups, ...(e.hosts || [])].some((x) => x.user_id === me.id);
+  const hostsLine = (e) => `<div class="ev-hosts"><span class="eyebrow">${(e.hosts || []).length > 1 ? "Ведущие" : "Ведущий"}</span>${(e.hosts || []).length
+    ? e.hosts.map((x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP(x.profiles || {})}<span>${esc(x.profiles?.nick || "Ведущий")}</span></span>`).join("")
+    : `<span class="ev-empty">ещё не отметился</span>`}</div>`;
   const payOf = (eid, uid) => ev.pays[eid + ":" + uid];
   const loadEvents = async () => {
     if (!sb || !me) return;
     await sb.rpc("ensure_events");
-    const [{ data: list }, { data: set }] = await Promise.all([
+    const [{ data: list }, { data: set }, { data: hostIds }] = await Promise.all([
       sb.from("events").select("*, signups(user_id, created_at, profiles(id,nick,tg_username,tg_photo))").gte("day", bkkToday()).order("day").limit(4),
       sb.from("pay_settings").select("*").eq("id", 1).maybeSingle(),
+      sb.rpc("host_ids"),
     ]);
-    ev.list = (list || []).map((e) => ({ ...e, signups: (e.signups || []).sort((a, b) => a.created_at.localeCompare(b.created_at)) }));
+    const hostSet = new Set((hostIds || []).map((x) => (typeof x === "string" ? x : x.host_ids)));
+    // hosts on a date are shown on top and are not counted or charged as players
+    ev.list = (list || []).map((e) => {
+      const all = (e.signups || []).sort((a, b) => a.created_at.localeCompare(b.created_at));
+      return { ...e, hosts: all.filter((x) => hostSet.has(x.user_id)), signups: all.filter((x) => !hostSet.has(x.user_id)) };
+    });
     ev.set = set || null;
     ev.pays = {};
     if (ev.list.length) {
@@ -1861,15 +1876,16 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         </div><div class="mode-stub"><span>Saturday</span></div></div></div></button>`;
       return;
     }
-    const { d, m } = dayParts(e.day), mine = e.signups.some((x) => x.user_id === me.id);
+    const { d, m } = dayParts(e.day), mine = isMine(e);
     const crew = e.signups.map((x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP(x.profiles || {})}<span>${esc(x.profiles?.nick || "Дачник")}</span></span>`).join("");
     box.innerHTML = `<article class="ticket ev is-next" data-ev="${e.id}"><div class="ticket-in">
       <div class="ev-head"><div class="ev-date"><small>сб</small><b>${d}</b><small>${MON[m - 1]}</small></div>
         <div style="min-width:0"><div class="eyebrow">Следующая игра</div>
           <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
           ${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
+      ${hostsLine(e)}
       <div class="ev-crew">${crew || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
-      <div class="ev-act">${mine ? `<span class="tag ok">ты идёшь</span><button class="linkish" data-goev>оплата</button>` : `<button class="pill sm" data-join>я буду</button>`}<span class="ev-count">идут: ${e.signups.length}</span></div>
+      <div class="ev-act">${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span><button class="linkish" data-goev>${canHost() ? "подробнее" : "оплата"}</button>` : `<button class="pill sm" data-join>${canHost() ? "я веду" : "я буду"}</button>`}<span class="ev-count">идут: ${e.signups.length}</span></div>
       <button class="stub ev-go" data-goev><span>Все субботы и оплата</span><b>→</b></button>
     </div></article>`;
   };
@@ -1931,6 +1947,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
           <div style="min-width:0"><div class="eyebrow">${off ? "Игра отменена" : "Для ведущего"}</div>
             <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
             ${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
+        ${hostsLine(e)}
+        <div class="ev-act" style="padding-top:0">${isMine(e) ? `<span class="tag ok">ты ведёшь</span><button class="linkish" data-leave>не смогу</button>` : `<button class="pill sm" data-join ${off ? "disabled" : ""}>я веду эту игру</button>`}</div>
         <div class="stats ev-stats">
           <div><b>${ps.length}</b><small>${plural(ps.length, "придёт", "придут", "придут")}</small></div>
           <div><b>${paid * e.price}</b><small>получено ฿ · ${paid} из ${ps.length}</small></div>
@@ -1958,17 +1976,18 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (!ev.list.length) { box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">Ближайших суббот пока нет.</p></div></div></div>`; return; }
     const nextId = ev.list.find((x) => x.status === "open")?.id;
     box.innerHTML = ev.list.map((e) => {
-      const { d, m } = dayParts(e.day), off = e.status !== "open", mine = e.signups.some((x) => x.user_id === me.id);
+      const { d, m } = dayParts(e.day), off = e.status !== "open", mine = isMine(e);
       const crew = e.signups.map((x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP(x.profiles || {})}<span>${esc(x.profiles?.nick || "Дачник")}</span></span>`).join("");
       return `<article class="ticket ev ${off ? "is-cancelled" : ""} ${e.id === nextId ? "is-next" : ""}" data-ev="${e.id}"><div class="ticket-in">
         <div class="ev-head"><div class="ev-date"><small>сб</small><b>${d}</b><small>${MON[m - 1]}</small></div>
           <div style="min-width:0"><div class="eyebrow">${off ? "Игра отменена" : e.id === nextId ? "Ближайшая игра" : "Суббота"}</div>
             <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
             ${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
+        ${hostsLine(e)}
         <div class="ev-crew">${crew || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
-        <div class="ev-act">${mine ? `<span class="tag ok">ты идёшь</span><button class="linkish" data-leave>не смогу</button>` : `<button class="pill sm" data-join ${off ? "disabled" : ""}>я буду</button>`}
+        <div class="ev-act">${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span><button class="linkish" data-leave>не смогу</button>` : `<button class="pill sm" data-join ${off ? "disabled" : ""}>${canHost() ? "я веду" : "я буду"}</button>`}
           <span class="ev-count">идут: ${e.signups.length}</span></div>
-        ${mine && !off ? payBlock(e) : ""}
+        ${mine && !off && !canHost() ? payBlock(e) : ""}
         <div class="stub"><span>Суббота, ${d} ${MON_FULL[m - 1]}</span><b>SAT ${pad(d)}.${pad(m)}</b></div>
       </div></article>`;
     }).join("");
