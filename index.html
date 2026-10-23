@@ -991,7 +991,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261023134433"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261023135017"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1163,8 +1163,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       alt: "LETO — виртуальные карты, промокод LETOMAFIA: бесплатная виртуальная карта", label: "LETO, виртуальные карты",
       vars: "--tag-y:-17%;--tag-r:auto;--tag-l:9%" },
   ];
-  // share of impressions: GreenEx half, Feniks and LETO a quarter each
-  const AD_WEIGHT = { greenex: 50, feniks: 25, leto: 25 };
+  // share of impressions: a third each
+  const AD_WEIGHT = { greenex: 1, feniks: 1, leto: 1 };
   const pickAd = () => {
     let r = Math.random() * ADS.reduce((t, a) => t + AD_WEIGHT[a.id], 0);
     return ADS.find((a) => (r -= AD_WEIGHT[a.id]) < 0) || ADS[0];
