@@ -991,7 +991,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261023135017"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261023135445"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1159,8 +1159,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     { id: "feniks", img: "ads/feniks.webp", ratio: "1100 / 393", url: "https://t.me/fenikss24?text=" + AD_TEXT,
       alt: "Feniks — обмен валюты. Написать @fenikss24", label: "Feniks, обмен валюты",
       vars: "--bill-x:69%;--bill-y:62%;--tag-y:33%;--tag-r:auto;--tag-l:13%" },
-    { id: "leto", img: "ads/leto-2.webp", ratio: "1100 / 207", card: "ads/leto-card.webp", url: "https://t.me/leto_finance_bot?startapp=ref_SKY-WS5WDXN4",
-      alt: "LETO — виртуальные карты, промокод LETOMAFIA: бесплатная виртуальная карта", label: "LETO, виртуальные карты",
+    { id: "leto", img: "ads/leto-3.webp", ratio: "1100 / 208", card: "ads/leto-card.webp", url: "https://t.me/leto_finance_bot?startapp=ref_SKY-WS5WDXN4",
+      alt: "LETO — виртуальные карты, промокод LETOMAFIA: подарочная виртуальная карта", label: "LETO, виртуальные карты",
       vars: "--tag-y:-17%;--tag-r:auto;--tag-l:9%" },
   ];
   // share of impressions: a third each
@@ -1925,7 +1925,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     ? e.hosts.map((x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP(x.profiles || {})}<span>${esc(x.profiles?.nick || "Ведущий")}</span></span>`).join("")
     : `<span class="ev-empty">ещё не отметился</span>`}</div>`;
   // green chip: paid (host confirmed) or claimed (said "я перевёл")
-  const paidOf = (e, uid) => ev.paid?.[e.id + ":" + uid] || "";
+  const paidOf = (e, uid) => (canHost() && ev.paid?.[e.id + ":" + uid]) || "";
   const whoChip = (e, x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""} ${paidOf(e, x.user_id)}" title="${paidOf(e, x.user_id) === "paid" ? "оплатил" : paidOf(e, x.user_id) === "claimed" ? "перевёл, ждёт подтверждения" : ""}">${avaP(x.profiles || {})}<span>${esc(x.profiles?.nick || "Дачник")}</span></span>`;
   const paidCount = (e) => e.signups.filter((x) => paidOf(e, x.user_id)).length;
   const payOf = (eid, uid) => ev.pays[eid + ":" + uid];
