@@ -557,6 +557,12 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .ev-who .ava { width: 24px; height: 24px; font-size: 12px; box-shadow: none; }
 .ev-who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ev-who.me { background: var(--blue); color: #fff; box-shadow: none; }
+.ev-who.claimed { background: #DDF5E6; color: #0E5A30; box-shadow: inset 0 0 0 1.5px #1F9D55; }
+.ev-who.paid { background: #1F9D55; color: #fff; box-shadow: none; }
+.ev-who.paid::after { content: "✓"; font-weight: 900; margin-left: -2px; }
+.ev-count b { color: #1F9D55; }
+.prow.is-paid { background: #EAF8EF; }
+.prow.is-claimed { background: #F3FBF6; }
 .ev-empty { font-weight: 600; font-size: 13.5px; color: var(--muted); }
 .ev-act { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; padding: 0 16px 14px; }
 .ev-act .pill { margin: 4px 6px 9px; }
@@ -938,7 +944,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261023131816"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261023132633"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1871,6 +1877,10 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const hostsLine = (e) => `<div class="ev-hosts"><span class="eyebrow">${(e.hosts || []).length > 1 ? "Ведущие" : "Ведущий"}</span>${(e.hosts || []).length
     ? e.hosts.map((x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP(x.profiles || {})}<span>${esc(x.profiles?.nick || "Ведущий")}</span></span>`).join("")
     : `<span class="ev-empty">ещё не отметился</span>`}</div>`;
+  // green chip: paid (host confirmed) or claimed (said "я перевёл")
+  const paidOf = (e, uid) => ev.paid?.[e.id + ":" + uid] || "";
+  const whoChip = (e, x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""} ${paidOf(e, x.user_id)}" title="${paidOf(e, x.user_id) === "paid" ? "оплатил" : paidOf(e, x.user_id) === "claimed" ? "перевёл, ждёт подтверждения" : ""}">${avaP(x.profiles || {})}<span>${esc(x.profiles?.nick || "Дачник")}</span></span>`;
+  const paidCount = (e) => e.signups.filter((x) => paidOf(e, x.user_id)).length;
   const payOf = (eid, uid) => ev.pays[eid + ":" + uid];
   const loadEvents = async () => {
     if (!sb || !me) return;
@@ -1889,7 +1899,13 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     ev.set = set || null;
     ev.pays = {};
     if (ev.list.length) {
-      const { data: pays } = await sb.from("payments").select("*").in("event_id", ev.list.map((e) => e.id));
+      const ids = ev.list.map((e) => e.id);
+      const [{ data: pays }, { data: paidRows }] = await Promise.all([
+        sb.from("payments").select("*").in("event_id", ids),
+        sb.rpc("paid_status", { evs: ids }),
+      ]);
+      ev.paid = {};
+      (paidRows || []).forEach((r) => (ev.paid[r.event_id + ":" + r.user_id] = r.st));
       (pays || []).forEach((p) => (ev.pays[p.event_id + ":" + p.user_id] = p));
     }
     ev.loaded = true;
@@ -1904,7 +1920,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       return;
     }
     const { d, m } = dayParts(e.day), mine = isMine(e);
-    const crew = e.signups.map((x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP(x.profiles || {})}<span>${esc(x.profiles?.nick || "Дачник")}</span></span>`).join("");
+    const crew = e.signups.map((x) => whoChip(e, x)).join("");
     box.innerHTML = `<article class="ticket ev is-next" data-ev="${e.id}"><div class="ticket-in">
       <div class="ev-head"><div class="ev-date"><small>сб</small><b>${d}</b><small>${MON[m - 1]}</small></div>
         <div style="min-width:0"><div class="eyebrow">Следующая игра</div>
@@ -1912,7 +1928,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
           ${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
       ${hostsLine(e)}
       <div class="ev-crew">${crew || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
-      <div class="ev-act">${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span><button class="linkish" data-goev>${canHost() ? "подробнее" : "оплата"}</button>` : `<button class="pill sm" data-join>${canHost() ? "я веду" : "я буду"}</button>`}<span class="ev-count">идут: ${e.signups.length}</span></div>
+      <div class="ev-act">${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span><button class="linkish" data-goev>${canHost() ? "подробнее" : "оплата"}</button>` : `<button class="pill sm" data-join>${canHost() ? "я веду" : "я буду"}</button>`}<span class="ev-count">идут: ${e.signups.length}${paidCount(e) ? ` · <b>оплатили: ${paidCount(e)}</b>` : ""}</span></div>
       <button class="stub ev-go" data-goev><span>Все субботы и оплата</span><b>→</b></button>
     </div></article>`;
   };
@@ -1962,7 +1978,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const rows = ps.map(({ x, p, pay }) => {
       const st = pay?.confirmed_at ? "paid" : pay?.rejected_at ? "unpaid" : "none";
       const tag = st === "paid" ? `<span class="tag ok">получено ✓</span>` : st === "unpaid" ? `<span class="tag bad">не получено</span>` : pay?.method === "qr" && pay.claimed_at ? `<span class="tag btn">проверь перевод</span>` : `<span class="tag">ждём</span>`;
-      return `<div class="prow"><div class="hrow">${avaP(p)}<div style="min-width:0"><b>${esc(p.nick || "Дачник")}</b><small>${esc([tgLine(p), howPays(pay)].filter(Boolean).join(" · "))}</small></div>${tag}</div>
+      return `<div class="prow ${st === "paid" ? "is-paid" : pay?.method === "qr" && pay.claimed_at && !pay.rejected_at ? "is-claimed" : ""}"><div class="hrow">${avaP(p)}<div style="min-width:0"><b>${esc(p.nick || "Дачник")}</b><small>${esc([tgLine(p), howPays(pay)].filter(Boolean).join(" · "))}</small></div>${tag}</div>
         <div class="seg" role="group" aria-label="Оплата ${esc(p.nick || "")}">
           <button type="button" data-st="paid" data-u="${x.user_id}" aria-pressed="${st === "paid"}">получил ${e.price} ฿</button>
           <button type="button" data-st="unpaid" data-u="${x.user_id}" aria-pressed="${st === "unpaid"}">не получил</button>
@@ -2004,7 +2020,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const nextId = ev.list.find((x) => x.status === "open")?.id;
     box.innerHTML = ev.list.map((e) => {
       const { d, m } = dayParts(e.day), off = e.status !== "open", mine = isMine(e);
-      const crew = e.signups.map((x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP(x.profiles || {})}<span>${esc(x.profiles?.nick || "Дачник")}</span></span>`).join("");
+      const crew = e.signups.map((x) => whoChip(e, x)).join("");
       return `<article class="ticket ev ${off ? "is-cancelled" : ""} ${e.id === nextId ? "is-next" : ""}" data-ev="${e.id}"><div class="ticket-in">
         <div class="ev-head"><div class="ev-date"><small>сб</small><b>${d}</b><small>${MON[m - 1]}</small></div>
           <div style="min-width:0"><div class="eyebrow">${off ? "Игра отменена" : e.id === nextId ? "Ближайшая игра" : "Суббота"}</div>
@@ -2013,7 +2029,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         ${hostsLine(e)}
         <div class="ev-crew">${crew || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
         <div class="ev-act">${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span><button class="linkish" data-leave>не смогу</button>` : `<button class="pill sm" data-join ${off ? "disabled" : ""}>${canHost() ? "я веду" : "я буду"}</button>`}
-          <span class="ev-count">идут: ${e.signups.length}</span></div>
+          <span class="ev-count">идут: ${e.signups.length}${paidCount(e) ? ` · <b>оплатили: ${paidCount(e)}</b>` : ""}</span></div>
         ${mine && !off && !canHost() ? payBlock(e) : ""}
         <div class="stub"><span>Суббота, ${d} ${MON_FULL[m - 1]}</span><b>SAT ${pad(d)}.${pad(m)}</b></div>
       </div></article>`;

@@ -178,3 +178,16 @@ returns setof uuid language sql stable security definer set search_path = public
 $$;
 revoke all on function public.host_ids() from public, anon;
 grant execute on function public.host_ids() to authenticated;
+
+-- who paid, visible to everyone (only the fact, never the method):
+-- paid = host confirmed, claimed = said "я перевёл" and the host has not rejected it
+create or replace function public.paid_status(evs uuid[])
+returns table (event_id uuid, user_id uuid, st text)
+language sql stable security definer set search_path = public as $$
+  select p.event_id, p.user_id, case when p.confirmed_at is not null then 'paid' else 'claimed' end
+  from payments p
+  where p.event_id = any(evs)
+    and (p.confirmed_at is not null or (p.method = 'qr' and p.claimed_at is not null and p.rejected_at is null));
+$$;
+revoke all on function public.paid_status(uuid[]) from public, anon;
+grant execute on function public.paid_status(uuid[]) to authenticated;
