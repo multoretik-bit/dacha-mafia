@@ -504,6 +504,11 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   box-shadow: inset 0 0 0 1.5px #4f8a4f, 0 3px 6px rgba(0,0,0,.18); opacity: 0;
   animation: adBill 2.8s cubic-bezier(.2,.7,.3,1) infinite;
 }
+.ad-leto .ad-bill {
+  aspect-ratio: 1.6 / 1; border-radius: 4px;
+  background: linear-gradient(135deg, #DFFF3F 0 55%, #A8D400 55%), #DFFF3F;
+  box-shadow: inset 0 0 0 1.5px #111, inset 6px -5px 0 -3px #111, 0 3px 6px rgba(0,0,0,.25);
+}
 .ad-bill:nth-of-type(2) { animation-delay: .55s; --dx: -38px; --rot: -40deg; }
 .ad-bill:nth-of-type(3) { animation-delay: 1.1s; --dx: 26px; --rot: 30deg; }
 .ad-bill:nth-of-type(4) { animation-delay: 1.65s; --dx: -14px; --rot: -18deg; }
@@ -933,7 +938,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261023130917"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261023131816"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1101,13 +1106,21 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     { id: "feniks", img: "ads/feniks.webp", ratio: "1100 / 393", url: "https://t.me/fenikss24?text=" + AD_TEXT,
       alt: "Feniks — обмен валюты. Написать @fenikss24", label: "Feniks, обмен валюты",
       vars: "--bill-x:69%;--bill-y:62%;--tag-y:33%;--tag-r:auto;--tag-l:13%" },
+    { id: "leto", img: "ads/leto.webp", ratio: "1100 / 334", url: "https://t.me/leto_finance_bot?startapp=ref_SKY-WS5WDXN4",
+      alt: "LETO — виртуальные карты, промокод LETOPART: бесплатная виртуальная карта", label: "LETO, виртуальные карты",
+      vars: "--bill-x:47%;--bill-y:62%;--tag-y:26%;--tag-r:auto;--tag-l:13%" },
   ];
-  const pickAd = () => ADS[Math.floor(Math.random() * ADS.length)];
+  // share of impressions: GreenEx half, Feniks and LETO a quarter each
+  const AD_WEIGHT = { greenex: 50, feniks: 25, leto: 25 };
+  const pickAd = () => {
+    let r = Math.random() * ADS.reduce((t, a) => t + AD_WEIGHT[a.id], 0);
+    return ADS.find((a) => (r -= AD_WEIGHT[a.id]) < 0) || ADS[0];
+  };
   const adInner = (a, cls) => `${cls === "float" ? '<button class="ad-x" type="button" aria-label="Скрыть рекламу">×</button>' : ""}
       <a class="ad-btn" href="${a.url}" target="_blank" rel="noopener" data-tglink data-ad="${a.id}" style="--ad-ratio:${a.ratio}">
         <span class="ad-art"><img src="${a.img}" alt="${esc(a.alt)}" draggable="false"><span class="ad-shine" style="--ad-mask:url(${a.img})"></span>${'<i class="ad-bill"></i>'.repeat(5)}<span class="ad-tag">реклама</span></span>
       </a>`;
-  const adHTML = (cls, a = pickAd()) => `<div class="ad ${cls}" role="complementary" aria-label="Реклама: ${esc(a.label)}" style="${a.vars}">${adInner(a, cls)}</div>`;
+  const adHTML = (cls, a = pickAd()) => `<div class="ad ${cls} ad-${a.id}" role="complementary" aria-label="Реклама: ${esc(a.label)}" style="${a.vars}">${adInner(a, cls)}</div>`;
   document.querySelectorAll("[data-ad-slot]").forEach((el) => (el.innerHTML = adHTML("")));
   document.body.insertAdjacentHTML("beforeend", adHTML("float"));
   const adFloat = document.querySelector(".ad.float");
@@ -1127,6 +1140,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const a = pickAd();
     adFloat.innerHTML = adInner(a, "float");
     adFloat.setAttribute("style", a.vars);
+    ADS.forEach((x) => adFloat.classList.toggle("ad-" + x.id, x === a));
     adFloat.setAttribute("aria-label", "Реклама: " + a.label);
     adFloat.classList.toggle("top", typing);
     adFloat.style.setProperty("--ad-lift", dock && !typing ? `${Math.round(dock.getBoundingClientRect().height)}px` : "0px");
