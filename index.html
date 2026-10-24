@@ -238,6 +238,11 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .pick[aria-pressed="true"] .nm .signed { color: #BFF5D2; }
 .pick-quick { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; padding: 0 16px 12px; }
 .pick-quick .pill { margin: 4px 6px 9px; }
+.seat-sheet { width: 100%; max-width: 520px; max-height: calc(100vh - 32px); overflow-y: auto; }
+.seat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.seat-next { font: 600 64px/.9 var(--f-code); color: var(--blue); font-variant-numeric: tabular-nums; }
+.seat-head { display: flex; align-items: center; gap: 14px; }
+@media (max-width: 380px) { .seat-grid { grid-template-columns: minmax(0, 1fr); } }
 .guest-box { display: grid; gap: 10px; padding: 14px 16px 16px; border-top: 2px solid var(--ink); background: #E9F0F2; }
 .gchips { display: flex; flex-wrap: wrap; gap: 8px; }
 .gchip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 6px 5px 12px; border-radius: 99px; background: var(--ink); color: var(--paper); font-weight: 800; font-size: 13px; }
@@ -1189,7 +1194,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261024074549"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261024171210"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1662,7 +1667,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (t && t.signups.length && S.on.autoFrom !== t.id && !S.on.lineup.length) {
       const n = addSignups(t);
       S.on.autoFrom = t.id; save();
-      if (n) toast(`Добавил ${n} ${plural(n, "записавшегося", "записавшихся", "записавшихся")} на сегодня`);
+      if (n) toast(`Добавил ${n} ${plural(n, "записавшегося", "записавшихся", "записавшихся")} на сегодня`, { label: "рассадить", run: () => openSeating() });
     }
     drawPick();
   };
@@ -1686,8 +1691,9 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     }).join("");
     const q = $("pickQuick"), missing = t ? t.signups.filter((x) => !L.some((y) => y.u === x.user_id)).length : 0;
     q.hidden = !(t || L.length);
+    const seatBtn = L.length >= 2 ? `<button class="pill sm ghost" type="button" data-seating>рассадить по местам</button>` : "";
     q.innerHTML = `${t ? `<button class="pill sm" type="button" data-allsigned ${missing ? "" : "disabled"}>${missing ? `выбрать всех записавшихся (${t.signups.length})` : `все записавшиеся выбраны ✓`}</button>` : ""}
-      ${L.length ? `<button class="linkish" type="button" data-clearpick>снять всех</button>` : ""}`;
+      ${seatBtn}${L.length ? `<button class="linkish" type="button" data-clearpick>снять всех</button>` : ""}`;
     empty.hidden = people.length > 1;
     empty.textContent = "Пока в списке только ты. Скинь друзьям бота @dacha_gay: как только они нажмут «Играть», появятся здесь.";
     $("guestChips").innerHTML = L.map((x, i) => (x.g ? `<span class="gchip"><b>${i + 1}</b>${esc(x.g)}<button type="button" data-rmg="${i}" aria-label="Убрать гостя">×</button></span>` : "")).join("");
@@ -1705,11 +1711,48 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     i >= 0 ? L.splice(i, 1) : L.push({ u: b.dataset.u });
     S.on.counts = null; drawPick(); save();
   };
+  // seating round the table: the host taps players in order, place 1, 2, 3… clockwise
+  const openSeating = () => {
+    const L = S.on.lineup.slice();
+    if (L.length < 2) return;
+    const order = [];
+    const prof = (x) => (x.u ? people.find((p) => p.id === x.u) : null);
+    const name = (x) => (x.u ? prof(x)?.nick || "Дачник" : x.g);
+    const v = document.createElement("div");
+    v.className = "veil full";
+    const draw = () => {
+      const done = order.length === L.length;
+      v.innerHTML = `<div class="ticket seat-sheet" role="dialog" aria-modal="true" aria-label="Рассадка по кругу"><div class="ticket-in"><div class="t-body">
+        <div class="eyebrow">Рассадка по кругу · ${order.length} из ${L.length}</div>
+        <div class="seat-head">${done ? "" : `<span class="seat-next">${pad(order.length + 1)}</span>`}
+          <h2 class="h1">${done ? "Все на местах" : "Кто сидит на этом месте?"}</h2></div>
+        <p class="lead">${done
+          ? "Проверь номера и нажми «готово». Эти места будут на картах, у тебя на экране игры и в заметках у игроков."
+          : "Нажимай на игроков по очереди, по часовой стрелке от первого места. Нажал не того — нажми ещё раз, номер снимется."}</p>
+        <div class="seat-grid">${L.map((x, i) => {
+          const k = order.indexOf(i), p = prof(x);
+          return `<button class="pick" type="button" data-i="${i}" aria-pressed="${k >= 0}">${p ? avaP(p) : `<span class="ava guest">${esc([...(x.g || "?")][0])}</span>`}<span class="nm">${esc(name(x))}${x.g ? "<small>гость</small>" : p && tgLine(p) ? `<small>${esc(tgLine(p))}</small>` : ""}</span><span class="ord">${k >= 0 ? k + 1 : ""}</span></button>`;
+        }).join("")}</div>
+        <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="button" data-ok ${done ? "" : "disabled"}>готово</button><button class="pill ghost sm" type="button" data-reset>сначала</button><button class="linkish" type="button" data-no>отмена</button></div>
+      </div></div></div>`;
+    };
+    v.addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.i !== undefined) { const i = +b.dataset.i, k = order.indexOf(i); k >= 0 ? order.splice(k, 1) : order.push(i); haptic("tap"); draw(); }
+      else if (b.hasAttribute("data-reset")) { order.length = 0; draw(); }
+      else if (b.hasAttribute("data-no")) v.remove();
+      else if (b.hasAttribute("data-ok")) { S.on.lineup = order.map((i) => L[i]); save(); v.remove(); drawPick(); toast("Места расставлены по кругу"); }
+    });
+    draw();
+    document.body.append(v);
+  };
   $("pickQuick").onclick = (e) => {
     if (e.target.closest("[data-allsigned]")) {
       const t = todayEvent(); if (!t) return;
       const n = addSignups(t); save(); drawPick();
       toast(n ? `Добавил ${n} ${plural(n, "человека", "человек", "человек")}` : "Все записавшиеся уже выбраны");
+    } else if (e.target.closest("[data-seating]")) {
+      openSeating();
     } else if (e.target.closest("[data-clearpick]")) {
       S.on.lineup = []; S.on.counts = null; save(); drawPick();
     }
