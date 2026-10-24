@@ -232,3 +232,8 @@ grant execute on function public.promo_used_today(text) to authenticated;
 drop policy if exists "promos by hosts" on public.promos;
 create policy "promos by hosts" on public.promos for insert to authenticated
   with check (created_by = auth.uid() and public.can_host() and kind in ('ruslan', 'boss') and not public.promo_used_today(kind));
+
+-- third promo: beach video with music
+drop policy if exists "promos by hosts" on public.promos;
+create policy "promos by hosts" on public.promos for insert to authenticated
+  with check (created_by = auth.uid() and public.can_host() and kind in ('ruslan', 'boss', 'beach') and not public.promo_used_today(kind));

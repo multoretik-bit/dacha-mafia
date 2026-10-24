@@ -832,6 +832,25 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .prem-name::after { -webkit-text-fill-color: #3A2600; }
 .ev-who:has(.premium) { overflow: visible; }
 
+/* ---------- promo 3: beach video while "Tigran Champion" plays ---------- */
+.promo.beach { background: #000; }
+.bc-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #000; }
+.bc-note {
+  position: absolute; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); transform: translateX(-50%); z-index: 3;
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 99px; white-space: nowrap;
+  background: rgba(0,0,0,.55); color: #fff; font: 800 13px/1 var(--f-body); box-shadow: 0 0 0 2px rgba(255,255,255,.5);
+}
+.bc-note i { font-style: normal; display: inline-block; animation: bcNote .6s ease-in-out infinite alternate; }
+.bc-note i:nth-child(2) { animation-delay: .3s; }
+@keyframes bcNote { to { transform: translateY(-4px) rotate(12deg); } }
+.bc-bar { position: absolute; left: 0; bottom: 0; height: 4px; z-index: 3; background: linear-gradient(90deg, #FF2E88, #FFD43B); width: 0; }
+.bc-play {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 5;
+  min-height: 64px; padding: 0 26px; border-radius: 99px; background: #FF2E88; color: #fff;
+  font: italic 900 18px/1 var(--f-display); text-transform: lowercase; box-shadow: 0 0 0 4px #fff, 0 12px 30px rgba(0,0,0,.5);
+  animation: premGlow 1.4s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -1169,7 +1188,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261024072753"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261024073406"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2124,12 +2143,29 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         <p class="bs-cap bs-c2"><em>Мафия играет в него</em></p>
         <p class="bs-cap bs-c3">Комиссар проверил его один раз.<br>Больше комиссара <em>никто не видел</em></p>`;
     } },
+    beach: { title: "Summer Squad под Tigran Champion", img: "ads/beach.jpg", cls: "beach", music: true, html: () =>
+      `<video class="bc-video" src="ads/beach.mp4" poster="ads/beach.jpg" muted playsinline webkit-playsinline preload="auto"></video>
+        <span class="pr-stamp">Реклама</span>
+        <span class="bc-note"><i>♪</i><i>♫</i> Tigran Champion</span>
+        <span class="bc-bar"></span>` },
   };
+  // the promo song is unlocked on the first tap so it can start later without one (iOS needs this)
+  const promoSong = new Audio("ads/tigran-champion.mp3");
+  promoSong.preload = "auto";
+  let songUnlocked = false;
+  document.addEventListener("pointerdown", () => {
+    if (songUnlocked) return;
+    songUnlocked = true;
+    promoSong.muted = true;
+    promoSong.play().then(() => { promoSong.pause(); promoSong.currentTime = 0; promoSong.muted = false; }).catch(() => { promoSong.muted = false; songUnlocked = false; });
+  }, { passive: true });
   let promoEl = null, promoT = 0, promoDone = null;
   const closePromo = () => {
     clearTimeout(promoT);
     if (!promoEl) return;
     const el = promoEl, done = promoDone; promoEl = null; promoDone = null;
+    try { promoSong.pause(); promoSong.currentTime = 0; } catch {}
+    el.querySelector("video")?.pause();
     el.classList.add("out"); setTimeout(() => el.remove(), 460);
     if (done) setTimeout(done, 300);
   };
@@ -2145,7 +2181,26 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     document.body.append(promoEl);
     try { navigator.vibrate?.([60, 80, 60, 80, 60]); } catch {}
     haptic("card");
-    promoT = setTimeout(closePromo, 12500);
+    if (!pr.music) { promoT = setTimeout(closePromo, 12500); return; }
+    const vid = promoEl.querySelector("video"), bar = promoEl.querySelector(".bc-bar"), el = promoEl;
+    vid.play().catch(() => {});
+    const start = () => {
+      promoSong.currentTime = 0;
+      return promoSong.play().then(() => {
+        el.querySelector(".bc-play")?.remove();
+        vid.currentTime = 0; vid.play().catch(() => {});
+        const len = (isFinite(promoSong.duration) && promoSong.duration) || 15;
+        bar.style.transition = `width ${len}s linear`; requestAnimationFrame(() => (bar.style.width = "100%"));
+        clearTimeout(promoT); promoT = setTimeout(closePromo, len * 1000 + 600);
+      });
+    };
+    promoSong.onended = () => { if (promoEl === el) closePromo(); };
+    start().catch(() => {
+      // autoplay with sound was blocked: one tap starts it
+      el.insertAdjacentHTML("beforeend", `<button class="bc-play" type="button">▶ включить звук</button>`);
+      el.querySelector(".bc-play").onclick = () => start().catch(() => {});
+      promoT = setTimeout(closePromo, 30000);
+    });
   };
   // which promos were already played today (the server refuses a second time)
   let promoUsed = new Set(), promoUsedDay = "";
@@ -2663,7 +2718,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     loadMyCard();
     loadPeople().then(() => { if (S.view === "home") renderHome(); });
     loadEvents().then(drawHomeEvent).catch(() => {});
-    ["ads/ruslan.webp", "ads/boss.webp"].forEach((src) => (new Image().src = src));
+    ["ads/ruslan.webp", "ads/boss.webp", "ads/beach.jpg"].forEach((src) => (new Image().src = src));
     subscribeEvents();
     if (!S.on.gameId) {
       const { data } = await sb.from("games").select("id").eq("host_id", me.id).eq("status", "live").order("created_at", { ascending: false }).limit(1);
