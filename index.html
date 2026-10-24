@@ -737,6 +737,66 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   box-shadow: 0 0 0 2px rgba(255,255,255,.6); opacity: 0; animation: prFinal .4s ease-out 4s both;
 }
 
+/* ---------- promo 2: "Когда ты глава Мафий", Godfather style ---------- */
+.bs-bars::before, .bs-bars::after { content: ""; position: absolute; left: 0; right: 0; height: 11vh; background: #000; z-index: 3; animation: bsBar .7s cubic-bezier(.3,.8,.3,1) both; }
+.bs-bars::before { top: 0; } .bs-bars::after { bottom: 0; transform-origin: bottom; }
+@keyframes bsBar { from { transform: scaleY(0); } }
+.bs-intro { position: absolute; inset: 0; z-index: 4; display: grid; place-content: center; gap: 10px; text-align: center; pointer-events: none; }
+.bs-intro span { font: 600 clamp(22px, 7vw, 32px)/1.1 var(--f-code); letter-spacing: .14em; text-transform: uppercase; color: #E9E2CF; opacity: 0; animation: bsWord 1.9s ease-out both; }
+@keyframes bsWord { 0% { opacity: 0; transform: translateY(8px); filter: blur(4px); } 25%, 70% { opacity: 1; transform: none; filter: none; } 100% { opacity: 0; } }
+.bs-cam {
+  position: absolute; left: 50%; top: 50%; width: max(100vw, calc(100vh * 692 / 759)); aspect-ratio: 692 / 759;
+  transform: translate(-50%, -50%); opacity: 0; animation: bsCam 6.4s cubic-bezier(.45,0,.25,1) 1.7s both;
+}
+.bs-cam img { display: block; width: 100%; height: 100%; }
+@keyframes bsCam {
+  0% { opacity: 0; transform: translate(-50%, -38%) scale(2.6); }
+  8% { opacity: 1; }
+  40% { opacity: 1; transform: translate(-50%, -42%) scale(2.25); }
+  48% { transform: translate(-50%, -66%) scale(1.9); }
+  92% { opacity: 1; transform: translate(-50%, -70%) scale(2.05); }
+  100% { opacity: 0; transform: translate(-50%, -60%) scale(1.4); }
+}
+.bs-hit { position: absolute; inset: 0; animation: bsHit 10s linear both; }
+@keyframes bsHit {
+  0%, 31.5%, 34%, 100% { transform: none; }
+  32% { transform: translate(-9px, 4px) rotate(-1.2deg) scale(1.04); }
+  32.8% { transform: translate(8px, -5px) rotate(1deg) scale(1.04); }
+  33.4% { transform: translate(-4px, 2px); }
+}
+.bs-red { position: absolute; inset: 0; background: radial-gradient(circle, rgba(200,0,20,.15), rgba(200,0,20,.75)); opacity: 0; z-index: 2; pointer-events: none; animation: bsRed 10s linear both; }
+@keyframes bsRed { 0%, 31.8% { opacity: 0; } 32.2% { opacity: 1; } 36%, 100% { opacity: 0; } }
+.bs-vig { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, transparent 35%, rgba(0,0,0,.85) 85%); }
+.bs-smoke { position: absolute; left: var(--sx); top: var(--sy); width: 0; height: 0; pointer-events: none; }
+.bs-smoke i { position: absolute; left: -14px; top: -14px; width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle, rgba(235,235,235,.55), rgba(235,235,235,0) 70%); opacity: 0; animation: bsPuff 3.2s ease-out infinite; }
+.bs-smoke i:nth-child(2) { animation-delay: .8s; } .bs-smoke i:nth-child(3) { animation-delay: 1.6s; } .bs-smoke i:nth-child(4) { animation-delay: 2.4s; }
+@keyframes bsPuff { 0% { opacity: 0; transform: translate(0, 0) scale(.4); } 20% { opacity: .9; } 100% { opacity: 0; transform: translate(-30px, -120px) scale(3.2); } }
+.bs-glint { position: absolute; left: var(--gx); top: var(--gy); width: 9%; aspect-ratio: 1; margin: -4.5% 0 0 -4.5%; background: #fff; clip-path: polygon(50% 0, 56% 44%, 100% 50%, 56% 56%, 50% 100%, 44% 56%, 0 50%, 44% 44%); opacity: 0; filter: drop-shadow(0 0 6px #fff); animation: bsGlint 2.6s ease-in-out infinite; }
+@keyframes bsGlint { 0%, 55%, 100% { opacity: 0; transform: scale(.2) rotate(0); } 70% { opacity: 1; transform: scale(1) rotate(45deg); } 85% { opacity: 0; transform: scale(.4) rotate(90deg); } }
+.bs-cap {
+  position: absolute; left: 16px; right: 16px; bottom: calc(11vh + 18px); z-index: 4; text-align: center; margin: 0;
+  font: 600 clamp(22px, 6.8vw, 32px)/1.15 var(--f-code); letter-spacing: .06em; text-transform: uppercase; color: #fff;
+  text-shadow: 0 2px 0 #000, 2px 0 0 #000, -2px 0 0 #000, 0 -2px 0 #000, 0 6px 18px rgba(0,0,0,.8); opacity: 0;
+}
+.bs-cap em { font-style: normal; color: #FF3B3B; }
+.bs-c1 { animation: bsCap 1.6s ease-out 1.9s both; }
+.bs-c2 { animation: bsPunch 1.7s cubic-bezier(.2,1.6,.4,1) 3.2s both; font-size: clamp(28px, 9vw, 42px); }
+.bs-c3 { animation: bsCap 3s ease-out 5s both; }
+@keyframes bsCap { 0% { opacity: 0; transform: translateY(14px); } 15%, 85% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+@keyframes bsPunch { 0% { opacity: 0; transform: scale(2.6); } 18% { opacity: 1; transform: scale(1); } 85% { opacity: 1; transform: scale(1.03); } 100% { opacity: 0; transform: scale(.8); } }
+.bs-final { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; opacity: 0; animation: prFinal 1.2s ease-out 8s both; background: radial-gradient(circle at 50% 45%, #2a2418, #000 75%); }
+.bs-poster { position: relative; width: min(90vw, calc((78vh - 40px) * 692 / 759)); aspect-ratio: 692 / 759; animation: bsPoster 1.4s cubic-bezier(.2,1.3,.4,1) 8s both; }
+.bs-poster img { display: block; width: 100%; height: 100%; box-shadow: 0 20px 50px rgba(0,0,0,.8); }
+@keyframes bsPoster { from { transform: scale(1.5) rotate(4deg); filter: brightness(2); } }
+.bs-final b {
+  position: absolute; top: calc(11vh + 10px); left: 16px; right: 16px; text-align: center; z-index: 2;
+  font: 600 clamp(18px, 5.6vw, 26px)/1.1 var(--f-code); letter-spacing: .2em; text-transform: uppercase; color: #E9C46A;
+  text-shadow: 0 2px 0 #000; animation: prFinalCap .6s cubic-bezier(.2,1.5,.4,1) 8.8s both;
+}
+.promo.boss .pr-stamp { background: #111; box-shadow: 0 0 0 2px #E9C46A; color: #E9C46A; }
+.promo-pick { display: grid; gap: 2px; width: calc(100% - 12px); }
+.promo-pick .pill { margin: 4px 0 8px; width: 100%; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -906,7 +966,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     <div class="dock">
       <div class="sum" id="pickSum"></div>
       <button class="pill wide" id="pickNext">дальше: роли</button>
-      <button class="linkish" id="newLobbyPick">Новое лобби</button>
+      <div class="row-btns"><button class="linkish" id="testOnMe">Проверить на себе</button><button class="linkish" id="newLobbyPick">Новое лобби</button></div>
     </div>
   </section>
 
@@ -956,7 +1016,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     </div></div>
     <div class="dock">
       <div class="sum" id="rolesSum"></div>
-      <button class="pill wide ghost" id="promoBtn" hidden>показать рекламу всем</button>
+      <div class="promo-pick" id="promoBox" hidden></div>
       <button class="pill wide" id="toDeal">раздать карты</button>
       <div class="row-btns">
         <button class="linkish" id="backStep">← Назад</button>
@@ -1074,7 +1134,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261024064308"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261024065025"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1658,9 +1718,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     else sum.textContent = `${n} мест: ${u} ${plural(u, "роль", "роли", "ролей")} + ${civ} ${plural(civ, "мирный", "мирных", "мирных")}`;
     $("toDeal").disabled = civ < 0;
     $("toDeal").textContent = online() ? "разослать карты" : "раздать карты";
-    $("promoBtn").hidden = !online();
-    $("promoBtn").disabled = !!S.on.promoSent;
-    $("promoBtn").textContent = S.on.promoSent ? "реклама показана ✓" : "показать рекламу всем";
+    renderPromoBox();
   };
   $("rolesList").onclick = (e) => {
     const c = ctx().counts, t = e.target.closest("button"); if (!t) return;
@@ -1739,7 +1797,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       });
       const { error: e2 } = await sb.from("seats").insert(rows);
       if (e2) { await sb.from("games").delete().eq("id", g.id); throw e2; }
-      S.on.gameId = g.id; S.on.promoSent = false; live.showRoles = false; save(); syncNotesGame();
+      S.on.gameId = g.id; S.on.test = false; live.showRoles = false; save(); syncNotesGame();
       sb.functions.invoke("tg", { body: { action: "notify", game_id: g.id } }).catch(() => {});
       go("host"); toast("Карты разлетелись по телефонам");
     } catch (x) { toast("Не получилось разослать: " + humanErr(x)); }
@@ -1770,7 +1828,9 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const seatName = (s) => s.profiles?.nick || s.guest_name || "Дачник";
   const drawLive = () => {
     const ss = live.seats, seen = ss.filter((s) => s.seen_at).length;
-    $("liveTitle").textContent = seen === ss.length ? "Все посмотрели карты" : "Карты разосланы";
+    $("liveTitle").textContent = S.on.test ? "Тестовая раздача на себе" : seen === ss.length ? "Все посмотрели карты" : "Карты разосланы";
+    $("liveFinish").textContent = S.on.test ? "закончить тест" : "завершить игру";
+    $("liveRedeal").hidden = !!S.on.test;
     $("liveLead").textContent = seen === ss.length ? "Можно начинать первую ночь. Город засыпает." : `Посмотрели ${seen} из ${ss.length}. Как только каждый откроет свою карту, здесь появится отметка.`;
     $("liveBar").style.width = `${ss.length ? (seen / ss.length) * 100 : 0}%`;
     $("liveRolesBtn").textContent = live.showRoles ? "скрыть роли" : "показать роли";
@@ -1797,9 +1857,10 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const endGame = async (patch, msg) => {
     const { error } = await sb.from("games").update({ ...patch, finished_at: new Date().toISOString() }).eq("id", S.on.gameId);
     if (error) return toast("Не получилось: " + humanErr(error));
-    S.on.gameId = null; S.on.phase = "pick"; save(); people = []; go("host"); toast(msg);
+    S.on.gameId = null; S.on.test = false; S.on.phase = "pick"; save(); people = []; go("host"); toast(msg);
   };
   $("liveFinish").onclick = () => {
+    if (S.on.test) return endGame({ status: "cancelled" }, "Тест закончен, в статистику не попал");
     const hasSolo = live.seats.some((s) => s.team === "solo");
     choose({
       eyebrow: "Конец игры", title: "Кто победил?", text: "Победа запишется в профиль каждому дачнику из этой команды.",
@@ -1995,53 +2056,112 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     renderCard();
   });
 
-  /* ---------- sponsor promo, played once right before the deal ---------- */
+  /* ---------- sponsor promos before the deal: each one plays once per game day ---------- */
   const PROMO_IMG = "ads/ruslan.webp";
-  let promoEl = null, promoT = 0;
+  const PROMOS = {
+    ruslan: { title: "Руслан — лучший мужчина дачи", img: "ads/ruslan.webp", cls: "", html: () => {
+      const hearts = [[18, 52, 3.4], [26, 60, 3.7], [12, 64, 4.0], [22, 48, 4.4], [80, 52, 5.8], [72, 60, 6.1], [86, 64, 6.4], [76, 48, 6.8]]
+        .map(([x, y, d]) => `<i style="left:${x}%;top:${y}%;animation-delay:${d}s">♥</i>`).join("");
+      return `<div class="pr-shake"><img class="pr-cover" src="ads/ruslan.webp" alt=""></div>
+        <div class="pr-hearts">${hearts}</div>
+        <div class="pr-final"><div class="pr-rays"></div><img src="ads/ruslan.webp" alt="Руслан — лучший мужчина дачи"><b>Реклама одобрена бицепсом</b></div>
+        <div class="pr-flash"></div>
+        <span class="pr-stamp">Реклама</span>
+        <p class="pr-cap pr-c1">Это не он качается.<br><em>Это дача качается</em> от него</p>
+        <p class="pr-cap pr-c2">Мангал поднимает <em>одной левой</em></p>
+        <p class="pr-cap pr-c3">Кабачки растут быстрее, <em>когда он рядом</em></p>`;
+    } },
+    boss: { title: "Когда ты глава Мафий", img: "ads/boss.webp", cls: "boss", html: () => {
+      const smoke = `<span class="bs-smoke" style="--sx:27.5%;--sy:61.5%"><i></i><i></i><i></i><i></i></span>`;
+      const glints = `<span class="bs-glint" style="--gx:37%;--gy:40%"></span><span class="bs-glint" style="--gx:67%;--gy:39%;animation-delay:1.3s"></span>`;
+      return `<div class="bs-hit"><div class="bs-cam"><img src="ads/boss.webp" alt="">${smoke}</div></div>
+        <div class="bs-vig"></div><div class="bs-red"></div>
+        <div class="bs-final"><div class="bs-poster"><img src="ads/boss.webp" alt="Когда ты глава Мафий">${smoke}${glints}</div><b>Одобрено Доном</b></div>
+        <div class="bs-bars"></div>
+        <div class="bs-intro"><span style="animation-delay:.2s">Суббота.</span><span style="animation-delay:.55s">Дача.</span><span style="animation-delay:.9s;color:#FF3B3B">Он уже здесь.</span></div>
+        <span class="pr-stamp" style="animation-delay:8.2s">Реклама</span>
+        <p class="bs-cap bs-c1">Он не играет в мафию.</p>
+        <p class="bs-cap bs-c2"><em>Мафия играет в него</em></p>
+        <p class="bs-cap bs-c3">Комиссар проверил его один раз.<br>Больше комиссара <em>никто не видел</em></p>`;
+    } },
+  };
+  let promoEl = null, promoT = 0, promoDone = null;
   const closePromo = () => {
     clearTimeout(promoT);
     if (!promoEl) return;
-    const el = promoEl; promoEl = null;
+    const el = promoEl, done = promoDone; promoEl = null; promoDone = null;
     el.classList.add("out"); setTimeout(() => el.remove(), 460);
+    if (done) setTimeout(done, 300);
   };
-  const playPromo = () => {
+  const playPromo = (kind = "ruslan", onDone = null) => {
+    const pr = PROMOS[kind] || PROMOS.ruslan;
     if (promoEl) return;
     hideAd();
-    const hearts = [[18, 52, 3.4], [26, 60, 3.7], [12, 64, 4.0], [22, 48, 4.4], [80, 52, 5.8], [72, 60, 6.1], [86, 64, 6.4], [76, 48, 6.8]]
-      .map(([x, y, d]) => `<i style="left:${x}%;top:${y}%;animation-delay:${d}s">♥</i>`).join("");
+    promoDone = onDone;
     promoEl = document.createElement("div");
-    promoEl.className = "promo"; promoEl.setAttribute("role", "dialog"); promoEl.setAttribute("aria-label", "Реклама: Руслан — лучший мужчина дачи");
-    promoEl.innerHTML = `<div class="pr-shake"><img class="pr-cover" src="${PROMO_IMG}" alt=""></div>
-      <div class="pr-hearts">${hearts}</div>
-      <div class="pr-final"><div class="pr-rays"></div><img src="${PROMO_IMG}" alt="Руслан — лучший мужчина дачи"><b>Реклама одобрена бицепсом</b></div>
-      <div class="pr-flash"></div>
-      <span class="pr-stamp">Реклама</span>
-      <p class="pr-cap pr-c1">Это не он качается.<br><em>Это дача качается</em> от него</p>
-      <p class="pr-cap pr-c2">Мангал поднимает <em>одной левой</em></p>
-      <p class="pr-cap pr-c3">Кабачки растут быстрее, <em>когда он рядом</em></p>
-      <button class="pr-x" type="button">закрыть</button>`;
+    promoEl.className = "promo " + pr.cls; promoEl.setAttribute("role", "dialog"); promoEl.setAttribute("aria-label", "Реклама: " + pr.title);
+    promoEl.innerHTML = pr.html() + `<button class="pr-x" type="button">закрыть</button>`;
     promoEl.querySelector(".pr-x").onclick = closePromo;
     document.body.append(promoEl);
     try { navigator.vibrate?.([60, 80, 60, 80, 60]); } catch {}
     haptic("card");
     promoT = setTimeout(closePromo, 12500);
   };
-  // host: send the promo to everyone picked for this deal (and play it here too)
-  $("promoBtn").onclick = async () => {
-    if (!sb || !me || !canHost() || S.on.promoSent) return;
-    const targets = S.on.lineup.filter((x) => x.u).map((x) => x.u);
-    $("promoBtn").disabled = true;
-    const { error } = await sb.from("promos").insert({ created_by: me.id, kind: "ruslan", targets });
-    if (error) { $("promoBtn").disabled = false; return toast("Не получилось: " + humanErr(error)); }
-    S.on.promoSent = true; save(); renderRoles();
-    toast("Реклама полетела на телефоны");
-    playPromo();
+  // which promos were already played today (the server refuses a second time)
+  let promoUsed = new Set(), promoUsedDay = "";
+  const loadPromoUsed = async () => {
+    if (!sb || !me || !canHost()) return;
+    const { data } = await sb.from("promos").select("kind").gte("created_at", `${bkkToday()}T00:00:00+07:00`);
+    promoUsed = new Set((data || []).map((r) => r.kind)); promoUsedDay = bkkToday();
+  };
+  const renderPromoBox = () => {
+    const box = $("promoBox");
+    box.hidden = !online() || !canHost();
+    if (box.hidden) return;
+    if (promoUsedDay !== bkkToday()) { promoUsedDay = bkkToday(); loadPromoUsed().then(() => !$("vRoles").hidden && renderPromoBox()); }
+    box.innerHTML = Object.entries(PROMOS).map(([k, pr]) => promoUsed.has(k)
+      ? `<button class="pill wide ghost sm" type="button" disabled>${esc(pr.title)} · показана ✓</button>`
+      : `<button class="pill wide ghost sm" type="button" data-promo="${k}">показать рекламу: ${esc(pr.title)}</button>`).join("");
+  };
+  // host: send a promo to everyone picked for this deal (and play it here too)
+  $("promoBox").onclick = (e) => {
+    const b = e.target.closest("[data-promo]"); if (!b || !sb || !me || !canHost()) return;
+    const kind = b.dataset.promo;
+    sheet({ eyebrow: "Реклама перед раздачей", title: `Показать «${PROMOS[kind].title}»?`, text: "Она запустится на телефонах всех отмеченных игроков. Сегодня повторить её будет нельзя.", ok: "показать всем",
+      onOk: async () => {
+        const targets = S.on.lineup.filter((x) => x.u).map((x) => x.u);
+        const { error } = await sb.from("promos").insert({ created_by: me.id, kind, targets });
+        if (error) { await loadPromoUsed(); renderPromoBox(); return toast(/row-level/i.test(error.message) ? "Эта реклама сегодня уже была" : "Не получилось: " + humanErr(error)); }
+        promoUsed.add(kind); renderPromoBox();
+        toast("Реклама полетела на телефоны");
+        playPromo(kind);
+      } });
   };
   const onPromo = (row) => {
     if (!row || !me || row.created_by === me.id) return;
     if (row.targets?.length && !row.targets.includes(me.id)) return;
     if (Date.now() - new Date(row.created_at).getTime() > 120000) return;
-    playPromo();
+    playPromo(row.kind);
+  };
+  // host test: a promo and a card for yourself only; nothing is counted or spent
+  const dealToMe = async () => {
+    const pool = [...BASE, CIVIL], r = pool[Math.floor(Math.random() * pool.length)];
+    const art = (CARD_ART[r.id] || [])[Math.floor(Math.random() * (CARD_ART[r.id] || [""]).length)] || r.art || null;
+    const { data: g, error } = await sb.from("games").insert({ host_id: me.id, mafia_sees_family: false }).select().single();
+    if (error) return toast("Не получилось: " + humanErr(error));
+    const { error: e2 } = await sb.from("seats").insert({ game_id: g.id, seat: 1, user_id: me.id, guest_name: null, role_id: r.id, role_name: r.name, role_code: r.code, team: r.team, role_desc: r.desc, role_art: art });
+    if (e2) { await sb.from("games").delete().eq("id", g.id); return toast("Не получилось: " + humanErr(e2)); }
+    S.on.gameId = g.id; S.on.test = true; save();
+    await loadMyCard(); go("card"); toast("Тестовая карта пришла тебе");
+  };
+  $("testOnMe").onclick = () => {
+    if (!sb || !me || !canHost()) return;
+    if (S.on.gameId) return toast("Сначала заверши текущую игру");
+    choose({ eyebrow: "Проверить на себе", title: "Тестовая раздача", text: "Реклама и карта придут только тебе. Показ рекламы не потратится, в статистику ничего не попадёт.",
+      options: [
+        ...Object.entries(PROMOS).map(([k, pr]) => ({ label: `с рекламой: ${pr.title}`, run: () => playPromo(k, dealToMe) })),
+        { label: "без рекламы", cls: "ghost", run: dealToMe },
+      ] });
   };
 
   let mineChan = null;
@@ -2503,7 +2623,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     loadMyCard();
     loadPeople().then(() => { if (S.view === "home") renderHome(); });
     loadEvents().then(drawHomeEvent).catch(() => {});
-    new Image().src = PROMO_IMG;
+    ["ads/ruslan.webp", "ads/boss.webp"].forEach((src) => (new Image().src = src));
     subscribeEvents();
     if (!S.on.gameId) {
       const { data } = await sb.from("games").select("id").eq("host_id", me.id).eq("status", "live").order("created_at", { ascending: false }).limit(1);

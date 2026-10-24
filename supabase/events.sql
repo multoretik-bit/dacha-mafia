@@ -221,3 +221,14 @@ do $$ begin
     alter publication supabase_realtime add table public.promos;
   end if;
 end $$;
+
+-- each sponsor promo can be played once per game day (Phuket time)
+create or replace function public.promo_used_today(k text)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from promos where kind = k and (created_at at time zone 'Asia/Bangkok')::date = public.bkk_today());
+$$;
+revoke all on function public.promo_used_today(text) from public, anon;
+grant execute on function public.promo_used_today(text) to authenticated;
+drop policy if exists "promos by hosts" on public.promos;
+create policy "promos by hosts" on public.promos for insert to authenticated
+  with check (created_by = auth.uid() and public.can_host() and kind in ('ruslan', 'boss') and not public.promo_used_today(kind));
