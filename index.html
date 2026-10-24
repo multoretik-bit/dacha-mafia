@@ -656,6 +656,83 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   .big-n { font-size: 88px; }
   .pick-list { grid-template-columns: minmax(0, 1fr); }
 }
+/* ---------- sponsor promo before the deal: "Руслан — лучший мужчина дачи" ---------- */
+.promo { position: fixed; inset: 0; z-index: 80; background: #0B0A06; overflow: hidden; animation: prIn .25s ease-out both; }
+.promo.out { animation: prOut .45s ease-in both; }
+@keyframes prIn { from { opacity: 0; } }
+@keyframes prOut { to { opacity: 0; transform: scale(1.06); } }
+.pr-shake { position: absolute; inset: 0; animation: prShake 10s linear both; }
+.pr-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; transform-origin: 50% 40%; animation: prPan 8s cubic-bezier(.45,0,.25,1) both; }
+@keyframes prPan {
+  0% { object-position: 50% 10%; transform: scale(1.9); }
+  12% { object-position: 50% 14%; transform: scale(1.55); }
+  31% { object-position: 50% 20%; transform: scale(1.35); }
+  37% { object-position: 18% 45%; transform: scale(1.15); }
+  60% { object-position: 20% 42%; transform: scale(1.28); }
+  66% { object-position: 84% 45%; transform: scale(1.15); }
+  92% { object-position: 82% 42%; transform: scale(1.28); opacity: 1; }
+  100% { object-position: 50% 50%; transform: scale(1); opacity: 0; }
+}
+/* the biceps "flex": three hard beats */
+@keyframes prShake {
+  0%, 7%, 9.5%, 13%, 15.5%, 19%, 21.5%, 100% { transform: none; }
+  7.6% { transform: translate(-7px, 3px) rotate(-1deg) scale(1.03); }
+  8.4% { transform: translate(6px, -4px) rotate(1deg) scale(1.03); }
+  13.6% { transform: translate(7px, 2px) rotate(1deg) scale(1.04); }
+  14.4% { transform: translate(-6px, -3px) rotate(-1deg) scale(1.04); }
+  19.6% { transform: translate(-8px, 4px) rotate(-1.4deg) scale(1.06); }
+  20.4% { transform: translate(8px, -4px) rotate(1.4deg) scale(1.06); }
+}
+.pr-flash { position: absolute; inset: 0; background: #fff; opacity: 0; animation: prFlash 10s linear both; pointer-events: none; }
+@keyframes prFlash { 0% { opacity: 1; } 4%, 7.3% { opacity: 0; } 7.6% { opacity: .55; } 8.6%, 13.3% { opacity: 0; } 13.6% { opacity: .5; } 14.6%, 19.3% { opacity: 0; } 19.6% { opacity: .6; } 20.6%, 79.4% { opacity: 0; } 80% { opacity: .9; } 84%, 100% { opacity: 0; } }
+.pr-stamp {
+  position: absolute; top: calc(env(safe-area-inset-top, 0px) + 18px); left: 16px; z-index: 3;
+  font: italic 900 13px/1 var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: #fff;
+  background: var(--red); padding: 8px 12px; border-radius: 6px; transform: rotate(-6deg); box-shadow: 0 0 0 2px #fff;
+  animation: prStamp .5s cubic-bezier(.2,1.6,.4,1) .15s both;
+}
+@keyframes prStamp { from { transform: rotate(-30deg) scale(3); opacity: 0; } }
+.pr-cap {
+  position: absolute; left: 14px; right: 14px; bottom: calc(env(safe-area-inset-bottom, 0px) + 13%); z-index: 3;
+  text-align: center; font: italic 900 clamp(22px, 7.4vw, 34px)/1.08 var(--f-display); color: #fff; text-transform: uppercase; text-wrap: balance;
+  text-shadow: 0 3px 0 #000, 3px 0 0 #000, -3px 0 0 #000, 0 -3px 0 #000, 0 6px 18px rgba(0,0,0,.6);
+  opacity: 0; transform: rotate(-3deg) scale(.4);
+}
+.pr-cap em { font-style: inherit; color: #FFD43B; }
+.pr-c1 { animation: prCap 2.5s cubic-bezier(.2,1.5,.4,1) .7s both; }
+.pr-c2 { animation: prCap 2.4s cubic-bezier(.2,1.5,.4,1) 3.2s both; }
+.pr-c3 { animation: prCap 2.3s cubic-bezier(.2,1.5,.4,1) 5.5s both; }
+@keyframes prCap { 0% { opacity: 0; transform: rotate(-12deg) scale(.3); } 14% { opacity: 1; transform: rotate(-3deg) scale(1.08); } 22% { transform: rotate(-3deg) scale(1); } 86% { opacity: 1; transform: rotate(-2deg) scale(1.02); } 100% { opacity: 0; transform: rotate(4deg) scale(.6) translateY(30px); } }
+.pr-hearts { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.pr-hearts i { position: absolute; font-style: normal; color: #FF3B6B; font-size: 30px; opacity: 0; text-shadow: 0 2px 6px rgba(0,0,0,.35); animation: prHeart 2.2s ease-out both; }
+@keyframes prHeart { 0% { opacity: 0; transform: translateY(0) scale(.4) rotate(0); } 15% { opacity: 1; transform: translateY(-20px) scale(1.15) rotate(-8deg); } 100% { opacity: 0; transform: translateY(-220px) scale(.9) rotate(14deg); } }
+/* finale: the whole poster with the sign, sun rays behind */
+.pr-final { position: absolute; inset: 0; z-index: 1; opacity: 0; animation: prFinal 2.4s ease-out 7.7s both; display: grid; place-items: center; }
+.pr-rays {
+  position: absolute; width: 220vmax; height: 220vmax; left: 50%; top: 50%; margin: -110vmax 0 0 -110vmax;
+  background: repeating-conic-gradient(from 0deg, rgba(255,212,59,.55) 0 8deg, rgba(255,140,0,.12) 8deg 16deg);
+  animation: prSpin 14s linear infinite;
+}
+.pr-final::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(255,230,140,.5), rgba(11,10,6,.92) 70%); }
+.pr-final img {
+  position: relative; width: min(96vw, 640px); max-width: 100%; border-radius: 16px; box-shadow: 0 0 0 4px #FFD43B, 0 0 40px rgba(255,212,59,.7), 0 20px 40px rgba(0,0,0,.6);
+  animation: prPoster 2.4s cubic-bezier(.2,1.4,.4,1) 7.7s both;
+}
+.pr-final b {
+  position: absolute; bottom: calc(env(safe-area-inset-bottom, 0px) + 12%); left: 16px; right: 16px; text-align: center;
+  font: italic 900 clamp(20px, 6.4vw, 30px)/1.1 var(--f-display); color: #FFD43B; text-transform: uppercase;
+  text-shadow: 0 3px 0 #000, 3px 0 0 #000, -3px 0 0 #000, 0 -3px 0 #000; animation: prFinalCap .6s cubic-bezier(.2,1.5,.4,1) 8.4s both;
+}
+@keyframes prFinal { from { opacity: 0; } to { opacity: 1; } }
+@keyframes prFinalCap { from { opacity: 0; transform: rotate(-12deg) scale(.3); } to { opacity: 1; transform: rotate(-3deg) scale(1); } }
+@keyframes prPoster { 0% { transform: scale(.3) rotate(-8deg); } 60% { transform: scale(1.06) rotate(1.5deg); } 100% { transform: scale(1) rotate(0); } }
+@keyframes prSpin { to { transform: rotate(360deg); } }
+.pr-x {
+  position: absolute; top: calc(env(safe-area-inset-top, 0px) + 14px); right: 14px; z-index: 4;
+  min-height: 40px; padding: 0 16px; border-radius: 99px; background: rgba(0,0,0,.55); color: #fff; font-weight: 800; font-size: 14px;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.6); opacity: 0; animation: prFinal .4s ease-out 4s both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -874,6 +951,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     </div></div>
     <div class="dock">
       <div class="sum" id="rolesSum"></div>
+      <button class="pill wide ghost" id="promoBtn" hidden>показать рекламу всем</button>
       <button class="pill wide" id="toDeal">раздать карты</button>
       <div class="row-btns">
         <button class="linkish" id="backStep">← Назад</button>
@@ -991,7 +1069,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261023135445"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261024043558"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1543,6 +1621,9 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     else sum.textContent = `${n} мест: ${u} ${plural(u, "роль", "роли", "ролей")} + ${civ} ${plural(civ, "мирный", "мирных", "мирных")}`;
     $("toDeal").disabled = civ < 0;
     $("toDeal").textContent = online() ? "разослать карты" : "раздать карты";
+    $("promoBtn").hidden = !online();
+    $("promoBtn").disabled = !!S.on.promoSent;
+    $("promoBtn").textContent = S.on.promoSent ? "реклама показана ✓" : "показать рекламу всем";
   };
   $("rolesList").onclick = (e) => {
     const c = ctx().counts, t = e.target.closest("button"); if (!t) return;
@@ -1621,7 +1702,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       });
       const { error: e2 } = await sb.from("seats").insert(rows);
       if (e2) { await sb.from("games").delete().eq("id", g.id); throw e2; }
-      S.on.gameId = g.id; live.showRoles = false; save(); syncNotesGame();
+      S.on.gameId = g.id; S.on.promoSent = false; live.showRoles = false; save(); syncNotesGame();
       sb.functions.invoke("tg", { body: { action: "notify", game_id: g.id } }).catch(() => {});
       go("host"); toast("Карты разлетелись по телефонам");
     } catch (x) { toast("Не получилось разослать: " + humanErr(x)); }
@@ -1877,6 +1958,55 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     renderCard();
   });
 
+  /* ---------- sponsor promo, played once right before the deal ---------- */
+  const PROMO_IMG = "ads/ruslan.webp";
+  let promoEl = null, promoT = 0;
+  const closePromo = () => {
+    clearTimeout(promoT);
+    if (!promoEl) return;
+    const el = promoEl; promoEl = null;
+    el.classList.add("out"); setTimeout(() => el.remove(), 460);
+  };
+  const playPromo = () => {
+    if (promoEl) return;
+    hideAd();
+    const hearts = [[18, 52, 3.4], [26, 60, 3.7], [12, 64, 4.0], [22, 48, 4.4], [80, 52, 5.8], [72, 60, 6.1], [86, 64, 6.4], [76, 48, 6.8]]
+      .map(([x, y, d]) => `<i style="left:${x}%;top:${y}%;animation-delay:${d}s">♥</i>`).join("");
+    promoEl = document.createElement("div");
+    promoEl.className = "promo"; promoEl.setAttribute("role", "dialog"); promoEl.setAttribute("aria-label", "Реклама: Руслан — лучший мужчина дачи");
+    promoEl.innerHTML = `<div class="pr-shake"><img class="pr-cover" src="${PROMO_IMG}" alt=""></div>
+      <div class="pr-hearts">${hearts}</div>
+      <div class="pr-final"><div class="pr-rays"></div><img src="${PROMO_IMG}" alt="Руслан — лучший мужчина дачи"><b>Реклама одобрена бицепсом</b></div>
+      <div class="pr-flash"></div>
+      <span class="pr-stamp">Реклама</span>
+      <p class="pr-cap pr-c1">Это не он качается.<br><em>Это дача качается</em> от него</p>
+      <p class="pr-cap pr-c2">Мангал поднимает <em>одной левой</em></p>
+      <p class="pr-cap pr-c3">Кабачки растут быстрее, <em>когда он рядом</em></p>
+      <button class="pr-x" type="button">закрыть</button>`;
+    promoEl.querySelector(".pr-x").onclick = closePromo;
+    document.body.append(promoEl);
+    try { navigator.vibrate?.([60, 80, 60, 80, 60]); } catch {}
+    haptic("card");
+    promoT = setTimeout(closePromo, 12500);
+  };
+  // host: send the promo to everyone picked for this deal (and play it here too)
+  $("promoBtn").onclick = async () => {
+    if (!sb || !me || !canHost() || S.on.promoSent) return;
+    const targets = S.on.lineup.filter((x) => x.u).map((x) => x.u);
+    $("promoBtn").disabled = true;
+    const { error } = await sb.from("promos").insert({ created_by: me.id, kind: "ruslan", targets });
+    if (error) { $("promoBtn").disabled = false; return toast("Не получилось: " + humanErr(error)); }
+    S.on.promoSent = true; save(); renderRoles();
+    toast("Реклама полетела на телефоны");
+    playPromo();
+  };
+  const onPromo = (row) => {
+    if (!row || !me || row.created_by === me.id) return;
+    if (row.targets?.length && !row.targets.includes(me.id)) return;
+    if (Date.now() - new Date(row.created_at).getTime() > 120000) return;
+    playPromo();
+  };
+
   let mineChan = null;
   const subscribeMine = () => {
     if (mineChan) sb.removeChannel(mineChan);
@@ -1890,6 +2020,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         if (["home", "card", "profile", "people", "player", "events"].includes(S.view)) go("card");
         else toast("Пришла твоя карта", { label: "открыть", run: () => go("card") });
       })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "promos" }, (p) => onPromo(p.new))
       .subscribe();
   };
   // fallback when the phone slept and the socket dropped
@@ -2335,6 +2466,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     loadMyCard();
     loadPeople().then(() => { if (S.view === "home") renderHome(); });
     loadEvents().then(drawHomeEvent).catch(() => {});
+    new Image().src = PROMO_IMG;
     subscribeEvents();
     if (!S.on.gameId) {
       const { data } = await sb.from("games").select("id").eq("host_id", me.id).eq("status", "live").order("created_at", { ascending: false }).limit(1);

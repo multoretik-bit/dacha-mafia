@@ -202,3 +202,22 @@ language sql stable security definer set search_path = public as $$
     and p.event_id = any(evs)
     and (p.confirmed_at is not null or (p.method = 'qr' and p.claimed_at is not null and p.rejected_at is null));
 $$;
+
+-- sponsor promo a host plays on every player's phone right before dealing
+create table if not exists public.promos (
+  id bigint generated always as identity primary key,
+  created_by uuid not null references public.profiles (id) on delete cascade,
+  kind text not null default 'ruslan',
+  targets uuid[] not null default '{}',
+  created_at timestamptz not null default now()
+);
+alter table public.promos enable row level security;
+drop policy if exists "promos readable" on public.promos;
+create policy "promos readable" on public.promos for select to authenticated using (true);
+drop policy if exists "promos by hosts" on public.promos;
+create policy "promos by hosts" on public.promos for insert to authenticated with check (created_by = auth.uid() and public.can_host());
+do $$ begin
+  if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and tablename = 'promos') then
+    alter publication supabase_realtime add table public.promos;
+  end if;
+end $$;
