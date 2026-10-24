@@ -234,6 +234,10 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .pick .ord { font: 600 20px/1 var(--f-code); min-width: 1.4ch; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
 .pick[aria-pressed="true"] { background: var(--blue); border-color: var(--navy); color: #fff; box-shadow: 0 3px 0 0 var(--navy); }
 .pick[aria-pressed="true"] .ord { color: #fff; }
+.pick .nm .signed { display: inline-block; margin-top: 2px; font: 800 9.5px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; color: #1F9D55; opacity: 1; }
+.pick[aria-pressed="true"] .nm .signed { color: #BFF5D2; }
+.pick-quick { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; padding: 0 16px 12px; }
+.pick-quick .pill { margin: 4px 6px 9px; }
 .guest-box { display: grid; gap: 10px; padding: 14px 16px 16px; border-top: 2px solid var(--ink); background: #E9F0F2; }
 .gchips { display: flex; flex-wrap: wrap; gap: 8px; }
 .gchip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 6px 5px 12px; border-radius: 99px; background: var(--ink); color: var(--paper); font-weight: 800; font-size: 13px; }
@@ -886,6 +890,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         <h1 class="h1">Кто из дачников играет?</h1>
         <p class="lead">Отмечай в том порядке, как сидят за столом: это будут номера мест.</p>
       </div>
+      <div class="pick-quick" id="pickQuick" hidden></div>
       <div class="pick-list" id="pickList"></div>
       <div class="empty-note" id="pickEmpty" hidden></div>
       <form class="guest-box" id="guestForm" autocomplete="off">
@@ -1069,7 +1074,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261024043558"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261024064308"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1520,16 +1525,39 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     }
     $("guestForm").hidden = false;
     drawPick();
-    await loadPeople();
-    if (!$("vPick").hidden) drawPick();
+    await Promise.all([loadPeople(), ev.loaded ? null : loadEvents()]);
+    if ($("vPick").hidden) return;
+    // today's sign-ups come in by themselves once, in the order they signed up
+    const t = todayEvent();
+    if (t && t.signups.length && S.on.autoFrom !== t.id && !S.on.lineup.length) {
+      const n = addSignups(t);
+      S.on.autoFrom = t.id; save();
+      if (n) toast(`Добавил ${n} ${plural(n, "записавшегося", "записавшихся", "записавшихся")} на сегодня`);
+    }
+    drawPick();
+  };
+  const todayEvent = () => ev.list.find((e) => e.day === bkkToday() && e.status === "open") || null;
+  const addSignups = (t) => {
+    let n = 0;
+    t.signups.forEach((x) => {
+      if (!people.some((p) => p.id === x.user_id) || S.on.lineup.some((y) => y.u === x.user_id)) return;
+      S.on.lineup.push({ u: x.user_id }); n++;
+    });
+    if (n) S.on.counts = null;
+    return n;
   };
   const drawPick = () => {
     const L = S.on.lineup, list = $("pickList"), empty = $("pickEmpty");
-    const sorted = [...people].sort((a, b) => (a.id === me.id) - (b.id === me.id) || a.nick.localeCompare(b.nick));
+    const t = todayEvent(), signed = new Set((t?.signups || []).map((x) => x.user_id));
+    const sorted = [...people].sort((a, b) => signed.has(b.id) - signed.has(a.id) || (a.id === me.id) - (b.id === me.id) || a.nick.localeCompare(b.nick));
     list.innerHTML = sorted.map((p) => {
       const i = L.findIndex((x) => x.u === p.id);
-      return `<button class="pick" data-u="${p.id}" aria-pressed="${i >= 0}">${avaP(p)}<span class="nm">${esc(p.nick)}${p.id === me.id ? " (ты)" : ""}${tgLine(p) ? `<small>${esc(tgLine(p))}</small>` : ""}</span><span class="ord">${i >= 0 ? i + 1 : ""}</span></button>`;
+      return `<button class="pick" data-u="${p.id}" aria-pressed="${i >= 0}">${avaP(p)}<span class="nm">${esc(p.nick)}${p.id === me.id ? " (ты)" : ""}${tgLine(p) ? `<small>${esc(tgLine(p))}</small>` : ""}${signed.has(p.id) ? `<small class="signed">записан</small>` : ""}</span><span class="ord">${i >= 0 ? i + 1 : ""}</span></button>`;
     }).join("");
+    const q = $("pickQuick"), missing = t ? t.signups.filter((x) => !L.some((y) => y.u === x.user_id)).length : 0;
+    q.hidden = !(t || L.length);
+    q.innerHTML = `${t ? `<button class="pill sm" type="button" data-allsigned ${missing ? "" : "disabled"}>${missing ? `выбрать всех записавшихся (${t.signups.length})` : `все записавшиеся выбраны ✓`}</button>` : ""}
+      ${L.length ? `<button class="linkish" type="button" data-clearpick>снять всех</button>` : ""}`;
     empty.hidden = people.length > 1;
     empty.textContent = "Пока в списке только ты. Скинь друзьям бота @dacha_gay: как только они нажмут «Играть», появятся здесь.";
     $("guestChips").innerHTML = L.map((x, i) => (x.g ? `<span class="gchip"><b>${i + 1}</b>${esc(x.g)}<button type="button" data-rmg="${i}" aria-label="Убрать гостя">×</button></span>` : "")).join("");
@@ -1546,6 +1574,15 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const L = S.on.lineup, i = L.findIndex((x) => x.u === b.dataset.u);
     i >= 0 ? L.splice(i, 1) : L.push({ u: b.dataset.u });
     S.on.counts = null; drawPick(); save();
+  };
+  $("pickQuick").onclick = (e) => {
+    if (e.target.closest("[data-allsigned]")) {
+      const t = todayEvent(); if (!t) return;
+      const n = addSignups(t); save(); drawPick();
+      toast(n ? `Добавил ${n} ${plural(n, "человека", "человек", "человек")}` : "Все записавшиеся уже выбраны");
+    } else if (e.target.closest("[data-clearpick]")) {
+      S.on.lineup = []; S.on.counts = null; save(); drawPick();
+    }
   };
   $("guestChips").onclick = (e) => { const b = e.target.closest("[data-rmg]"); if (b) { S.on.lineup.splice(+b.dataset.rmg, 1); S.on.counts = null; drawPick(); save(); } };
   $("guestForm").onsubmit = (e) => {
