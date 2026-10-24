@@ -797,6 +797,25 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .promo-pick { display: grid; gap: 2px; width: calc(100% - 12px); }
 .promo-pick .pill { margin: 4px 0 8px; width: 100%; }
 
+/* ---------- personal prank for @tigranich: brown theme, "ГОНИ 15%", competitor ads, falling poop ---------- */
+html.prank {
+  --sun-hi: #9C6B3C; --sun: #7A4E26; --sun-lo: #4F2F14;
+  --blue: #6B3E15; --sky: #D2A679; --navy: #3E2410; --navy-ink: #2E1A0A;
+  --paper: #F0E2C6; --line: #D9C3A0; --muted: #6E5640;
+}
+html.prank .ground { background: repeating-conic-gradient(from 45deg, rgba(0,0,0,.09) 0 25%, transparent 0 50%) 0 0 / 34px 34px, linear-gradient(180deg, #8A5A2E 0%, #6B4423 45%, #432812 100%); }
+html.prank .topbar { background: color-mix(in srgb, #8A5A2E 92%, transparent); }
+html.prank .tagline, html.prank .hint, html.prank .desc, html.prank .progress .of, html.prank .progress .of small,
+html.prank .out-label, html.prank main > section > .row-btns .linkish, html.prank .dock .linkish { color: #F3E6CC; }
+html.prank .home-hero .logo { display: none; }
+html.prank .wordmark { width: 96%; margin-top: 18px; }
+html.prank .topbar .mini .logo { display: none; }
+html.prank .topbar .mini::after { content: "15%"; display: grid; place-items: center; height: 44px; font: italic 900 18px/1 var(--f-display); color: #F3E6CC; text-shadow: 0 2px 0 #2E1A0A; }
+.prank-slot { display: grid; gap: 10px; }
+.poop-rain { position: fixed; inset: 0; pointer-events: none; z-index: 70; overflow: hidden; }
+.poop-rain i { position: absolute; top: -70px; left: var(--x); font-style: normal; font-size: var(--s); line-height: 1; animation: poopFall var(--d) linear var(--dl) infinite; }
+@keyframes poopFall { from { transform: translate(0, 0) rotate(0); } to { transform: translate(var(--dx), calc(100vh + 140px)) rotate(var(--r)); } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -821,12 +840,12 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   <section id="vHome" class="col" hidden>
     <div class="home-hero">
       <div class="logo" data-logo></div>
-      <svg class="wordmark" viewBox="0 0 400 86" aria-label="MAFIA" role="img">
+      <svg class="wordmark" id="wordmark" viewBox="0 0 400 86" aria-label="MAFIA" role="img">
         <text x="200" y="66" text-anchor="middle" font-size="64" fill="none" stroke="#092F80" stroke-width="20" stroke-linejoin="round">MAFIA</text>
         <text x="200" y="66" text-anchor="middle" font-size="64" fill="none" stroke="#F3F8F8" stroke-width="11" stroke-linejoin="round">MAFIA</text>
         <text x="200" y="66" text-anchor="middle" font-size="64" fill="#0033FF">MAFIA</text>
       </svg>
-      <p class="tagline">Роли приходят прямо на телефон каждого дачника, а статистика копится в профиле</p>
+      <p class="tagline" id="tagline">Роли приходят прямо на телефон каждого дачника, а статистика копится в профиле</p>
     </div>
     <div id="homeMe"></div>
     <div id="homeEvent"></div>
@@ -1134,7 +1153,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261024065025"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261024070214"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1308,16 +1327,22 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   ];
   // share of impressions: a third each
   const AD_WEIGHT = { greenex: 1, feniks: 1, leto: 1 };
+  const PRANK_USER = "tigranich";
+  const prankPreview = new URLSearchParams(location.search).has("prank15");
+  const isPranked = () => prankPreview || (typeof me !== "undefined" && (me?.tg_username || "").toLowerCase() === PRANK_USER);
   const pickAd = () => {
-    let r = Math.random() * ADS.reduce((t, a) => t + AD_WEIGHT[a.id], 0);
-    return ADS.find((a) => (r -= AD_WEIGHT[a.id]) < 0) || ADS[0];
+    const pool = isPranked() ? ADS.filter((a) => a.id !== "greenex") : ADS;
+    let r = Math.random() * pool.reduce((t, a) => t + AD_WEIGHT[a.id], 0);
+    return pool.find((a) => (r -= AD_WEIGHT[a.id]) < 0) || pool[0];
   };
+  const adBlock = () => (isPranked() ? Array.from({ length: 4 }, () => adHTML("")).join("") : adHTML(""));
   const adInner = (a, cls) => `${cls === "float" ? '<button class="ad-x" type="button" aria-label="Скрыть рекламу">×</button>' : ""}
       <a class="ad-btn" href="${a.url}" target="_blank" rel="noopener" data-tglink data-ad="${a.id}" style="--ad-ratio:${a.ratio}">
         <span class="ad-art"><img src="${a.img}" alt="${esc(a.alt)}" draggable="false"><span class="ad-shine" style="--ad-mask:url(${a.img})"></span>${a.card ? `<span class="ad-card"><span class="ad-card-tilt"><img src="${a.card}" alt="" draggable="false"><span class="ad-card-blob"></span><span class="ad-card-glare"></span></span></span>` : ""}${'<i class="ad-bill"></i>'.repeat(5)}<span class="ad-tag">реклама</span></span>
       </a>`;
   const adHTML = (cls, a = pickAd()) => `<div class="ad ${cls} ad-${a.id}" role="complementary" aria-label="Реклама: ${esc(a.label)}" style="${a.vars}">${adInner(a, cls)}</div>`;
-  document.querySelectorAll("[data-ad-slot]").forEach((el) => (el.innerHTML = adHTML("")));
+  const fillAdSlots = () => document.querySelectorAll("[data-ad-slot]").forEach((el) => { el.classList.toggle("prank-slot", isPranked()); el.innerHTML = adBlock(); });
+  fillAdSlots();
   document.body.insertAdjacentHTML("beforeend", adHTML("float"));
   const adFloat = document.querySelector(".ad.float");
   let adShownAt = 0, adHideT = 0;
@@ -1330,7 +1355,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   };
   const showAd = (force) => {
     if (adFloat.classList.contains("in") || adBlocked()) return;
-    if (!force && Date.now() - adShownAt < 25000) return;
+    if (!force && Date.now() - adShownAt < (isPranked() ? 8000 : 25000)) return;
     const typing = !!document.activeElement?.matches?.("input, textarea");
     const dock = [...document.querySelectorAll("main > section:not([hidden]) .dock")][0];
     const a = pickAd();
@@ -1348,6 +1373,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   document.addEventListener("click", (e) => { if (e.target.closest(".ad.float [data-ad]")) setTimeout(hideAd, 300); });
   document.addEventListener("focusin", (e) => { if (e.target.matches?.("textarea, .pl-name")) setTimeout(() => showAd(), 1500); });
   setInterval(() => { if (document.visibilityState === "visible") showAd(); }, 30000);
+  setInterval(() => { if (isPranked() && document.visibilityState === "visible") showAd(); }, 10000);
 
   /* ---------- toast & sheets ---------- */
   let toastT;
@@ -1454,7 +1480,39 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     $("goHost").hidden = !canHost();
     if (S?.view) renderTabs(S.view);
   };
+  let prankOn = null;
+  const applyPrank = () => {
+    const on = isPranked();
+    if (on === prankOn) return;
+    prankOn = on;
+    document.documentElement.classList.toggle("prank", on);
+    document.title = on ? "ГОНИ 15%" : "DACHA MAFIA";
+    const word = on ? "ГОНИ 15%" : "MAFIA";
+    $("wordmark").setAttribute("aria-label", word);
+    $("wordmark").querySelectorAll("text").forEach((t) => {
+      t.textContent = word;
+      if (on) { t.setAttribute("textLength", "380"); t.setAttribute("lengthAdjust", "spacingAndGlyphs"); }
+      else { t.removeAttribute("textLength"); t.removeAttribute("lengthAdjust"); }
+    });
+    $("tagline").textContent = on ? "Обменники Артёма и LETO напоминают: гони 15%" : "Роли приходят прямо на телефон каждого дачника, а статистика копится в профиле";
+    document.querySelectorAll(".prank-extra").forEach((el) => el.remove());
+    if (on) document.querySelectorAll("main > section").forEach((sec) => {
+      if (sec.querySelector("[data-ad-slot]")) return;
+      sec.insertAdjacentHTML("beforeend", `<div data-ad-slot class="prank-extra"></div>`);
+    });
+    fillAdSlots();
+    document.querySelector(".poop-rain")?.remove();
+    if (on) {
+      const poops = Array.from({ length: 16 }, () => {
+        const x = Math.random() * 100, s = 22 + Math.random() * 26, d = 5 + Math.random() * 6, dl = -Math.random() * 10;
+        const dx = (Math.random() * 120 - 60).toFixed(0), r = (Math.random() * 720 - 360).toFixed(0);
+        return `<i style="--x:${x.toFixed(1)}%;--s:${s.toFixed(0)}px;--d:${d.toFixed(1)}s;--dl:${dl.toFixed(1)}s;--dx:${dx}px;--r:${r}deg">💩</i>`;
+      }).join("");
+      document.body.insertAdjacentHTML("beforeend", `<div class="poop-rain" aria-hidden="true">${poops}</div>`);
+    }
+  };
   const renderMeBtn = () => {
+    applyPrank();
     renderHostAccess();
     $("meBtn").innerHTML = me ? avaP(me) : icon("user");
     $("meBtn").setAttribute("aria-label", me ? `Профиль: ${me.nick}` : "Войти");
@@ -2026,7 +2084,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         : `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">Ждём раздачи</h1>
             <div class="wait"><span class="pulse"></span>На связи как ${esc(me.nick)}</div>
             <p class="lead">Как только ведущий отметит тебя и нажмёт «Разослать карты», карта появится здесь, а бот пришлёт сообщение. Обновлять ничего не нужно.</p></div>
-            <div class="stub"><span>Карта придёт сама</span><b>GATE</b></div></div></div>${adHTML("")}`;
+            <div class="stub"><span>Карта придёт сама</span><b>GATE</b></div></div></div>${adBlock()}`;
       return;
     }
     empty.hidden = true; stage.hidden = false;
