@@ -797,6 +797,41 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .promo-pick { display: grid; gap: 2px; width: calc(100% - 12px); }
 .promo-pick .pill { margin: 4px 0 8px; width: 100%; }
 
+/* ---------- PREMIUM dachnik (@tigranich): gold ring, flying cash, gold badge ---------- */
+.prem { position: relative; display: inline-flex; flex: none; overflow: visible !important; }
+.ev-who:has(.premium) { padding-left: 4px; }
+.ava.premium { box-shadow: 0 0 0 2.5px #FFD54A, 0 0 0 4px #9A6B00, 0 0 14px 3px rgba(255,196,0,.8); animation: premGlow 1.8s ease-in-out infinite; }
+@keyframes premGlow { 50% { box-shadow: 0 0 0 2.5px #FFF1A8, 0 0 0 4px #C08A00, 0 0 22px 6px rgba(255,214,60,.95); } }
+.prem .cash { position: absolute; left: 50%; top: 50%; z-index: 2; font-style: normal; font-size: 13px; line-height: 1; pointer-events: none; opacity: 0; animation: cashFly 2.6s ease-out infinite; }
+.prem .cash:nth-of-type(1) { --dx: -26px; --dy: -24px; --r: -40deg; }
+.prem .cash:nth-of-type(2) { --dx: 26px; --dy: -22px; --r: 35deg; animation-delay: .65s; }
+.prem .cash:nth-of-type(3) { --dx: -22px; --dy: 18px; --r: -25deg; animation-delay: 1.3s; }
+.prem .cash:nth-of-type(4) { --dx: 24px; --dy: 20px; --r: 50deg; animation-delay: 1.95s; }
+@keyframes cashFly { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.3); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.15) rotate(var(--r)); } }
+.ava.lg.premium + .cash, .prem:has(.ava.lg) .cash { font-size: 24px; }
+.prem:has(.ava.lg) .cash:nth-of-type(1) { --dx: -62px; --dy: -50px; } .prem:has(.ava.lg) .cash:nth-of-type(2) { --dx: 64px; --dy: -46px; }
+.prem:has(.ava.lg) .cash:nth-of-type(3) { --dx: -58px; --dy: 44px; } .prem:has(.ava.lg) .cash:nth-of-type(4) { --dx: 60px; --dy: 48px; }
+.prem-badge, .ev-who:has(.premium)::after, .pick:has(.premium) .nm::after, .lb-row:has(.premium) .nm::after, .pl:has(.premium) .pl-who b::after, .me-card:has(.premium) .who b::after, .prof-head:has(.premium) .h1::after, .prow:has(.premium) .hrow b::after, .prem-name::after {
+  content: "PREMIUM"; display: inline-block; vertical-align: middle; margin-left: 6px; padding: 3px 7px 2px; border-radius: 99px;
+  font: 900 9px/1 var(--f-body); letter-spacing: .14em; color: #3A2600; font-style: normal; text-decoration: none;
+  background: linear-gradient(110deg, #B8860B 0%, #FFE27A 35%, #FFF6CF 50%, #FFD54A 65%, #B8860B 100%) 0 0 / 220% 100%;
+  box-shadow: 0 0 0 1px #8A6200, 0 0 8px rgba(255,200,40,.6); animation: premShine 2.4s linear infinite;
+}
+.prof-head:has(.premium) .h1::after { font-size: 11px; padding: 5px 10px 4px; }
+@keyframes premShine { to { background-position: -220% 0; } }
+.ev-who:has(.premium), .pick:has(.premium), .lb-row:has(.premium), .prow:has(.premium) {
+  box-shadow: inset 0 0 0 2px #E8B923, 0 0 12px rgba(255,196,0,.45);
+  background: linear-gradient(135deg, #FFF7D6, #FFE9A0 55%, #FFF7D6) !important; color: #3A2600;
+}
+.pick[aria-pressed="true"]:has(.premium) { background: linear-gradient(135deg, #C99700, #FFD54A 55%, #C99700) !important; border-color: #8A6200; color: #2B1C00; }
+.pick[aria-pressed="true"]:has(.premium) .ord { color: #2B1C00; }
+.pl:has(.premium) { box-shadow: 0 0 0 3px #E8B923, 0 0 18px rgba(255,196,0,.5); }
+.pl:has(.premium) .pl-in { background: linear-gradient(135deg, #FFF7D6, #FFEDB3); }
+.me-card:has(.premium) { background: linear-gradient(135deg, #FFF7D6, #FFE9A0 55%, #FFF7D6); }
+.prem-name { background: linear-gradient(110deg, #9A6B00, #E8B923 45%, #9A6B00); -webkit-background-clip: text; background-clip: text; color: transparent !important; }
+.prem-name::after { -webkit-text-fill-color: #3A2600; }
+.ev-who:has(.premium) { overflow: visible; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -1134,7 +1169,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261024065025"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261024072753"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1255,7 +1290,12 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     return url;
   };
   const ava = (nick, key, extra = "", photo = "") => `<span class="ava ${avaClass(key || nick)} ${extra}">${esc([...(nick || "?")][0])}${photo ? `<img src="${esc(avaSrc(photo))}" data-ava="${esc(photo)}" alt="" decoding="sync" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}</span>`;
-  const avaP = (p, extra = "") => ava(p?.nick, p?.id, extra, p?.tg_photo);
+  const PREMIUM_USERS = ["tigranich"];
+  const isPremium = (p) => PREMIUM_USERS.includes((p?.tg_username || "").toLowerCase());
+  const CASH = '<i class="cash">💵</i><i class="cash">💸</i><i class="cash">💵</i><i class="cash">💰</i>';
+  const avaP = (p, extra = "") => isPremium(p)
+    ? `<span class="prem">${ava(p?.nick, p?.id, extra + " premium", p?.tg_photo)}${CASH}</span>`
+    : ava(p?.nick, p?.id, extra, p?.tg_photo);
   const canHost = () => !!me?.canHost;
   const tgLine = (p) => (p?.tg_username ? "@" + p.tg_username : p?.tg_name || "");
   const humanErr = (e) => {
@@ -1840,7 +1880,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         ? `<span class="tag ${s.seen_at ? "ok" : ""}">${s.seen_at ? "посмотрел" : "ждёт"}</span>`
         : `<button class="tag btn" data-guest="${s.id}">${s.seen_at ? "ещё раз" : "показать"}</button>`;
       return `<div class="srow"><span class="seat">${pad(s.seat)}</span>
-        <div style="min-width:0"><div class="nm">${esc(seatName(s))}</div>
+        <div style="min-width:0"><div class="nm ${isPremium(s.profiles) ? "prem-name" : ""}">${esc(seatName(s))}</div>
         <div class="sub">${s.user_id ? (s.profiles?.tg_username ? esc("@" + s.profiles.tg_username) + " · " : "") : "гость · "}${live.showRoles ? `<span class="dot team-${r.team}" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span>${esc(r.name)}` : "роль скрыта"}</div></div>
         ${status}</div>`;
     }).join("");
@@ -2523,7 +2563,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     el.innerHTML = `<div class="pl-in">
       <div class="pl-badge"></div>
       <div class="pl-main">
-        <div class="pl-who">${ava(p.name, p.uid || p.name, "", p.photo)}<div><b>${esc(p.name)}</b><small>${esc([p.self ? "это ты" : "", p.handle].filter(Boolean).join(" · "))}</small></div></div>
+        <div class="pl-who">${avaP({ nick: p.name, id: p.uid || p.name, tg_photo: p.photo, tg_username: (p.handle || "").replace(/^@/, "") })}<div><b>${esc(p.name)}</b><small>${esc([p.self ? "это ты" : "", p.handle].filter(Boolean).join(" · "))}</small></div></div>
         <div class="trust" role="group" aria-label="Доверие">
           <button data-c="gray" aria-label="Серый: не знаю"><i></i></button>
           <button data-c="black" aria-label="Чёрный: мафия"><i></i></button>
