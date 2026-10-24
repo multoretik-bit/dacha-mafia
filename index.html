@@ -844,6 +844,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .bc-note i:nth-child(2) { animation-delay: .3s; }
 @keyframes bcNote { to { transform: translateY(-4px) rotate(12deg); } }
 .bc-bar { position: absolute; left: 0; bottom: 0; height: 4px; z-index: 3; background: linear-gradient(90deg, #FF2E88, #FFD43B); width: 0; }
+.bc-play.bc-play-sm { top: calc(env(safe-area-inset-top, 0px) + 66px); transform: translateX(-50%); min-height: 46px; font-size: 14px; padding: 0 18px; white-space: nowrap; }
 .bc-play {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 5;
   min-height: 64px; padding: 0 26px; border-radius: 99px; background: #FF2E88; color: #fff;
@@ -1188,7 +1189,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261024073406"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261024074549"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1367,16 +1368,25 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   ];
   // share of impressions: a third each
   const AD_WEIGHT = { greenex: 1, feniks: 1, leto: 1 };
+  // an advertiser sees only his own ad
+  const OWN_AD = { tigranich: "greenex" };
+  const adPool = () => { const own = OWN_AD[(me?.tg_username || "").toLowerCase()]; return own ? ADS.filter((a) => a.id === own) : ADS; };
   const pickAd = () => {
-    let r = Math.random() * ADS.reduce((t, a) => t + AD_WEIGHT[a.id], 0);
-    return ADS.find((a) => (r -= AD_WEIGHT[a.id]) < 0) || ADS[0];
+    const pool = adPool();
+    let r = Math.random() * pool.reduce((t, a) => t + AD_WEIGHT[a.id], 0);
+    return pool.find((a) => (r -= AD_WEIGHT[a.id]) < 0) || pool[0];
   };
   const adInner = (a, cls) => `${cls === "float" ? '<button class="ad-x" type="button" aria-label="Скрыть рекламу">×</button>' : ""}
       <a class="ad-btn" href="${a.url}" target="_blank" rel="noopener" data-tglink data-ad="${a.id}" style="--ad-ratio:${a.ratio}">
         <span class="ad-art"><img src="${a.img}" alt="${esc(a.alt)}" draggable="false"><span class="ad-shine" style="--ad-mask:url(${a.img})"></span>${a.card ? `<span class="ad-card"><span class="ad-card-tilt"><img src="${a.card}" alt="" draggable="false"><span class="ad-card-blob"></span><span class="ad-card-glare"></span></span></span>` : ""}${'<i class="ad-bill"></i>'.repeat(5)}<span class="ad-tag">реклама</span></span>
       </a>`;
   const adHTML = (cls, a = pickAd()) => `<div class="ad ${cls} ad-${a.id}" role="complementary" aria-label="Реклама: ${esc(a.label)}" style="${a.vars}">${adInner(a, cls)}</div>`;
-  document.querySelectorAll("[data-ad-slot]").forEach((el) => (el.innerHTML = adHTML("")));
+  let adPoolKey = "";
+  const fillAdSlots = () => {
+    adPoolKey = adPool().map((a) => a.id).join();
+    document.querySelectorAll("[data-ad-slot]").forEach((el) => (el.innerHTML = adHTML("")));
+  };
+  fillAdSlots();
   document.body.insertAdjacentHTML("beforeend", adHTML("float"));
   const adFloat = document.querySelector(".ad.float");
   let adShownAt = 0, adHideT = 0;
@@ -1514,6 +1524,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (S?.view) renderTabs(S.view);
   };
   const renderMeBtn = () => {
+    if (adPool().map((a) => a.id).join() !== adPoolKey) fillAdSlots();
     renderHostAccess();
     $("meBtn").innerHTML = me ? avaP(me) : icon("user");
     $("meBtn").setAttribute("aria-label", me ? `Профиль: ${me.nick}` : "Войти");
@@ -2118,7 +2129,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   /* ---------- sponsor promos before the deal: each one plays once per game day ---------- */
   const PROMO_IMG = "ads/ruslan.webp";
   const PROMOS = {
-    ruslan: { title: "Руслан — лучший мужчина дачи", img: "ads/ruslan.webp", cls: "", html: () => {
+    ruslan: { title: "Руслан — лучший мужчина дачи", img: "ads/ruslan.webp", cls: "", song: "ads/ruslan-theme.mp3", html: () => {
       const hearts = [[18, 52, 3.4], [26, 60, 3.7], [12, 64, 4.0], [22, 48, 4.4], [80, 52, 5.8], [72, 60, 6.1], [86, 64, 6.4], [76, 48, 6.8]]
         .map(([x, y, d]) => `<i style="left:${x}%;top:${y}%;animation-delay:${d}s">♥</i>`).join("");
       return `<div class="pr-shake"><img class="pr-cover" src="ads/ruslan.webp" alt=""></div>
@@ -2130,7 +2141,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         <p class="pr-cap pr-c2">Мангал поднимает <em>одной левой</em></p>
         <p class="pr-cap pr-c3">Кабачки растут быстрее, <em>когда он рядом</em></p>`;
     } },
-    boss: { title: "Когда ты глава Мафий", img: "ads/boss.webp", cls: "boss", html: () => {
+    boss: { title: "Когда ты глава Мафий", img: "ads/boss.webp", cls: "boss", song: "ads/boss-theme.mp3", html: () => {
       const smoke = `<span class="bs-smoke" style="--sx:27.5%;--sy:61.5%"><i></i><i></i><i></i><i></i></span>`;
       const glints = `<span class="bs-glint" style="--gx:37%;--gy:40%"></span><span class="bs-glint" style="--gx:67%;--gy:39%;animation-delay:1.3s"></span>`;
       return `<div class="bs-hit"><div class="bs-cam"><img src="ads/boss.webp" alt="">${smoke}</div></div>
@@ -2143,28 +2154,31 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         <p class="bs-cap bs-c2"><em>Мафия играет в него</em></p>
         <p class="bs-cap bs-c3">Комиссар проверил его один раз.<br>Больше комиссара <em>никто не видел</em></p>`;
     } },
-    beach: { title: "Summer Squad под Tigran Champion", img: "ads/beach.jpg", cls: "beach", music: true, html: () =>
+    beach: { title: "Summer Squad под Tigran Champion", img: "ads/beach.jpg", cls: "beach", music: true, song: "ads/tigran-champion.mp3", html: () =>
       `<video class="bc-video" src="ads/beach.mp4" poster="ads/beach.jpg" muted playsinline webkit-playsinline preload="auto"></video>
         <span class="pr-stamp">Реклама</span>
         <span class="bc-note"><i>♪</i><i>♫</i> Tigran Champion</span>
         <span class="bc-bar"></span>` },
   };
-  // the promo song is unlocked on the first tap so it can start later without one (iOS needs this)
-  const promoSong = new Audio("ads/tigran-champion.mp3");
-  promoSong.preload = "auto";
-  let songUnlocked = false;
+  // promo songs are unlocked on the first tap so they can start later without one (iOS needs this)
+  const SONGS = {};
+  const songFor = (src) => SONGS[src] || (SONGS[src] = Object.assign(new Audio(src), { preload: "auto" }));
+  Object.values(PROMOS).forEach((pr) => pr.song && songFor(pr.song));
+  let promoSong = null, songUnlocked = false;
   document.addEventListener("pointerdown", () => {
     if (songUnlocked) return;
     songUnlocked = true;
-    promoSong.muted = true;
-    promoSong.play().then(() => { promoSong.pause(); promoSong.currentTime = 0; promoSong.muted = false; }).catch(() => { promoSong.muted = false; songUnlocked = false; });
+    Object.values(SONGS).forEach((a) => {
+      a.muted = true;
+      a.play().then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; songUnlocked = false; });
+    });
   }, { passive: true });
   let promoEl = null, promoT = 0, promoDone = null;
   const closePromo = () => {
     clearTimeout(promoT);
     if (!promoEl) return;
     const el = promoEl, done = promoDone; promoEl = null; promoDone = null;
-    try { promoSong.pause(); promoSong.currentTime = 0; } catch {}
+    try { if (promoSong) { promoSong.pause(); promoSong.currentTime = 0; promoSong.onended = null; } } catch {}
     el.querySelector("video")?.pause();
     el.classList.add("out"); setTimeout(() => el.remove(), 460);
     if (done) setTimeout(done, 300);
@@ -2181,7 +2195,19 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     document.body.append(promoEl);
     try { navigator.vibrate?.([60, 80, 60, 80, 60]); } catch {}
     haptic("card");
-    if (!pr.music) { promoT = setTimeout(closePromo, 12500); return; }
+    promoSong = pr.song ? songFor(pr.song) : null;
+    if (!pr.music) {
+      promoT = setTimeout(closePromo, 12500);
+      if (!promoSong) return;
+      const el = promoEl, song = promoSong;
+      song.currentTime = 0;
+      song.play().catch(() => {
+        // sound blocked: a small button turns it on, the animation keeps going
+        el.insertAdjacentHTML("beforeend", `<button class="bc-play bc-play-sm" type="button">🔊 включить звук</button>`);
+        el.querySelector(".bc-play").onclick = () => song.play().then(() => el.querySelector(".bc-play")?.remove()).catch(() => {});
+      });
+      return;
+    }
     const vid = promoEl.querySelector("video"), bar = promoEl.querySelector(".bc-bar"), el = promoEl;
     vid.play().catch(() => {});
     const start = () => {
