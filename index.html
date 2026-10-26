@@ -967,7 +967,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   <section id="vEvents" class="col" hidden>
     <div class="ticket"><div class="ticket-in">
       <div class="t-body" style="padding-bottom:16px">
-        <div class="eyebrow">Субботы на даче</div>
+        <div class="eyebrow">Мафия на даче</div>
         <h1 class="h1" id="evTitle">Записаться на мафию</h1>
         <p class="lead" id="evLead">Выбери дату и нажми «Я буду». Все увидят, кто идёт.</p>
       </div>
@@ -1194,7 +1194,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261024171210"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261026083522"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2370,7 +2370,10 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const MON_FULL = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
   const bkkToday = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Bangkok" }).format(new Date());
   const hm = (t) => String(t || "").slice(0, 5);
-  const dayParts = (iso) => { const [y, m, d] = iso.split("-").map(Number); return { d, m, y }; };
+  const DOW = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+  const DOW_FULL = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+  const DOW_CODE = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const dayParts = (iso) => { const [y, m, d] = iso.split("-").map(Number); const w = new Date(Date.UTC(y, m - 1, d)).getUTCDay(); return { d, m, y, w }; };
   const ev = { list: [], pays: {}, set: null, chan: null, editing: null, loaded: false };
   const isMine = (e) => [...e.signups, ...(e.hosts || [])].some((x) => x.user_id === me.id);
   const hostsLine = (e) => `<div class="ev-hosts"><span class="eyebrow">${(e.hosts || []).length > 1 ? "Ведущие" : "Ведущий"}</span>${(e.hosts || []).length
@@ -2421,7 +2424,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const { d, m } = dayParts(e.day), mine = isMine(e);
     const crew = e.signups.map((x) => whoChip(e, x)).join("");
     box.innerHTML = `<article class="ticket ev is-next" data-ev="${e.id}"><div class="ticket-in">
-      <div class="ev-head"><div class="ev-date"><small>сб</small><b>${d}</b><small>${MON[m - 1]}</small></div>
+      <div class="ev-head"><div class="ev-date"><small>${DOW[dayParts(e.day).w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
         <div style="min-width:0"><div class="eyebrow">Следующая игра</div>
           <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
           ${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
@@ -2485,7 +2488,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     }).join("");
     box.innerHTML = `<div class="ev-days" role="group" aria-label="Выбор субботы">${days}</div>
       <article class="ticket ev is-next ${off ? "is-cancelled" : ""}" data-ev="${e.id}"><div class="ticket-in">
-        <div class="ev-head"><div class="ev-date"><small>сб</small><b>${d}</b><small>${MON[m - 1]}</small></div>
+        <div class="ev-head"><div class="ev-date"><small>${DOW[dayParts(e.day).w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
           <div style="min-width:0"><div class="eyebrow">${off ? "Игра отменена" : "Для ведущего"}</div>
             <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
             ${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
@@ -2504,9 +2507,9 @@ a.pill { text-decoration: none; box-sizing: border-box; }
           <span><b>${ps.length * e.price}</b>฿ ждём всего</span>
         </div>
         <div class="sec-label eyebrow">Кто придёт</div>
-        ${rows || `<div class="empty-note">На эту субботу пока никто не записался.</div>`}
+        ${rows || `<div class="empty-note">На эту игру пока никто не записался.</div>`}
         ${editHTML(e)}
-        <div class="stub"><span>Суббота, ${d} ${MON_FULL[m - 1]}</span><b>SAT ${pad(d)}.${pad(m)}</b></div>
+        <div class="stub"><span>${DOW_FULL[dayParts(e.day).w]}, ${d} ${MON_FULL[m - 1]}</span><b>${DOW_CODE[dayParts(e.day).w]} ${pad(d)}.${pad(m)}</b></div>
       </div></article>`;
     drawPaySettings();
   };
@@ -2515,14 +2518,14 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     $("evTitle").textContent = canHost() ? "Запись и оплата" : "Записаться на мафию";
     $("evLead").textContent = canHost() ? "Выбери субботу: кто придёт, как платит и от кого ты получил деньги." : "Выбери дату и нажми «Я буду». Все увидят, кто идёт.";
     if (ev.list.length && canHost()) return drawHostEvents();
-    if (!ev.list.length) { box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">Ближайших суббот пока нет.</p></div></div></div>`; return; }
+    if (!ev.list.length) { box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">Ближайших игр пока нет.</p></div></div></div>`; return; }
     const nextId = ev.list.find((x) => x.status === "open")?.id;
     box.innerHTML = ev.list.map((e) => {
       const { d, m } = dayParts(e.day), off = e.status !== "open", mine = isMine(e);
       const crew = e.signups.map((x) => whoChip(e, x)).join("");
       return `<article class="ticket ev ${off ? "is-cancelled" : ""} ${e.id === nextId ? "is-next" : ""}" data-ev="${e.id}"><div class="ticket-in">
-        <div class="ev-head"><div class="ev-date"><small>сб</small><b>${d}</b><small>${MON[m - 1]}</small></div>
-          <div style="min-width:0"><div class="eyebrow">${off ? "Игра отменена" : e.id === nextId ? "Ближайшая игра" : "Суббота"}</div>
+        <div class="ev-head"><div class="ev-date"><small>${DOW[dayParts(e.day).w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
+          <div style="min-width:0"><div class="eyebrow">${off ? "Игра отменена" : e.id === nextId ? "Ближайшая игра" : DOW_FULL[dayParts(e.day).w]}</div>
             <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
             ${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
         ${hostsLine(e)}
@@ -2530,7 +2533,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         <div class="ev-act">${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span><button class="linkish" data-leave>не смогу</button>` : `<button class="pill sm" data-join ${off ? "disabled" : ""}>${canHost() ? "я веду" : "я буду"}</button>`}
           <span class="ev-count">идут: ${e.signups.length}${paidCount(e) ? ` · <b>оплатили: ${paidCount(e)}</b>` : ""}</span></div>
         ${mine && !off && !canHost() ? payBlock(e) : ""}
-        <div class="stub"><span>Суббота, ${d} ${MON_FULL[m - 1]}</span><b>SAT ${pad(d)}.${pad(m)}</b></div>
+        <div class="stub"><span>${DOW_FULL[dayParts(e.day).w]}, ${d} ${MON_FULL[m - 1]}</span><b>${DOW_CODE[dayParts(e.day).w]} ${pad(d)}.${pad(m)}</b></div>
       </div></article>`;
     }).join("");
     drawPaySettings();
@@ -2606,8 +2609,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const card = e.target.closest("[data-ev]"); if (!card) return;
     const id = card.dataset.ev, b = e.target.closest("button"); if (!b) return;
     const event = ev.list.find((x) => x.id === id);
-    if (b.hasAttribute("data-join")) { haptic("tap"); evAction(() => sb.from("signups").insert({ event_id: id, user_id: me.id }), "Записал тебя на субботу"); }
-    else if (b.hasAttribute("data-leave")) sheet({ eyebrow: "Запись", title: "Не сможешь прийти?", text: "Запись на эту субботу отменится. Если ты уже перевёл деньги, скажи ведущему.", ok: "отменить запись",
+    if (b.hasAttribute("data-join")) { haptic("tap"); evAction(() => sb.from("signups").insert({ event_id: id, user_id: me.id }), "Записал тебя на игру"); }
+    else if (b.hasAttribute("data-leave")) sheet({ eyebrow: "Запись", title: "Не сможешь прийти?", text: "Запись на эту игру отменится. Если ты уже перевёл деньги, скажи ведущему.", ok: "отменить запись",
       onOk: () => evAction(() => sb.from("signups").delete().eq("event_id", id).eq("user_id", me.id), "Запись отменена") });
     else if (b.dataset.m) evAction(() => sb.rpc("set_payment", { e: id, m: b.dataset.m, claimed: false }));
     else if (b.hasAttribute("data-qrdl")) downloadQR();
@@ -2624,7 +2627,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       const { error } = await sb.from("signups").insert({ event_id: card.dataset.ev, user_id: me.id });
       if (error) return toast("Не получилось: " + humanErr(error));
       await loadEvents(); drawHomeEvent();
-      toast("Записал тебя на субботу", { label: "оплатить", run: () => go("events") });
+      toast("Записал тебя на игру", { label: "оплатить", run: () => go("events") });
     }
   });
   $("eventsList").addEventListener("submit", (e) => {
