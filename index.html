@@ -1194,7 +1194,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261026083522"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261026084445"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2813,7 +2813,9 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (S.on.phase === "roles" && !S.on.counts) S.on.phase = "pick";
     renderMeBtn();
     let startView = S.view === "auth" || S.view === "profile" || S.view === "people" ? "home" : S.view || "home";
-    if (new URLSearchParams(location.search).get("v") === "card" || tg?.initDataUnsafe?.start_param === "card") startView = "card";
+    const deep = new URLSearchParams(location.search).get("v") || tg?.initDataUnsafe?.start_param || "";
+    if (deep === "card") startView = "card";
+    if (deep === "events") startView = "events";
     if (inTG) {
       try { tg?.ready(); tg?.expand(); tg?.setHeaderColor?.("#FFDD86"); tg?.setBackgroundColor?.("#FEC948"); tg?.setBottomBarColor?.("#E2A612"); tg?.disableVerticalSwipes?.(); } catch {}
     }
