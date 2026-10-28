@@ -954,6 +954,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     <div data-ad-slot></div>
     <div class="row-btns" style="margin-top:6px">
       <button class="pill ghost" id="goPeople">дачники</button>
+      <button class="pill dark" id="goAnnounce" hidden>сделать анонс</button>
     </div>
   </section>
 
@@ -1231,7 +1232,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261028090250"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261028112826"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1581,6 +1582,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 
   /* ---------- home ---------- */
   const renderHome = () => {
+    $("goAnnounce").hidden = !canGrant;
     drawGameOn();
     drawHomeEvent();
     const box = $("homeMe");
@@ -2534,6 +2536,70 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     }
     save(); refreshCardUI(); drawGameOn();
   };
+  /* ---------- announcements through the bot (@tivishka only) ---------- */
+  const AN_DRAFT = "dachaMafia.announce";
+  const openAnnounce = () => {
+    if (!canGrant) return;
+    let file = null, uploaded = "", withBtn = true, busy = false;
+    const v = document.createElement("div");
+    v.className = "veil full";
+    v.innerHTML = `<div class="ticket seat-sheet" role="dialog" aria-modal="true" aria-label="Сделать анонс"><div class="ticket-in"><div class="t-body">
+      <div class="eyebrow">Анонс через @dacha_gay · ${people.length || "все"} дачников</div>
+      <h2 class="h1">Сделать анонс</h2>
+      <textarea class="field" id="anText" maxlength="4000" placeholder="Текст анонса: дата, время, место, ведущий…" style="min-height:190px;resize:vertical;font-weight:600"></textarea>
+      <input type="file" id="anFile" accept="image/png,image/jpeg,image/webp" hidden>
+      <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ghost" type="button" data-an="pic">добавить картинку</button><button class="linkish" type="button" data-an="nopic" hidden>убрать картинку</button></div>
+      <img id="anPrev" alt="Картинка анонса" hidden style="max-width:100%;border-radius:12px;box-shadow:0 0 0 2px var(--ink)">
+      <button class="toggle-row" type="button" data-an="btn" role="switch" aria-checked="true" style="border:2px solid var(--ink);border-radius:14px"><div><b>Кнопка «Записаться на игру»</b><span>Под постом, открывает запись в приложении</span></div><i class="switch on"></i></button>
+      <p class="err" id="anErr" role="alert"></p>
+      <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ghost" type="button" data-an="test">отправить себе</button><button class="pill sm" type="button" data-an="all">разослать всем</button><button class="linkish" type="button" data-an="close">закрыть</button></div>
+    </div></div></div>`;
+    document.body.append(v);
+    const ta = v.querySelector("#anText");
+    try { ta.value = localStorage.getItem(AN_DRAFT) || ""; } catch {}
+    ta.addEventListener("input", () => { try { localStorage.setItem(AN_DRAFT, ta.value); } catch {} });
+    v.querySelector("#anFile").addEventListener("change", (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      if (f.size > 8 * 1024 * 1024) return toast("Картинка больше 8 МБ");
+      file = f; uploaded = "";
+      const img = v.querySelector("#anPrev"); img.src = URL.createObjectURL(f); img.hidden = false;
+      v.querySelector('[data-an="nopic"]').hidden = false;
+    });
+    const send = async (test) => {
+      if (busy) return;
+      const text = ta.value.trim(), err = v.querySelector("#anErr");
+      if (!text && !file) { err.textContent = "Напиши текст или добавь картинку"; return; }
+      busy = true; err.textContent = "";
+      const btn = v.querySelector(`[data-an="${test ? "test" : "all"}"]`), label = btn.textContent;
+      btn.disabled = true; btn.textContent = "отправляю…";
+      try {
+        if (file && !uploaded) {
+          const path = `a-${Date.now()}.${(file.type.split("/")[1] || "png").replace("jpeg", "jpg")}`;
+          const up = await sb.storage.from("announce").upload(path, file, { contentType: file.type, cacheControl: "31536000" });
+          if (up.error) throw up.error;
+          uploaded = sb.storage.from("announce").getPublicUrl(path).data.publicUrl;
+        }
+        const { data, error } = await sb.functions.invoke("tg", { body: { action: "broadcast", text, photo_url: uploaded || null, button: withBtn, test } });
+        if (error || data?.error) throw new Error(data?.error || error.message);
+        if (test) toast(data.sent ? "Анонс пришёл тебе в Telegram" : "Не дошло: открой чат с ботом и нажми Start");
+        else { toast(`Отправлено ${data.sent} из ${data.total}`); try { localStorage.removeItem(AN_DRAFT); } catch {} v.remove(); }
+      } catch (x) { err.textContent = "Не получилось: " + humanErr(x); }
+      finally { busy = false; btn.disabled = false; btn.textContent = label; }
+    };
+    v.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-an]"); if (!b) return;
+      const k = b.dataset.an;
+      if (k === "pic") v.querySelector("#anFile").click();
+      else if (k === "nopic") { file = null; uploaded = ""; v.querySelector("#anPrev").hidden = true; b.hidden = true; }
+      else if (k === "btn") { withBtn = !withBtn; b.setAttribute("aria-checked", withBtn); b.querySelector(".switch").classList.toggle("on", withBtn); }
+      else if (k === "close") v.remove();
+      else if (k === "test") send(true);
+      else if (k === "all") sheet({ eyebrow: "Анонс", title: "Разослать всем дачникам?", text: "Пост придёт в Telegram каждому, кто открывал бота. Отменить рассылку будет нельзя.", ok: "разослать", onOk: () => send(false) });
+    });
+    ta.focus();
+  };
+  $("goAnnounce").onclick = openAnnounce;
+
   let mineChan = null;
   const subscribeMine = () => {
     if (mineChan) sb.removeChannel(mineChan);

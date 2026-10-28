@@ -108,3 +108,10 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.game_roster(uuid) from public, anon;
 grant execute on function public.game_roster(uuid) to authenticated;
+
+-- announcements: @tivishka writes a post in the app, the tg function sends it through the bot
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('announce', 'announce', true, 8388608, array['image/jpeg', 'image/png', 'image/webp'])
+on conflict (id) do update set public = true;
+drop policy if exists "admin uploads announce images" on storage.objects;
+create policy "admin uploads announce images" on storage.objects for insert to authenticated with check (bucket_id = 'announce' and public.can_grant_premium());

@@ -121,6 +121,44 @@ async function notify(req: Request, gameId: string) {
   return json({ sent });
 }
 
+// announcement from @tivishka: plain text, optional photo URL, optional "sign up" button; test = only to the sender
+async function broadcast(req: Request, body: any) {
+  const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const { data: { user } } = await admin.auth.getUser(jwt);
+  if (!user) return json({ error: "Нужно войти" }, 401);
+  const { data: me } = await admin.from("profiles").select("tg_id,tg_username").eq("id", user.id).maybeSingle();
+  if ((me?.tg_username || "").toLowerCase() !== "tivishka") return json({ error: "Анонсы делает только @tivishka" }, 403);
+  const text = String(body.text || "").trim().slice(0, 4000);
+  const photo = typeof body.photo_url === "string" && body.photo_url.startsWith(SB_URL + "/storage/v1/object/public/announce/") ? body.photo_url : null;
+  if (!text && !photo) return json({ error: "Пустой анонс" }, 400);
+  const markup = body.button ? { inline_keyboard: [[{ text: "Записаться на игру", web_app: { url: APP + "?v=events" } }]] } : undefined;
+  let chats: number[];
+  if (body.test) chats = [me!.tg_id];
+  else {
+    const { data } = await admin.from("profiles").select("tg_id").not("tg_id", "is", null);
+    chats = (data || []).map((r: any) => r.tg_id).filter((id: number) => !(id >= 990000000 && id <= 990000099));
+  }
+  let sent = 0;
+  const failed: Record<string, number> = {};
+  let fileId: string | null = null;
+  for (const chat of chats) {
+    let r: any;
+    if (photo && text.length <= 1024) {
+      r = await tgApi("sendPhoto", { chat_id: chat, photo: fileId || photo, caption: text || undefined, reply_markup: markup });
+    } else {
+      if (photo) { const p = await tgApi("sendPhoto", { chat_id: chat, photo: fileId || photo }); if (p.ok && !fileId) fileId = p.result.photo.at(-1).file_id; }
+      r = await tgApi("sendMessage", { chat_id: chat, text, reply_markup: markup, link_preview_options: { is_disabled: false } });
+    }
+    if (r.ok) { sent++; if (photo && !fileId && r.result?.photo) fileId = r.result.photo.at(-1).file_id; }
+    else {
+      const why = r.description || "error"; failed[why] = (failed[why] || 0) + 1;
+      if (r.error_code === 429) await new Promise((res) => setTimeout(res, (r.parameters?.retry_after || 2) * 1000));
+    }
+    await new Promise((res) => setTimeout(res, 45));
+  }
+  return json({ sent, total: chats.length, failed });
+}
+
 async function hook(req: Request) {
   if (req.headers.get("X-Telegram-Bot-Api-Secret-Token") !== HOOK_SECRET) return new Response("forbidden", { status: 401 });
   const upd = await req.json().catch(() => ({}));
@@ -142,5 +180,6 @@ Deno.serve(async (req) => {
   const body = await req.json().catch(() => ({}));
   if (body.action === "auth") return auth(body.initData);
   if (body.action === "notify") return notify(req, body.game_id);
+  if (body.action === "broadcast") return broadcast(req, body);
   return json({ error: "unknown action" }, 400);
 });
