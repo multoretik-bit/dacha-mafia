@@ -1194,7 +1194,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261026084445"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261028062923"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1315,8 +1315,15 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     return url;
   };
   const ava = (nick, key, extra = "", photo = "") => `<span class="ava ${avaClass(key || nick)} ${extra}">${esc([...(nick || "?")][0])}${photo ? `<img src="${esc(avaSrc(photo))}" data-ava="${esc(photo)}" alt="" decoding="sync" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}</span>`;
-  const PREMIUM_USERS = ["tigranich"];
-  const isPremium = (p) => PREMIUM_USERS.includes((p?.tg_username || "").toLowerCase());
+  let premiumIds = new Set(), canGrant = false;
+  const isPremium = (p) => !!p && premiumIds.has(p.id || p.uid || p.user_id);
+  const noAds = () => isPremium(me);
+  const loadPremium = async () => {
+    if (!sb || !me) return;
+    const [{ data: ids }, { data: g }] = await Promise.all([sb.rpc("premium_ids"), sb.rpc("can_grant_premium")]);
+    premiumIds = new Set((ids || []).map((x) => (typeof x === "string" ? x : x.premium_ids)));
+    canGrant = !!g;
+  };
   const CASH = '<i class="cash">💵</i><i class="cash">💸</i><i class="cash">💵</i><i class="cash">💰</i>';
   const avaP = (p, extra = "") => isPremium(p)
     ? `<span class="prem">${ava(p?.nick, p?.id, extra + " premium", p?.tg_photo)}${CASH}</span>`
@@ -1388,8 +1395,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const adHTML = (cls, a = pickAd()) => `<div class="ad ${cls} ad-${a.id}" role="complementary" aria-label="Реклама: ${esc(a.label)}" style="${a.vars}">${adInner(a, cls)}</div>`;
   let adPoolKey = "";
   const fillAdSlots = () => {
-    adPoolKey = adPool().map((a) => a.id).join();
-    document.querySelectorAll("[data-ad-slot]").forEach((el) => (el.innerHTML = adHTML("")));
+    adPoolKey = noAds() ? "none" : adPool().map((a) => a.id).join();
+    document.querySelectorAll("[data-ad-slot]").forEach((el) => (el.innerHTML = noAds() ? "" : adHTML("")));
   };
   fillAdSlots();
   document.body.insertAdjacentHTML("beforeend", adHTML("float"));
@@ -1403,7 +1410,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     adFloat.classList.remove("in"); adFloat.classList.add("out");
   };
   const showAd = (force) => {
-    if (adFloat.classList.contains("in") || adBlocked()) return;
+    if (adFloat.classList.contains("in") || adBlocked() || noAds()) return;
     if (!force && Date.now() - adShownAt < 25000) return;
     const typing = !!document.activeElement?.matches?.("input, textarea");
     const dock = [...document.querySelectorAll("main > section:not([hidden]) .dock")][0];
@@ -1529,7 +1536,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (S?.view) renderTabs(S.view);
   };
   const renderMeBtn = () => {
-    if (adPool().map((a) => a.id).join() !== adPoolKey) fillAdSlots();
+    if ((noAds() ? "none" : adPool().map((a) => a.id).join()) !== adPoolKey) fillAdSlots();
     renderHostAccess();
     $("meBtn").innerHTML = me ? avaP(me) : icon("user");
     $("meBtn").setAttribute("aria-label", me ? `Профиль: ${me.nick}` : "Войти");
@@ -1618,8 +1625,31 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         }).join("")
       : `<div class="empty-note" style="padding-top:4px">Пока нет завершённых игр. Статистика появится, когда ведущий завершит игру и отметит победителя.</div>`;
     $("profStub").textContent = `Вёл игр: ${row.hosted || 0}`;
-    $("profBtns").innerHTML = `<button class="pill ghost sm" data-p="people">все дачники</button>${isMe && !inTG ? `<button class="pill dark sm" data-p="out">выйти</button>` : ""}`;
+    const { data: pr } = await sb.from("profiles").select("premium_until").eq("id", id).maybeSingle();
+    const until = pr?.premium_until ? new Date(pr.premium_until) : null, active = until && (isNaN(until) || until > new Date());
+    const forever = pr?.premium_until && /infinity/i.test(String(pr.premium_until));
+    const premLine = !active ? "нет" : forever ? "навсегда" : `до ${until.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}`;
+    $("profBtns").innerHTML = `${canGrant ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
+        <div class="eyebrow">PREMIUM · выдаёшь только ты</div>
+        <h2 class="h2">PREMIUM: ${premLine}</h2>
+        <p class="lead">Премиум-дачник не видит рекламных плашек, а у всех в приложении отмечен золотом и плашкой PREMIUM.</p>
+        <div class="row-btns" style="justify-content:flex-start">
+          <button class="pill sm" data-prem="1">месяц</button><button class="pill sm" data-prem="3">3 месяца</button><button class="pill sm dark" data-prem="inf">навсегда</button>
+          ${active ? `<button class="pill sm ghost" data-prem="off">снять</button>` : ""}
+        </div></div></div></div>` : ""}
+      <button class="pill ghost sm" data-p="people">все дачники</button>${isMe && !inTG ? `<button class="pill dark sm" data-p="out">выйти</button>` : ""}`;
     $("profBtns").onclick = async (e) => {
+      const pb = e.target.closest("[data-prem]");
+      if (pb && canGrant) {
+        const k = pb.dataset.prem;
+        const base = active && !forever && until > new Date() ? new Date(until) : new Date();
+        const to = k === "off" ? null : k === "inf" ? "infinity" : new Date(base.setMonth(base.getMonth() + +k)).toISOString();
+        const { error } = await sb.rpc("set_premium", { u: id, until: to });
+        if (error) return toast("Не получилось: " + humanErr(error));
+        await loadPremium(); people = [];
+        toast(k === "off" ? "PREMIUM снят" : "PREMIUM выдан");
+        renderMeBtn(); return renderProfile();
+      }
       const b = e.target.closest("[data-p]"); if (!b) return;
       if (b.dataset.p === "people") go("people");
       else sheet({ eyebrow: "Аккаунт", title: "Выйти из аккаунта?", text: "Карты перестанут приходить на этот телефон, пока не войдёшь снова.", ok: "выйти", onOk: async () => { await sb.auth.signOut(); me = null; afterLogout(); go("home"); toast("Ты вышел из аккаунта"); } });
@@ -1953,7 +1983,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         ? `<span class="tag ${s.seen_at ? "ok" : ""}">${s.seen_at ? "посмотрел" : "ждёт"}</span>`
         : `<button class="tag btn" data-guest="${s.id}">${s.seen_at ? "ещё раз" : "показать"}</button>`;
       return `<div class="srow"><span class="seat">${pad(s.seat)}</span>
-        <div style="min-width:0"><div class="nm ${isPremium(s.profiles) ? "prem-name" : ""}">${esc(seatName(s))}</div>
+        <div style="min-width:0"><div class="nm ${isPremium({ id: s.user_id }) ? "prem-name" : ""}">${esc(seatName(s))}</div>
         <div class="sub">${s.user_id ? (s.profiles?.tg_username ? esc("@" + s.profiles.tg_username) + " · " : "") : "гость · "}${live.showRoles ? `<span class="dot team-${r.team}" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span>${esc(r.name)}` : "роль скрыта"}</div></div>
         ${status}</div>`;
     }).join("");
@@ -2139,7 +2169,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         : `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">Ждём раздачи</h1>
             <div class="wait"><span class="pulse"></span>На связи как ${esc(me.nick)}</div>
             <p class="lead">Как только ведущий отметит тебя и нажмёт «Разослать карты», карта появится здесь, а бот пришлёт сообщение. Обновлять ничего не нужно.</p></div>
-            <div class="stub"><span>Карта придёт сама</span><b>GATE</b></div></div></div>${adHTML("")}`;
+            <div class="stub"><span>Карта придёт сама</span><b>GATE</b></div></div></div>${noAds() ? "" : adHTML("")}`;
       return;
     }
     empty.hidden = true; stage.hidden = false;
@@ -2789,6 +2819,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     subscribeMine();
     loadMyCard();
     loadPeople().then(() => { if (S.view === "home") renderHome(); });
+    loadPremium().then(() => { renderMeBtn(); if (!["auth"].includes(S.view)) go(S.view); }).catch(() => {});
     loadEvents().then(drawHomeEvent).catch(() => {});
     ["ads/ruslan.webp", "ads/boss.webp", "ads/beach.jpg"].forEach((src) => (new Image().src = src));
     subscribeEvents();

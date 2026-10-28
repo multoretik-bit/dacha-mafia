@@ -63,3 +63,27 @@ grant execute on function public.game_roster(uuid) to authenticated;
 -- deleting an account removes its seats (a seat must have a player or a guest name)
 alter table public.seats drop constraint if exists seats_user_id_fkey;
 alter table public.seats add constraint seats_user_id_fkey foreign key (user_id) references public.profiles (id) on delete cascade;
+
+-- PREMIUM: granted in the app by @tivishka only; premium players see no ad banners
+alter table public.profiles add column if not exists premium_until timestamptz;
+create or replace function public.premium_ids()
+returns setof uuid language sql stable security definer set search_path = public as $$
+  select id from profiles where premium_until > now();
+$$;
+create or replace function public.can_grant_premium()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from profiles where id = auth.uid() and lower(tg_username) = 'tivishka');
+$$;
+create or replace function public.set_premium(u uuid, until timestamptz)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.can_grant_premium() then raise exception 'only @tivishka can grant premium'; end if;
+  update profiles set premium_until = until where id = u;
+end $$;
+revoke all on function public.premium_ids() from public, anon;
+revoke all on function public.can_grant_premium() from public, anon;
+revoke all on function public.set_premium(uuid, timestamptz) from public, anon;
+grant execute on function public.premium_ids() to authenticated;
+grant execute on function public.can_grant_premium() to authenticated;
+grant execute on function public.set_premium(uuid, timestamptz) to authenticated;
+update public.profiles set premium_until = 'infinity' where lower(tg_username) = 'tigranich' and premium_until is null;
