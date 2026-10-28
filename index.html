@@ -857,6 +857,42 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   animation: premGlow 1.4s ease-in-out infinite;
 }
 
+/* ---------- game flow: phase banner for everyone, night/day console for the host ---------- */
+.game-on { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 18px; color: #fff; font-weight: 800; font-size: 14.5px; box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--navy); }
+.game-on b { font: italic 800 17px/1.1 var(--f-display); display: block; }
+.game-on small { font-weight: 700; opacity: .8; }
+.game-on .gi { font-size: 26px; }
+.game-on.night { background: linear-gradient(135deg, #10163A, #2B3A8C); }
+.game-on.day { background: linear-gradient(135deg, #E8590C, #F59F00); }
+.game-on.setup { background: linear-gradient(135deg, #0F0F11, #3A3A44); }
+.mode.waiting { opacity: .62; }
+.mode.waiting .mode-stub { background: var(--gray); }
+.cons-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.cons-phase { font: italic 800 24px/1.1 var(--f-display); color: var(--navy-ink); }
+.act { padding: 12px 16px; border-top: 1.5px dashed var(--line); display: grid; gap: 8px; }
+.act-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 800; color: var(--ink); }
+.act-h .tag { padding: 6px 9px; }
+.act-off { color: var(--muted); font-weight: 700; font-size: 13px; }
+.chipset { display: flex; flex-wrap: wrap; gap: 6px; }
+.schip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px 6px 6px; border-radius: 99px; border: 2px solid var(--ink); background: #fff; color: var(--ink); font-weight: 800; font-size: 12.5px; }
+.schip b { font: 600 15px/1 var(--f-code); min-width: 2ch; text-align: center; }
+.schip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.schip.t-mafia b { color: var(--red); } .schip[aria-pressed="true"].t-mafia b { color: #FF8A8A; }
+.res { font-weight: 800; font-size: 13px; padding: 6px 10px; border-radius: 10px; background: #E9F0F2; color: var(--ink); }
+.res.hit { background: var(--ink); color: #FF8A8A; }
+.prow2 { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 16px; border-top: 1.5px dashed var(--line); }
+.prow2 .seat { font: 600 22px/1 var(--f-code); color: var(--ink); }
+.prow2 .nm { font-weight: 800; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prow2 .rl { font: 700 11px/1.3 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.prow2.dead { opacity: .42; }
+.prow2.dead .nm { text-decoration: line-through; }
+.prow2 .btns { display: flex; gap: 6px; align-items: center; }
+.ballot { background: #FFF4D6; }
+.vote-n { font: 600 22px/1 var(--f-code); min-width: 1.6ch; text-align: center; color: var(--ink); }
+.logl { padding: 10px 16px 14px; border-top: 1.5px dashed var(--line); display: grid; gap: 4px; font-size: 13px; font-weight: 700; color: var(--ink); }
+.logl small { color: var(--muted); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: 10.5px; }
+.win-hint { background: var(--ink); color: var(--paper); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-weight: 800; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -879,6 +915,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 
   <!-- HOME -->
   <section id="vHome" class="col" hidden>
+    <div class="game-on" id="gameOnHome" hidden></div>
     <div class="home-hero">
       <div class="logo" data-logo></div>
       <svg class="wordmark" viewBox="0 0 400 86" aria-label="MAFIA" role="img">
@@ -922,6 +959,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 
   <!-- PLAYER HUB -->
   <section id="vPlayer" class="col" hidden>
+    <div class="game-on" id="gameOnPlayer" hidden></div>
     <div class="modes">
       <button class="mode" id="goCard">
         <div class="ticket"><div class="ticket-in">
@@ -1101,6 +1139,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       <div id="liveSeats"></div>
       <div class="stub"><span id="liveStub"></span><b>NIGHT 1</b></div>
     </div></div>
+    <div class="col" id="console"></div>
     <div data-ad-slot></div>
     <div class="row-btns">
       <button class="pill" id="liveFinish">завершить игру</button>
@@ -1194,7 +1233,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261028062923"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261028083954"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1544,6 +1583,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 
   /* ---------- home ---------- */
   const renderHome = () => {
+    drawGameOn();
     drawHomeEvent();
     const box = $("homeMe");
     if (!sb) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><h2 class="h2">Нет связи с сервером</h2><p class="lead">Аккаунты и карты на телефон не работают без интернета. Раздача с одного телефона работает.</p></div></div></div>`;
@@ -1571,13 +1611,22 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     rp.textContent = fresh ? "Пришла карта, открой её" : my.seat ? `Место ${pad(my.seat.seat)} · игра идёт` : `Заметки: в игре ${ps.filter((p) => !p.out).length} из ${ps.length}`;
     $("goPlayer").classList.toggle("hot", fresh);
   };
+  const phaseText = (ph, r) => (ph === "night" ? `Ночь ${r} · город спит` : ph === "day" ? `День ${r} · обсуждение и голосование` : "Карты розданы, ждём первую ночь");
+  const drawGameOn = () => {
+    const g = canHost() && S.on.gameId && live.game?.id === S.on.gameId ? live.game : my.seat?.games;
+    const ph = g?.phase || "setup", html = g ? `<span class="gi">${ph === "night" ? "🌙" : ph === "day" ? "☀️" : "🎲"}</span><div><b>Игра идёт</b><small>${esc(phaseText(ph, g.round || 0))}</small></div>` : "";
+    ["gameOnHome", "gameOnPlayer"].forEach((id) => { const el = $(id); el.hidden = !g; el.className = "game-on " + ph; el.innerHTML = html; });
+  };
   const renderPlayer = () => {
+    drawGameOn();
+    $("goCard").classList.toggle("waiting", !my.seat);
+    $("goNotes").classList.toggle("waiting", !S.notes.players.length && !my.seat);
     const rc = $("resumeCard"), rn = $("resumeNotes"), ps = S.notes.players;
-    rc.hidden = !my.seat;
-    if (my.seat) rc.textContent = my.seat.seen_at ? `Место ${pad(my.seat.seat)} · карта открыта` : "Пришла карта, открой её";
+    rc.hidden = false;
+    rc.textContent = !my.seat ? "ожидание раздачи" : my.seat.seen_at ? `Место ${pad(my.seat.seat)} · карта открыта` : "Пришла карта, открой её";
     $("goCard").classList.toggle("hot", !!(my.seat && !my.seat.seen_at));
-    rn.hidden = !ps.length;
-    if (ps.length) rn.textContent = `В игре ${ps.filter((p) => !p.out).length} из ${ps.length}`;
+    rn.hidden = false;
+    rn.textContent = ps.length ? `В игре ${ps.filter((p) => !p.out).length} из ${ps.length}` : "ожидание игры";
   };
 
   /* ---------- auth ---------- */
@@ -1989,7 +2038,150 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     }).join("");
     const maf = ss.filter((s) => s.team === "mafia").length;
     $("liveStub").textContent = `${ss.length} мест · ${maf} ${plural(maf, "мафия", "мафии", "мафии")}`;
+    drawConsole(); drawGameOn();
   };
+  /* ---------- host console: night actions, day nominations and votes ---------- */
+  const NIGHT = [
+    { k: "maf", label: "Мафия стреляет", who: (s) => s.team === "mafia" },
+    { k: "don", label: "Дон ищет комиссара", who: (s) => s.role_id === "don", check: (t) => (t.role_id === "kom" ? "КОМИССАР" : "не комиссар"), hit: (t) => t.role_id === "kom" },
+    { k: "kom", label: "Комиссар проверяет", who: (s) => s.role_id === "kom", check: (t) => (t.team === "mafia" ? "МАФИЯ" : "не мафия"), hit: (t) => t.team === "mafia" },
+    { k: "pat", label: "Патрульный проверяет", who: (s) => s.role_id === "pat", check: (t) => (t.team === "mafia" ? "МАФИЯ" : "не мафия"), hit: (t) => t.team === "mafia" },
+    { k: "doc", label: "Доктор лечит", who: (s) => s.role_id === "doc" },
+    { k: "kur", label: "Любовница идёт к", who: (s) => s.role_id === "kur" },
+    { k: "man", label: "Маньяк убивает", who: (s) => s.role_id === "man" },
+  ];
+  const flow = () => {
+    if (S.on.flow?.gameId !== S.on.gameId) S.on.flow = { gameId: S.on.gameId, night: {}, noms: {}, votes: {}, log: [] };
+    return S.on.flow;
+  };
+  const alive = () => live.seats.filter((s) => s.alive !== false);
+  const seatBy = (n) => live.seats.find((s) => s.seat === n);
+  const roleTag = (s) => `<span class="dot team-${s.team}" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span>${esc(s.role_name)}`;
+  const chip = (s, on, data) => `<button class="schip t-${s.team}" type="button" ${data} aria-pressed="${on}"><b>${pad(s.seat)}</b>${esc(seatName(s))}</button>`;
+  const winHint = () => {
+    const a = alive(), maf = a.filter((s) => s.team === "mafia").length, solo = a.filter((s) => s.team === "solo").length, city = a.length - maf - solo;
+    if (!maf && !solo) return { team: "city", text: "Мафии не осталось — город победил?" };
+    if (!solo && maf >= city) return { team: "mafia", text: "Мафии столько же, сколько мирных — мафия победила?" };
+    if (solo && a.length <= 2 && !maf) return { team: "solo", text: "Остался маньяк один на один — маньяк победил?" };
+    return null;
+  };
+  // night outcome: the lover shields from the mafia shot and cancels the visited player's own move
+  const nightOutcome = () => {
+    const n = flow().night, lines = [], victims = [];
+    const visited = n.kur ? seatBy(n.kur) : null;
+    const blocked = (k) => visited && NIGHT.find((x) => x.k === k).who(visited) && k !== "maf";
+    const docOn = n.doc && !blocked("doc") ? n.doc : null;
+    if (n.kur && visited) lines.push(`Любовница была у ${pad(visited.seat)} ${seatName(visited)}`);
+    if (n.maf) {
+      const t = seatBy(n.maf);
+      if (n.kur === n.maf) lines.push(`Мафия стреляла в ${pad(t.seat)} ${seatName(t)}, но там была любовница`);
+      else if (docOn === n.maf) lines.push(`Мафия стреляла в ${pad(t.seat)} ${seatName(t)}, доктор спас`);
+      else victims.push({ seat: t.seat, by: "мафия" });
+    }
+    if (n.man) {
+      const t = seatBy(n.man);
+      if (blocked("man")) lines.push("Маньяк был у любовницы и никого не тронул");
+      else if (docOn === n.man) lines.push(`Маньяк пришёл к ${pad(t.seat)} ${seatName(t)}, доктор спас`);
+      else if (!victims.some((v) => v.seat === t.seat)) victims.push({ seat: t.seat, by: "маньяк" });
+    }
+    if (n.doc && blocked("doc")) lines.push("Доктор был у любовницы, лечение не сработало");
+    return { lines, victims };
+  };
+  const setPhaseDb = async (phase, round) => {
+    const { error } = await sb.from("games").update({ phase, round }).eq("id", live.game.id);
+    if (error) { toast("Не получилось: " + humanErr(error)); return false; }
+    live.game.phase = phase; live.game.round = round; return true;
+  };
+  const killSeats = async (list, how) => {
+    for (const v of list) {
+      const s = seatBy(v.seat); if (!s) continue;
+      const { error } = await sb.from("seats").update({ alive: false, died_round: live.game.round, died_how: how }).eq("id", s.id);
+      if (error) { toast("Не получилось: " + humanErr(error)); return false; }
+      s.alive = false; s.died_round = live.game.round; s.died_how = how;
+    }
+    refreshDeaths();
+    return true;
+  };
+  const logIt = (text) => { flow().log.push({ round: live.game.round, phase: live.game.phase, text }); save(); };
+  const drawConsole = () => {
+    const box = $("console"); if (!box || !live.game) return;
+    const g = live.game, f = flow(), a = alive();
+    const ph = g.phase || "setup", r = g.round || 0;
+    const head = `<div class="t-body" style="padding-bottom:12px"><div class="eyebrow">Пульт ведущего</div>
+      <div class="cons-head"><div class="cons-phase">${ph === "night" ? `🌙 Ночь ${r}` : ph === "day" ? `☀️ День ${r}` : "🎲 Перед первой ночью"}</div>
+      <div class="row-btns" style="justify-content:flex-end">${ph === "night"
+        ? `<button class="pill sm" data-flow="day">наступает день</button>`
+        : `<button class="pill sm dark" data-flow="night">${ph === "setup" ? "начать первую ночь" : "наступает ночь"}</button>${ph === "setup" ? `<button class="pill sm ghost" data-flow="day">начать с дня</button>` : ""}`}</div></div>
+      <p class="lead">${ph === "night" ? "Отмечай, кого выбрал каждый. Итог ночи посчитается, когда нажмёшь «наступает день»." : ph === "day" ? "Выставление: два голоса за игрока — и он на голосовании. Потом отметь голоса и выгони одного или никого." : "Объяви, что город засыпает, и начни ночь."}</p></div>`;
+    let body = "";
+    if (ph === "night") {
+      body = NIGHT.map((act) => {
+        const actors = a.filter(act.who);
+        if (!actors.length) return "";
+        const pick = f.night[act.k], t = pick ? seatBy(pick) : null;
+        const res = act.check && t ? `<span class="res ${act.hit(t) ? "hit" : ""}">${act.check(t)}</span>` : "";
+        return `<div class="act"><div class="act-h"><span>${act.label} <span class="act-off">· ${actors.map((x) => pad(x.seat)).join(", ")}</span></span>${res}</div>
+          <div class="chipset">${a.map((s) => chip(s, pick === s.seat, `data-night="${act.k}" data-seat="${s.seat}"`)).join("")}</div></div>`;
+      }).join("");
+    } else if (ph === "day") {
+      const noms = f.noms, ballot = a.filter((s) => (noms[s.seat] || 0) >= 2);
+      body = a.map((s) => `<div class="prow2"><span class="seat">${pad(s.seat)}</span><div style="min-width:0"><div class="nm">${esc(seatName(s))}</div><div class="rl">${roleTag(s)}</div></div>
+          <div class="btns">${(noms[s.seat] || 0) >= 2 ? `<span class="tag ok">на голосовании</span>` : `<button class="tag btn" type="button" data-nom="${s.seat}">выставить ${noms[s.seat] || 0}/2</button>`}${noms[s.seat] ? `<button class="x-btn" type="button" data-unnom="${s.seat}">×</button>` : ""}</div></div>`).join("");
+      if (ballot.length) body += `<div class="sec-label eyebrow">Голосование</div>` + ballot.map((s) => `<div class="prow2 ballot"><span class="seat">${pad(s.seat)}</span><div style="min-width:0"><div class="nm">${esc(seatName(s))}</div><div class="rl">${roleTag(s)}</div></div>
+          <div class="btns"><button class="round sm" type="button" data-vote="${s.seat}" data-d="-1">−</button><span class="vote-n">${f.votes[s.seat] || 0}</span><button class="round sm" type="button" data-vote="${s.seat}" data-d="1">+</button><button class="pill sm red" type="button" data-out="${s.seat}" style="margin:4px">выгнать</button></div></div>`).join("")
+        + `<div class="row-btns" style="padding:8px 16px 12px;justify-content:flex-start"><button class="linkish" type="button" data-nobody>никого не выгоняем</button></div>`;
+    }
+    const dead = live.seats.filter((s) => s.alive === false);
+    const all = `<div class="sec-label eyebrow">Игроки · в игре ${a.length} из ${live.seats.length}</div>` + live.seats.map((s) => `<div class="prow2 ${s.alive === false ? "dead" : ""}"><span class="seat">${pad(s.seat)}</span>
+        <div style="min-width:0"><div class="nm">${esc(seatName(s))}</div><div class="rl">${roleTag(s)}${s.alive === false ? ` · ${s.died_how === "vote" ? "выгнан" : s.died_how === "night" ? "убит ночью" : "выбыл"} (${s.died_round})` : ""}</div></div>
+        <div class="btns"><button class="x-btn" type="button" data-toggle="${s.seat}">${s.alive === false ? "вернуть" : "выбыл"}</button></div></div>`).join("");
+    const w = winHint();
+    const win = w ? `<div class="win-hint"><span>${w.text}</span><button class="pill sm" type="button" data-win="${w.team}" style="margin:4px">${TEAM[w.team].won.toLowerCase()}</button></div>` : "";
+    const log = f.log.length ? `<div class="logl"><small>Журнал</small>${f.log.map((l) => `<div>${l.phase === "night" ? "🌙" : "☀️"} ${l.round}: ${esc(l.text)}</div>`).join("")}</div>` : "";
+    box.innerHTML = `<div class="ticket"><div class="ticket-in">${head}${win}${body}${all}${log}</div></div>`;
+    void dead;
+  };
+  $("console").addEventListener("click", async (e) => {
+    const b = e.target.closest("button"); if (!b || !live.game) return;
+    const f = flow(), g = live.game;
+    if (b.dataset.night) { const k = b.dataset.night, n = +b.dataset.seat; f.night[k] = f.night[k] === n ? undefined : n; haptic("tap"); save(); return drawConsole(); }
+    if (b.dataset.nom) { f.noms[b.dataset.nom] = Math.min(2, (f.noms[b.dataset.nom] || 0) + 1); haptic("tap"); save(); return drawConsole(); }
+    if (b.dataset.unnom) { delete f.noms[b.dataset.unnom]; delete f.votes[b.dataset.unnom]; save(); return drawConsole(); }
+    if (b.dataset.vote) { f.votes[b.dataset.vote] = Math.max(0, (f.votes[b.dataset.vote] || 0) + +b.dataset.d); save(); return drawConsole(); }
+    if (b.dataset.win) return endGame({ status: "finished", winner: b.dataset.win }, TEAM[b.dataset.win].won);
+    if (b.dataset.flow === "night") {
+      if (!(await setPhaseDb("night", (g.round || 0) + 1))) return;
+      f.night = {}; logIt("город засыпает"); toast(`Ночь ${g.round}: город засыпает`); return drawLive();
+    }
+    if (b.dataset.flow === "day") {
+      if (g.phase !== "night") { if (!(await setPhaseDb("day", Math.max(1, g.round || 0)))) return; f.noms = {}; f.votes = {}; logIt("день начался"); return drawLive(); }
+      const o = nightOutcome();
+      const text = [...o.lines, o.victims.length ? `Убит${o.victims.length > 1 ? "ы" : ""}: ${o.victims.map((v) => `${pad(v.seat)} ${seatName(seatBy(v.seat))} (${v.by})`).join(", ")}` : "Этой ночью никто не погиб"].join(". ");
+      return choose({ eyebrow: `Итог ночи ${g.round}`, title: o.victims.length ? "Кто-то не проснулся" : "Все проснулись", text,
+        options: [{ label: "подтвердить и начать день", run: async () => {
+          if (!(await killSeats(o.victims, "night"))) return;
+          if (!(await setPhaseDb("day", g.round))) return;
+          f.noms = {}; f.votes = {}; logIt(text); toast(o.victims.length ? "Наступает день. Ночью есть жертвы" : "Наступает день. Все живы"); drawLive();
+        } }] });
+    }
+    if (b.dataset.out) {
+      const s = seatBy(+b.dataset.out);
+      return sheet({ eyebrow: `День ${g.round}`, title: `Выгнать ${pad(s.seat)} ${seatName(s)}?`, text: `Роль: ${s.role_name}. Игрок выбудет у всех в приложении.`, ok: "выгнать", okClass: "red", onOk: async () => {
+        if (!(await killSeats([{ seat: s.seat }], "vote"))) return;
+        await setPhaseDb("day", g.round); logIt(`выгнали ${pad(s.seat)} ${seatName(s)} (${s.role_name}), голосов: ${f.votes[s.seat] || 0}`);
+        f.noms = {}; f.votes = {}; save(); drawLive();
+      } });
+    }
+    if (b.hasAttribute("data-nobody")) { logIt("никого не выгнали"); f.noms = {}; f.votes = {}; save(); return drawConsole(); }
+    if (b.dataset.toggle) {
+      const s = seatBy(+b.dataset.toggle), back = s.alive === false;
+      const { error } = await sb.from("seats").update(back ? { alive: true, died_round: null, died_how: null } : { alive: false, died_round: g.round || 0, died_how: "host" }).eq("id", s.id);
+      if (error) return toast("Не получилось: " + humanErr(error));
+      s.alive = back; s.died_round = back ? null : g.round || 0; s.died_how = back ? null : "host";
+      await setPhaseDb(g.phase || "setup", g.round || 0);
+      logIt(back ? `${pad(s.seat)} ${seatName(s)} вернулся в игру` : `${pad(s.seat)} ${seatName(s)} выбыл`); drawLive();
+    }
+  });
   $("liveRolesBtn").onclick = () => { live.showRoles = !live.showRoles; drawLive(); };
   $("liveSeats").onclick = (e) => {
     const b = e.target.closest("[data-guest]"); if (!b) return;
@@ -2126,7 +2318,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const my = { seat: null, family: [], hostNick: "", open: false, gameChan: null };
   const loadMyCard = async () => {
     if (!sb || !me) { my.seat = null; return; }
-    const { data, error } = await sb.from("seats").select("*, games!inner(id,status,mafia_sees_family,host_id)")
+    const { data, error } = await sb.from("seats").select("*, games!inner(id,status,mafia_sees_family,host_id,phase,round)")
       .eq("user_id", me.id).eq("games.status", "live").order("created_at", { ascending: false }).limit(1);
     if (error) return;
     const s = data?.[0] || null;
@@ -2144,7 +2336,9 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       await Promise.all(tasks);
       my.gameChan = sb.channel("game-" + s.game_id)
         .on("postgres_changes", { event: "UPDATE", schema: "public", table: "games", filter: `id=eq.${s.game_id}` }, (p) => {
-          if (p.new.status !== "live") { my.seat = null; my.open = false; refreshCardUI(); toast(p.new.winner ? TEAM[p.new.winner].won : "Игра завершена"); }
+          if (p.new.status !== "live") { my.seat = null; my.open = false; refreshCardUI(); toast(p.new.winner ? TEAM[p.new.winner].won : "Игра завершена"); return; }
+          if (my.seat?.games) { const was = my.seat.games.phase + my.seat.games.round; my.seat.games.phase = p.new.phase; my.seat.games.round = p.new.round; if (was !== p.new.phase + p.new.round) toast(phaseText(p.new.phase, p.new.round)); }
+          refreshDeaths(); refreshCardUI();
         })
         .subscribe();
     }
@@ -2740,6 +2934,18 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     el.querySelector(".pl-badge").textContent = p.seat;
     el.querySelectorAll(".trust button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.c === p.c));
     el.querySelector(".pl-out").textContent = p.out ? "вернуть" : "выбыл";
+  };
+  const refreshDeaths = async () => {
+    const gid = S.notes.gameId; if (!gid || !sb || !me) return;
+    const { data } = await sb.rpc("game_roster", { g: gid });
+    let changed = false;
+    (data || []).forEach((x) => {
+      const p = S.notes.players.find((q) => q.seat === x.seat);
+      if (p && x.alive === false && !p.out) { p.out = true; p.outAt = Date.now(); changed = true; }
+      if (p && x.alive === true && p.dead) { p.out = false; changed = true; }
+      if (p) p.dead = x.alive === false;
+    });
+    if (changed) { save(); if (S.view === "notes") renderNotes(true); }
   };
   const renderNotes = (animate, movedId) => {
     if (!animate) syncNotesGame().then((changed) => { if (changed && S.view === "notes") renderNotes(false); });

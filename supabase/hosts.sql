@@ -87,3 +87,24 @@ grant execute on function public.premium_ids() to authenticated;
 grant execute on function public.can_grant_premium() to authenticated;
 grant execute on function public.set_premium(uuid, timestamptz) to authenticated;
 update public.profiles set premium_until = 'infinity' where lower(tg_username) = 'tigranich' and premium_until is null;
+
+-- game flow: the host switches night/day, players see the phase and who is out (never roles)
+alter table public.games add column if not exists phase text not null default 'setup';
+alter table public.games drop constraint if exists games_phase_check;
+alter table public.games add constraint games_phase_check check (phase in ('setup', 'night', 'day'));
+alter table public.games add column if not exists round int not null default 0;
+alter table public.seats add column if not exists alive boolean not null default true;
+alter table public.seats add column if not exists died_round int;
+alter table public.seats add column if not exists died_how text check (died_how in ('night', 'vote', 'host'));
+
+drop function if exists public.game_roster(uuid);
+create function public.game_roster(g uuid)
+returns table (seat int, name text, user_id uuid, tg_username text, tg_photo text, alive boolean, died_round int, died_how text)
+language sql stable security definer set search_path = public as $$
+  select s.seat, coalesce(p.nick, s.guest_name), s.user_id, p.tg_username, p.tg_photo, s.alive, s.died_round, s.died_how
+  from seats s left join profiles p on p.id = s.user_id
+  where s.game_id = g and (public.is_player(g) or public.is_host(g))
+  order by s.seat;
+$$;
+revoke all on function public.game_roster(uuid) from public, anon;
+grant execute on function public.game_roster(uuid) to authenticated;
