@@ -1231,7 +1231,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261028085801"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261028090250"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2189,7 +2189,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const endGame = async (patch, msg) => {
     const { error } = await sb.from("games").update({ ...patch, finished_at: new Date().toISOString() }).eq("id", S.on.gameId);
     if (error) return toast("Не получилось: " + humanErr(error));
-    S.on.gameId = null; S.on.test = false; S.on.phase = "pick"; save(); people = []; go("host"); toast(msg);
+    const gid = S.on.gameId;
+    S.on.gameId = null; S.on.test = false; S.on.phase = "pick"; save(); people = []; forgetGame(gid); go("host"); toast(msg);
   };
   $("liveFinish").onclick = () => {
     if (S.on.test) return endGame({ status: "cancelled" }, "Тест закончен, в статистику не попал");
@@ -2316,6 +2317,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       if (my.gameChan) { sb.removeChannel(my.gameChan); my.gameChan = null; }
     }
     my.seat = s;
+    if (S.notes.gameId && S.notes.gameId !== s?.game_id && !(canHost() && S.on.gameId === S.notes.gameId)) forgetGame(S.notes.gameId);
     if (s && changed) {
       preload([s.role_art]);
       const tasks = [sb.from("profiles").select("nick").eq("id", s.games.host_id).maybeSingle().then(({ data }) => (my.hostNick = data?.nick || ""))];
@@ -2324,7 +2326,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       await Promise.all(tasks);
       my.gameChan = sb.channel("game-" + s.game_id)
         .on("postgres_changes", { event: "UPDATE", schema: "public", table: "games", filter: `id=eq.${s.game_id}` }, (p) => {
-          if (p.new.status !== "live") { my.seat = null; my.open = false; refreshCardUI(); toast(p.new.winner ? TEAM[p.new.winner].won : "Игра завершена"); return; }
+          if (p.new.status !== "live") { forgetGame(p.new.id); toast(p.new.winner ? TEAM[p.new.winner].won : "Игра завершена"); return; }
           if (my.seat?.games) { const was = my.seat.games.phase + my.seat.games.round; my.seat.games.phase = p.new.phase; my.seat.games.round = p.new.round; if (was !== p.new.phase + p.new.round) toast(phaseText(p.new.phase, p.new.round)); }
           refreshDeaths(); refreshCardUI();
         })
@@ -2518,6 +2520,19 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (row.targets?.length && !row.targets.includes(me.id)) return;
     if (Date.now() - new Date(row.created_at).getTime() > 120000) return;
     playPromo(row.kind);
+  };
+  // a finished game leaves nothing behind: no card, no notes
+  const forgetGame = (gid) => {
+    if (my.seat && (!gid || my.seat.game_id === gid)) {
+      my.seat = null; my.open = false; my.family = [];
+      if (my.gameChan) { sb.removeChannel(my.gameChan); my.gameChan = null; }
+      const f = $("cFront"); if (f) f.innerHTML = "";
+    }
+    if (S.notes.gameId && (!gid || S.notes.gameId === gid)) {
+      S.notes = { gameId: null, players: [] };
+      rowEls.forEach((el) => el.remove()); rowEls.clear();
+    }
+    save(); refreshCardUI(); drawGameOn();
   };
   let mineChan = null;
   const subscribeMine = () => {
