@@ -1064,7 +1064,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     <div class="dock">
       <div class="sum" id="pickSum"></div>
       <button class="pill wide" id="pickNext">дальше: роли</button>
-      <div class="row-btns"><button class="linkish" id="testOnMe">Проверить на себе</button><button class="linkish" id="newLobbyPick">Новое лобби</button></div>
+      <div class="row-btns"><button class="linkish" id="newLobbyPick">Новое лобби</button></div>
     </div>
   </section>
 
@@ -1143,8 +1143,6 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     <div data-ad-slot></div>
     <div class="row-btns">
       <button class="pill" id="liveFinish">завершить игру</button>
-      <button class="pill ghost sm" id="liveRedeal">перераздать</button>
-      <button class="linkish" id="newLobbyLive">Новое лобби</button>
     </div>
   </section>
 
@@ -1233,7 +1231,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261028083954"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261028085801"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1552,7 +1550,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   $("tabCard").onclick = () => go("card");
   $("tabNotes").onclick = () => go("notes");
   $("meBtn").onclick = () => (me ? go("profile", me.id) : go("auth"));
-  ["newLobbyDone", "newLobbyPick", "newLobbyCount", "newLobbyLive"].forEach((id) => ($(id).onclick = askNewLobby));
+  ["newLobbyDone", "newLobbyPick", "newLobbyCount"].forEach((id) => ($(id).onclick = askNewLobby));
 
   // only the two tabs of the current section, so labels never overlap
   const renderTabs = (view) => {
@@ -1781,8 +1779,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const drawPickSum = () => {
     const n = lineupN(), g = S.on.lineup.filter((x) => x.g).length;
     $("pickSum").textContent = n ? `${n} ${plural(n, "игрок", "игрока", "игроков")}${g ? `, из них ${g} ${plural(g, "гость", "гостя", "гостей")}` : ""}` : "Никто не выбран";
-    $("pickSum").classList.toggle("bad", n > 0 && n < 3);
-    $("pickNext").disabled = !me || n < 3;
+    $("pickSum").classList.remove("bad");
+    $("pickNext").disabled = !me || n < 1;
   };
   $("pickList").onclick = (e) => {
     const b = e.target.closest("[data-u]"); if (!b) return;
@@ -1909,7 +1907,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     else if (!maf) sum.textContent = `Нет ни одной мафии · ${n} мест`;
     else sum.textContent = `${n} мест: ${u} ${plural(u, "роль", "роли", "ролей")} + ${civ} ${plural(civ, "мирный", "мирных", "мирных")}`;
     $("toDeal").disabled = civ < 0;
-    $("toDeal").textContent = online() ? "разослать карты" : "раздать карты";
+    $("toDeal").textContent = online() ? "начать игру" : "раздать карты";
     renderPromoBox();
   };
   $("rolesList").onclick = (e) => {
@@ -1978,7 +1976,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   let dealing = false;
   const dealOnline = async () => {
     if (dealing || !sb || !me) return;
-    dealing = true; $("toDeal").disabled = true; $("toDeal").textContent = "рассылаю…";
+    dealing = true; $("toDeal").disabled = true; $("toDeal").textContent = "запускаю игру…";
     try {
       const L = S.on.lineup, deck = buildDeck(S.on.counts, L.length), arts = pickArts(deck);
       const { data: g, error } = await sb.from("games").insert({ host_id: me.id, mafia_sees_family: S.on.mafiaSees }).select().single();
@@ -1993,7 +1991,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       sb.functions.invoke("tg", { body: { action: "notify", game_id: g.id } }).catch(() => {});
       go("host"); toast("Карты разлетелись по телефонам");
     } catch (x) { toast("Не получилось разослать: " + humanErr(x)); }
-    finally { dealing = false; $("toDeal").disabled = false; $("toDeal").textContent = "разослать карты"; }
+    finally { dealing = false; $("toDeal").disabled = false; $("toDeal").textContent = "начать игру"; }
   };
 
   const live = { game: null, seats: [], chan: null, showRoles: false };
@@ -2022,7 +2020,6 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const ss = live.seats, seen = ss.filter((s) => s.seen_at).length;
     $("liveTitle").textContent = S.on.test ? "Тестовая раздача на себе" : seen === ss.length ? "Все посмотрели карты" : "Карты разосланы";
     $("liveFinish").textContent = S.on.test ? "закончить тест" : "завершить игру";
-    $("liveRedeal").hidden = !!S.on.test;
     $("liveLead").textContent = seen === ss.length ? "Можно начинать первую ночь. Город засыпает." : `Посмотрели ${seen} из ${ss.length}. Как только каждый откроет свою карту, здесь появится отметка.`;
     $("liveBar").style.width = `${ss.length ? (seen / ss.length) * 100 : 0}%`;
     $("liveRolesBtn").textContent = live.showRoles ? "скрыть роли" : "показать роли";
@@ -2208,15 +2205,6 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       ],
     });
   };
-  $("liveRedeal").onclick = () => sheet({
-    eyebrow: "Раздача", title: "Перераздать карты?", text: "Эта раздача отменится без записи в статистику, и каждому придёт новая карта с теми же ролями.",
-    ok: "перераздать",
-    onOk: async () => {
-      await sb.from("games").update({ status: "cancelled", finished_at: new Date().toISOString() }).eq("id", S.on.gameId);
-      S.on.gameId = null; S.on.phase = "roles"; save(); stopLive(); dealOnline();
-    },
-  });
-
   /* ---------- card faces ---------- */
   const passHTML = (r, seat) => {
     const custom = String(r.id).startsWith("c_");
@@ -2362,7 +2350,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         ? `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">${inTG ? "Входим через Telegram…" : "Карты приходят в Telegram"}</h1><p class="lead">${inTG ? esc(authError || "Секунду, подключаемся к даче.") : "Открой бота @dacha_gay и нажми «Играть». Ведущий отметит тебя, и карта роли придёт прямо туда."}</p>${inTG ? "" : `<div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`}</div></div></div>`
         : `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">Ждём раздачи</h1>
             <div class="wait"><span class="pulse"></span>На связи как ${esc(me.nick)}</div>
-            <p class="lead">Как только ведущий отметит тебя и нажмёт «Разослать карты», карта появится здесь, а бот пришлёт сообщение. Обновлять ничего не нужно.</p></div>
+            <p class="lead">Как только ведущий отметит тебя и нажмёт «Начать игру», карта появится здесь, а бот пришлёт сообщение. Обновлять ничего не нужно.</p></div>
             <div class="stub"><span>Карта придёт сама</span><b>GATE</b></div></div></div>${noAds() ? "" : adHTML("")}`;
       return;
     }
@@ -2531,27 +2519,6 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (Date.now() - new Date(row.created_at).getTime() > 120000) return;
     playPromo(row.kind);
   };
-  // host test: a promo and a card for yourself only; nothing is counted or spent
-  const dealToMe = async () => {
-    const pool = [...BASE, CIVIL], r = pool[Math.floor(Math.random() * pool.length)];
-    const art = (CARD_ART[r.id] || [])[Math.floor(Math.random() * (CARD_ART[r.id] || [""]).length)] || r.art || null;
-    const { data: g, error } = await sb.from("games").insert({ host_id: me.id, mafia_sees_family: false }).select().single();
-    if (error) return toast("Не получилось: " + humanErr(error));
-    const { error: e2 } = await sb.from("seats").insert({ game_id: g.id, seat: 1, user_id: me.id, guest_name: null, role_id: r.id, role_name: r.name, role_code: r.code, team: r.team, role_desc: r.desc, role_art: art });
-    if (e2) { await sb.from("games").delete().eq("id", g.id); return toast("Не получилось: " + humanErr(e2)); }
-    S.on.gameId = g.id; S.on.test = true; save();
-    await loadMyCard(); go("card"); toast("Тестовая карта пришла тебе");
-  };
-  $("testOnMe").onclick = () => {
-    if (!sb || !me || !canHost()) return;
-    if (S.on.gameId) return toast("Сначала заверши текущую игру");
-    choose({ eyebrow: "Проверить на себе", title: "Тестовая раздача", text: "Реклама и карта придут только тебе. Показ рекламы не потратится, в статистику ничего не попадёт.",
-      options: [
-        ...Object.entries(PROMOS).map(([k, pr]) => ({ label: `с рекламой: ${pr.title}`, run: () => playPromo(k, dealToMe) })),
-        { label: "без рекламы", cls: "ghost", run: dealToMe },
-      ] });
-  };
-
   let mineChan = null;
   const subscribeMine = () => {
     if (mineChan) sb.removeChannel(mineChan);
