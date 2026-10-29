@@ -237,3 +237,7 @@ create policy "promos by hosts" on public.promos for insert to authenticated
 drop policy if exists "promos by hosts" on public.promos;
 create policy "promos by hosts" on public.promos for insert to authenticated
   with check (created_by = auth.uid() and public.can_host() and kind in ('ruslan', 'boss', 'beach') and not public.promo_used_today(kind));
+
+-- a removed game stays as a row (so ensure_events does not bring the Saturday back) but is never shown
+alter table public.events drop constraint if exists events_status_check;
+alter table public.events add constraint events_status_check check (status in ('open', 'cancelled', 'removed'));
