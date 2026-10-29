@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFF1A8"/>
+      <stop offset=".45" stop-color="#F2C230"/>
+      <stop offset="1" stop-color="#A97400"/>
+    </linearGradient>
+    <radialGradient id="face" cx=".38" cy=".32" r=".8">
+      <stop offset="0" stop-color="#FFE68A"/>
+      <stop offset=".55" stop-color="#EDB51E"/>
+      <stop offset="1" stop-color="#C08600"/>
+    </radialGradient>
+    <linearGradient id="engrave" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9C6A00"/>
+      <stop offset="1" stop-color="#6E4A00"/>
+    </linearGradient>
+    <clipPath id="inner"><circle cx="60" cy="60" r="41"/></clipPath>
+  </defs>
+  <!-- rim -->
+  <circle cx="60" cy="60" r="57" fill="url(#rim)"/>
+  <circle cx="60" cy="60" r="57" fill="none" stroke="#7A5200" stroke-width="2"/>
+  <circle cx="60" cy="60" r="49" fill="none" stroke="#FFF4C2" stroke-opacity=".7" stroke-width="1.2" stroke-dasharray="1.6 3.2"/>
+  <!-- face of the coin -->
+  <circle cx="60" cy="60" r="44" fill="url(#face)" stroke="#9C6A00" stroke-width="2"/>
+  <!-- engraved silhouette: curly hair, head, shoulders -->
+  <g clip-path="url(#inner)" fill="url(#engrave)">
+    <path d="M24 104c2-17 17-27 36-27s34 10 36 27z"/>
+    <rect x="53" y="64" width="14" height="14" rx="5"/>
+    <circle cx="60" cy="54" r="15"/>
+    <g>
+      <circle cx="46" cy="44" r="7.5"/><circle cx="52" cy="36.5" r="7.5"/><circle cx="61" cy="33.5" r="8"/>
+      <circle cx="70" cy="36.5" r="7.5"/><circle cx="75.5" cy="44" r="7"/><circle cx="43.5" cy="52" r="5.5"/>
+      <circle cx="77" cy="52" r="5.5"/><circle cx="56" cy="41" r="6"/><circle cx="66" cy="41" r="6"/>
+    </g>
+  </g>
+  <!-- highlights -->
+  <path d="M27 42a36 36 0 0 1 30-23" fill="none" stroke="#FFFBE0" stroke-opacity=".85" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="60" cy="60" r="44" fill="none" stroke="#FFF7CF" stroke-opacity=".45" stroke-width="1"/>
+</svg>

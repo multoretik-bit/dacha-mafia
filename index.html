@@ -640,10 +640,16 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .pay-set { display: grid; gap: 12px; }
 .ach-list { display: flex; flex-wrap: wrap; gap: 14px; padding: 2px 16px 16px; }
 .ach { display: grid; justify-items: center; gap: 6px; width: 86px; text-align: center; color: var(--ink); }
-.ach img { width: 74px; height: 74px; border-radius: 50%; filter: drop-shadow(0 5px 8px rgba(0,0,0,.3)); animation: achCoin 5s ease-in-out infinite; }
+.coin { position: relative; display: block; width: 74px; height: 74px; perspective: 400px; animation: coinFloat 3.2s ease-in-out infinite; }
+.coin img { display: block; width: 100%; height: 100%; filter: drop-shadow(0 6px 8px rgba(80,50,0,.35)); animation: achCoin 6s cubic-bezier(.45,0,.25,1) infinite; }
+.coin::after { content: ""; position: absolute; inset: 4%; border-radius: 50%; pointer-events: none; background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.75) 47%, rgba(255,255,255,.15) 53%, transparent 62%) 160% 0 / 260% 100% no-repeat; mix-blend-mode: screen; animation: coinShine 6s ease-in-out infinite; }
+@keyframes coinFloat { 50% { transform: translateY(-4px); } }
+@keyframes coinShine { 0%, 30% { background-position: 160% 0; } 55%, 100% { background-position: -60% 0; } }
 .ach b { font-weight: 800; font-size: 12px; line-height: 1.2; }
-@keyframes achCoin { 0%, 70%, 100% { transform: rotateY(0); } 80% { transform: rotateY(180deg) scale(1.06); } 90% { transform: rotateY(360deg); } }
-.ach-big { width: min(56vw, 220px); aspect-ratio: 1; border-radius: 50%; display: block; margin: 0 auto; filter: drop-shadow(0 10px 18px rgba(0,0,0,.35)); animation: achCoin 3s ease-in-out infinite; }
+@keyframes achCoin { 0%, 72%, 100% { transform: rotateY(0); } 86% { transform: rotateY(200deg) scale(1.05); } 94% { transform: rotateY(345deg); } }
+.coin.big { width: min(56vw, 220px); height: auto; aspect-ratio: 1; margin: 0 auto; }
+.coin.big img { animation: achSpin 7s linear infinite; filter: drop-shadow(0 14px 18px rgba(80,50,0,.4)); }
+@keyframes achSpin { to { transform: rotateY(360deg); } }
 .ev-hosts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0 16px 12px; padding: 8px 10px; border-radius: 14px; background: var(--ink); }
 .ev-hosts .eyebrow { color: var(--sky); margin-right: 2px; }
 .ev-hosts .ev-who { background: var(--paper); box-shadow: none; }
@@ -1239,7 +1245,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261029110623"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261029111201"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1683,14 +1689,14 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     const { data: achs } = await sb.from("user_achievements").select("awarded_at, achievements(id,title,description,icon)").eq("user_id", id).order("awarded_at");
     const list = (achs || []).filter((a) => a.achievements);
     $("profAch").innerHTML = list.length ? `<div class="sec-label eyebrow">Ачивки · ${list.length}</div><div class="ach-list">${list.map((a, i) =>
-      `<button class="ach" type="button" data-ach="${i}"><img src="${esc(a.achievements.icon)}" alt=""><b>${esc(a.achievements.title)}</b></button>`).join("")}</div>` : "";
+      `<button class="ach" type="button" data-ach="${i}"><span class="coin"><img src="${esc(a.achievements.icon)}" alt=""></span><b>${esc(a.achievements.title)}</b></button>`).join("")}</div>` : "";
     $("profAch").onclick = (e) => {
       const b = e.target.closest("[data-ach]"); if (!b) return;
       const a = list[+b.dataset.ach], d = new Date(a.awarded_at);
       const v = document.createElement("div"); v.className = "veil";
       v.innerHTML = `<div class="ticket" role="dialog" aria-modal="true"><div class="ticket-in"><div class="t-body" style="text-align:center;align-items:center">
         <div class="eyebrow">Ачивка · ${d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}</div>
-        <img class="ach-big" src="${esc(a.achievements.icon)}" alt="">
+        <span class="coin big"><img src="${esc(a.achievements.icon)}" alt=""></span>
         <h2 class="h1">${esc(a.achievements.title)}</h2><p class="lead">${esc(a.achievements.description)}</p>
         <button class="pill sm" type="button" data-close>круто</button></div></div></div>`;
       v.addEventListener("click", (ev) => { if (ev.target === v || ev.target.closest("[data-close]")) v.remove(); });
