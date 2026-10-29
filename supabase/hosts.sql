@@ -115,3 +115,38 @@ values ('announce', 'announce', true, 8388608, array['image/jpeg', 'image/png', 
 on conflict (id) do update set public = true;
 drop policy if exists "admin uploads announce images" on storage.objects;
 create policy "admin uploads announce images" on storage.objects for insert to authenticated with check (bucket_id = 'announce' and public.can_grant_premium());
+
+-- achievements shown in profiles
+create table if not exists public.achievements (
+  id text primary key,
+  title text not null,
+  description text not null,
+  icon text not null,
+  created_at timestamptz not null default now()
+);
+create table if not exists public.user_achievements (
+  user_id uuid not null references public.profiles (id) on delete cascade,
+  achievement_id text not null references public.achievements (id) on delete cascade,
+  awarded_at timestamptz not null default now(),
+  primary key (user_id, achievement_id)
+);
+alter table public.achievements enable row level security;
+alter table public.user_achievements enable row level security;
+drop policy if exists "achievements readable" on public.achievements;
+create policy "achievements readable" on public.achievements for select to authenticated using (true);
+drop policy if exists "user achievements readable" on public.user_achievements;
+create policy "user achievements readable" on public.user_achievements for select to authenticated using (true);
+drop policy if exists "admin awards achievements" on public.user_achievements;
+create policy "admin awards achievements" on public.user_achievements for all to authenticated using (public.can_grant_premium()) with check (public.can_grant_premium());
+
+insert into public.achievements (id, title, description, icon) values
+  ('slishkom-tupo', 'Слишком Тупо', 'Игра от 28.10.2026, в которой Денис совершил самострел, но даже не знал правил священника и обосрался', 'ach/slishkom-tupo.webp')
+on conflict (id) do update set title = excluded.title, description = excluded.description, icon = excluded.icon;
+-- everyone who was at the 28.10 game: signed up for it or sat in a deal that day
+insert into public.user_achievements (user_id, achievement_id, awarded_at)
+select x.user_id, 'slishkom-tupo', timestamptz '2026-10-28 23:00+07' from (
+  select s.user_id from public.signups s join public.events e on e.id = s.event_id where e.day = date '2026-10-28'
+  union select s.user_id from public.seats s join public.games g on g.id = s.game_id
+  where s.user_id is not null and (g.created_at at time zone 'Asia/Bangkok')::date = date '2026-10-28'
+) x
+on conflict do nothing;
