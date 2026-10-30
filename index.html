@@ -896,6 +896,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .prow2 .seat { font: 600 22px/1 var(--f-code); color: var(--ink); }
 .prow2 .nm { font-weight: 800; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .prow2 .rl { font: 700 11px/1.3 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.prow2 .rl .dot { flex: none; }
 .prow2.dead { opacity: .42; }
 .prow2.dead .nm { text-decoration: line-through; }
 .prow2 .btns { display: flex; gap: 6px; align-items: center; }
@@ -903,6 +904,20 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .vote-n { font: 600 22px/1 var(--f-code); min-width: 1.6ch; text-align: center; color: var(--ink); }
 .logl { padding: 10px 16px 14px; border-top: 1.5px dashed var(--line); display: grid; gap: 4px; font-size: 13px; font-weight: 700; color: var(--ink); }
 .logl small { color: var(--muted); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: 10.5px; }
+.night-sum { margin: 4px 16px 14px; padding: 12px 14px; border-radius: 14px; border: 2px solid var(--ink); background: #E9F7EC; color: var(--ink); display: grid; gap: 4px; }
+.night-sum.bad { background: var(--ink); color: var(--paper); }
+.night-sum small { font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: 10.5px; opacity: .7; }
+.night-sum > b { font: italic 800 22px/1.1 var(--f-display); }
+.night-sum.bad > b { color: #FF8A8A; }
+.ns-who { display: flex; align-items: center; gap: 8px; font-weight: 800; }
+.ns-who .seat { font: 600 18px/1 var(--f-code); }
+.ns-who em { font-style: normal; font-weight: 700; font-size: 12px; opacity: .65; }
+.ns-note { font-size: 12.5px; font-weight: 700; opacity: .75; }
+.foul { display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 99px; border: 2px solid var(--ink); background: #fff; color: var(--ink); font: 800 11px/1 var(--f-body); text-transform: uppercase; letter-spacing: .06em; }
+.foul span { margin-right: 2px; }
+.foul i { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--ink); }
+.foul i.x { background: var(--red); border-color: var(--red); }
+.foul.on { background: #FFF4D6; }
 .win-hint { background: var(--ink); color: var(--paper); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-weight: 800; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1245,7 +1260,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261029111201"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261030092143"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1271,6 +1286,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     pat: '<path d="M12 3.2 19.5 6v5.6c0 4.4-3.1 8-7.5 9.2-4.4-1.2-7.5-4.8-7.5-9.2V6z"/><path d="m8.8 12 2.2 2.2 4.4-4.4"/>',
     kur: '<path d="M12 20s-7.8-4.6-7.8-10.2A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.8 2.4C19.8 15.4 12 20 12 20z"/>',
     doc: '<path d="M9.2 3.8h5.6v5.4h5.4v5.6h-5.4v5.4H9.2v-5.4H3.8V9.2h5.4z"/>',
+    pri: '<path d="M12 3v18"/><path d="M6.5 8.5h11"/>',
     man: '<path d="M19.8 3.5 9.6 13.7l1.9 1.9L20.4 6.7c.6-1.1.4-2.3-.6-3.2z"/><path d="m10.5 14.6-5.8 5.8"/><path d="m7.4 15.5 2.4 2.4"/>',
     custom: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.9.7c0 1.7-2.5 2.1-2.5 3.6"/><path d="M12 16.9v.1"/>',
     user: '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.4 7.5-5.4s6.3 1.8 7.5 5.4"/>',
@@ -1290,6 +1306,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     { id: "pat", name: "Патрульный", code: "PTR", team: "city", art: "cards/pat.webp", desc: "Напарник комиссара. Ночью тоже проверяешь игрока. Если комиссара убьют, занимаешь его место." },
     { id: "kur", name: "Любовница", code: "LVR", team: "city", art: "cards/kur.webp", desc: "Ночью приходишь к игроку. Его ночной ход пропадает, а выстрел мафии по нему не проходит." },
     { id: "doc", name: "Доктор", code: "DOC", team: "city", art: "cards/doc.webp", desc: "Ночью лечишь одного игрока: если по нему стреляли, он выживет. Себя можно лечить один раз." },
+    { id: "pri", name: "Священник", code: "PRS", team: "city", art: "cards/pri.webp", desc: "Ты на стороне города. Ночью делаешь свой ход по правилам ведущего, днём помогай найти мафию." },
     { id: "man", name: "Маньяк", code: "MAN", team: "solo", art: "cards/man.webp", desc: "Ты ни за кого. Каждую ночь убиваешь одного игрока. Победа, если останешься в живых последним." },
   ];
   const CIVIL = { id: "mir", name: "Мирный житель", code: "CIV", team: "city", art: "cards/mir-1.webp", desc: "Ночью спишь. Днём слушай, спорь и голосуй, чтобы выгнать мафию из города." };
@@ -1303,6 +1320,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     man: ["cards/man.webp"],
     pat: ["cards/pat.webp"],
     doc: ["cards/doc.webp"],
+    pri: ["cards/pri.webp"],
     mir: ["cards/mir-1.webp", "cards/mir-2.webp", "cards/mir-3.webp"],
   };
 
@@ -1892,7 +1910,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   /* ---------- host: roles (shared) ---------- */
   const suggest = (n) => {
     const fam = Math.max(1, Math.round(n / 3.4));
-    const c = { maf: Math.max(0, fam - 1), don: 1, kom: 1, pat: 0, kur: 0, doc: n >= 6 ? 1 : 0, man: 0 };
+    const c = { maf: Math.max(0, fam - 1), don: 1, kom: 1, pat: 0, kur: 0, doc: n >= 6 ? 1 : 0, pri: 0, man: 0 };
     if (n < 5) { c.doc = 0; if (n < 4) c.kom = 0; }
     S.custom.forEach((r) => (c[r.id] = 0));
     return c;
@@ -2071,9 +2089,6 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   /* ---------- host console: night actions, day nominations and votes ---------- */
   const NIGHT = [
     { k: "maf", label: "Мафия стреляет", who: (s) => s.team === "mafia" },
-    { k: "don", label: "Дон ищет комиссара", who: (s) => s.role_id === "don", check: (t) => (t.role_id === "kom" ? "КОМИССАР" : "не комиссар"), hit: (t) => t.role_id === "kom" },
-    { k: "kom", label: "Комиссар проверяет", who: (s) => s.role_id === "kom", check: (t) => (t.team === "mafia" ? "МАФИЯ" : "не мафия"), hit: (t) => t.team === "mafia" },
-    { k: "pat", label: "Патрульный проверяет", who: (s) => s.role_id === "pat", check: (t) => (t.team === "mafia" ? "МАФИЯ" : "не мафия"), hit: (t) => t.team === "mafia" },
     { k: "doc", label: "Доктор лечит", who: (s) => s.role_id === "doc" },
     { k: "kur", label: "Любовница идёт к", who: (s) => s.role_id === "kur" },
     { k: "man", label: "Маньяк убивает", who: (s) => s.role_id === "man" },
@@ -2097,7 +2112,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const nightOutcome = () => {
     const n = flow().night, lines = [], victims = [];
     const visited = n.kur ? seatBy(n.kur) : null;
-    const blocked = (k) => visited && NIGHT.find((x) => x.k === k).who(visited) && k !== "maf";
+    const blocked = (k) => !!visited && k !== "maf" && NIGHT.find((x) => x.k === k).who(visited);
     const docOn = n.doc && !blocked("doc") ? n.doc : null;
     if (n.kur && visited) lines.push(`Любовница была у ${pad(visited.seat)} ${seatName(visited)}`);
     if (n.maf) {
@@ -2123,9 +2138,9 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const killSeats = async (list, how) => {
     for (const v of list) {
       const s = seatBy(v.seat); if (!s) continue;
-      const { error } = await sb.from("seats").update({ alive: false, died_round: live.game.round, died_how: how }).eq("id", s.id);
+      const { error } = await sb.from("seats").update({ alive: false, died_round: live.game.round || 0, died_how: how }).eq("id", s.id);
       if (error) { toast("Не получилось: " + humanErr(error)); return false; }
-      s.alive = false; s.died_round = live.game.round; s.died_how = how;
+      s.alive = false; s.died_round = live.game.round || 0; s.died_how = how;
     }
     refreshDeaths();
     return true;
@@ -2140,17 +2155,21 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       <div class="row-btns" style="justify-content:flex-end">${ph === "night"
         ? `<button class="pill sm" data-flow="day">наступает день</button>`
         : `<button class="pill sm dark" data-flow="night">${ph === "setup" ? "начать первую ночь" : "наступает ночь"}</button>${ph === "setup" ? `<button class="pill sm ghost" data-flow="day">начать с дня</button>` : ""}`}</div></div>
-      <p class="lead">${ph === "night" ? "Отмечай, кого выбрал каждый. Итог ночи посчитается, когда нажмёшь «наступает день»." : ph === "day" ? "Выставление: два голоса за игрока — и он на голосовании. Потом отметь голоса и выгони одного или никого." : "Объяви, что город засыпает, и начни ночь."}</p></div>`;
+      <p class="lead">${ph === "night" ? "Отметь, кого выбрал каждый. Итог ночи внизу считается сразу." : ph === "day" ? "Выставление: два голоса за игрока — и он на голосовании. Потом отметь голоса и выгони одного или никого." : "Объяви, что город засыпает, и начни ночь."}</p></div>`;
     let body = "";
     if (ph === "night") {
       body = NIGHT.map((act) => {
         const actors = a.filter(act.who);
         if (!actors.length) return "";
-        const pick = f.night[act.k], t = pick ? seatBy(pick) : null;
-        const res = act.check && t ? `<span class="res ${act.hit(t) ? "hit" : ""}">${act.check(t)}</span>` : "";
-        return `<div class="act"><div class="act-h"><span>${act.label} <span class="act-off">· ${actors.map((x) => pad(x.seat)).join(", ")}</span></span>${res}</div>
+        const pick = f.night[act.k];
+        return `<div class="act"><div class="act-h"><span>${act.label} <span class="act-off">· ${actors.map((x) => pad(x.seat)).join(", ")}</span></span></div>
           <div class="chipset">${a.map((s) => chip(s, pick === s.seat, `data-night="${act.k}" data-seat="${s.seat}"`)).join("")}</div></div>`;
       }).join("");
+      const o = nightOutcome(), k = o.victims.length;
+      body += `<div class="night-sum ${k ? "bad" : ""}"><small>Итог ночи</small>
+        <b>${k} ${plural(k, "смерть", "смерти", "смертей")}</b>
+        ${k ? o.victims.map((v) => `<div class="ns-who"><span class="seat">${pad(v.seat)}</span>${esc(seatName(seatBy(v.seat)))} <em>${v.by}</em></div>`).join("") : `<div class="ns-who">все живы</div>`}
+        ${o.lines.length ? `<div class="ns-note">${o.lines.map(esc).join(" · ")}</div>` : ""}</div>`;
     } else if (ph === "day") {
       const noms = f.noms, ballot = a.filter((s) => (noms[s.seat] || 0) >= 2);
       body = a.map((s) => `<div class="prow2"><span class="seat">${pad(s.seat)}</span><div style="min-width:0"><div class="nm">${esc(seatName(s))}</div><div class="rl">${roleTag(s)}</div></div>
@@ -2161,8 +2180,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     }
     const dead = live.seats.filter((s) => s.alive === false);
     const all = `<div class="sec-label eyebrow">Игроки · в игре ${a.length} из ${live.seats.length}</div>` + live.seats.map((s) => `<div class="prow2 ${s.alive === false ? "dead" : ""}"><span class="seat">${pad(s.seat)}</span>
-        <div style="min-width:0"><div class="nm">${esc(seatName(s))}</div><div class="rl">${roleTag(s)}${s.alive === false ? ` · ${s.died_how === "vote" ? "выгнан" : s.died_how === "night" ? "убит ночью" : "выбыл"} (${s.died_round})` : ""}</div></div>
-        <div class="btns"><button class="x-btn" type="button" data-toggle="${s.seat}">${s.alive === false ? "вернуть" : "выбыл"}</button></div></div>`).join("");
+        <div style="min-width:0"><div class="nm">${esc(seatName(s))}</div><div class="rl">${roleTag(s)}${s.alive === false ? ` · ${s.died_how === "vote" ? "выгнан" : s.died_how === "night" ? "убит ночью" : s.died_how === "fouls" ? "3 фола" : "выбыл"} (${s.died_round})` : ""}</div></div>
+        <div class="btns">${s.alive === false ? "" : `<button class="foul ${s.fouls ? "on" : ""}" type="button" data-foul="${s.seat}" aria-label="Фол: ${s.fouls || 0} из 3"><span>фол</span>${[1, 2, 3].map((i) => `<i class="${i <= (s.fouls || 0) ? "x" : ""}"></i>`).join("")}</button>${s.fouls ? `<button class="x-btn" type="button" data-unfoul="${s.seat}" aria-label="Снять фол">−</button>` : ""}`}<button class="x-btn" type="button" data-toggle="${s.seat}">${s.alive === false ? "вернуть" : "выбыл"}</button></div></div>`).join("");
     const w = winHint();
     const win = w ? `<div class="win-hint"><span>${w.text}</span><button class="pill sm" type="button" data-win="${w.team}" style="margin:4px">${TEAM[w.team].won.toLowerCase()}</button></div>` : "";
     const log = f.log.length ? `<div class="logl"><small>Журнал</small>${f.log.map((l) => `<div>${l.phase === "night" ? "🌙" : "☀️"} ${l.round}: ${esc(l.text)}</div>`).join("")}</div>` : "";
@@ -2198,6 +2217,20 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         if (!(await killSeats([{ seat: s.seat }], "vote"))) return;
         await setPhaseDb("day", g.round); logIt(`выгнали ${pad(s.seat)} ${seatName(s)} (${s.role_name}), голосов: ${f.votes[s.seat] || 0}`);
         f.noms = {}; f.votes = {}; save(); drawLive();
+      } });
+    }
+    if (b.dataset.foul || b.dataset.unfoul) {
+      const s = seatBy(+(b.dataset.foul || b.dataset.unfoul)), to = Math.max(0, Math.min(3, (s.fouls || 0) + (b.dataset.foul ? 1 : -1)));
+      const put = async () => {
+        const { error } = await sb.from("seats").update({ fouls: to }).eq("id", s.id);
+        if (error) { toast("Не получилось: " + humanErr(error)); return false; }
+        s.fouls = to; haptic("tap"); return true;
+      };
+      if (to < 3) { if (await put()) { if (b.dataset.foul) logIt(`фол ${to}/3: ${pad(s.seat)} ${seatName(s)}`); save(); drawConsole(); } return; }
+      return sheet({ eyebrow: "Третий фол", title: `${pad(s.seat)} ${seatName(s)} уходит`, text: `Роль: ${s.role_name}. После трёх фолов игрок выбывает у всех в приложении.`, ok: "удалить из игры", okClass: "red", onOk: async () => {
+        if (!(await put()) || !(await killSeats([{ seat: s.seat }], "fouls"))) return;
+        await setPhaseDb(g.phase || "setup", g.round || 0);
+        logIt(`${pad(s.seat)} ${seatName(s)} ушёл по фолам (${s.role_name})`); toast("Игрок ушёл по фолам"); drawLive();
       } });
     }
     if (b.hasAttribute("data-nobody")) { logIt("никого не выгнали"); f.noms = {}; f.votes = {}; save(); return drawConsole(); }
@@ -3122,6 +3155,10 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   const start = async () => {
     S = load() || fresh();
     if (!S.custom) S.custom = [];
+    S.custom.filter((r) => /^священник$/i.test(r.name.trim())).forEach((r) => {
+      [S.host.counts, S.on.counts].forEach((c) => { if (c && r.id in c) { c.pri = (c.pri || 0) + c[r.id]; delete c[r.id]; } });
+    });
+    S.custom = S.custom.filter((r) => !/^священник$/i.test(r.name.trim()));
     if (S.host.phase === "deal" && !S.host.deal.length) S.host.phase = "roles";
     if (S.host.phase !== "count" && !S.host.counts) S.host.counts = suggest(S.host.n);
     if (S.on.phase === "roles" && !S.on.counts) S.on.phase = "pick";
