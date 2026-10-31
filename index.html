@@ -174,6 +174,11 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .deck-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .deck-card { display: block; padding: 0; border-radius: 10px; transition: transform .18s ease; filter: drop-shadow(0 4px 6px rgba(9, 47, 128, .22)); }
 .deck-card img { display: block; width: 100%; aspect-ratio: 800 / 1180; object-fit: contain; }
+.deck-card.locked { position: relative; overflow: hidden; }
+.deck-card.locked img { filter: grayscale(1) blur(3px) brightness(.55); transform: scale(1.04); }
+.deck-card .lock { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 4px; color: #fff; }
+.deck-card .lock svg { width: 30px; height: 30px; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .5)); }
+.deck-card .lock small { font: 800 10.5px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; }
 .deck-card:active { transform: scale(.96) rotate(-1deg); }
 .deck-veil { align-items: center; overflow-y: auto; }
 .deck-big { width: min(92vw, 420px); display: grid; gap: 12px; margin: auto; animation: deckIn .32s cubic-bezier(.2, .9, .3, 1.2); }
@@ -1289,7 +1294,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261031095653"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261031100812"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1318,6 +1323,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     pri: '<path d="M12 3v18"/><path d="M6.5 8.5h11"/>',
     man: '<path d="M19.8 3.5 9.6 13.7l1.9 1.9L20.4 6.7c.6-1.1.4-2.3-.6-3.2z"/><path d="m10.5 14.6-5.8 5.8"/><path d="m7.4 15.5 2.4 2.4"/>',
     custom: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.9.7c0 1.7-2.5 2.1-2.5 3.6"/><path d="M12 16.9v.1"/>',
+    lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/><path d="M12 14.5v2.5"/>',
     deck: '<rect x="8.5" y="4.5" width="11" height="15" rx="2.2"/><path d="M6 7.2 4.6 7.6a1.6 1.6 0 0 0-1.1 2l2.9 9.6a1.6 1.6 0 0 0 2 1.1l2.4-.7"/>',
     user: '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.4 7.5-5.4s6.3 1.8 7.5 5.4"/>',
   };
@@ -1331,7 +1337,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   };
   const BASE = [
     { id: "maf", name: "Мафия", code: "MAF", team: "mafia", art: "cards/maf.webp", desc: "Ночью вместе с семьёй выбираешь, кого убрать. Днём притворяйся мирным и уводи подозрения." },
-    { id: "don", name: "Дон мафии", code: "DON", team: "mafia", art: "cards/don.webp", desc: "Глава семьи. Ночью стреляешь с мафией, а потом ищешь комиссара: проверяешь одного игрока." },
+    { id: "don", name: "Дон мафии", code: "DON", team: "mafia", art: "cards/don-2.webp", desc: "Глава семьи. Ночью стреляешь с мафией, а потом ищешь комиссара: проверяешь одного игрока." },
     { id: "kom", name: "Комиссар", code: "COM", team: "city", art: "cards/kom.webp", desc: "Ночью проверяешь одного игрока и узнаёшь, мафия он или нет. Не спались раньше времени." },
     { id: "pat", name: "Патрульный", code: "PTR", team: "city", art: "cards/pat.webp", desc: "Напарник комиссара. Ночью тоже проверяешь игрока. Если комиссара убьют, занимаешь его место." },
     { id: "kur", name: "Любовница", code: "LVR", team: "city", art: "cards/kur.webp", desc: "Ночью приходишь к игроку. Его ночной ход пропадает, а выстрел мафии по нему не проходит." },
@@ -1344,7 +1350,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   // every card variant per role; one is picked at random on each deal (the role's `art` is the thumbnail)
   const CARD_ART = {
     maf: ["cards/maf.webp", "cards/maf-2.webp", "cards/maf-3.webp"],
-    don: ["cards/don.webp"],
+    don: ["cards/don-2.webp"],
     kom: ["cards/kom.webp", "cards/kom-2.webp"],
     kur: ["cards/kur.webp"],
     man: ["cards/man.webp", "cards/man-2.webp"],
@@ -1353,6 +1359,9 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     pri: ["cards/pri.webp"],
     mir: ["cards/mir-1.webp", "cards/mir-2.webp", "cards/mir-3.webp", "cards/mir-4.webp"],
   };
+
+  // retired variants: stay in the deck view, locked, and are never dealt
+  const LOCKED_ART = { don: ["cards/don.webp"] };
 
   const TR = { а:"A",б:"B",в:"V",г:"G",д:"D",е:"E",ё:"E",ж:"ZH",з:"Z",и:"I",й:"Y",к:"K",л:"L",м:"M",н:"N",о:"O",п:"P",р:"R",с:"S",т:"T",у:"U",ф:"F",х:"H",ц:"C",ч:"CH",ш:"SH",щ:"SH",ы:"Y",э:"E",ю:"YU",я:"YA" };
   const codeOf = (name) => {
@@ -1650,10 +1659,11 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     $("deckStub").textContent = `${roles.length} ${plural(roles.length, "роль", "роли", "ролей")}`;
     $("deckList").innerHTML = roles.map((r) => `<div class="deck-role team-${r.team}">
         <div class="deck-h"><span class="dot team-${r.team}"></span><b>${esc(r.name)}</b><span class="r-code">${esc(r.code)}</span><small>${TEAM[r.team].label}${CARD_ART[r.id].length > 1 ? ` · ${CARD_ART[r.id].length} варианта` : ""}</small></div>
-        <div class="deck-grid">${CARD_ART[r.id].map((src, i) => `<button class="deck-card" type="button" data-deck="${r.id}" data-i="${i}" aria-label="${esc(r.name)}${CARD_ART[r.id].length > 1 ? `, вариант ${i + 1}` : ""}"><img src="${src}" alt="" loading="lazy"></button>`).join("")}</div>
+        <div class="deck-grid">${CARD_ART[r.id].map((src, i) => `<button class="deck-card" type="button" data-deck="${r.id}" data-i="${i}" aria-label="${esc(r.name)}${CARD_ART[r.id].length > 1 ? `, вариант ${i + 1}` : ""}"><img src="${src}" alt="" loading="lazy"></button>`).join("")}${(LOCKED_ART[r.id] || []).map((src) => `<button class="deck-card locked" type="button" data-locked aria-label="${esc(r.name)}: карточка закрыта"><img src="${src}" alt="" loading="lazy"><span class="lock">${icon("lock")}<small>закрыта</small></span></button>`).join("")}</div>
       </div>`).join("");
   };
   $("deckList").onclick = (e) => {
+    if (e.target.closest("[data-locked]")) { haptic("tap"); return toast("Эта карточка пока закрыта"); }
     const b = e.target.closest("[data-deck]"); if (!b) return;
     const r = roleById(b.dataset.deck), src = CARD_ART[r.id][+b.dataset.i];
     const v = document.createElement("div"); v.className = "veil deck-veil";
