@@ -1063,6 +1063,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       </div>
     </div></div>
     <div class="col" id="eventsList"></div>
+    <div id="newDate"></div>
     <div id="paySettings"></div>
   </section>
 
@@ -1294,7 +1295,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261031100812"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261031103229"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2788,7 +2789,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (!sb || !me) return;
     await sb.rpc("ensure_events");
     const [{ data: list }, { data: set }, { data: hostIds }] = await Promise.all([
-      sb.from("events").select("*, signups(user_id, created_at, profiles(id,nick,tg_username,tg_photo))").gte("day", bkkToday()).neq("status", "removed").order("day").limit(4),
+      sb.from("events").select("*, signups(user_id, created_at, profiles(id,nick,tg_username,tg_photo))").gte("day", bkkToday()).neq("status", "removed").order("day").limit(10),
       sb.from("pay_settings").select("*").eq("id", 1).maybeSingle(),
       sb.rpc("host_ids"),
     ]);
@@ -2865,7 +2866,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
         <label>цена, бат<input class="field" type="number" name="p" min="0" step="10" value="${e.price}" required></label>
         <label class="wide">заметка для всех<input class="field" name="n" maxlength="200" value="${esc(e.note || "")}" placeholder="Например: берём настолку, адрес тот же"></label>
         <div class="row-btns wide" style="justify-content:flex-start"><button class="pill sm" type="submit">сохранить</button>
-        <button class="pill sm ${e.status === "open" ? "red" : "ghost"}" type="button" data-evstatus>${e.status === "open" ? "отменить игру" : "вернуть игру"}</button></div>
+        <button class="pill sm ${e.status === "open" ? "red" : "ghost"}" type="button" data-evstatus>${e.status === "open" ? "отменить игру" : "вернуть игру"}</button>
+        ${canGrant ? `<button class="pill sm ghost" type="button" data-evremove>убрать дату</button>` : ""}</div>
       </form>` : ""}`;
   const howPays = (pay) => pay?.method === "qr" ? (pay.claimed_at ? "QR · говорит, что перевёл" : "QR · ещё не перевёл") : pay?.method === "cash" ? "наличными на месте" : "способ не выбран";
   // the host's own screen: one Saturday at a time, who comes and who paid
@@ -2913,7 +2915,36 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       </div></article>`;
     drawPaySettings();
   };
+  // only @tivishka adds game dates
+  const drawNewDate = () => {
+    const box = $("newDate");
+    if (!canGrant) { box.innerHTML = ""; return; }
+    if (box.firstChild && box.contains(document.activeElement)) return;
+    box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:10px">
+      <div class="eyebrow">Новая дата · создаёшь только ты</div>
+      <h2 class="h2">Поставить игру</h2>
+      <form class="ev-form" id="newDateForm">
+        <label class="wide">дата<input class="field" type="date" name="d" min="${bkkToday()}" required></label>
+        <label>сбор<input class="field" type="time" name="g" value="18:30" required></label>
+        <label>начало<input class="field" type="time" name="s" value="19:00" required></label>
+        <label>цена, бат<input class="field" type="number" name="p" min="0" step="10" value="100" required></label>
+        <label class="wide">заметка для всех<input class="field" name="n" maxlength="200" placeholder="Например: место, ведущий"></label>
+        <div class="row-btns wide" style="justify-content:flex-start"><button class="pill sm" type="submit">создать игру</button></div>
+      </form></div></div></div>`;
+  };
+  $("newDate").addEventListener("submit", async (e) => {
+    const f = e.target.closest("#newDateForm"); if (!f) return;
+    e.preventDefault();
+    const v = (k) => f.elements[k].value;
+    const { data: id, error } = await sb.rpc("create_event", { d: v("d"), g: v("g"), s: v("s"), p: parseInt(v("p"), 10) || 0, n: v("n") });
+    if (error) return toast("Не получилось: " + humanErr(error));
+    const { d, m, w } = dayParts(v("d"));
+    f.reset(); document.activeElement?.blur?.();
+    ev.sel = id; await loadEvents(); if (S.view === "events") drawEvents();
+    toast(`Игра создана: ${DOW_FULL[w].toLowerCase()}, ${d} ${MON_FULL[m - 1]}`);
+  });
   const drawEvents = () => {
+    drawNewDate();
     const box = $("eventsList");
     $("evTitle").textContent = canHost() ? "Запись и оплата" : "Записаться на мафию";
     $("evLead").textContent = canHost() ? "Выбери субботу: кто придёт, как платит и от кого ты получил деньги." : "Выбери дату и нажми «Я буду». Все увидят, кто идёт.";
@@ -3017,6 +3048,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     else if (b.hasAttribute("data-claim")) evAction(() => sb.rpc("set_payment", { e: id, m: "qr", claimed: true }), "Отметил перевод. Ведущий подтвердит");
     else if (b.dataset.st) evAction(() => sb.rpc("set_pay_status", { e: id, u: b.dataset.u, st: b.getAttribute("aria-pressed") === "true" ? "none" : b.dataset.st }));
     else if (b.hasAttribute("data-edit")) { ev.editing = ev.editing === id ? null : id; drawEvents(); }
+    else if (b.hasAttribute("data-evremove")) sheet({ eyebrow: "Дата", title: "Убрать эту дату?", text: "Игра пропадёт из расписания у всех. Записи останутся в базе.", ok: "убрать", okClass: "red",
+      onOk: () => { ev.editing = null; ev.sel = null; return evAction(() => sb.rpc("remove_event", { e: id }), "Дата убрана"); } });
     else if (b.hasAttribute("data-evstatus")) evAction(() => sb.from("events").update({ status: event.status === "open" ? "cancelled" : "open" }).eq("id", id), event.status === "open" ? "Игра отменена" : "Игра снова в расписании");
   });
   $("homeEvent").addEventListener("click", async (e) => {
