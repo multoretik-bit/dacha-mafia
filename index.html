@@ -194,6 +194,13 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .deck-big > img { width: 100%; max-height: 62vh; object-fit: contain; filter: drop-shadow(0 12px 24px rgba(0, 0, 0, .35)); }
 @keyframes deckIn { from { transform: translateY(24px) scale(.94); opacity: 0; } }
 
+#liveGames .ticket-in { border-color: var(--navy); }
+.lg-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 16px; border-top: 1.5px dashed var(--line); }
+.lg-info { display: grid; gap: 3px; min-width: 0; flex: 1 1 160px; }
+.lg-info b { font: 800 15px/1.2 var(--f-body); color: var(--ink); }
+.lg-info small { color: var(--muted); font-weight: 700; font-size: 12.5px; }
+.lg-btns { display: flex; gap: 8px; }
+
 /* ---------- avatars ---------- */
 .ava {
   width: 40px; height: 40px; border-radius: 50%; flex: none; display: grid; place-items: center;
@@ -1210,6 +1217,7 @@ html.hw {
   <!-- HOST ONLINE: PICK -->
   <section id="vPick" class="col" hidden>
     <div class="seg mode-seg" data-modeseg></div>
+    <div id="liveGames" hidden></div>
     <div class="ticket"><div class="ticket-in">
       <div class="t-body" style="padding-bottom:12px">
         <div class="eyebrow">Шаг 1 из 3</div>
@@ -1399,7 +1407,7 @@ html.hw {
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261031125910"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261031175158"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1957,6 +1965,7 @@ html.hw {
     }
     $("guestForm").hidden = false;
     drawPick();
+    loadLiveGames();
     await Promise.all([loadPeople(), ev.loaded ? null : loadEvents()]);
     if ($("vPick").hidden) return;
     // today's sign-ups come in by themselves once, in the order they signed up
@@ -1967,6 +1976,32 @@ html.hw {
       if (n) toast(`Добавил ${n} ${plural(n, "записавшегося", "записавшихся", "записавшихся")} на сегодня`, { label: "рассадить", run: () => openSeating() });
     }
     drawPick();
+  };
+  const loadLiveGames = async () => {
+    const box = $("liveGames");
+    if (!sb || !me || !canHost() || !online()) { box.hidden = true; return; }
+    const { data } = await sb.from("games").select("id,created_at,round,host_id,profiles(nick),seats(count)").eq("status", "live").order("created_at", { ascending: false });
+    if ($("vPick").hidden) return;
+    const list = data || [];
+    box.hidden = !list.length;
+    if (!list.length) return;
+    const when = (t) => new Date(t).toLocaleString("ru-RU", { timeZone: "Asia/Bangkok", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+    box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:4px;padding-bottom:6px">
+        <div class="eyebrow">Идут сейчас · ${list.length}</div><h2 class="h2">Незавершённые игры</h2>
+        <p class="lead">Любой ведущий может открыть игру и закончить её.</p></div>
+      ${list.map((g) => {
+        const n = g.seats?.[0]?.count || 0;
+        return `<div class="lg-row" data-lg="${g.id}" data-host="${esc(g.profiles?.nick || "")}">
+          <div class="lg-info"><b>${when(g.created_at)}</b><small>ведёт ${g.host_id === me.id ? "ты" : esc(g.profiles?.nick || "ведущий")} · ${n} ${plural(n, "игрок", "игрока", "игроков")}${g.round ? ` · ${g.round}-й круг` : ""}</small></div>
+          <div class="lg-btns"><button class="pill sm ghost" type="button" data-lgopen>открыть</button><button class="pill sm red" type="button" data-lgend>завершить</button></div>
+        </div>`;
+      }).join("")}
+    </div></div>`;
+  };
+  $("liveGames").onclick = (e) => {
+    const b = e.target.closest("[data-lgopen],[data-lgend]"), row = b?.closest("[data-lg]"); if (!row) return;
+    S.on.gameId = row.dataset.lg; S.on.test = false; live.showRoles = false; live.finishOnOpen = b.hasAttribute("data-lgend");
+    save(); syncNotesGame(); haptic("tap"); go("host");
   };
   const todayEvent = () => ev.list.find((e) => e.day === bkkToday() && e.status === "open") || null;
   const addSignups = (t) => {
@@ -2227,6 +2262,7 @@ html.hw {
     if (!game || game.status !== "live") { S.on.gameId = null; S.on.phase = "pick"; save(); return go("host"); }
     live.game = game; live.seats = seats || [];
     drawLive();
+    if (live.finishOnOpen) { live.finishOnOpen = false; $("liveFinish").onclick(); }
     if (!live.chan) {
       live.chan = sb.channel("live-" + gid)
         .on("postgres_changes", { event: "UPDATE", schema: "public", table: "seats", filter: `game_id=eq.${gid}` }, (p) => {
