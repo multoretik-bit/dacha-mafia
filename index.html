@@ -163,6 +163,23 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .icon-btn svg { width: 22px; height: 22px; }
 .icon-btn .ava { width: 100%; height: 100%; box-shadow: none; font-size: 22px; }
 
+.deck-btn svg { width: 23px; height: 23px; }
+.home-hero { position: relative; }
+.deck-home { position: absolute; top: 4px; right: 0; z-index: 2; }
+.deck-role { padding: 12px 16px 14px; border-top: 1.5px dashed var(--line); }
+.deck-h { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; color: var(--ink); margin-bottom: 10px; }
+.deck-h b { font: italic 800 18px/1.1 var(--f-display); }
+.deck-h small { color: var(--muted); font-weight: 700; font-size: 12px; margin-left: auto; }
+.deck-h .dot { width: 10px; height: 10px; border-radius: 50%; align-self: center; }
+.deck-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.deck-card { display: block; padding: 0; border-radius: 10px; transition: transform .18s ease; filter: drop-shadow(0 4px 6px rgba(9, 47, 128, .22)); }
+.deck-card img { display: block; width: 100%; aspect-ratio: 800 / 1180; object-fit: contain; }
+.deck-card:active { transform: scale(.96) rotate(-1deg); }
+.deck-veil { align-items: center; overflow-y: auto; }
+.deck-big { width: min(92vw, 420px); display: grid; gap: 12px; margin: auto; animation: deckIn .32s cubic-bezier(.2, .9, .3, 1.2); }
+.deck-big > img { width: 100%; max-height: 62vh; object-fit: contain; filter: drop-shadow(0 12px 24px rgba(0, 0, 0, .35)); }
+@keyframes deckIn { from { transform: translateY(24px) scale(.94); opacity: 0; } }
+
 /* ---------- avatars ---------- */
 .ava {
   width: 40px; height: 40px; border-radius: 50%; flex: none; display: grid; place-items: center;
@@ -937,6 +954,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       <button role="tab" id="tabNotes" aria-selected="false" hidden>заметки</button>
     </div>
     <div class="top-title" id="topTitle" hidden></div>
+    <button class="icon-btn deck-btn" id="deckBtn" aria-label="Все карточки"></button>
     <button class="icon-btn" id="meBtn" aria-label="Профиль"></button>
   </header>
 
@@ -944,6 +962,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   <section id="vHome" class="col" hidden>
     <div class="game-on" id="gameOnHome" hidden></div>
     <div class="home-hero">
+      <button class="icon-btn deck-btn deck-home" id="deckHome" aria-label="Все карточки"></button>
       <div class="logo" data-logo></div>
       <svg class="wordmark" viewBox="0 0 400 86" aria-label="MAFIA" role="img">
         <text x="200" y="66" text-anchor="middle" font-size="64" fill="none" stroke="#092F80" stroke-width="20" stroke-linejoin="round">MAFIA</text>
@@ -1053,6 +1072,16 @@ a.pill { text-decoration: none; box-sizing: border-box; }
       <div class="stub"><span id="profStub"></span><b>PROFILE</b></div>
     </div></div>
     <div class="row-btns" id="profBtns"></div>
+  </section>
+
+  <!-- DECK -->
+  <section id="vDeck" class="col" hidden>
+    <div class="ticket"><div class="ticket-in">
+      <div class="t-body" style="padding-bottom:6px"><div class="eyebrow" id="deckEyebrow">Колода</div><h2 class="h1">Все карточки</h2>
+        <p class="lead">Каждая роль и все её варианты. При раздаче вариант выпадает случайно.</p></div>
+      <div id="deckList"></div>
+      <div class="stub"><span id="deckStub"></span><b>DECK</b></div>
+    </div></div>
   </section>
 
   <!-- PEOPLE -->
@@ -1260,7 +1289,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261030092143"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261031060006"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1289,6 +1318,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     pri: '<path d="M12 3v18"/><path d="M6.5 8.5h11"/>',
     man: '<path d="M19.8 3.5 9.6 13.7l1.9 1.9L20.4 6.7c.6-1.1.4-2.3-.6-3.2z"/><path d="m10.5 14.6-5.8 5.8"/><path d="m7.4 15.5 2.4 2.4"/>',
     custom: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.9.7c0 1.7-2.5 2.1-2.5 3.6"/><path d="M12 16.9v.1"/>',
+    deck: '<rect x="8.5" y="4.5" width="11" height="15" rx="2.2"/><path d="M6 7.2 4.6 7.6a1.6 1.6 0 0 0-1.1 2l2.9 9.6a1.6 1.6 0 0 0 2 1.1l2.4-.7"/>',
     user: '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.4 7.5-5.4s6.3 1.8 7.5 5.4"/>',
   };
   const PLANE = '<svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z" transform="rotate(90 12 12)"/></svg>';
@@ -1317,7 +1347,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     don: ["cards/don.webp"],
     kom: ["cards/kom.webp"],
     kur: ["cards/kur.webp"],
-    man: ["cards/man.webp"],
+    man: ["cards/man.webp", "cards/man-2.webp"],
     pat: ["cards/pat.webp"],
     doc: ["cards/doc.webp"],
     pri: ["cards/pri.webp"],
@@ -1536,7 +1566,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   });
 
   /* ---------- navigation ---------- */
-  const VIEWS = ["vHome", "vAuth", "vProfile", "vPeople", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
+  const VIEWS = ["vHome", "vAuth", "vProfile", "vPeople", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
   let profileId = null;
   const online = () => S.hostMode === "online";
   const hostView = () => {
@@ -1555,13 +1585,13 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     if (view === "profile") profileId = arg || me?.id;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "home";
     renderTabs(view);
     if (id !== "vLive") stopLive();
     ({
-      vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople,
+      vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople, vDeck: renderDeck,
       vPick: renderPick, vCount: renderCount, vRoles: renderRoles, vLive: renderLive, vDeal: renderDeal, vDone: renderDone,
       vCard: renderCard, vNotes: () => renderNotes(false), vEvents: renderEvents, vPlayer: renderPlayer,
     })[id]();
@@ -1582,6 +1612,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   $("tabCard").onclick = () => go("card");
   $("tabNotes").onclick = () => go("notes");
   $("meBtn").onclick = () => (me ? go("profile", me.id) : go("auth"));
+  ["deckBtn", "deckHome"].forEach((id) => { $(id).innerHTML = icon("deck"); $(id).onclick = () => go("deck"); });
   ["newLobbyDone", "newLobbyPick", "newLobbyCount"].forEach((id) => ($(id).onclick = askNewLobby));
 
   // only the two tabs of the current section, so labels never overlap
@@ -1597,7 +1628,7 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     $("tabEvents").textContent = canHost() ? "запись" : "запись на игру";
     $("tabsBox").hidden = !set.length;
     $("topTitle").hidden = !!set.length;
-    $("topTitle").textContent = { profile: "профиль", people: "дачники", auth: "вход" }[view] || "";
+    $("topTitle").textContent = { profile: "профиль", people: "дачники", auth: "вход", deck: "колода" }[view] || "";
   };
 
   const renderHostAccess = () => {
@@ -1609,6 +1640,31 @@ a.pill { text-decoration: none; box-sizing: border-box; }
     renderHostAccess();
     $("meBtn").innerHTML = me ? avaP(me) : icon("user");
     $("meBtn").setAttribute("aria-label", me ? `Профиль: ${me.nick}` : "Войти");
+  };
+
+  /* ---------- deck: every card that exists ---------- */
+  const deckRoles = () => [...BASE, CIVIL].filter((r) => CARD_ART[r.id]?.length);
+  const renderDeck = () => {
+    const roles = deckRoles(), total = roles.reduce((a, r) => a + CARD_ART[r.id].length, 0);
+    $("deckEyebrow").textContent = `Колода · ${total} ${plural(total, "карточка", "карточки", "карточек")}`;
+    $("deckStub").textContent = `${roles.length} ${plural(roles.length, "роль", "роли", "ролей")}`;
+    $("deckList").innerHTML = roles.map((r) => `<div class="deck-role team-${r.team}">
+        <div class="deck-h"><span class="dot team-${r.team}"></span><b>${esc(r.name)}</b><span class="r-code">${esc(r.code)}</span><small>${TEAM[r.team].label}${CARD_ART[r.id].length > 1 ? ` · ${CARD_ART[r.id].length} варианта` : ""}</small></div>
+        <div class="deck-grid">${CARD_ART[r.id].map((src, i) => `<button class="deck-card" type="button" data-deck="${r.id}" data-i="${i}" aria-label="${esc(r.name)}${CARD_ART[r.id].length > 1 ? `, вариант ${i + 1}` : ""}"><img src="${src}" alt="" loading="lazy"></button>`).join("")}</div>
+      </div>`).join("");
+  };
+  $("deckList").onclick = (e) => {
+    const b = e.target.closest("[data-deck]"); if (!b) return;
+    const r = roleById(b.dataset.deck), src = CARD_ART[r.id][+b.dataset.i];
+    const v = document.createElement("div"); v.className = "veil deck-veil";
+    v.innerHTML = `<div class="deck-big" role="dialog" aria-modal="true" aria-label="${esc(r.name)}">
+        <img src="${src}" alt="${esc(r.name)}">
+        <div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:6px">
+          <div class="eyebrow">${TEAM[r.team].long}</div><h2 class="h2">${esc(r.name)}</h2><p class="lead">${esc(r.desc)}</p>
+          <button class="pill sm" type="button" data-close style="align-self:flex-start">закрыть</button></div></div></div>
+      </div>`;
+    v.addEventListener("click", (ev) => { if (ev.target === v || ev.target.closest("[data-close]")) v.remove(); });
+    document.body.append(v); haptic("tap");
   };
 
   /* ---------- home ---------- */
