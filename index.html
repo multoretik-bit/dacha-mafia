@@ -1427,7 +1427,7 @@ html.hw {
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261101112748"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261101143828"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1893,8 +1893,9 @@ html.hw {
         me.nick = nick; people = []; renderMeBtn(); toast("Ник сохранён"); renderProfile();
       };
     };
+    // win rate only from 5 games: fewer games say nothing
     const rate = row.games ? Math.round((row.wins / row.games) * 100) : 0;
-    $("profStats").innerHTML = `<div><b>${row.games}</b><small>${plural(row.games, "игра", "игры", "игр")}</small></div><div><b>${row.wins}</b><small>${plural(row.wins, "победа", "победы", "побед")}</small></div><div><b>${rate}%</b><small>побед</small></div>`;
+    $("profStats").innerHTML = `<div><b>${row.games}</b><small>${plural(row.games, "игра", "игры", "игр")}</small></div><div><b>${row.wins}</b><small>${plural(row.wins, "победа", "победы", "побед")}</small></div>${row.games >= 5 ? `<div><b>${rate}%</b><small>побед</small></div>` : `<div><b>—</b><small>% побед с 5 игр</small></div>`}`;
     $("profRoles").innerHTML = (stats || []).length
       ? stats.map((s) => {
           const art = ART[s.role_id];
