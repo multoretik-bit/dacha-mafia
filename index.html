@@ -205,6 +205,21 @@ button { cursor: pointer; border: 0; background: none; padding: 0; }
 .lg-info small { color: var(--muted); font-weight: 700; font-size: 12.5px; }
 .lg-btns { display: flex; gap: 8px; }
 
+.po-opts { display: grid; gap: 8px; }
+.po-opt { display: flex; gap: 8px; align-items: center; }
+.po-opt .field { flex: 1; min-width: 0; }
+#poList { display: grid; }
+.po-empty { padding: 14px 16px 18px; color: var(--muted); font-weight: 600; border-top: 1.5px dashed var(--line); }
+.po-card { display: grid; gap: 8px; padding: 14px 16px 16px; border-top: 1.5px dashed var(--line); }
+.po-q { font: 800 16px/1.3 var(--f-body); color: var(--ink); }
+.po-live { color: var(--red); }
+.po-row { display: grid; gap: 3px; }
+.po-row small { color: var(--muted); font-weight: 700; font-size: 12px; line-height: 1.35; }
+.po-bar { position: relative; display: flex; justify-content: space-between; gap: 10px; padding: 9px 12px; border-radius: 12px; box-shadow: inset 0 0 0 2px var(--navy); overflow: hidden; font-weight: 800; color: var(--ink); }
+.po-bar i { position: absolute; inset: 0 auto 0 0; background: var(--sky); transition: width .4s ease; }
+.po-bar span, .po-bar b { position: relative; }
+.po-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: var(--muted); font-weight: 700; }
+
 /* ---------- avatars ---------- */
 .ava {
   width: 40px; height: 40px; border-radius: 50%; flex: none; display: grid; place-items: center;
@@ -1121,6 +1136,7 @@ html.hw {
     <div class="row-btns" style="margin-top:6px">
       <button class="pill ghost" id="goPeople">дачники</button>
       <button class="pill dark" id="goAnnounce" hidden>сделать анонс</button>
+      <button class="pill dark" id="goPolls" hidden>опрос в боте</button>
     </div>
   </section>
 
@@ -1411,7 +1427,7 @@ html.hw {
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261101090841"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261101112748"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1797,6 +1813,7 @@ html.hw {
   /* ---------- home ---------- */
   const renderHome = () => {
     $("goAnnounce").hidden = !canGrant;
+    $("goPolls").hidden = !canGrant;
     drawGameOn();
     drawHomeEvent();
     const box = $("homeMe");
@@ -2892,6 +2909,100 @@ html.hw {
     ta.focus();
   };
   $("goAnnounce").onclick = openAnnounce;
+
+  /* ---------- polls through the bot: «кто за мафию?» (@tivishka only) ---------- */
+  const POLL_OPTS = ["✅ Я за", "🤔 Подумаю", "❌ Не смогу"];
+  const pollQuestion = () => {
+    const e = ev.list.find((x) => x.status === "open" && x.day >= bkkToday());
+    if (!e) return "Собираемся на мафию в эту субботу. Кто за?";
+    const { d, m, w } = dayParts(e.day);
+    return `Мафия: ${DOW_FULL[w].toLowerCase()}, ${d} ${MON_FULL[m - 1]}, начало в ${hm(e.start_time)}. Кто за?`;
+  };
+  const openPolls = async () => {
+    if (!canGrant) return;
+    if (!ev.loaded) await loadEvents().catch(() => {});
+    let opts = [...POLL_OPTS], busy = false, chan = null, timer = 0;
+    const v = document.createElement("div");
+    v.className = "veil full";
+    v.innerHTML = `<div class="ticket seat-sheet" role="dialog" aria-modal="true" aria-label="Опрос в боте"><div class="ticket-in"><div class="t-body">
+      <div class="eyebrow">Опрос через @dacha_gay · ответы кнопками прямо в боте</div>
+      <h2 class="h1">Кто за мафию?</h2>
+      <textarea class="field" id="poQ" maxlength="300" style="min-height:84px;resize:vertical;font-weight:600"></textarea>
+      <div class="po-opts" id="poOpts"></div>
+      <p class="err" id="poErr" role="alert"></p>
+      <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ghost" type="button" data-po="test">отправить себе</button><button class="pill sm" type="button" data-po="all">разослать всем</button><button class="linkish" type="button" data-po="close">закрыть</button></div>
+    </div>
+    <div id="poList"></div></div></div>`;
+    document.body.append(v);
+    v.querySelector("#poQ").value = pollQuestion();
+    const drawOpts = () => {
+      v.querySelector("#poOpts").innerHTML = opts.map((o, i) => `<div class="po-opt"><input class="field" maxlength="40" value="${esc(o)}" data-poi="${i}" aria-label="Ответ ${i + 1}">${opts.length > 2 ? `<button class="round sm ghost" type="button" data-po="rm" data-i="${i}" aria-label="Убрать ответ">×</button>` : ""}</div>`).join("")
+        + (opts.length < 6 ? `<button class="linkish" type="button" data-po="add" style="justify-self:start">+ ещё ответ</button>` : "");
+    };
+    drawOpts();
+    v.querySelector("#poOpts").addEventListener("input", (e) => { const i = e.target.dataset.poi; if (i != null) opts[+i] = e.target.value; });
+
+    const drawList = async () => {
+      const [{ data: polls }, { data: votes }] = await Promise.all([
+        sb.from("polls").select("*").order("created_at", { ascending: false }).limit(8),
+        sb.from("poll_votes").select("poll_id,option,user_id,profiles(nick)").order("voted_at"),
+      ]);
+      if (!v.isConnected) return;
+      const box = v.querySelector("#poList");
+      if (!polls?.length) { box.innerHTML = `<div class="po-empty">Опросов ещё не было. Первый появится здесь, и ответы будут обновляться сами.</div>`; return; }
+      box.innerHTML = polls.map((p) => {
+        const vs = (votes || []).filter((x) => x.poll_id === p.id), total = vs.length;
+        const when = new Date(p.created_at).toLocaleString("ru-RU", { timeZone: "Asia/Bangkok", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+        return `<div class="po-card">
+          <div class="eyebrow">${when}${p.test ? " · тест, только тебе" : ` · отправлено ${p.sent} из ${p.total}`} · ${p.closed_at ? "закрыт" : "<b class=\"po-live\">идёт</b>"}</div>
+          <b class="po-q">${esc(p.question)}</b>
+          ${p.options.map((o, i) => {
+            const who = vs.filter((x) => x.option === i), pct = total ? Math.round((who.length / total) * 100) : 0;
+            return `<div class="po-row"><div class="po-bar"><i style="width:${pct}%"></i><span>${esc(o)}</span><b>${who.length}</b></div>
+              ${who.length ? `<small>${who.map((x) => esc(x.profiles?.nick || "дачник")).join(", ")}</small>` : ""}</div>`;
+          }).join("")}
+          <div class="po-foot"><span>Ответили: <b>${total}</b></span>${p.closed_at ? "" : `<button class="pill sm ghost" type="button" data-po="end" data-id="${p.id}">закрыть опрос</button>`}</div>
+        </div>`;
+      }).join("");
+    };
+    drawList();
+    chan = sb.channel("polls-" + Date.now())
+      .on("postgres_changes", { event: "*", schema: "public", table: "poll_votes" }, () => { clearTimeout(timer); timer = setTimeout(drawList, 300); })
+      .subscribe();
+    const shut = () => { if (chan) sb.removeChannel(chan); chan = null; v.remove(); };
+
+    const send = async (test) => {
+      if (busy) return;
+      const question = v.querySelector("#poQ").value.trim(), options = opts.map((o) => o.trim()).filter(Boolean), err = v.querySelector("#poErr");
+      if (!question) { err.textContent = "Напиши вопрос"; return; }
+      if (options.length < 2) { err.textContent = "Нужно хотя бы два ответа"; return; }
+      busy = true; err.textContent = "";
+      const btn = v.querySelector(`[data-po="${test ? "test" : "all"}"]`), label = btn.textContent;
+      btn.disabled = true; btn.textContent = "отправляю…";
+      try {
+        const { data, error } = await sb.functions.invoke("tg", { body: { action: "poll", question, options, test } });
+        if (error || data?.error) throw new Error(data?.error || error.message);
+        toast(test ? (data.sent ? "Опрос пришёл тебе в бота" : "Не дошло: открой чат с ботом и нажми Start") : `Опрос отправлен ${data.sent} из ${data.total}`);
+        drawList();
+      } catch (x) { err.textContent = "Не получилось: " + humanErr(x); }
+      finally { busy = false; btn.disabled = false; btn.textContent = label; }
+    };
+    v.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-po]"); if (!b) return;
+      const k = b.dataset.po;
+      if (k === "close") shut();
+      else if (k === "add") { opts.push(""); drawOpts(); v.querySelector(`[data-poi="${opts.length - 1}"]`).focus(); }
+      else if (k === "rm") { opts.splice(+b.dataset.i, 1); drawOpts(); }
+      else if (k === "test") send(true);
+      else if (k === "all") sheet({ eyebrow: "Опрос", title: "Разослать опрос всем?", text: "Опрос придёт в бота каждому дачнику, ответы появятся здесь сразу.", ok: "разослать", onOk: () => send(false) });
+      else if (k === "end") sheet({ eyebrow: "Опрос", title: "Закрыть опрос?", text: "Ответить больше будет нельзя. У всех в боте останется итог.", ok: "закрыть", okClass: "red", onOk: async () => {
+        const { data, error } = await sb.functions.invoke("tg", { body: { action: "poll_close", poll_id: b.dataset.id } });
+        if (error || data?.error) return toast("Не получилось: " + (data?.error || humanErr(error)));
+        toast("Опрос закрыт, итог у всех в боте"); drawList();
+      } });
+    });
+  };
+  $("goPolls").onclick = openPolls;
 
   let mineChan = null;
   const subscribeMine = () => {

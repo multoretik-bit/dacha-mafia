@@ -1,7 +1,8 @@
 // DACHA MAFIA · Telegram edge function
 // POST {action:"auth", initData}   -> verifies Telegram mini app data, returns a Supabase session
 // POST {action:"notify", game_id}  -> host only: bot tells every player their card has arrived
-// POST ?hook=1 (Telegram webhook)  -> answers /start with an "Играть" button
+// POST {action:"poll", question, options, test} / {action:"poll_close", poll_id} -> @tivishka only
+// POST ?hook=1 (Telegram webhook)  -> answers /start with an "Играть" button, takes poll answers (callback_query pv:<poll>:<i>)
 import { createClient } from "npm:@supabase/supabase-js@2.117.0";
 
 const BOT = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
@@ -159,9 +160,102 @@ async function broadcast(req: Request, body: any) {
   return json({ sent, total: chats.length, failed });
 }
 
+// ---------- polls: «кто за мафию?» with answer buttons right in the bot ----------
+const escHtml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const tally = async (pollId: string, n: number) => {
+  const { data } = await admin.from("poll_votes").select("option").eq("poll_id", pollId);
+  const c = Array(n).fill(0);
+  (data || []).forEach((v: any) => { if (v.option >= 0 && v.option < n) c[v.option]++; });
+  return c;
+};
+const pollText = (p: any, counts: number[], mine: number | null) => {
+  const total = counts.reduce((a, b) => a + b, 0);
+  const lines = p.options.map((o: string, i: number) => `${mine === i ? "▸ " : ""}${escHtml(o)} — <b>${counts[i]}</b>`);
+  const tail = p.closed_at ? "Опрос закрыт. Спасибо всем, кто ответил!"
+    : mine === null ? "Нажми кнопку ниже, чтобы ответить." : `Твой ответ: ${escHtml(p.options[mine])}. Передумал — нажми другую кнопку.`;
+  return `📊 <b>Опрос · DACHA MAFIA</b>\n\n<b>${escHtml(p.question)}</b>\n\n${lines.join("\n")}\n\nОтветили: ${total}\n${tail}`;
+};
+const pollKeys = (p: any, mine: number | null) => p.closed_at ? { inline_keyboard: [] }
+  : { inline_keyboard: p.options.map((o: string, i: number) => [{ text: (mine === i ? "✔️ " : "") + o, callback_data: `pv:${p.id}:${i}` }]) };
+
+async function adminOf(req: Request) {
+  const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const { data: { user } } = await admin.auth.getUser(jwt);
+  if (!user) return null;
+  const { data: me } = await admin.from("profiles").select("id,tg_id,tg_username").eq("id", user.id).maybeSingle();
+  return (me?.tg_username || "").toLowerCase() === "tivishka" ? me : null;
+}
+
+async function pollCreate(req: Request, body: any) {
+  const me = await adminOf(req);
+  if (!me) return json({ error: "Опросы делает только @tivishka" }, 403);
+  const question = String(body.question || "").trim().slice(0, 300);
+  const options = (Array.isArray(body.options) ? body.options : []).map((o: unknown) => String(o || "").trim().slice(0, 40)).filter(Boolean).slice(0, 6);
+  if (!question || options.length < 2) return json({ error: "Нужен вопрос и хотя бы два ответа" }, 400);
+  let chats: number[];
+  if (body.test) chats = [me.tg_id];
+  else {
+    const { data } = await admin.from("profiles").select("tg_id").not("tg_id", "is", null);
+    chats = (data || []).map((r: any) => r.tg_id).filter((id: number) => !(id >= 990000000 && id <= 990000099));
+  }
+  const { data: p, error } = await admin.from("polls").insert({ question, options, created_by: me.id, test: !!body.test, total: chats.length }).select().single();
+  if (error) return json({ error: error.message }, 500);
+  const zero = Array(options.length).fill(0);
+  let sent = 0;
+  const failed: Record<string, number> = {};
+  for (const chat of chats) {
+    const r = await tgApi("sendMessage", { chat_id: chat, text: pollText(p, zero, null), parse_mode: "HTML", reply_markup: pollKeys(p, null) });
+    if (r.ok) { sent++; await admin.from("poll_msgs").upsert({ poll_id: p.id, chat_id: chat, message_id: r.result.message_id }); }
+    else {
+      const why = r.description || "error"; failed[why] = (failed[why] || 0) + 1;
+      if (r.error_code === 429) await new Promise((res) => setTimeout(res, (r.parameters?.retry_after || 2) * 1000));
+    }
+    await new Promise((res) => setTimeout(res, 45));
+  }
+  await admin.from("polls").update({ sent }).eq("id", p.id);
+  return json({ id: p.id, sent, total: chats.length, failed });
+}
+
+// closing freezes the poll and turns every bot message into the final result
+async function pollClose(req: Request, body: any) {
+  if (!(await adminOf(req))) return json({ error: "Опросы закрывает только @tivishka" }, 403);
+  const { data: p } = await admin.from("polls").update({ closed_at: new Date().toISOString() }).eq("id", body.poll_id).is("closed_at", null).select().maybeSingle();
+  if (!p) return json({ error: "Опрос уже закрыт" }, 400);
+  const counts = await tally(p.id, p.options.length);
+  const [{ data: msgs }, { data: votes }] = await Promise.all([
+    admin.from("poll_msgs").select("chat_id,message_id").eq("poll_id", p.id),
+    admin.from("poll_votes").select("option,profiles(tg_id)").eq("poll_id", p.id),
+  ]);
+  const mineBy = new Map((votes || []).map((v: any) => [Number(v.profiles?.tg_id), v.option]));
+  for (const m of msgs || []) {
+    await tgApi("editMessageText", { chat_id: m.chat_id, message_id: m.message_id, text: pollText(p, counts, mineBy.get(Number(m.chat_id)) ?? null), parse_mode: "HTML", reply_markup: pollKeys(p, null) });
+    await new Promise((res) => setTimeout(res, 45));
+  }
+  return json({ ok: true, counts });
+}
+
+async function pollVote(cq: any) {
+  const [, pollId, idx] = String(cq.data).split(":");
+  const i = Number(idx);
+  const answer = (text: string) => tgApi("answerCallbackQuery", { callback_query_id: cq.id, text });
+  const { data: p } = await admin.from("polls").select("*").eq("id", pollId).maybeSingle();
+  if (!p) return answer("Опрос не найден");
+  if (p.closed_at) return answer("Опрос уже закрыт");
+  if (!(i >= 0 && i < p.options.length)) return answer("Нет такого ответа");
+  const { data: prof } = await admin.from("profiles").select("id").eq("tg_id", cq.from.id).maybeSingle();
+  if (!prof) return answer("Сначала нажми «Играть» в боте, чтобы попасть в список дачников");
+  await admin.from("poll_votes").upsert({ poll_id: p.id, user_id: prof.id, option: i, voted_at: new Date().toISOString() });
+  const counts = await tally(p.id, p.options.length);
+  if (cq.message) {
+    await tgApi("editMessageText", { chat_id: cq.message.chat.id, message_id: cq.message.message_id, text: pollText(p, counts, i), parse_mode: "HTML", reply_markup: pollKeys(p, i) });
+  }
+  return answer(`Записал: ${p.options[i]}`);
+}
+
 async function hook(req: Request) {
   if (req.headers.get("X-Telegram-Bot-Api-Secret-Token") !== HOOK_SECRET) return new Response("forbidden", { status: 401 });
   const upd = await req.json().catch(() => ({}));
+  if (upd.callback_query?.data?.startsWith("pv:")) { await pollVote(upd.callback_query); return new Response("ok"); }
   const msg = upd.message;
   if (msg?.chat?.type === "private") {
     await tgApi("sendMessage", {
@@ -181,5 +275,7 @@ Deno.serve(async (req) => {
   if (body.action === "auth") return auth(body.initData);
   if (body.action === "notify") return notify(req, body.game_id);
   if (body.action === "broadcast") return broadcast(req, body);
+  if (body.action === "poll") return pollCreate(req, body);
+  if (body.action === "poll_close") return pollClose(req, body);
   return json({ error: "unknown action" }, 400);
 });
