@@ -122,7 +122,7 @@ async function notify(req: Request, gameId: string) {
   return json({ sent });
 }
 
-// announcement from @tivishka: plain text, optional photo URL, optional "sign up" button; test = only to the sender
+// announcement from @tivishka: plain text, optional photo OR video URL, optional "sign up" button; test = only to the sender
 async function broadcast(req: Request, body: any) {
   const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
   const { data: { user } } = await admin.auth.getUser(jwt);
@@ -130,8 +130,10 @@ async function broadcast(req: Request, body: any) {
   const { data: me } = await admin.from("profiles").select("tg_id,tg_username").eq("id", user.id).maybeSingle();
   if ((me?.tg_username || "").toLowerCase() !== "tivishka") return json({ error: "Анонсы делает только @tivishka" }, 403);
   const text = String(body.text || "").trim().slice(0, 4000);
-  const photo = typeof body.photo_url === "string" && body.photo_url.startsWith(SB_URL + "/storage/v1/object/public/announce/") ? body.photo_url : null;
-  if (!text && !photo) return json({ error: "Пустой анонс" }, 400);
+  const ours = (u: unknown) => typeof u === "string" && u.startsWith(SB_URL + "/storage/v1/object/public/announce/") ? u : null;
+  const video = ours(body.video_url);
+  const photo = video ? null : ours(body.photo_url);
+  if (!text && !photo && !video) return json({ error: "Пустой анонс" }, 400);
   const markup = body.button ? { inline_keyboard: [[{ text: "Записаться на игру", web_app: { url: APP + "?v=events" } }]] } : undefined;
   let chats: number[];
   if (body.test) chats = [me!.tg_id];
@@ -144,13 +146,22 @@ async function broadcast(req: Request, body: any) {
   let fileId: string | null = null;
   for (const chat of chats) {
     let r: any;
-    if (photo && text.length <= 1024) {
-      r = await tgApi("sendPhoto", { chat_id: chat, photo: fileId || photo, caption: text || undefined, reply_markup: markup });
+    // Telegram скачивает файл по ссылке один раз, дальше шлём по file_id
+    const media = video
+      ? (cap: Record<string, unknown>) => tgApi("sendVideo", { chat_id: chat, video: fileId || video, supports_streaming: true, ...cap })
+      : photo ? (cap: Record<string, unknown>) => tgApi("sendPhoto", { chat_id: chat, photo: fileId || photo, ...cap }) : null;
+    const keep = (res: any) => {
+      if (fileId || !res?.ok) return;
+      fileId = video ? res.result?.video?.file_id || res.result?.document?.file_id || null : res.result?.photo?.at(-1)?.file_id || null;
+    };
+    if (media && text.length <= 1024) {
+      r = await media({ caption: text || undefined, reply_markup: markup });
+      keep(r);
     } else {
-      if (photo) { const p = await tgApi("sendPhoto", { chat_id: chat, photo: fileId || photo }); if (p.ok && !fileId) fileId = p.result.photo.at(-1).file_id; }
+      if (media) keep(await media({}));
       r = await tgApi("sendMessage", { chat_id: chat, text, reply_markup: markup, link_preview_options: { is_disabled: false } });
     }
-    if (r.ok) { sent++; if (photo && !fileId && r.result?.photo) fileId = r.result.photo.at(-1).file_id; }
+    if (r.ok) sent++;
     else {
       const why = r.description || "error"; failed[why] = (failed[why] || 0) + 1;
       if (r.error_code === 429) await new Promise((res) => setTimeout(res, (r.parameters?.retry_after || 2) * 1000));

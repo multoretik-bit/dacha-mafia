@@ -1434,7 +1434,7 @@ html.hw {
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261102075809"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261102115126"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1489,7 +1489,7 @@ html.hw {
   const ART = Object.fromEntries([...BASE, CIVIL].filter((r) => r.art).map((r) => [r.id, r.art]));
   // every card variant per role; one is picked at random on each deal (the role's `art` is the thumbnail)
   const CARD_ART = {
-    maf: ["cards/maf.webp", "cards/maf-2.webp", "cards/maf-3.webp"],
+    maf: ["cards/maf.webp", "cards/maf-2.webp", "cards/maf-4.webp"],
     don: ["cards/don-2.webp"],
     kom: ["cards/kom.webp", "cards/kom-2.webp"],
     kur: ["cards/kur.webp"],
@@ -2873,9 +2873,11 @@ html.hw {
       <div class="eyebrow">Анонс через @dacha_gay · ${people.length || "все"} дачников</div>
       <h2 class="h1">Сделать анонс</h2>
       <textarea class="field" id="anText" maxlength="4000" placeholder="Текст анонса: дата, время, место, ведущий…" style="min-height:190px;resize:vertical;font-weight:600"></textarea>
-      <input type="file" id="anFile" accept="image/png,image/jpeg,image/webp" hidden>
-      <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ghost" type="button" data-an="pic">добавить картинку</button><button class="linkish" type="button" data-an="nopic" hidden>убрать картинку</button></div>
+      <input type="file" id="anFile" accept="image/png,image/jpeg,image/webp,video/mp4,video/quicktime,video/webm" hidden>
+      <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ghost" type="button" data-an="pic">добавить картинку или видео</button><button class="linkish" type="button" data-an="nopic" hidden>убрать</button></div>
       <img id="anPrev" alt="Картинка анонса" hidden style="max-width:100%;border-radius:12px;box-shadow:0 0 0 2px var(--ink)">
+      <video id="anVid" controls playsinline preload="metadata" hidden style="max-width:100%;max-height:340px;border-radius:12px;box-shadow:0 0 0 2px var(--ink);background:#000"></video>
+      <small id="anHint" style="color:var(--muted);font-weight:700">Картинка до 8 МБ, видео до 20 МБ (mp4, mov, webm)</small>
       <button class="toggle-row" type="button" data-an="btn" role="switch" aria-checked="true" style="border:2px solid var(--ink);border-radius:14px"><div><b>Кнопка «Записаться на игру»</b><span>Под постом, открывает запись в приложении</span></div><i class="switch on"></i></button>
       <p class="err" id="anErr" role="alert"></p>
       <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ghost" type="button" data-an="test">отправить себе</button><button class="pill sm" type="button" data-an="all">разослать всем</button><button class="linkish" type="button" data-an="close">закрыть</button></div>
@@ -2885,27 +2887,35 @@ html.hw {
     try { ta.value = localStorage.getItem(AN_DRAFT) || ""; } catch {}
     ta.addEventListener("input", () => { try { localStorage.setItem(AN_DRAFT, ta.value); } catch {} });
     v.querySelector("#anFile").addEventListener("change", (e) => {
-      const f = e.target.files[0]; if (!f) return;
-      if (f.size > 8 * 1024 * 1024) return toast("Картинка больше 8 МБ");
+      const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+      const isVid = f.type.startsWith("video/");
+      if (!isVid && f.size > 8 * 1024 * 1024) return toast("Картинка больше 8 МБ");
+      if (isVid && f.size > 20 * 1024 * 1024) return toast("Видео больше 20 МБ — Telegram такое по ссылке не возьмёт, сожми его");
       file = f; uploaded = "";
-      const img = v.querySelector("#anPrev"); img.src = URL.createObjectURL(f); img.hidden = false;
+      const img = v.querySelector("#anPrev"), vid = v.querySelector("#anVid");
+      img.hidden = isVid; vid.hidden = !isVid;
+      if (isVid) { img.removeAttribute("src"); vid.src = URL.createObjectURL(f); } else { vid.removeAttribute("src"); vid.load(); img.src = URL.createObjectURL(f); }
       v.querySelector('[data-an="nopic"]').hidden = false;
     });
     const send = async (test) => {
       if (busy) return;
       const text = ta.value.trim(), err = v.querySelector("#anErr");
-      if (!text && !file) { err.textContent = "Напиши текст или добавь картинку"; return; }
+      if (!text && !file) { err.textContent = "Напиши текст или добавь картинку / видео"; return; }
       busy = true; err.textContent = "";
       const btn = v.querySelector(`[data-an="${test ? "test" : "all"}"]`), label = btn.textContent;
       btn.disabled = true; btn.textContent = "отправляю…";
       try {
         if (file && !uploaded) {
-          const path = `a-${Date.now()}.${(file.type.split("/")[1] || "png").replace("jpeg", "jpg")}`;
+          const ext = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "video/mp4": "mp4", "video/quicktime": "mov", "video/webm": "webm" }[file.type] || "bin";
+          if (file.type.startsWith("video/")) btn.textContent = "загружаю видео…";
+          const path = `a-${Date.now()}.${ext}`;
           const up = await sb.storage.from("announce").upload(path, file, { contentType: file.type, cacheControl: "31536000" });
           if (up.error) throw up.error;
           uploaded = sb.storage.from("announce").getPublicUrl(path).data.publicUrl;
         }
-        const { data, error } = await sb.functions.invoke("tg", { body: { action: "broadcast", text, photo_url: uploaded || null, button: withBtn, test } });
+        btn.textContent = "отправляю…";
+        const isVid = !!file && file.type.startsWith("video/");
+        const { data, error } = await sb.functions.invoke("tg", { body: { action: "broadcast", text, photo_url: !isVid && uploaded || null, video_url: isVid && uploaded || null, button: withBtn, test } });
         if (error || data?.error) throw new Error(data?.error || error.message);
         if (test) toast(data.sent ? "Анонс пришёл тебе в Telegram" : "Не дошло: открой чат с ботом и нажми Start");
         else { toast(`Отправлено ${data.sent} из ${data.total}`); try { localStorage.removeItem(AN_DRAFT); } catch {} v.remove(); }
@@ -2916,7 +2926,7 @@ html.hw {
       const b = e.target.closest("[data-an]"); if (!b) return;
       const k = b.dataset.an;
       if (k === "pic") v.querySelector("#anFile").click();
-      else if (k === "nopic") { file = null; uploaded = ""; v.querySelector("#anPrev").hidden = true; b.hidden = true; }
+      else if (k === "nopic") { file = null; uploaded = ""; v.querySelector("#anPrev").hidden = true; const vd = v.querySelector("#anVid"); vd.pause(); vd.removeAttribute("src"); vd.load(); vd.hidden = true; b.hidden = true; }
       else if (k === "btn") { withBtn = !withBtn; b.setAttribute("aria-checked", withBtn); b.querySelector(".switch").classList.toggle("on", withBtn); }
       else if (k === "close") v.remove();
       else if (k === "test") send(true);
