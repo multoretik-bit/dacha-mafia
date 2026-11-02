@@ -570,6 +570,13 @@ a.pill { text-decoration: none; box-sizing: border-box; }
   box-shadow: inset 0 0 0 1.5px #4f8a4f, 0 3px 6px rgba(0,0,0,.18); opacity: 0;
   animation: adBill 2.8s cubic-bezier(.2,.7,.3,1) infinite;
 }
+/* school: English letters fly out instead of banknotes */
+.ad-school .ad-bill { width: auto; aspect-ratio: auto; background: none; box-shadow: none; border-radius: 0; font: 900 clamp(15px, 4.6vw, 22px)/1 var(--f-display); color: #fff; -webkit-text-stroke: 1.5px #E0218A; text-shadow: 0 2px 0 #4A1766; }
+.ad-school .ad-bill:nth-of-type(1)::before { content: "A"; }
+.ad-school .ad-bill:nth-of-type(2)::before { content: "B"; }
+.ad-school .ad-bill:nth-of-type(3)::before { content: "?"; }
+.ad-school .ad-bill:nth-of-type(4)::before { content: "Z"; }
+.ad-school .ad-bill:nth-of-type(5)::before { content: "Q"; }
 /* LETO: the virtual card floats in the middle of the banner, tilting and glinting like the brand video */
 .ad-card { position: absolute; left: 50%; top: 50%; width: 31%; aspect-ratio: 720 / 462; transform: translate(-50%, -55%); perspective: 520px; pointer-events: none; z-index: 1; }
 .ad-card::before {
@@ -1427,7 +1434,7 @@ html.hw {
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261102062844"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261102075418"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1606,7 +1613,7 @@ html.hw {
     if (a && tg?.openTelegramLink) { e.preventDefault(); tg.openTelegramLink(a.href); }
   });
 
-  /* ---------- sponsor ads: GreenEx and Feniks, 50 / 50 ---------- */
+  /* ---------- sponsor ads: GreenEx, Feniks, LETO cards, Irina's English school ---------- */
   const AD_TEXT = encodeURIComponent("Привет, хочу обменять валюту");
   const ADS = [
     { id: "greenex", img: "ads/greenex.webp", ratio: "1100 / 375", url: "https://t.me/tigranich?text=" + AD_TEXT,
@@ -1618,11 +1625,14 @@ html.hw {
     { id: "leto", img: "ads/leto-3.webp", ratio: "1100 / 208", card: "ads/leto-card.webp", url: "https://t.me/leto_finance_bot?startapp=ref_SKY-WS5WDXN4",
       alt: "LETO — виртуальные карты, промокод LETOMAFIA: подарочная виртуальная карта", label: "LETO, виртуальные карты",
       vars: "--tag-y:-17%;--tag-r:auto;--tag-l:9%" },
+    { id: "school", img: "ads/school.webp", ratio: "1100 / 367", url: "https://t.me/iry_eng?text=" + encodeURIComponent("Привет, хочу заниматься английским"),
+      alt: "Ирина — лучший репетитор по английскому. Написать @iry_eng", label: "Ирина, репетитор по английскому",
+      vars: "--bill-x:22%;--bill-y:50%;--tag-y:28%;--tag-r:auto;--tag-l:7%" },
   ];
-  // share of impressions: a third each
-  const AD_WEIGHT = { greenex: 1, feniks: 1, leto: 1 };
+  // share of impressions, %: GreenEx 30, Feniks 25, LETO cards 25, school 20
+  const AD_WEIGHT = { greenex: 30, feniks: 25, leto: 25, school: 20 };
   // an advertiser sees only his own ad
-  const OWN_AD = { tigranich: "greenex" };
+  const OWN_AD = { tigranich: "greenex", iry_eng: "school" };
   const adPool = () => { const own = OWN_AD[(me?.tg_username || "").toLowerCase()]; return own ? ADS.filter((a) => a.id === own) : ADS; };
   const pickAd = () => {
     const pool = adPool();
