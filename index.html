@@ -1434,7 +1434,7 @@ html.hw {
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261102075418"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261102075809"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1626,14 +1626,19 @@ html.hw {
       alt: "LETO — виртуальные карты, промокод LETOMAFIA: подарочная виртуальная карта", label: "LETO, виртуальные карты",
       vars: "--tag-y:-17%;--tag-r:auto;--tag-l:9%" },
     { id: "school", img: "ads/school.webp", ratio: "1100 / 367", url: "https://t.me/iry_eng?text=" + encodeURIComponent("Привет, хочу заниматься английским"),
-      alt: "Ирина — лучший репетитор по английскому. Написать @iry_eng", label: "Ирина, репетитор по английскому",
+      until: "2026-12-01", alt: "Ирина — лучший репетитор по английскому. Написать @iry_eng", label: "Ирина, репетитор по английскому",
       vars: "--bill-x:22%;--bill-y:50%;--tag-y:28%;--tag-r:auto;--tag-l:7%" },
   ];
   // share of impressions, %: GreenEx 30, Feniks 25, LETO cards 25, school 20
   const AD_WEIGHT = { greenex: 30, feniks: 25, leto: 25, school: 20 };
   // an advertiser sees only his own ad
   const OWN_AD = { tigranich: "greenex", iry_eng: "school" };
-  const adPool = () => { const own = OWN_AD[(me?.tg_username || "").toLowerCase()]; return own ? ADS.filter((a) => a.id === own) : ADS; };
+  // an ad with "until" runs up to that day (Bangkok), not including it
+  const liveAds = () => { const d = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Bangkok" }).format(new Date()); return ADS.filter((a) => !a.until || d < a.until); };
+  const adPool = () => {
+    const live = liveAds(), own = OWN_AD[(me?.tg_username || "").toLowerCase()], mine = live.filter((a) => a.id === own);
+    return mine.length ? mine : live;
+  };
   const pickAd = () => {
     const pool = adPool();
     let r = Math.random() * pool.reduce((t, a) => t + AD_WEIGHT[a.id], 0);
