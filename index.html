@@ -527,6 +527,14 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .notes-status { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 13.5px; color: var(--navy-ink); background: var(--paper); border-radius: 99px; padding: 9px 14px; box-shadow: 0 0 0 2px var(--ink); }
 .pl.is-out .pl-out { background: var(--ink); color: var(--paper); }
 .pl.is-out .trust { pointer-events: none; }
+.pl { -webkit-touch-callout: none; }
+.pl-who, .pl-badge { -webkit-user-select: none; user-select: none; }
+.pl.pressing { transform: scale(.98); transition: transform .35s, opacity .45s, filter .45s; }
+.pl.dragging { position: relative; z-index: 30; transition: none; box-shadow: 0 0 0 3px var(--navy), 0 22px 40px -14px rgba(7,27,77,.65); cursor: grabbing; }
+.pl.dragging .pl-in { background: var(--paper); }
+.players.sorting .pl:not(.dragging) { transition: opacity .45s, filter .45s; }
+.players.sorting { -webkit-user-select: none; user-select: none; }
+.drag-hint { font-size: 12px; font-weight: 700; color: var(--muted); text-align: center; margin: -4px 0 0; }
 .out-label { font: 700 11px/1 var(--f-body); letter-spacing: .16em; text-transform: uppercase; color: var(--navy-ink); text-align: center; opacity: .7; padding: 4px 0 0; }
 .empty .t-body { align-items: center; text-align: center; }
 
@@ -1421,6 +1429,7 @@ html.hw {
       <div class="ticket empty" id="notesEmpty" hidden><div class="ticket-in">
         <div class="t-body" id="notesEmptyBody"></div>
       </div></div>
+      <p class="drag-hint" id="dragHint" hidden>зажми игрока и перетащи, чтобы расставить как удобно</p>
       <div class="players" id="players"></div>
       <div data-ad-slot></div>
     </div>
@@ -1434,7 +1443,7 @@ html.hw {
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261102115126"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261102174430"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3469,6 +3478,7 @@ html.hw {
     $("notesStatus").hidden = !ps.length;
     $("notesStatus").innerHTML = liveNow ? `<span class="pulse"></span>Игра идёт · записи видишь только ты` : "Игра завершена · это записи прошлой игры. Новые появятся с новой раздачей";
     $("notesEmpty").hidden = ps.length > 0;
+    $("dragHint").hidden = ps.filter((p) => !p.out).length < 2;
     if (!ps.length) {
       $("notesEmptyBody").innerHTML = !sb || !me
         ? `<h2 class="h2">Записи работают в игре через Telegram</h2><p class="lead">Открой бота @dacha_gay и нажми «Играть». Когда ведущий раздаст карты, здесь появятся все игроки за столом.</p><div class="row-btns"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`
@@ -3523,6 +3533,94 @@ html.hw {
     const row = e.target.closest(".pl"); const p = row && pById(row.dataset.id); if (!p) return;
     if (e.target.classList.contains("pl-note")) { p.note = e.target.value; save(true); }
   });
+  // long-press a player card and drag it to reorder (only players still in the game; own order, saved locally)
+  (() => {
+    const box = $("players");
+    let pend = null, drag = null;
+    const pt = (e) => (e.touches ? e.touches[0] : e);
+    const cancelPend = () => { if (pend) { clearTimeout(pend.t); pend.el.classList.remove("pressing"); pend = null; } };
+    const start = (e) => {
+      if (drag || (e.button != null && e.button !== 0)) return;
+      if (e.target.closest("textarea, button, input, a")) return;
+      const el = e.target.closest(".pl"); if (!el || el.classList.contains("is-out")) return;
+      const p0 = pt(e);
+      cancelPend();
+      pend = { el, x: p0.clientX, y: p0.clientY, t: setTimeout(() => begin(el), 380) };
+      el.classList.add("pressing");
+    };
+    const begin = (el) => {
+      if (!pend) return;
+      const y = pend.y; cancelPend();
+      if (box.querySelectorAll(".pl:not(.is-out)").length < 2) return;
+      drag = { el, y0: y, y, base: el.getBoundingClientRect().top, scroll: 0 };
+      el.classList.add("dragging"); box.classList.add("sorting");
+      document.activeElement?.blur?.();
+      try { navigator.vibrate?.(15); } catch {}
+      try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred("medium"); } catch {}
+      tick();
+    };
+    const place = () => {
+      const { el, y } = drag;
+      const rest = [...box.querySelectorAll(".pl:not(.is-out):not(.dragging)")];
+      let before = null;
+      for (const o of rest) { const r = o.getBoundingClientRect(); if (y < r.top + r.height / 2) { before = o; break; } }
+      const target = before || (rest.length ? rest[rest.length - 1].nextSibling : null);
+      if (target === el || (before && el.nextSibling === before) || (!before && rest.length && rest[rest.length - 1].nextSibling === el)) return;
+      const first = new Map(rest.map((o) => [o, o.getBoundingClientRect().top]));
+      box.insertBefore(el, target);
+      rest.forEach((o) => {
+        const dy = first.get(o) - o.getBoundingClientRect().top;
+        if (Math.abs(dy) > 1) o.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }], { duration: 220, easing: "cubic-bezier(.25,.8,.25,1)" });
+      });
+      try { window.Telegram?.WebApp?.HapticFeedback?.selectionChanged(); } catch {}
+    };
+    const follow = () => {
+      const { el, y } = drag;
+      el.style.transform = "none";
+      const natural = el.getBoundingClientRect().top;
+      const want = drag.base + (y - drag.y0);
+      el.style.transform = `translateY(${want - natural}px) scale(1.03)`;
+    };
+    const tick = () => {
+      if (!drag) return;
+      const edge = 70, H = innerHeight, y = drag.y;
+      const v = y < edge ? -(edge - y) / 5 : y > H - edge ? (y - (H - edge)) / 5 : 0;
+      if (v) { scrollBy(0, v); place(); follow(); }
+      requestAnimationFrame(tick);
+    };
+    const move = (e) => {
+      if (pend) {
+        const p0 = pt(e);
+        if (Math.hypot(p0.clientX - pend.x, p0.clientY - pend.y) > 9) cancelPend();
+        return;
+      }
+      if (!drag) return;
+      if (e.cancelable) e.preventDefault();
+      drag.y = pt(e).clientY;
+      place(); follow();
+    };
+    const end = () => {
+      cancelPend();
+      if (!drag) return;
+      const { el } = drag; drag = null;
+      const from = el.getBoundingClientRect().top;
+      el.style.transform = "";
+      el.classList.remove("dragging"); box.classList.remove("sorting");
+      const dy = from - el.getBoundingClientRect().top;
+      if (Math.abs(dy) > 1) el.animate([{ transform: `translateY(${dy}px) scale(1.03)` }, { transform: "none" }], { duration: 200, easing: "ease-out" });
+      const order = [...box.querySelectorAll(".pl")].map((x) => x.dataset.id);
+      const ps = S.notes.players;
+      S.notes.players = [...order.map((id) => ps.find((p) => p.id === id)).filter(Boolean), ...ps.filter((p) => !order.includes(p.id))];
+      save();
+    };
+    box.addEventListener("touchstart", start, { passive: true });
+    box.addEventListener("mousedown", start);
+    addEventListener("touchmove", move, { passive: false });
+    addEventListener("mousemove", move);
+    addEventListener("touchend", end); addEventListener("touchcancel", end);
+    addEventListener("mouseup", end);
+    box.addEventListener("contextmenu", (e) => { if (pend || drag) e.preventDefault(); });
+  })();
 
   /* ---------- session ---------- */
   const afterLogin = async () => {
