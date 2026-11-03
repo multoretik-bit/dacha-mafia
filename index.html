@@ -958,6 +958,28 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .mode.waiting .mode-stub { background: var(--gray); }
 .cons-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .cons-phase { font: italic 800 24px/1.1 var(--f-display); color: var(--navy-ink); }
+/* day timers: 2:00 discussion, 1:00 speech, 0:30 defence */
+.dtimer { margin: 0 16px 12px; padding: 12px; border: 2px solid var(--ink); border-radius: 16px; background: #F3F6FB; display: grid; gap: 10px; }
+.dt-presets { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+.dt-presets button { border: 2px solid var(--navy); border-radius: 12px; background: var(--paper); padding: 8px 4px; color: var(--navy-ink); display: grid; gap: 2px; text-align: center; box-shadow: 0 3px 0 0 var(--navy); }
+.dt-presets button b { font: 600 22px/1 var(--f-code); font-variant-numeric: tabular-nums; }
+.dt-presets button small { font-weight: 800; font-size: 11px; color: var(--muted); }
+.dt-presets button[aria-pressed="true"] { background: var(--navy); color: #fff; }
+.dt-presets button[aria-pressed="true"] small { color: #C9D6F2; }
+.dt-presets button:active { transform: translateY(2px); box-shadow: 0 1px 0 0 var(--navy); }
+.dt-run { display: flex; align-items: center; gap: 10px; }
+.dt-clock { font: 600 46px/1 var(--f-code); font-variant-numeric: tabular-nums; color: var(--ink); min-width: 3.2ch; }
+.dt-meta { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.dt-meta small { font-weight: 800; font-size: 12px; color: var(--muted); }
+.dt-bar { height: 8px; border-radius: 99px; background: #D9DFEA; overflow: hidden; }
+.dt-bar i { display: block; height: 100%; width: 100%; background: var(--navy); transform-origin: left; transition: transform .2s linear; }
+.dt-btns { display: flex; gap: 8px; align-items: center; }
+.dt-btns .pill { flex: 1; margin: 0; }
+.dtimer.warn .dt-clock { color: #D9480F; }
+.dtimer.warn .dt-bar i { background: #E8590C; }
+.dtimer.done { background: #FFE3E3; border-color: var(--red); animation: dtFlash .5s ease-in-out 6; }
+.dtimer.done .dt-clock { color: var(--red); }
+@keyframes dtFlash { 50% { background: var(--red); } }
 .act { padding: 12px 16px; border-top: 1.5px dashed var(--line); display: grid; gap: 8px; }
 .act-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 800; color: var(--ink); }
 .act-h .tag { padding: 6px 9px; }
@@ -1448,7 +1470,7 @@ html.hw {
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261103100955"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261103122817"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2427,6 +2449,79 @@ html.hw {
     return true;
   };
   const logIt = (text) => { flow().log.push({ round: live.game.round, phase: live.game.phase, text }); save(); };
+  /* ---------- day timers for the host: loud signal when time is up ---------- */
+  const dayTimer = (() => {
+    const PRESETS = [[120, "обсуждение"], [60, "речь"], [30, "оправдание"]];
+    const T = { total: 0, end: 0, left: 0, paused: false, done: false, iv: 0, lock: null };
+    let ctx = null;
+    const audio = () => { try { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === "suspended") ctx.resume(); } catch {} return ctx; };
+    const tone = (f, t0, dur, vol, type = "square") => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = type; o.frequency.setValueAtTime(f, t0);
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + 0.01);
+      g.gain.setValueAtTime(vol, t0 + dur - 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.connect(g).connect(ctx.destination); o.start(t0); o.stop(t0 + dur + 0.02);
+    };
+    // loud two-tone siren ~2.8 s
+    const alarm = () => {
+      if (!audio()) return;
+      const t = ctx.currentTime + 0.02;
+      for (let i = 0; i < 4; i++) { tone(988, t + i * 0.5, 0.22, 0.9); tone(740, t + i * 0.5 + 0.24, 0.22, 0.9); tone(494, t + i * 0.5, 0.46, 0.35, "sawtooth"); }
+      tone(1318, t + 2.05, 0.7, 0.9); tone(659, t + 2.05, 0.7, 0.5, "sawtooth");
+    };
+    const wake = async (on) => {
+      try { if (on && !T.lock && navigator.wakeLock) T.lock = await navigator.wakeLock.request("screen"); if (!on && T.lock) { T.lock.release(); T.lock = null; } } catch {}
+    };
+    const remain = () => (T.paused || T.done ? T.left : Math.max(0, T.end - Date.now()));
+    const fmt = (ms) => { const sec = Math.ceil(ms / 1000); return `${Math.floor(sec / 60)}:${pad(sec % 60)}`; };
+    const label = () => (PRESETS.find((p) => p[0] === T.total) || [0, ""])[1];
+    const tick = () => {
+      if (!T.total || T.paused || T.done) return;
+      const ms = remain();
+      if (ms <= 0) {
+        T.done = true; T.left = 0; clearInterval(T.iv); wake(false);
+        alarm();
+        try { navigator.vibrate?.([400, 150, 400, 150, 600]); } catch {}
+        try { tg?.HapticFeedback?.notificationOccurred("warning"); } catch {}
+        return drawConsole();
+      }
+      paint();
+    };
+    const start = (sec) => {
+      audio();
+      clearInterval(T.iv);
+      Object.assign(T, { total: sec, end: Date.now() + sec * 1000, left: sec * 1000, paused: false, done: false });
+      wake(true);
+      T.iv = setInterval(tick, 200);
+      haptic("tap"); drawConsole();
+    };
+    const stop = () => { clearInterval(T.iv); Object.assign(T, { total: 0, done: false, paused: false }); wake(false); };
+    const html = () => `<div class="dtimer ${T.done ? "done" : ""}" id="dtimer">
+        <div class="dt-presets">${PRESETS.map(([sec, l]) => `<button type="button" data-timer="${sec}" aria-pressed="${T.total === sec}"><b>${fmt(sec * 1000)}</b><small>${l}</small></button>`).join("")}</div>
+        ${T.total ? `<div class="dt-run"><div class="dt-clock" id="dtClock"></div><div class="dt-meta"><small id="dtLabel"></small><div class="dt-bar"><i id="dtBar"></i></div></div></div>
+          <div class="dt-btns">${T.done ? "" : `<button class="pill sm ghost" type="button" data-tpause>${T.paused ? "продолжить" : "пауза"}</button>`}<button class="pill sm" type="button" data-timer="${T.total}">${T.done ? "следующий ▶" : "заново"}</button><button class="x-btn" type="button" data-tstop aria-label="Убрать таймер">×</button></div>` : ""}
+      </div>`;
+    const paint = () => {
+      const el = $("dtimer"); if (!el || !T.total) return;
+      const ms = remain();
+      $("dtClock").textContent = T.done ? "0:00" : fmt(ms);
+      $("dtLabel").textContent = T.done ? `Время вышло · ${label()}` : T.paused ? `Пауза · ${label()}` : `Идёт ${label()}`;
+      $("dtBar").style.transform = `scaleX(${ms / (T.total * 1000)})`;
+      el.classList.toggle("warn", !T.done && ms <= 10000);
+    };
+    const click = (b) => {
+      if (b.dataset.timer) { start(+b.dataset.timer); return true; }
+      if (b.hasAttribute("data-tpause")) {
+        if (T.paused) { T.end = Date.now() + T.left; T.paused = false; T.iv = setInterval(tick, 200); wake(true); }
+        else { T.left = remain(); T.paused = true; clearInterval(T.iv); wake(false); }
+        drawConsole(); return true;
+      }
+      if (b.hasAttribute("data-tstop")) { stop(); drawConsole(); return true; }
+      return false;
+    };
+    document.addEventListener("visibilitychange", () => { if (!document.hidden && T.total && !T.paused && !T.done) { wake(true); tick(); } });
+    return { html, paint, click, stop, alarm, start };
+  })();
   const drawConsole = () => {
     const box = $("console"); if (!box || !live.game) return;
     const g = live.game, f = flow(), a = alive();
@@ -2437,6 +2532,7 @@ html.hw {
         ? `<button class="pill sm" data-flow="day">наступает день</button>`
         : `<button class="pill sm dark" data-flow="night">${ph === "setup" ? "начать первую ночь" : "наступает ночь"}</button>${ph === "setup" ? `<button class="pill sm ghost" data-flow="day">начать с дня</button>` : ""}`}</div></div>
       <p class="lead">${ph === "night" ? "Отметь, кого выбрал каждый. Итог ночи внизу считается сразу." : ph === "day" ? "Выставление: два голоса за игрока — и он на голосовании. Потом отметь голоса и выгони одного или никого." : "Объяви, что город засыпает, и начни ночь."}</p></div>`;
+    if (ph !== "day") dayTimer.stop();
     let body = "";
     if (ph === "night") {
       body = NIGHT.map((act) => {
@@ -2466,11 +2562,13 @@ html.hw {
     const w = winHint();
     const win = w ? `<div class="win-hint"><span>${w.text}</span><button class="pill sm" type="button" data-win="${w.team}" style="margin:4px">${TEAM[w.team].won.toLowerCase()}</button></div>` : "";
     const log = f.log.length ? `<div class="logl"><small>Журнал</small>${f.log.map((l) => `<div>${l.phase === "night" ? "🌙" : "☀️"} ${l.round}: ${esc(l.text)}</div>`).join("")}</div>` : "";
-    box.innerHTML = `<div class="ticket"><div class="ticket-in">${head}${win}${body}${all}${log}</div></div>`;
+    box.innerHTML = `<div class="ticket"><div class="ticket-in">${head}${ph === "day" ? dayTimer.html() : ""}${win}${body}${all}${log}</div></div>`;
+    dayTimer.paint();
     void dead;
   };
   $("console").addEventListener("click", async (e) => {
     const b = e.target.closest("button"); if (!b || !live.game) return;
+    if (dayTimer.click(b)) return;
     const f = flow(), g = live.game;
     if (b.dataset.night) { const k = b.dataset.night, n = +b.dataset.seat; f.night[k] = f.night[k] === n ? undefined : n; haptic("tap"); save(); return drawConsole(); }
     if (b.dataset.nom) { f.noms[b.dataset.nom] = Math.min(2, (f.noms[b.dataset.nom] || 0) + 1); haptic("tap"); save(); return drawConsole(); }
