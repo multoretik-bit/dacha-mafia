@@ -451,6 +451,11 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .lb-row .rank { font: 600 20px/1 var(--f-code); color: var(--muted); font-variant-numeric: tabular-nums; }
 .lb-row .nm { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lb-row .nm small { display: block; font-weight: 700; font-size: 12px; color: var(--muted); }
+/* never played a single game: grey row and avatar */
+.lb-row.never { background: #E4E6EA; color: #8A909C; }
+.lb-row.never .ava { filter: grayscale(1); opacity: .55; }
+.lb-row.never .nm, .lb-row.never .rs-num { color: #8A909C; }
+.lb-row.never .rank, .lb-row.never .nm small, .lb-row.never .rs-num small { color: #A3A8B2; }
 .err { color: var(--red); font-weight: 800; font-size: 13.5px; min-height: 1.2em; margin: 0; }
 
 /* ---------- notes ---------- */
@@ -1443,7 +1448,7 @@ html.hw {
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261103065254"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261103065508"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2005,7 +2010,7 @@ html.hw {
     await loadPeople();
     if (S.view !== "people") return;
     const list = [...people].sort((a, b) => b.wins - a.wins || b.games - a.games || a.nick.localeCompare(b.nick));
-    $("peopleList").innerHTML = list.map((p, i) => `<button class="lb-row" data-id="${p.id}">
+    $("peopleList").innerHTML = list.map((p, i) => `<button class="lb-row${!p.games && !p.hosted ? " never" : ""}" data-id="${p.id}"${!p.games && !p.hosted ? ' title="ещё не играл, только заходил в приложение"' : ""}>
         <span class="rank">${i + 1}</span>${avaP(p)}
         <span class="nm">${esc(p.nick)}${p.id === me.id ? " · ты" : ""}<small>${[tgLine(p), p.is_host ? "ведущий" : "", `${p.games} ${plural(p.games, "игра", "игры", "игр")}`, p.hosted ? `вёл ${p.hosted}` : ""].filter(Boolean).map(esc).join(" · ")}</small></span>
         <span class="rs-num">${p.wins}<small>${plural(p.wins, "победа", "победы", "побед")}</small></span></button>`).join("");
