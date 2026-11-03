@@ -1443,7 +1443,7 @@ html.hw {
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261102174430"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261103065254"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1904,17 +1904,20 @@ html.hw {
     const handle = tgLine(row);
     $("profHead").innerHTML = `${avaP({ ...row, id }, "lg")}<div><div class="eyebrow">${[isMe ? "Это ты" : "Дачник", row.is_host || (isMe && canHost()) ? "ведущий" : ""].filter(Boolean).join(" · ")}</div><h1 class="h1" style="margin-top:6px">${esc(row.nick)}</h1>
       ${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}</div>
-      ${isMe ? `<button class="linkish" id="editNick">изменить ник</button>` : ""}`;
-    if (isMe) $("editNick").onclick = () => {
+      ${isMe || canGrant ? `<button class="linkish" id="editNick">${isMe ? "изменить ник" : "изменить ник дачнику"}</button>` : ""}`;
+    if (isMe || canGrant) $("editNick").onclick = () => {
       $("editNick").outerHTML = `<form class="nick-edit" id="nickForm"><input class="field" id="nickInput" maxlength="24" value="${esc(row.nick)}" aria-label="Новый ник"><button class="round sm" type="submit" aria-label="Сохранить ник">✓</button></form>`;
       $("nickInput").focus(); $("nickInput").select();
       $("nickForm").onsubmit = async (e) => {
         e.preventDefault();
         const nick = $("nickInput").value.trim().replace(/\s+/g, " ");
         if (!nick) return toast("Ник не может быть пустым");
-        const { error } = await sb.from("profiles").update({ nick }).eq("id", me.id);
+        const { error } = isMe
+          ? await sb.from("profiles").update({ nick }).eq("id", me.id)
+          : await sb.rpc("set_nick", { u: id, n: nick });
         if (error) return toast("Не получилось сохранить: " + humanErr(error));
-        me.nick = nick; people = []; renderMeBtn(); toast("Ник сохранён"); renderProfile();
+        if (isMe) { me.nick = nick; renderMeBtn(); }
+        people = []; toast(isMe ? "Ник сохранён" : `Ник изменён: ${nick}`); renderProfile();
       };
     };
     // win rate only from 5 games: fewer games say nothing
