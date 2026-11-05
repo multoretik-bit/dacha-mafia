@@ -1809,15 +1809,20 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 .tm-btn { flex: 0 0 auto !important; }
 .tm-btn b { font-weight: 900; }
 .tomato-fx { position: fixed; inset: 0; z-index: 2147483000; pointer-events: none; overflow: hidden; }
+.tomato-fx.out { pointer-events: none; }
 .tm-fly { position: absolute; left: 50%; top: 50%; font-size: 90px; line-height: 1; transform: translate(-50%, -50%); animation: tmFly .45s cubic-bezier(.4,0,.9,.6) both; filter: drop-shadow(0 10px 18px rgba(0,0,0,.35)); }
 @keyframes tmFly { 0% { transform: translate(-260%, 220%) scale(.25) rotate(-200deg); opacity: 1; } 92% { opacity: 1; } 100% { transform: translate(-50%, -50%) scale(2.6) rotate(0deg); opacity: 0; } }
+.tm-cv { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: auto; touch-action: none; opacity: 0; transform: scale(.4); filter: drop-shadow(0 6px 10px rgba(80,0,0,.35)); }
+.tm-cv.on { animation: tmSplat .28s cubic-bezier(.2,1.6,.4,1) both; }
+.tm-from.hide { opacity: 0 !important; transition: opacity .4s; }
 .tm-splat { position: absolute; inset: -6%; width: 112%; height: 112%; opacity: 0; transform: scale(.4); animation: tmSplat .28s cubic-bezier(.2,1.6,.4,1) .4s both; filter: drop-shadow(0 6px 10px rgba(80,0,0,.35)); }
 @keyframes tmSplat { to { opacity: .97; transform: scale(1); } }
 .tm-splat .drip { transform-box: fill-box; transform-origin: 50% 0; transform: scaleY(0); animation: tmDrip 3.4s ease-in forwards; }
 @keyframes tmDrip { to { transform: scaleY(1); } }
 .tm-from { position: absolute; left: 50%; bottom: calc(26px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); padding: 8px 14px; border-radius: 99px; background: rgba(0,0,0,.55); color: #fff; font-weight: 800; font-size: 14px; opacity: 0; animation: tmFrom .3s ease .7s both; white-space: nowrap; }
 @keyframes tmFrom { to { opacity: 1; } }
-.tomato-fx.out { transition: opacity 1.4s ease; opacity: 0; }
+.tomato-fx.out { transition: opacity .8s ease; opacity: 0; }
+.tomato-fx.out .tm-cv { pointer-events: none; }
 
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
@@ -2451,7 +2456,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105170346"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105171047"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -5987,24 +5992,60 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     for (let i = 0; i < n; i++) { const p0 = pts[i], p1 = pts[(i + 1) % n], mx = (p0[0] + p1[0]) / 2, my = (p0[1] + p1[1]) / 2; d += ` Q${p0[0].toFixed(1)},${p0[1].toFixed(1)} ${mx.toFixed(1)},${my.toFixed(1)}`; }
     return d + "Z";
   };
+  // the splat is painted on a canvas: it drips, stays until wiped off with a finger (or 30 s pass)
   const splatTomato = (fromId) => {
     if (document.hidden) return;
+    document.querySelector(".tomato-fx")?.remove();
     const from = personOf(fromId);
     const fx = document.createElement("div"); fx.className = "tomato-fx";
-    const drops = Array.from({ length: 14 }, () => { const a = Math.random() * Math.PI * 2, d = 120 + Math.random() * 120; return `<circle cx="${(200 + Math.cos(a) * d).toFixed(0)}" cy="${(260 + Math.sin(a) * d).toFixed(0)}" r="${(6 + Math.random() * 18).toFixed(0)}" fill="url(#tg)"/>`; }).join("");
-    const drips = Array.from({ length: 7 }, (_, i) => { const x = 110 + i * 30 + Math.random() * 14, w = 10 + Math.random() * 12, h = 120 + Math.random() * 260; return `<rect class="drip" x="${x.toFixed(0)}" y="300" width="${w.toFixed(0)}" height="${h.toFixed(0)}" rx="${(w / 2).toFixed(0)}" fill="url(#tg)" style="animation-delay:${(0.6 + Math.random() * 1.2).toFixed(2)}s"/>`; }).join("");
-    const seeds = Array.from({ length: 16 }, () => `<ellipse cx="${(150 + Math.random() * 100).toFixed(0)}" cy="${(210 + Math.random() * 100).toFixed(0)}" rx="4" ry="7" fill="#F7E08A" opacity=".85" transform="rotate(${(Math.random() * 180).toFixed(0)})" style="transform-box:fill-box;transform-origin:center"/>`).join("");
-    fx.innerHTML = `<div class="tm-fly">🍅</div>
-      <svg class="tm-splat" viewBox="0 0 400 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        <defs><radialGradient id="tg" cx="45%" cy="40%" r="70%"><stop offset="0" stop-color="#FF5A3C"/><stop offset=".6" stop-color="#E0221A"/><stop offset="1" stop-color="#A50F0A"/></radialGradient></defs>
-        ${drips}<path d="${splatBlob(200, 260, 150, 22, 0.55)}" fill="url(#tg)"/><path d="${splatBlob(200, 260, 95, 14, 0.4)}" fill="#C8170F" opacity=".55"/>${drops}${seeds}
-        <ellipse cx="170" cy="215" rx="40" ry="18" fill="#fff" opacity=".22" transform="rotate(-25 170 215)"/></svg>
-      <div class="tm-from">🍅 от ${esc(from.nick || "дачника")}</div>`;
+    fx.innerHTML = `<div class="tm-fly">🍅</div><canvas class="tm-cv"></canvas><div class="tm-from">🍅 от ${esc(from.nick || "дачника")} · сотри пальцем</div>`;
     document.body.append(fx);
-    try { navigator.vibrate?.([30, 40, 120]); } catch {}
-    setTimeout(() => haptic("card"), 420);
-    setTimeout(() => fx.classList.add("out"), 6000);
-    setTimeout(() => fx.remove(), 7600);
+    const cv = fx.querySelector("canvas"), dpr = Math.min(2, window.devicePixelRatio || 1);
+    const W = innerWidth, H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    const ctx = cv.getContext("2d"); ctx.scale(dpr, dpr);
+    // the splat in a 400×640 box, covering the screen
+    const k = Math.max(W / 400, H / 640) * 1.08, ox = (W - 400 * k) / 2, oy = (H - 640 * k) / 2;
+    const P = (x, y) => [ox + x * k, oy + y * k];
+    const paint = () => { const [cx, cy] = P(190, 260), g = ctx.createRadialGradient(cx, cy - 30 * k, 10 * k, cx, cy, 190 * k); g.addColorStop(0, "#FF5A3C"); g.addColorStop(0.6, "#E0221A"); g.addColorStop(1, "#A50F0A"); return g; };
+    const blob = (cx, cy, r, n, j) => { const pts = Array.from({ length: n }, (_, i) => { const an = (i / n) * Math.PI * 2, rr = r * (1 - j / 2 + Math.random() * j); return P(cx + Math.cos(an) * rr, cy + Math.sin(an) * rr); }); const pa = new Path2D(); pa.moveTo(...pts[0]); for (let i = 0; i < n; i++) { const p0 = pts[i], p1 = pts[(i + 1) % n]; pa.quadraticCurveTo(p0[0], p0[1], (p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2); } pa.closePath(); return pa; };
+    const drawSplat = () => {
+      ctx.fillStyle = paint();
+      ctx.fill(blob(200, 260, 165, 24, 0.55));
+      for (let i = 0; i < 16; i++) { const an = Math.random() * Math.PI * 2, d = 150 + Math.random() * 130, [x, y] = P(200 + Math.cos(an) * d, 260 + Math.sin(an) * d); ctx.beginPath(); ctx.arc(x, y, (6 + Math.random() * 20) * k, 0, 7); ctx.fill(); }
+      ctx.fillStyle = "rgba(200,23,15,.55)"; ctx.fill(blob(200, 260, 100, 14, 0.4));
+      ctx.fillStyle = "rgba(247,224,138,.85)";
+      for (let i = 0; i < 18; i++) { const [x, y] = P(140 + Math.random() * 120, 200 + Math.random() * 120); ctx.beginPath(); ctx.ellipse(x, y, 4 * k, 7 * k, Math.random() * 3, 0, 7); ctx.fill(); }
+      ctx.fillStyle = "rgba(255,255,255,.22)"; ctx.beginPath(); const [hx, hy] = P(165, 210); ctx.ellipse(hx, hy, 42 * k, 18 * k, -0.45, 0, 7); ctx.fill();
+    };
+    // drips grow downwards for a few seconds
+    const drips = Array.from({ length: 8 }, (_, i) => ({ x: 95 + i * 30 + Math.random() * 14, w: 10 + Math.random() * 13, max: 160 + Math.random() * 300, h: 0, v: 40 + Math.random() * 60, delay: 0.3 + Math.random() * 1.4 }));
+    let t0 = 0, raf = 0;
+    const drip = (ts) => {
+      if (!t0) t0 = ts;
+      const t = (ts - t0) / 1000;
+      ctx.globalCompositeOperation = "source-over"; ctx.fillStyle = paint();
+      let more = false;
+      drips.forEach((d) => { if (t < d.delay || d.h >= d.max) { more = more || d.h < d.max; return; } const nh = Math.min(d.max, d.h + d.v * 0.016 * (1 + t * 0.4)); const [x, y] = P(d.x, 330 + d.h); ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y - 2, d.w * k, (nh - d.h) * k + 4, (d.w * k) / 2) : ctx.rect(x, y - 2, d.w * k, (nh - d.h) * k + 4); ctx.fill(); if (nh >= d.max) { ctx.beginPath(); ctx.arc(x + (d.w * k) / 2, y + (nh - d.h) * k, (d.w * k) * 0.75, 0, 7); ctx.fill(); } d.h = nh; more = true; });
+      if (more && t < 8) raf = requestAnimationFrame(drip);
+    };
+    setTimeout(() => { drawSplat(); ready = true; cv.classList.add("on"); try { navigator.vibrate?.([30, 40, 120]); } catch {} haptic("card"); raf = requestAnimationFrame(drip); }, 420);
+    // wipe with a finger
+    let last = null, moves = 0, gone = false, ready = false;
+    const left = () => { const img = ctx.getImageData(0, 0, cv.width, cv.height).data; let n = 0, all = 0; for (let i = 3; i < img.length; i += 4 * 97) { all++; if (img[i] > 40) n++; } return n / all; };
+    const finish = () => { if (gone) return; gone = true; cancelAnimationFrame(raf); fx.classList.add("out"); setTimeout(() => fx.remove(), 900); };
+    const rub = (x, y) => {
+      if (!ready) return;
+      ctx.globalCompositeOperation = "destination-out"; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = 64;
+      ctx.beginPath(); ctx.moveTo(...(last || [x, y])); ctx.lineTo(x, y); ctx.stroke();
+      last = [x, y];
+      if (++moves % 12 === 0 && left() < 0.12) finish();
+    };
+    cv.addEventListener("pointerdown", (e) => { e.preventDefault(); last = null; rub(e.clientX, e.clientY); fx.querySelector(".tm-from").classList.add("hide"); });
+    cv.addEventListener("pointermove", (e) => { if (e.buttons || e.pointerType === "touch") rub(e.clientX, e.clientY); });
+    cv.addEventListener("pointerup", () => { last = null; if (ready && left() < 0.12) finish(); });
+    cv.addEventListener("pointercancel", () => { last = null; });
+    setTimeout(finish, 30000);
   };
   const buyTomatoes = () => choose({ eyebrow: "🍅 Помидоры", title: "Купить помидоры", text: `Каждый стоит 1 ฿ с баланса — это деньги на развитие DACHA. Сейчас у тебя ${myTomatoes ?? 0} 🍅.`,
     options: [5, 10, 30].map((n) => ({ label: `${n} 🍅 за ${n} ฿`, run: async () => {
