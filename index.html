@@ -1466,6 +1466,34 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .pm-card-t { flex: 1; font-weight: 700; font-size: 14px; }
 .pm-card-p { font-weight: 800; color: var(--pm-champ); font-size: 13.5px; }
 
+/* bank sheet, premium icon (05.11) */
+.bank-veil { align-items: flex-end; }
+.bank { position: relative; width: 100%; max-width: 460px; display: grid; gap: 12px; padding: 16px; border-radius: 28px 28px 0 0; background: var(--bg); animation: rise .3s cubic-bezier(.2,.8,.2,1); box-sizing: border-box; padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px)); }
+.bank-card { border-radius: 22px; padding: 18px 18px 16px; color: #F2EBDD; display: grid; gap: 2px; box-shadow: var(--sh);
+  background: radial-gradient(90% 120% at 100% 0%, rgba(205,183,138,.3), transparent 60%), repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 9px), linear-gradient(150deg, #101015, #262630); }
+.bank-card.neg > b { color: #FF8A96; }
+.bank-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.bank-prem { font: 800 10px/1 var(--f-body); letter-spacing: .2em; color: var(--pm-champ); }
+.bank-card small { font: 700 12px/1 var(--f-body); opacity: .65; }
+.bank-card > b { font: 700 44px/1.05 var(--f-code); color: #fff; font-variant-numeric: tabular-nums; }
+.bank-who { font-weight: 700; font-size: 13px; opacity: .75; margin-top: 6px; }
+.bank-acts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.bank-acts button { display: grid; justify-items: center; gap: 6px; padding: 12px 2px; border-radius: 18px; background: #fff; box-shadow: var(--sh); color: var(--ink); font-weight: 800; font-size: 12px; }
+.bank-acts i { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 19px; background: var(--pm-ink); color: var(--pm-champ); }
+.bank-acts button:active { transform: scale(.96); }
+.bank-send { display: grid; gap: 10px; padding: 14px; border-radius: 20px; background: #fff; box-shadow: var(--sh); }
+.bank-x { position: absolute; top: -48px; right: 14px; width: 38px; height: 38px; border-radius: 50%; background: #fff; color: var(--ink); font-size: 22px; line-height: 1; box-shadow: var(--sh); }
+.bal-chip { cursor: pointer; }
+.prem { position: relative; }
+.prem-ic { position: absolute; right: -4px; bottom: -4px; z-index: 3; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 11px; line-height: 1; background: var(--pm-ink); box-shadow: 0 0 0 1.5px var(--pm-champ); }
+.prem:has(.ava.lg) .prem-ic { width: 30px; height: 30px; font-size: 17px; right: 0; bottom: 0; }
+.crew-faces .prem-ic, .wk-faces .prem-ic, .qr-who .prem-ic, .tx-av .prem-ic, .icon-btn .prem-ic { display: none; }
+.ic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
+.ic-grid button { height: 44px; border-radius: 12px; background: var(--soft); font-size: 22px; }
+.ic-grid button[aria-pressed="true"] { background: var(--pm-ink); box-shadow: 0 0 0 1.5px var(--pm-champ); }
+.ic-grid .ic-none { font: 800 12px/1 var(--f-body); color: var(--muted); }
+#hubPrem { margin-top: 2px; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1657,6 +1685,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     </div></div>
     <div class="sec-title">Игры</div>
     <div class="games" id="hubGames"></div>
+    <button class="pm-card" type="button" id="hubPrem" hidden><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ на счёт каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>
     <div data-ad-slot></div>
     <div class="row-btns">
       <button class="pill dark sm" id="goAnnounce" hidden>сделать анонс</button>
@@ -2063,7 +2092,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105092008"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105093248"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2199,11 +2228,14 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!sb || !me) return;
     const [{ data: ids }, { data: g }] = await Promise.all([sb.rpc("premium_ids"), sb.rpc("can_grant_premium")]);
     premiumIds = new Set((ids || []).map((x) => (typeof x === "string" ? x : x.premium_ids)));
+    const { data: ic } = await sb.from("profiles").select("id, prem_icon").not("prem_icon", "is", null);
+    premIcons.clear(); (ic || []).forEach((r) => premIcons.set(r.id, r.prem_icon));
     canGrant = !!g;
   };
   const CASH = '<i class="cash">💵</i><i class="cash">💸</i><i class="cash">💵</i><i class="cash">💰</i>';
+  const premIcons = new Map();
   const avaP = (p, extra = "") => isPremium(p)
-    ? `<span class="prem">${ava(p?.nick, p?.id, extra + " premium", p?.tg_photo)}${CASH}</span>`
+    ? `<span class="prem">${ava(p?.nick, p?.id, extra + " premium", p?.tg_photo)}${premIcons.get(p?.id || p?.uid || p?.user_id) ? `<i class="prem-ic">${esc(premIcons.get(p?.id || p?.uid || p?.user_id))}</i>` : ""}</span>`
     : ava(p?.nick, p?.id, extra, p?.tg_photo);
   const canHost = () => !!me?.canHost;
   const tgLine = (p) => (p?.tg_username ? "@" + p.tg_username : p?.tg_name || "");
@@ -2563,7 +2595,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("profHead").innerHTML = `<div class="ph-top">${avaP({ ...row, id }, "lg")}
         <div class="ph-ach" id="phAch"></div></div>
       <div class="ph-name"><h1 class="h1">${esc(row.nick)}</h1>
-        ${isMe || isAnyHost() ? `<button class="bal-chip" type="button" id="profBal" data-uid="${id}"><svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>баланс…</button>` : ""}
+        ${me ? `<button class="bal-chip" type="button" id="profBal" data-uid="${id}"><svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>баланс…</button>` : ""}
         <div class="ph-sub">${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}<span class="ph-since" id="phSince"></span></div></div>
       ${badges.length ? `<div class="prof-badges">${badges.map((b) => `<span class="cb host">${esc(b)}</span>`).join("")}</div>` : ""}
       ${isMe || canGrant ? `<div class="ph-acts" id="phActs"><button class="pill sm ghost" type="button" id="editNick">${isMe ? "изменить ник" : "ник дачнику"}</button></div>` : ""}`;
@@ -2630,8 +2662,13 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const hostLine = hostOf.length ? `Ведёт: ${hostOf.join(", ")}` : "Пока не ведущий";
     const myQr = isMe && isAnyHost() ? extra?.pay_qr || "" : null;
     document.querySelector("#vProfile .prof-card").classList.toggle("is-prem", isPremium({ id }));
-    const premCard = isMe ? `<button class="pm-card" type="button" data-p="premium"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">${isPremium(me) ? "PREMIUM активен · продлить" : "Без рекламы и с премиум-профилем"}</span><span class="pm-card-p">${isPremium(me) ? "›" : "от 400 ฿ / мес ›"}</span></button>` : "";
-    $("profBtns").innerHTML = `${premCard}${myQr !== null ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
+    const premCard = isMe ? `<button class="pm-card" type="button" data-p="premium"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">${isPremium(me) ? "PREMIUM активен · продлить" : "+200 ฿ каждый месяц, без рекламы, своя иконка"}</span><span class="pm-card-p">${isPremium(me) ? "›" : "от 400 ฿ / мес ›"}</span></button>` : "";
+    const ICONS_P = ["🔥", "⚡", "👑", "🦁", "🐺", "🦅", "🌙", "⭐", "🎯", "🍀", "💎", "🃏", "🎭", "🏐", "⚽", "🌴"];
+    const iconPick = isMe && isPremium(me) ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
+        <div class="eyebrow">◆ PREMIUM · твоя иконка</div><p class="lead">Она будет на твоей аватарке во всех списках.</p>
+        <div class="ic-grid">${ICONS_P.map((x) => `<button type="button" data-picon="${x}" aria-pressed="${premIcons.get(me.id) === x}">${x}</button>`).join("")}<button type="button" data-picon="" aria-pressed="${!premIcons.get(me.id)}" class="ic-none">без</button></div>
+      </div></div></div>` : "";
+    $("profBtns").innerHTML = `${premCard}${iconPick}${myQr !== null ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
         <div class="eyebrow">Мой QR для оплат</div>
         <p class="lead">Когда ты отмечаешься ведущим на игре, дачники платят за неё по этому QR.${canGrant ? " Твой QR ещё показывается, когда пополняют баланс." : ""}</p>
         ${myQr ? `<img class="qr-mini" src="${esc(myQr)}" alt="Мой QR">` : `<p class="bio-meta" style="margin:0">QR ещё не загружен${canGrant ? "" : ": пока показывается QR владельца"}.</p>`}
@@ -2672,6 +2709,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     };
     $("profBtns").onclick = async (e) => {
       if (e.target.closest("[data-qrup]")) return $("myQrFile").click();
+      const pi = e.target.closest("[data-picon]");
+      if (pi) { const { error } = await sb.rpc("set_prem_icon", { i: pi.dataset.picon || null }); if (error) return toast("Не получилось: " + humanErr(error)); await loadPremium(); renderMeBtn(); haptic("tap"); return renderProfile(); }
       if (e.target.closest("[data-qrdel]")) { const { error } = await sb.rpc("set_pay_qr", { url: null }); if (error) return toast("Не получилось: " + humanErr(error)); toast("QR убран"); return renderProfile(); }
       const sh = e.target.closest("[data-shost]");
       if (sh && canGrant) {
@@ -4039,6 +4078,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     drawGameOn();
     $("hubHello").innerHTML = me ? "" : loginPrompt();
     drawCrewBtn(); drawWeek(); drawHubGames(); drawBalPill();
+    $("hubPrem").hidden = !me || isPremium(me);
     if (!me) return;
     const need = [];
     if (!sp.loaded) need.push(loadSports());
@@ -4051,6 +4091,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("crewFaces").innerHTML = withPhoto.length ? withPhoto.slice(0, 3).map((p) => avaP(p)).join("") : `<span class="ic">${icon("user")}</span>`;
     $("crewN").textContent = people.length ? `${people.length} ${plural(people.length, "дачник", "дачника", "дачников")}` : "дачники";
   };
+  $("hubPrem").onclick = () => go("premium");
   $("gameOnHub").onclick = () => go(canHost() && S.on.gameId ? "host" : "player");
 
   let weekSel = null;
@@ -4190,27 +4231,35 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   let profLast = null;
   const drawProfBal = async (id, isMe, row) => {
     const b = $("profBal"); if (!b) return;
+    if (!isMe && !isAnyHost()) {
+      b.className = "bal-chip send";
+      b.innerHTML = `↗ Перевести деньги <span>›</span>`;
+      b.onclick = () => openBank("send", id);
+      return;
+    }
     let bal;
     if (isMe) { try { await loadWallet(); } catch {} bal = +wal.balance || 0; }
     else { const { data } = await sb.rpc("wallet", { u: id }); bal = +data?.balance || 0; }
     if (!$("profBal") || profileId !== id) return;
     b.className = "bal-chip" + (bal < 0 ? " neg" : bal > 0 ? " pos" : "");
-    b.innerHTML = `<svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>Баланс: <b>${money(bal)}</b> <span>${isMe ? "пополнить ›" : "принять оплату ›"}</span>`;
+    b.innerHTML = `<svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>Баланс: <b>${money(bal)}</b>${isMe ? "" : ` <span>принять оплату ›</span>`}`;
     b.onclick = () => {
-      if (isMe) return openPay();
+      if (isMe) return openBank();
       const v = document.createElement("div"); v.className = "veil";
       v.innerHTML = `<div class="ticket" role="dialog" aria-modal="true"><div class="ticket-in"><div class="t-body" style="gap:12px">
         <div class="eyebrow">Баланс · ${esc(row.nick)}</div><h2 class="h1">${money(bal)}</h2>
         <label class="amt-row"><input class="amt" type="number" min="1" step="10" value="${bal < 0 ? -bal : 100}" aria-label="Сумма"><span>฿</span></label>
         <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" data-m="cash">получил наличными</button><button class="pill sm" data-m="qr">получил по QR</button>
-          ${canGrant ? `<button class="pill sm red" data-m="minus">списать</button>` : ""}<button class="pill sm ghost" data-close>закрыть</button></div>
+          ${canGrant ? `<button class="pill sm red" data-m="minus">списать</button>` : ""}<button class="pill sm dark" data-m="send">↗ перевести со своего счёта</button><button class="pill sm ghost" data-close>закрыть</button></div>
         <p class="bio-meta" style="margin:0">${canGrant ? "«Списать» уменьшает баланс вручную (например, за игру без записи)." : "Сумма сразу зачислится на баланс дачника."}</p></div></div></div>`;
       v.addEventListener("click", async (ev2) => {
         if (ev2.target === v || ev2.target.closest("[data-close]")) return v.remove();
         const mb = ev2.target.closest("[data-m]"); if (!mb) return;
+        if (mb.dataset.m === "send") { v.remove(); return openBank("send", id); }
         const amount = parseInt(v.querySelector("input").value, 10); if (!(amount >= 1)) return toast("Укажи сумму");
-        const { error } = mb.dataset.m === "minus" ? await sb.rpc("wallet_adjust", { u: id, amount: -amount, note: "Списание вручную" }) : await sb.rpc("pay_receive", { u: id, amount, m: mb.dataset.m });
+        const { data: rid, error } = mb.dataset.m === "minus" ? await sb.rpc("wallet_adjust", { u: id, amount: -amount, note: "Списание вручную" }) : await sb.rpc("pay_receive", { u: id, amount, m: mb.dataset.m });
         if (error) return toast("Не получилось: " + humanErr(error));
+        if (mb.dataset.m !== "minus") notifyTx(rid);
         v.remove(); toast(mb.dataset.m === "minus" ? "Списано" : "Баланс пополнен"); drawProfBal(id, isMe, row);
       });
       document.body.append(v);
@@ -4494,6 +4543,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (error) throw error;
     Object.assign(wal, data, { loaded: true });
   })().finally(() => { wal.loading = null; }));
+  const notifyTx = (id) => { if (id && sb) sb.functions.invoke("tg", { body: { action: "wallet_notify", tx: id } }).catch(() => {}); };
   const walletChanged = async () => {
     try { await loadWallet(); } catch { return; }
     if (!isPremium(me)) loadPremium().then(renderMeBtn).catch(() => {});
@@ -4518,7 +4568,66 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     b.innerHTML = `<svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>${money(wal.balance)}`;
     b.setAttribute("aria-label", "Баланс " + money(wal.balance));
   };
-  $("hubBal").onclick = () => openPay();
+  $("hubBal").onclick = () => openBank();
+  const openBank = async (mode, toId) => {
+    if (!me) return go("auth");
+    haptic("tap");
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    let tab = mode || "main", to = toId || "", amt = "";
+    const draw = () => {
+      const bal = +wal.balance || 0;
+      const list = [...people].filter((p) => p.id !== me.id).sort((a, b) => a.nick.localeCompare(b.nick));
+      v.innerHTML = `<div class="bank" role="dialog" aria-modal="true" aria-label="Баланс">
+        <div class="bank-card ${bal < 0 ? "neg" : ""}"><div class="bank-top"><span class="pm-mark">DACHA <b>WALLET</b></span>${isPremium(me) ? `<span class="bank-prem">◆ PREMIUM</span>` : ""}</div>
+          <small>Баланс</small><b>${money(bal)}</b>
+          <div class="bank-who">${esc(me.nick)}${wal.pending ? ` · ⏳ +${money(wal.pending)} ждёт подтверждения` : ""}</div></div>
+        ${tab === "main" ? `<div class="bank-acts">
+            <button type="button" data-b="topup"><i>＋</i><span>Пополнить</span></button>
+            <button type="button" data-b="send"><i>↗</i><span>Перевести</span></button>
+            <button type="button" data-b="premium"><i>◆</i><span>PREMIUM</span></button>
+            <button type="button" data-b="history"><i>≡</i><span>История</span></button>
+          </div>`
+        : `<form class="bank-send" data-sendform>
+            <div class="eyebrow">Перевод дачнику</div>
+            <select class="field" name="to" required><option value="">Кому перевести?</option>${list.map((p) => `<option value="${p.id}" ${p.id === to ? "selected" : ""}>${esc(p.nick)}${p.tg_username ? " · @" + esc(p.tg_username) : ""}</option>`).join("")}</select>
+            <label class="amt-row"><input class="amt" name="a" type="number" inputmode="numeric" min="1" max="${Math.max(bal, 0)}" step="10" value="${amt}" placeholder="0" required aria-label="Сумма"><span>฿</span></label>
+            <input class="field" name="n" maxlength="80" placeholder="Сообщение (можно пусто)">
+            <p class="bio-meta" style="margin:0">${bal > 0 ? `Можно перевести до ${money(bal)}. Деньги придут сразу, бот напишет получателю.` : "На балансе пока нет денег для перевода — сначала пополни."}</p>
+            <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="submit" ${bal > 0 ? "" : "disabled"}>перевести</button><button class="pill sm ghost" type="button" data-b="main">назад</button></div>
+          </form>`}
+        <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button>
+      </div>`;
+    };
+    if (!wal.loaded) { try { await loadWallet(); } catch {} }
+    if (!people.length) await loadPeople();
+    draw();
+    v.addEventListener("click", (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      const b = e.target.closest("[data-b]"); if (!b) return;
+      const k = b.dataset.b;
+      if (k === "topup") { v.remove(); return openPay(); }
+      if (k === "history") { v.remove(); return openPay(); }
+      if (k === "premium") { v.remove(); return go("premium"); }
+      if (k === "send") { tab = "send"; return draw(); }
+      if (k === "main") { tab = "main"; return draw(); }
+    });
+    v.addEventListener("submit", async (e) => {
+      const f = e.target.closest("[data-sendform]"); if (!f) return;
+      e.preventDefault();
+      to = f.elements.to.value; amt = f.elements.a.value;
+      const amount = parseInt(amt, 10), who = personOf(to);
+      if (!to) return toast("Выбери, кому перевести");
+      if (!(amount >= 1)) return toast("Укажи сумму");
+      if (amount > (+wal.balance || 0)) return toast("На балансе не хватает денег");
+      sheet({ eyebrow: "Перевод", title: `Перевести ${money(amount)} → ${who.nick}?`, text: "Деньги уйдут сразу, отменить перевод нельзя.", ok: "перевести", onOk: async () => {
+        const { data: rid, error } = await sb.rpc("wallet_transfer", { to_: to, amount, note: f.elements.n.value.trim() || null });
+        if (error) return toast("Не получилось: " + humanErr(error));
+        notifyTx(rid); haptic("card"); toast(`Перевёл ${money(amount)} → ${who.nick}`);
+        await walletChanged(); tab = "main"; amt = ""; draw();
+      } });
+    });
+    document.body.append(v);
+  };
   const evPayState = (id) => { const l = wal.txs.filter((t) => t.event_id === id); return l.some((t) => t.status === "confirmed") ? "paid" : l.some((t) => t.status === "pending") ? "pending" : null; };
   const payBtn = (kind, e) => {
     if (!me || !e?.price) return "";
@@ -4534,9 +4643,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const loadQRs = async () => { const { data } = await sb.from("profiles").select("id, pay_qr").not("pay_qr", "is", null); qrs.clear(); (data || []).forEach((r) => qrs.set(r.id, r.pay_qr)); };
   const ownerId = () => people.find((p) => String(p.tg_username || "").toLowerCase() === "tivishka")?.id;
   const qrFor = (e) => {
-    for (const h of (e?.hosts || []).map((x) => x.user_id)) if (qrs.get(h)) return { url: qrs.get(h), who: personOf(h) };
-    const o = ownerId(); if (o && qrs.get(o)) return { url: qrs.get(o), who: personOf(o) };
-    return ev.set?.qr_url ? { url: ev.set.qr_url, who: null } : null;
+    if (e) { for (const h of (e.hosts || []).map((x) => x.user_id)) if (qrs.get(h)) return { url: qrs.get(h), who: personOf(h) }; return null; }
+    const o = ownerId(); return o && qrs.get(o) ? { url: qrs.get(o), who: personOf(o) } : null;
   };
   const openPay = (kind, id) => { haptic("tap"); payCtx = kind && id ? { kind, id } : null; payAmt = null; go("pay"); };
   const ctxEvent = () => (!payCtx ? null : payCtx.kind === "mafia" ? ev.list.find((x) => x.id === payCtx.id) : sp.events.find((x) => x.id === payCtx.id)) || null;
@@ -4576,7 +4684,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         ${payMethod === "qr" ? (qr ? `<div class="qr-card">${q.who ? `<span class="qr-who">${avaP(q.who)}QR${e && (e.hosts || []).some((h) => h.user_id === q.who.id) ? " ведущего" : ""}: <b>${esc(q.who.nick)}</b></span>` : ""}<img src="${esc(qr)}" alt="QR-код для перевода"><p>Отсканируй в приложении банка и переведи <b>${money(+amt || 0)}</b>.${ev.set?.qr_note ? " " + esc(ev.set.qr_note) : ""}</p>
               <button class="pill sm ghost" type="button" data-qrsave>⬇ скачать QR</button></div>
             <button class="pill wide" type="button" data-send="qr">я перевёл ${money(+amt || 0)}</button>`
-          : `<p class="lead">QR-код ещё не загружен. Пока можно отдать наличными.</p>`)
+          : `<p class="lead">${e ? "Ведущий этой игры ещё не добавил свой QR. Можно отдать наличными." : "QR-код ещё не загружен. Пока можно отдать наличными."}</p>`)
           : `<p class="lead">Отдай <b>${money(+amt || 0)}</b> ведущему на месте. Как только он подтвердит, баланс пополнится.</p>
             <button class="pill wide" type="button" data-send="cash">отдам ${money(+amt || 0)} наличными</button>`}
         <p class="bio-meta" style="margin:0">Деньги зачисляются, когда ведущий подтвердит, что получил.</p>
@@ -4588,14 +4696,14 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       ...wal.charges.map((c) => ({ at: c.day + "T" + c.start_time, amt: -c.price, ic: meta(c.game).emoji, t: `${meta(c.game).name} · ${dayLabel(c.day)}`, s: c.place || "игра" })),
       ...wal.txs.filter((t) => t.status !== "pending" && t.purpose === "premium").map((t) => ({ at: t.created_at, amt: 0, ic: t.status === "rejected" ? "✕" : "◆",
         t: `PREMIUM · ${t.amount} ${CUR[t.currency] || "฿"}${t.status === "rejected" ? " · не подтверждено" : ""}`, s: "покупка на месяц" })),
-      ...wal.txs.filter((t) => t.status !== "pending" && t.purpose !== "premium").map((t) => ({ at: t.created_at, amt: t.status === "confirmed" ? t.amount : 0, ic: t.status === "rejected" ? "✕" : t.method === "adjust" ? "✎" : t.method === "qr" ? "📱" : "💵",
-        t: t.status === "rejected" ? `Не подтверждено · ${money(t.amount)}` : t.method === "adjust" ? (t.note || "Корректировка") : `Пополнение · ${t.method === "qr" ? "QR" : "наличные"}`, s: t.game ? evTitle(t.game, t.event_id) : new Date(t.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) })),
+      ...wal.txs.filter((t) => t.status !== "pending" && t.purpose !== "premium").map((t) => ({ at: t.created_at, amt: t.status === "confirmed" ? t.amount : 0, ic: t.status === "rejected" ? "✕" : t.method === "transfer" ? (t.amount < 0 ? "↗" : "↙") : t.method === "adjust" ? (t.amount > 0 ? "＋" : "−") : t.method === "qr" ? "📱" : "💵",
+        t: t.status === "rejected" ? `Не подтверждено · ${money(t.amount)}` : t.method === "transfer" || t.method === "adjust" ? (t.note || "Корректировка") : `Пополнение · ${t.method === "qr" ? "QR" : "наличные"}`, s: t.game ? evTitle(t.game, t.event_id) : new Date(t.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) })),
     ].sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 40);
     $("payHist").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">История</div></div>
       ${rows.length ? rows.map((r) => `<div class="tx-row"><span class="tx-ic">${r.ic}</span><span class="tx-t"><b>${esc(r.t)}</b><small>${esc(r.s)}</small></span><span class="tx-amt ${r.amt < 0 ? "neg" : r.amt > 0 ? "pos" : ""}">${r.amt > 0 ? "+" : ""}${r.amt ? money(r.amt) : "—"}</span></div>`).join("")
         : `<div class="empty-note">Пока пусто. Здесь будут игры, за которые списались деньги, и пополнения.</div>`}
       <div class="stub"><span>Списано ${money(wal.owed || 0)} · внесено ${money(wal.paid || 0)}</span><b>WALLET</b></div></div></div>
-      ${isPremium(me) ? "" : `<button class="pm-card" type="button" id="payPrem"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">Без рекламы и с премиум-профилем</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>`}`;
+      ${isPremium(me) ? "" : `<button class="pm-card" type="button" id="payPrem"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>`}`;
     if ($("payPrem")) $("payPrem").onclick = () => go("premium");
   };
   // hosts: confirm requests, see debts, take money
@@ -4637,6 +4745,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (b.dataset.decide) {
       const { error } = await sb.rpc("pay_decide", { tx: b.dataset.decide, ok: b.dataset.ok === "1" });
       if (error) return toast("Не получилось: " + humanErr(error));
+      if (b.dataset.ok === "1") notifyTx(b.dataset.decide);
       toast(b.dataset.ok === "1" ? "Подтверждено, баланс пополнен" : "Отмечено: не получено"); haptic("tap");
       return drawPayHost();
     }
@@ -4646,8 +4755,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const f = e.target.closest("[data-recv]"); if (!f) return;
     e.preventDefault();
     const amount = parseInt(f.elements.a.value, 10); if (!(amount >= 1)) return toast("Укажи сумму");
-    const { error } = await sb.rpc("pay_receive", { u: f.dataset.recv, amount, m: f.elements.m.value });
+    const { data: rid, error } = await sb.rpc("pay_receive", { u: f.dataset.recv, amount, m: f.elements.m.value });
     if (error) return toast("Не получилось: " + humanErr(error));
+    notifyTx(rid);
     payRecv = null; toast("Записал: баланс пополнен"); drawPayHost();
   });
 
@@ -4673,9 +4783,10 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <h1>${on ? "У тебя PREMIUM" : "Стань PREMIUM-дачником"}</h1>
         <p>${on ? (forever ? "Навсегда. Спасибо, что поддерживаешь дачу." : until ? `Активен до ${new Date(until).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}. Можно продлить заранее — месяц добавится.` : "Активен.") : "Поддержи дачу и получи особый статус среди своих."}</p>
         <ul class="pm-list">
+          <li><i>◆</i><span><b>+200 ฿ на счёт каждый месяц</b>трать как угодно: игры, переводы друзьям</span></li>
           <li><i>◆</i><span><b>Без рекламы</b>ни баннеров, ни всплывающих плашек</span></li>
-          <li><i>◆</i><span><b>Тёмный премиум-профиль</b>особая обложка и отделка, которую видят все</span></li>
-          <li><i>◆</i><span><b>Знак PREMIUM</b>в списках игроков, рейтингах и заметках</span></li>
+          <li><i>◆</i><span><b>Своя иконка</b>на аватарке во всех списках и в профиле</span></li>
+          <li><i>◆</i><span><b>Тёмный премиум-профиль</b>и знак PREMIUM рядом с ником</span></li>
         </ul>
         <div class="pm-price"><b>${PREM_PRICE[pmCur]} ${CUR[pmCur]}</b><span>за месяц</span></div>
       </div>`;
@@ -4703,7 +4814,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         : `<p class="lead">Оплата в ${pmCur === "RUB" ? "рублях" : "долларах"} — переводом. Напиши @tivishka, он пришлёт реквизиты, а после перевода нажми «я оплатил».</p>
           <a class="pill wide ghost" href="${tg2}" target="_blank" rel="noopener" data-tglink>написать @tivishka</a>
           <button class="pill wide pm-btn" type="button" data-pmsend="transfer">я оплатил ${PREM_PRICE[pmCur]} ${CUR[pmCur]}</button>`}
-        <p class="bio-meta" style="margin:0">PREMIUM включится, когда @tivishka подтвердит оплату.</p>
+        <p class="bio-meta" style="margin:0">PREMIUM включится, когда @tivishka подтвердит оплату, и сразу придёт +200 ฿ на счёт.</p>
       </div></div></div>`;
   };
   $("vPremium").addEventListener("click", async (e) => {
@@ -4720,6 +4831,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (b.dataset.pmsend) {
       const { error } = await sb.rpc("premium_request", { cur: pmCur, m: b.dataset.pmsend });
       if (error) return toast("Не получилось: " + humanErr(error));
+      sb.functions.invoke("tg", { body: { action: "premium_notify" } }).catch(() => {});
       haptic("card"); toast("Заявка отправлена. PREMIUM включится после подтверждения");
       await loadWallet(); drawPremium();
     }
@@ -4998,8 +5110,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       evAction(async () => {
         if (b.dataset.st === "paid") {
           if (on) return ids.confirmed ? sb.rpc("pay_undo", { tx: ids.confirmed }) : { error: null };
-          if (ids.pending) return sb.rpc("pay_decide", { tx: ids.pending, ok: true });
-          return sb.rpc("pay_receive", { u, amount: event.price, m: "cash", e: id, g: "mafia" });
+          if (ids.pending) { const r = await sb.rpc("pay_decide", { tx: ids.pending, ok: true }); if (!r.error) notifyTx(ids.pending); return r; }
+          const r = await sb.rpc("pay_receive", { u, amount: event.price, m: "cash", e: id, g: "mafia" }); if (!r.error) notifyTx(r.data); return r;
         }
         if (on) return { error: null };
         if (ids.pending) return sb.rpc("pay_decide", { tx: ids.pending, ok: false });
@@ -5327,6 +5439,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (deep === "card") startView = "card";
     if (deep === "events") startView = "events";
     if (deep === "mafia") startView = "home";
+    if (deep === "pay" || deep === "premium") startView = deep;
     if (SPORTS[deep]) { startView = "sport"; sportId = deep; }
     if (inTG) {
       try { tg?.ready(); tg?.expand(); const hw = document.documentElement.classList.contains("hw");
