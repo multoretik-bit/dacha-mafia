@@ -128,13 +128,20 @@ async function broadcast(req: Request, body: any) {
   const { data: { user } } = await admin.auth.getUser(jwt);
   if (!user) return json({ error: "Нужно войти" }, 401);
   const { data: me } = await admin.from("profiles").select("tg_id,tg_username").eq("id", user.id).maybeSingle();
-  if ((me?.tg_username || "").toLowerCase() !== "tivishka") return json({ error: "Анонсы делает только @tivishka" }, 403);
+  // announcements: @tivishka for any game, a host only for the game he hosts
+  const game = ["mafia", "volley", "foot"].includes(body.game) ? body.game : "mafia";
+  const uname = (me?.tg_username || "").toLowerCase();
+  let allowed = uname === "tivishka";
+  if (!allowed && game === "mafia" && uname) { const { data: h } = await admin.from("host_allowlist").select("tg_username").eq("tg_username", uname).maybeSingle(); allowed = !!h; }
+  if (!allowed && game !== "mafia") { const { data: h } = await admin.from("sport_hosts").select("user_id").eq("user_id", user.id).eq("sport", game).maybeSingle(); allowed = !!h; }
+  if (!allowed) return json({ error: "Анонсы по этой игре делает её ведущий" }, 403);
   const text = String(body.text || "").trim().slice(0, 4000);
   const ours = (u: unknown) => typeof u === "string" && u.startsWith(SB_URL + "/storage/v1/object/public/announce/") ? u : null;
   const video = ours(body.video_url);
   const photo = video ? null : ours(body.photo_url);
   if (!text && !photo && !video) return json({ error: "Пустой анонс" }, 400);
-  const markup = body.button ? { inline_keyboard: [[{ text: "Записаться на игру", web_app: { url: APP + "?v=events" } }]] } : undefined;
+  const btn = ({ mafia: ["Записаться на мафию", "?v=events"], volley: ["Записаться на волейбол", "?v=volley"], foot: ["Записаться на футбол", "?v=foot"] } as Record<string, string[]>)[game];
+  const markup = body.button ? { inline_keyboard: [[{ text: btn[0], web_app: { url: APP + btn[1] } }]] } : undefined;
   let chats: number[];
   if (body.test) chats = [me!.tg_id];
   else {
