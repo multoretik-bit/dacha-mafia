@@ -1342,8 +1342,6 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .cb { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px; border-radius: 99px; background: var(--soft); font-weight: 800; font-size: 11.5px; color: var(--navy-ink); }
 .cb.host { background: #FFF1C9; color: #8A5A00; }
 .crew-row .go { color: #B4BAC8; font: 600 22px/1 var(--f-code); }
-.crew-row.never { opacity: .55; }
-.crew-row.never .ava { filter: grayscale(1); }
 
 /* ---------- profile ---------- */
 .prof-card .ticket-in { position: relative; }
@@ -1839,7 +1837,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105081711"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105082127"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3840,7 +3838,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         p.is_host ? `<span class="cb host">🎭 ведущий</span>` : "",
         ...hostOf.map((x) => `<span class="cb host">${x.emoji} ведущий</span>`),
       ].filter(Boolean).join("");
-      return `<button class="crew-row${total(p) ? "" : " never"}" type="button" data-id="${p.id}">${avaP(p)}
+      return `<button class="crew-row" type="button" data-id="${p.id}">${avaP(p)}
         <span class="nm"><b>${esc(p.nick)}${p.id === me.id ? " · ты" : ""}</b><small>${esc(tgLine(p) || "дачник")}</small>${chips ? `<span class="crew-badges">${chips}</span>` : ""}</span><span class="go">›</span></button>`;
     }).join("") : `<div class="empty-note">Никого не нашли по «${esc(q)}».</div>`;
   };
