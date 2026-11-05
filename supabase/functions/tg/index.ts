@@ -188,15 +188,17 @@ async function broadcast(req: Request, body: any) {
   // @tivishka's announcements also go to the DACHA group
   let group: string | null = null;
   if (uname === "tivishka" && !body.test) {
-    const info: any = await tgApi("getChat", { chat_id: GROUP_CHAT });
+    const { data: bc } = await admin.from("bot_chats").select("chat_id").in("status", ["administrator", "member"]).neq("type", "private").order("added_at", { ascending: false }).limit(1).maybeSingle();
+    const target = bc?.chat_id || GROUP_CHAT;
+    const info: any = await tgApi("getChat", { chat_id: target });
     if (!info.ok) group = "бот не добавлен в группу";
     else {
-      const thread = info.result?.is_forum ? { message_thread_id: GROUP_THREAD } : {};
-      const gm = video ? (cap: Record<string, unknown>) => tgApi("sendVideo", { chat_id: GROUP_CHAT, video: fileId || video, supports_streaming: true, ...thread, ...cap })
-        : photo ? (cap: Record<string, unknown>) => tgApi("sendPhoto", { chat_id: GROUP_CHAT, photo: fileId || photo, ...thread, ...cap }) : null;
+      const thread = info.result?.is_forum && target === GROUP_CHAT ? { message_thread_id: GROUP_THREAD } : {};
+      const gm = video ? (cap: Record<string, unknown>) => tgApi("sendVideo", { chat_id: target, video: fileId || video, supports_streaming: true, ...thread, ...cap })
+        : photo ? (cap: Record<string, unknown>) => tgApi("sendPhoto", { chat_id: target, photo: fileId || photo, ...thread, ...cap }) : null;
       let r: any;
       if (gm && text.length <= 1024) r = await gm({ caption: text || undefined, reply_markup: groupMarkup });
-      else { if (gm) await gm({}); r = await tgApi("sendMessage", { chat_id: GROUP_CHAT, text, reply_markup: groupMarkup, ...thread }); }
+      else { if (gm) await gm({}); r = await tgApi("sendMessage", { chat_id: target, text, reply_markup: groupMarkup, ...thread }); }
       group = r.ok ? "ok" : r.description || "ошибка";
     }
   }
@@ -394,6 +396,17 @@ async function hook(req: Request) {
   if (req.headers.get("X-Telegram-Bot-Api-Secret-Token") !== HOOK_SECRET) return new Response("forbidden", { status: 401 });
   const upd = await req.json().catch(() => ({}));
   if (upd.callback_query?.data?.startsWith("pv:")) { await pollVote(upd.callback_query); return new Response("ok"); }
+  if (upd.my_chat_member) {
+    const m = upd.my_chat_member, ch = m.chat || {}, st = m.new_chat_member?.status;
+    if (ch.type !== "private") {
+      await admin.from("bot_chats").upsert({ chat_id: ch.id, title: ch.title || "", type: ch.type, is_forum: !!ch.is_forum, status: st, added_at: new Date().toISOString() });
+      const { data: own } = await admin.from("profiles").select("tg_id").ilike("tg_username", "tivishka").maybeSingle();
+      if (own?.tg_id) await tgApi("sendMessage", { chat_id: own.tg_id, text: ["administrator", "member"].includes(st)
+        ? `✅ Меня добавили в «${ch.title || ch.id}» (${st === "administrator" ? "админ" : "участник"}). Твои анонсы теперь будут дублироваться туда.${st === "member" && ch.type === "channel" ? " Для канала нужен статус администратора." : ""}`
+        : `ℹ️ Меня убрали из «${ch.title || ch.id}».` });
+    }
+    return new Response("ok");
+  }
   if (upd.callback_query?.data?.startsWith("j:")) { await joinFromButton(upd.callback_query); return new Response("ok"); }
   const msg = upd.message;
   if (msg?.chat?.type === "private") {
