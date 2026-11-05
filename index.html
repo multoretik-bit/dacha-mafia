@@ -2428,7 +2428,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105151200"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105155159"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2629,7 +2629,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
       vars: "--bill-x:22%;--bill-y:50%;--tag-y:28%;--tag-r:auto;--tag-l:7%" },
   ];
   // share of impressions, %: GreenEx 30, Feniks 25, LETO cards 25, school 20
-  const AD_WEIGHT = { greenex: 30, feniks: 25, leto: 25, school: 20 };
+  const AD_WEIGHT = { greenex: 30, feniks: 30, leto: 30, school: 10 };
   // an advertiser sees only his own ad
   const OWN_AD = { tigranich: "greenex", iry_eng: "school" };
   // an ad with "until" runs up to that day (Bangkok), not including it
