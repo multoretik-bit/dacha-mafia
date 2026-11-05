@@ -1729,6 +1729,23 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
 .bk-in h1 { margin: 0; font: 800 26px/1.1 var(--f-display); color: var(--navy-ink); }
 .bk-in p { margin: 0; font-weight: 600; color: var(--muted); }
 
+/* all ratings (05.11) */
+.rt-card { border-radius: 22px; background: #fff; box-shadow: var(--sh); overflow: hidden; }
+.rt-h { display: grid; grid-template-columns: 40px 1fr; column-gap: 10px; align-items: center; padding: 12px 14px; background: color-mix(in srgb, var(--gc) 12%, #fff); }
+.rt-ic { grid-row: span 2; width: 40px; height: 40px; border-radius: 12px; background: #fff; display: grid; place-items: center; font-size: 22px; }
+.rt-h b { font: 800 17px/1.1 var(--f-display); color: var(--ink); }
+.rt-h small { color: var(--muted); font-weight: 700; font-size: 12px; }
+.rt-row { display: grid; grid-template-columns: 28px 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 14px; border-top: 1px solid var(--hair); width: 100%; text-align: left; color: var(--ink); box-sizing: border-box; }
+.rt-row > .ava, .rt-row > .prem { width: 34px; height: 34px; font-size: 16px; }
+.rt-row > .prem .ava { width: 100%; height: 100%; } .rt-row .prem .cash { display: none; }
+.rt-n { text-align: center; font: 700 15px/1 var(--f-code); color: var(--muted); }
+.rt-nm { font-weight: 800; font-size: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rt-nm small { display: block; color: var(--muted); font-weight: 700; font-size: 11.5px; }
+.rt-row > b { font: 700 20px/1 var(--f-code); color: var(--gc); }
+.rt-row.me { background: #F4F7FF; }
+.rt-more { display: block; width: 100%; padding: 10px 14px; border-top: 1px solid var(--hair); text-align: left; font-weight: 800; font-size: 13px; color: var(--navy-ink); }
+#vRat { gap: 12px; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1933,6 +1950,11 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
       <button class="pill dark sm" id="goAnnounce" hidden>сделать анонс</button>
       <button class="pill dark sm" id="goPolls" hidden>опрос в боте</button>
     </div>
+  </section>
+
+  <!-- ALL RATINGS (from «Дачники») -->
+  <section id="vRat" class="col" hidden>
+    <div id="ratBody"></div>
   </section>
 
   <!-- COMMUNITY EVENT page -->
@@ -2356,7 +2378,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105135619"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105140229"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2651,7 +2673,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
   });
 
   /* ---------- navigation ---------- */
-  const VIEWS = ["vCev", "vReq", "vPremium", "vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
+  const VIEWS = ["vRat", "vCev", "vReq", "vPremium", "vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
   let profileId = null;
   const online = () => S.hostMode === "online";
   const hostView = () => {
@@ -2682,7 +2704,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
     if (view === "pay" && S.view !== "pay") payFrom = S.view;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { cevent: "vCev", sportlist: "vSport", sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { ratings: "vRat", cevent: "vCev", sportlist: "vSport", sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "hub";
     if (typeof checkBlock === "function") try { checkBlock(); } catch {}
@@ -2690,7 +2712,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
     renderTabs(view);
     if (id !== "vLive") stopLive();
     ({
-      vCev: renderCev, vReq: renderReq, vPremium: renderPremium, vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
+      vRat: renderRat, vCev: renderCev, vReq: renderReq, vPremium: renderPremium, vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
       vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople, vMonth: () => { boardMonth = null; drawMonth(); }, vDeck: renderDeck,
       vPick: renderPick, vCount: renderCount, vRoles: renderRoles, vLive: renderLive, vDeal: renderDeal, vDone: renderDone,
       vCard: renderCard, vNotes: () => renderNotes(false), vEvents: renderEvents, vPlayer: renderPlayer,
@@ -2723,6 +2745,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
   $("goList").onclick = () => { haptic("tap"); ["sport", "sportorg", "sportrate"].includes(S.view) ? go("sportlist", sportId) : go("events"); };
   $("goPeople").onclick = () => {
     if (!me) return go("auth");
+    if (S.view === "crew") return go("ratings");
     if (S.view === "sport" || S.view === "sportorg") return go("sportrate", sportId);
     if (S.view === "sportrate") return;
     go("people");
@@ -2747,11 +2770,11 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
     $("tabEvents").textContent = canHost() ? "запись" : "запись на игру";
     $("tabsBox").hidden = !set.length;
     // rating of the current game, next to the avatar
-    $("goPeople").hidden = !["home", "card", "notes", "host", "events", "player", "deck", "sport", "sportorg", "sportlist"].includes(view);
+    $("goPeople").hidden = !["home", "card", "notes", "host", "events", "player", "deck", "sport", "sportorg", "sportlist", "crew"].includes(view);
     $("goList").hidden = !me || !["home", "card", "notes", "host", "player", "deck", "people", "month", "sport", "sportorg", "sportrate"].includes(view);
     $("goPeople").setAttribute("aria-label", view === "sport" ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("topTitle").hidden = !!set.length;
-    $("topTitle").textContent = { cevent: "ивент", host: "раздача", events: "запись", sportlist: "запись", sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
+    $("topTitle").textContent = { ratings: "рейтинги", cevent: "ивент", host: "раздача", events: "запись", sportlist: "запись", sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
   };
 
   const renderHostAccess = () => {
@@ -4599,6 +4622,28 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
     box.innerHTML = list.length ? `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:6px"><div class="eyebrow">🎂 Скоро дни рождения</div></div>
       <div class="bd-list">${list.map((x) => { const pp = personOf(x.id); return `<button class="bd-row ${x.n === 0 ? "today" : ""}" type="button" data-id="${x.id}">${avaP(pp)}<span class="nm"><b>${esc(pp.nick)}</b><small>${esc(bdayText(x.b))}</small></span><span class="bd-when">${x.n === 0 ? "сегодня 🎉" : x.n === 1 ? "завтра" : `через ${x.n} ${plural(x.n, "день", "дня", "дней")}`}</span></button>`; }).join("")}</div></div></div>` : "";
   };
+
+  /* ---------- all ratings at once ---------- */
+  const renderRat = async () => {
+    const box = $("ratBody");
+    if (!sb || !me) { box.innerHTML = loginPrompt(); return; }
+    box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>Считаю рейтинги…</div></div></div></div>`;
+    const [, v, f] = await Promise.all([loadPeople(), sportBoard("volley").catch(() => []), sportBoard("foot").catch(() => [])]);
+    if (S.view !== "ratings") return;
+    const maf = [...people].filter((p) => p.games > 0).sort((a, b) => b.wins - a.wins || b.games - a.games || a.nick.localeCompare(b.nick));
+    const card = (k, list, more) => { const M = meta(k);
+      const rows = list.slice(0, 7).map((p, i) => `<button class="rt-row ${p.id === me.id ? "me" : ""}" type="button" data-id="${p.id}"><span class="rt-n">${i < 3 ? ["🥇", "🥈", "🥉"][i] : i + 1}</span>${avaP(p)}<span class="rt-nm">${esc(p.nick)}${p.id === me.id ? " · ты" : ""}<small>${+p.games} ${plural(+p.games, "игра", "игры", "игр")}</small></span><b>${+p.wins}</b></button>`).join("");
+      const mineIdx = list.findIndex((p) => p.id === me.id);
+      return `<div class="rt-card" style="--gc:${M.color}"><div class="rt-h"><span class="rt-ic">${M.emoji}</span><b>${M.name}</b><small>${list.length} ${plural(list.length, "игрок", "игрока", "игроков")}${mineIdx >= 0 ? ` · ты #${mineIdx + 1}` : ""}</small></div>
+        ${rows || `<p class="bio-meta" style="margin:6px 14px 12px">Пока нет сыгранных игр.</p>`}
+        <button class="rt-more" type="button" data-more="${more}">весь рейтинг ›</button></div>`; };
+    box.innerHTML = `<div class="sec-title" style="margin:0 2px 2px">Рейтинги дачников</div><p class="bio-meta" style="margin:0 2px 8px">По победам. Нажми на дачника — откроется профиль.</p>
+      ${card("mafia", maf, "people")}${card("volley", v, "volley")}${card("foot", f, "foot")}`;
+  };
+  $("ratBody").addEventListener("click", (e) => {
+    const m = e.target.closest("[data-more]"); if (m) return m.dataset.more === "people" ? go("people") : go("sportrate", m.dataset.more);
+    const b = e.target.closest("[data-id]"); if (b) go("profile", b.dataset.id);
+  });
 
   /* ---------- crew: social list of everybody ---------- */
   const sportBoard = async (k, month) => {
