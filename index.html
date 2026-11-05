@@ -1885,6 +1885,44 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 .ss-note { min-height: 110px; resize: vertical; font-weight: 600; }
 #board { display: none; }
 
+/* profile themes v2 (06.11): scenes, title, own photo, dark */
+.prof-card .prof-cover.tall { height: 120px; }
+.prof-card .prof-cover.has-title { height: 132px; }
+.cov-title { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); width: calc(100% - 40px); text-align: center; font: 900 24px/1.1 var(--f-body); letter-spacing: -.01em; color: #fff; text-shadow: 0 2px 0 rgba(7,27,77,.35), 0 6px 18px rgba(0,0,0,.45); overflow-wrap: anywhere; pointer-events: none; z-index: 1; }
+.theme-panel .tp-tabs { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.theme-panel .tp-tabs button { font-size: 12px; padding: 0 2px; white-space: nowrap; }
+.tp-scenes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tp-scenes button { position: relative; height: 58px; border-radius: 14px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }
+.tp-scenes button span { position: absolute; left: 6px; bottom: 5px; padding: 2px 7px; border-radius: 99px; background: rgba(7,27,77,.55); color: #fff; font-weight: 800; font-size: 11px; }
+.tp-scenes button[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--card, #fff), 0 0 0 5px var(--navy-ink); }
+.tp-sub { margin: 12px 0 6px; font-weight: 800; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.tp-lock { display: grid; gap: 6px; justify-items: start; padding: 4px 0; }
+.tp-lock b { font-weight: 900; color: var(--navy-ink); } .tp-lock p { margin: 0; color: var(--muted); font-weight: 600; font-size: 13.5px; }
+.tp-prem { display: grid; gap: 10px; }
+.tp-lbl { display: grid; gap: 6px; font-weight: 800; font-size: 13px; color: var(--navy-ink); }
+.tp-prem .host-row { grid-template-columns: minmax(0, 1fr) auto; }
+.tp-lbl .field { width: 100%; box-sizing: border-box; }
+.tp-body { max-height: 46vh; overflow-y: auto; }
+.tp-photo { display: flex; gap: 8px; flex-wrap: wrap; }
+.tp-photo label { cursor: pointer; }
+/* full dark profile (PREMIUM) */
+body.pdark { background: #0A0D16; }
+html body.pdark::before { background: #0A0D16; }
+html:has(body.pdark) { background: #0A0D16; }
+#vProfile.th-dark .pgo { background: color-mix(in srgb, var(--gc) 16%, #141927); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gc) 40%, transparent); }
+#vProfile.th-dark .pgo small { color: var(--muted); }
+#vProfile.th-dark .pill.dark { background: #EEF1F8; color: #0A0D16; }
+#vProfile.th-dark a, #vProfile.th-dark .link { color: #8FB0FF; }
+#vProfile.th-dark { --bg: #0A0D16; --card: #141927; --soft: #1D2335; --hair: #262E44; --ink: #EEF1F8; --navy-ink: #EEF1F8; --muted: #8E98B3; --paper: #141927; --line: #262E44; --sh: 0 1px 2px rgba(0,0,0,.4), 0 14px 30px -16px rgba(0,0,0,.8); color: var(--ink); }
+#vProfile.th-dark .prof-card, #vProfile.th-dark .ticket, #vProfile.th-dark .ticket-in, #vProfile.th-dark .t-body, #vProfile.th-dark .pf-card { background: var(--card); color: var(--ink); }
+#vProfile.th-dark .h1, #vProfile.th-dark h1, #vProfile.th-dark h2, #vProfile.th-dark b, #vProfile.th-dark .lead { color: var(--ink); }
+#vProfile.th-dark .field { background: var(--soft); color: var(--ink); box-shadow: inset 0 0 0 1px var(--hair); }
+#vProfile.th-dark .pill.ghost, #vProfile.th-dark .ph-mini, #vProfile.th-dark .bal-chip { background: var(--soft); color: var(--ink); box-shadow: 0 0 0 1px var(--hair); }
+#vProfile.th-dark .ic-grid button { background: var(--soft); }
+#vProfile.th-dark .ticket::before, #vProfile.th-dark .ticket::after { background: var(--bg); }
+body.pdark .topbar { background: linear-gradient(#0A0D16, rgba(10,13,22,.85)); }
+body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color: #EEF1F8; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -2518,7 +2556,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105174058"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105175427"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2663,7 +2701,14 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
   const CASH = '<i class="cash">💵</i><i class="cash">💸</i><i class="cash">💵</i><i class="cash">💰</i>';
   const premIcons = new Map(), lockedIds = new Set();
   const FACES = ["don", "maf", "mafc", "mafw", "mafl", "kom", "komw", "kur", "doc", "pat", "pri", "man", "manw", "mir", "mirp", "mirt", "mirg"];
-  const premIconHTML = (v) => (String(v).startsWith("f:") ? `<img src="faces/${esc(String(v).slice(2))}.svg" alt="">` : esc(v));
+  const PICONS = ["fire", "bolt", "crown", "star", "moon", "gem", "target", "clover", "heart", "palm", "mask", "volley", "ball", "spade", "dice", "sun"];
+  const EMO_IC = { "🔥": "fire", "⚡": "bolt", "👑": "crown", "🦁": "sun", "🐺": "moon", "🦅": "bolt", "🌙": "moon", "⭐": "star", "🎯": "target", "🍀": "clover", "💎": "gem", "🃏": "spade", "🎭": "mask", "🏐": "volley", "⚽": "ball", "🌴": "palm" };
+  const premIconHTML = (v) => {
+    v = String(v);
+    if (v.startsWith("f:")) return `<img src="faces/${esc(v.slice(2))}.svg" alt="">`;
+    const ic = v.startsWith("i:") ? v.slice(2) : EMO_IC[v];
+    return ic ? `<img src="icons/${esc(ic)}.svg" alt="">` : esc(v);
+  };
   const avaP = (p, extra = "") => isPremium(p)
     ? `<span class="prem">${ava(p?.nick, p?.id, extra + " premium", p?.tg_photo)}${premIcons.get(p?.id || p?.uid || p?.user_id) ? `<i class="prem-ic">${premIconHTML(premIcons.get(p?.id || p?.uid || p?.user_id))}</i>` : ""}</span>`
     : ava(p?.nick, p?.id, extra, p?.tg_photo);
@@ -2831,6 +2876,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
   let navBack = false, navReady = false;
   const goBack = () => { haptic("tap"); const t = navStack.pop(); navBack = true; try { go(t ? t.v : "hub", t?.a); } finally { navBack = false; } };
   const go = (view, arg) => {
+    if (view !== "profile") document.body.classList.remove("pdark");
     if (navReady && !navBack && S.view && (S.view !== view || (view === "profile" && arg && arg !== profileId) || (view === "sport" && arg && arg !== sportId))) {
       navStack.push({ v: S.view, a: S.view === "profile" ? profileId : ["sport", "sportorg", "sportrate", "sportlist"].includes(S.view) ? sportId : S.view === "cevent" ? ceId : undefined });
       if (navStack.length > 40) navStack.shift();
@@ -3026,7 +3072,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     card0.classList.toggle("is-locked", !!extra?.locked);
     if (extra?.locked) {
       const r0 = people.find((p) => p.id === id) || { id, nick: "Дачник" };
-      card0.classList.remove("is-prem", "has-acc", "editing"); card0.querySelector(".prof-cover").style.background = ""; card0.querySelector(".prof-cover").innerHTML = "";
+      card0.classList.remove("is-prem", "has-acc", "editing"); $("vProfile").classList.remove("th-dark"); document.body.classList.remove("pdark"); card0.querySelector(".prof-cover").style.background = ""; card0.querySelector(".prof-cover").innerHTML = "";
       $("profHead").innerHTML = `<div class="lk-ava">${ava(r0.nick, id, "lg", r0.tg_photo)}<span class="lk-ic">🔒</span></div><h1 class="h1">${esc(r0.nick)}</h1>
         <p class="lk-msg">В связи с подозрительной активностью аккаунт был заблокирован. Просмотр недоступен</p>`;
       ["profBio", "profGames", "profAch"].forEach((k) => { $(k).innerHTML = ""; $(k).hidden = k === "profBio"; });
@@ -3065,7 +3111,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
       };
     };
     drawProfBio(id, isMe, extra);
-    applyTheme(extra?.theme || null, false);
+    applyTheme(extra?.theme || null, false, isPremium({ id }));
     if (isMe) $("phActs")?.insertAdjacentHTML("beforeend", `<button class="pill sm ghost" type="button" id="themeEdit">🎨 стиль</button>`), ($("themeEdit").onclick = () => openThemeEditor(extra?.theme || null));
     if (myTomatoes === null) await loadTomatoes().catch(() => {});
     if (S.view === "profile" && profileId === id) {
@@ -3127,13 +3173,13 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     const qrUrlOf = (n) => (n === 1 ? extra?.pay_qr : extra?.pay_qr2) || null;
     document.querySelector("#vProfile .prof-card").classList.toggle("is-prem", isPremium({ id }));
     const premCard = isMe ? `<button class="pm-card" type="button" data-p="premium"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">${isPremium(me) ? "PREMIUM активен · продлить" : "+200 ฿ и 50 🍅 каждый месяц, без рекламы, своя иконка"}</span><span class="pm-card-p">${isPremium(me) ? "›" : "от 400 ฿ / мес ›"}</span></button>` : "";
-    const ICONS_P = ["🔥", "⚡", "👑", "🦁", "🐺", "🦅", "🌙", "⭐", "🎯", "🍀", "💎", "🃏", "🎭", "🏐", "⚽", "🌴"];
+    const curIc = premIcons.get(me?.id) || "", curI = curIc.startsWith("i:") ? curIc.slice(2) : EMO_IC[curIc];
     const iconPick = isMe && isPremium(me) ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
         <div class="eyebrow">◆ PREMIUM · твоя иконка</div><p class="lead">Она будет на твоей аватарке во всех списках.</p>
         <div class="eyebrow" style="margin-top:2px">Дачники с карт</div>
         <div class="ic-grid faces">${FACES.map((f) => `<button type="button" data-picon="f:${f}" aria-pressed="${premIcons.get(me.id) === "f:" + f}"><img src="faces/${f}.svg" alt=""></button>`).join("")}</div>
-        <div class="eyebrow" style="margin-top:2px">Смайлики</div>
-        <div class="ic-grid">${ICONS_P.map((x) => `<button type="button" data-picon="${x}" aria-pressed="${premIcons.get(me.id) === x}">${x}</button>`).join("")}<button type="button" data-picon="" aria-pressed="${!premIcons.get(me.id)}" class="ic-none">без</button></div>
+        <div class="eyebrow" style="margin-top:2px">Значки</div>
+        <div class="ic-grid faces">${PICONS.map((x) => `<button type="button" data-picon="i:${x}" aria-pressed="${curI === x}"><img src="icons/${x}.svg" alt=""></button>`).join("")}<button type="button" data-picon="" aria-pressed="${!curIc}" class="ic-none">без</button></div>
       </div></div></div>` : "";
     const NK = [["mafia", "🎭 Мафия"], ["volley", "🏐 Волейбол"], ["foot", "⚽ Футбол"], ["community", "✨ Ивенты дачников"]];
     const nAll = extra?.notify_all !== false, nKinds = extra?.notify_kinds || [];
@@ -4907,50 +4953,85 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     mint: "linear-gradient(135deg, #43E97B, #38F9D7)", peach: "linear-gradient(135deg, #FFDEE9, #B5FFFC)", fire: "linear-gradient(135deg, #F12711, #F5AF19)",
     sky: "linear-gradient(180deg, #A1C4FD, #C2E9FB)", gold: "linear-gradient(135deg, #BF953F, #FCF6BA 45%, #B38728 70%, #FBF5B7)",
   };
+  const SCENES = { sunset: "Закат", beach: "Пляж", waves: "Волны", hills: "Горы", night: "Ночь", aurora: "Сияние", tropic: "Тропики", clouds: "Облака", mafia: "Мафия", memphis: "Мемфис", party: "Праздник" };
   const ACCENTS = ["#071B4D", "#0033FF", "#E3263A", "#FF7A1A", "#16A34A", "#7B3FE4", "#E0218A", "#0EA5B7", "#B8860B"];
   const STICKERS = ["😎", "🔥", "💛", "⭐", "🌴", "🍉", "🎭", "🏐", "⚽", "♟️", "🎲", "👑", "🦋", "🌸", "🍀", "🌙", "☕", "🍕", "🎧", "📸", "🚀", "🐱", "🐶", "🦄", "💎", "🌈", "🥥", "🏝️", "🎉", "✨"];
-  const coverCss = (c) => !c ? "" : String(c).startsWith("#") ? `linear-gradient(135deg, ${c}, color-mix(in srgb, ${c} 55%, #000))` : COVERS[c] || "";
-  const applyTheme = (th, editing) => {
+  const coverCss = (c, img) => img ? `url("${String(img).replace(/["\\]/g, "")}") center/cover no-repeat` : !c ? "" : SCENES[c] ? `url(covers/${c}.svg) center/cover no-repeat` : String(c).startsWith("#") ? `linear-gradient(135deg, ${c}, color-mix(in srgb, ${c} 55%, #000))` : COVERS[c] || "";
+  const applyTheme = (th, editing, prem = true) => {
     const card = document.querySelector("#vProfile .prof-card"), cover = card?.querySelector(".prof-cover"); if (!card || !cover) return;
-    const t = th || {};
-    cover.style.background = coverCss(t.cover);
+    const t = th || {}, img = prem ? t.img : null, title = prem ? String(t.title || "").trim() : "", dark = prem && !!t.dark;
+    cover.style.background = coverCss(t.cover, img);
+    $("vProfile").classList.toggle("th-dark", dark);
+    document.body.classList.toggle("pdark", dark && S.view === "profile");
     card.style.setProperty("--acc", t.accent || "");
     card.classList.toggle("has-acc", !!t.accent);
     card.classList.toggle("hide-rate", !!t.hide?.includes("rate"));
     card.classList.toggle("hide-goes", !!t.hide?.includes("goes"));
     const st = (t.stickers || []).slice(0, 8);
-    cover.classList.toggle("tall", st.length > 0);
-    cover.innerHTML = st.map((x, i) => `<span class="stk" data-i="${i}" style="left:${+x.x || 50}%;top:${+x.y || 50}%;--r:${+x.r || 0}deg;--s:${+x.s || 1}">${esc(x.e)}${editing ? `<button class="stk-x" type="button" data-stkx="${i}" aria-label="Убрать">×</button>` : ""}</span>`).join("");
+    cover.classList.toggle("tall", st.length > 0 || !!img || !!title || !!SCENES[t.cover]);
+    cover.classList.toggle("has-title", !!title);
+    cover.innerHTML = (title ? `<div class="cov-title">${esc(title)}</div>` : "") + st.map((x, i) => `<span class="stk" data-i="${i}" style="left:${+x.x || 50}%;top:${+x.y || 50}%;--r:${+x.r || 0}deg;--s:${+x.s || 1}">${esc(x.e)}${editing ? `<button class="stk-x" type="button" data-stkx="${i}" aria-label="Убрать">×</button>` : ""}</span>`).join("");
     card.classList.toggle("editing", !!editing);
   };
   const openThemeEditor = (cur) => {
     let th = JSON.parse(JSON.stringify(cur || {})), tab = "cover";
+    const prem = isPremium(me);
     th.stickers = th.stickers || []; th.hide = th.hide || [];
     const card = document.querySelector("#vProfile .prof-card"), cover = card.querySelector(".prof-cover");
     window.scrollTo({ top: 0, behavior: "smooth" });
     const panel = document.createElement("div"); panel.className = "theme-panel";
     const draw = () => {
-      applyTheme(th, true);
-      panel.innerHTML = `<div class="tp-tabs">${[["cover", "Фон"], ["stk", "Стикеры"], ["acc", "Цвет"], ["blocks", "Блоки"]].map(([k, l]) => `<button type="button" data-tab="${k}" aria-pressed="${k === tab}">${l}</button>`).join("")}</div>
-        <div class="tp-body">${tab === "cover" ? `<div class="tp-covers">${Object.keys(COVERS).map((k) => `<button type="button" data-cover="${k}" aria-pressed="${(th.cover || "dacha") === k}" style="background:${COVERS[k]}"></button>`).join("")}<label class="tp-own" title="Свой цвет"><input type="color" data-owncolor value="${String(th.cover || "").startsWith("#") ? th.cover : "#7B3FE4"}"><span>свой</span></label></div>`
+      applyTheme(th, true, prem);
+      panel.innerHTML = `<div class="tp-tabs">${[["cover", "Фон"], ["prem", "◆ Премиум"], ["stk", "Стикеры"], ["acc", "Цвет"], ["blocks", "Блоки"]].map(([k, l]) => `<button type="button" data-tab="${k}" aria-pressed="${k === tab}">${l}</button>`).join("")}</div>
+        <div class="tp-body">${tab === "cover" ? `<div class="tp-scenes">${Object.entries(SCENES).map(([k, l]) => `<button type="button" data-cover="${k}" aria-pressed="${th.cover === k && !th.img}" style="background:url(covers/${k}.svg) center/cover"><span>${l}</span></button>`).join("")}</div>
+            <div class="tp-sub">Цвета</div><div class="tp-covers">${Object.keys(COVERS).map((k) => `<button type="button" data-cover="${k}" aria-pressed="${(th.cover || "dacha") === k && !th.img}" style="background:${COVERS[k]}"></button>`).join("")}<label class="tp-own" title="Свой цвет"><input type="color" data-owncolor value="${String(th.cover || "").startsWith("#") ? th.cover : "#7B3FE4"}"><span>свой</span></label></div>`
+          : tab === "prem" ? (!prem ? `<div class="tp-lock"><b>◆ Только с PREMIUM</b><p>Тёмный профиль, своя надпись на шапке и своё фото в шапке.</p><button class="pill sm" type="button" data-gopremium>Открыть PREMIUM</button></div>`
+            : `<div class="tp-prem">
+              <button class="host-row" type="button" data-dark role="switch" aria-checked="${!!th.dark}" style="border:0;padding:4px 0"><span class="hr-t"><b>Тёмный профиль</b><small>вся страница в тёмных тонах</small></span><i class="switch ${th.dark ? "on" : ""}"></i></button>
+              <label class="tp-lbl">Надпись на шапке<input class="field" data-title maxlength="40" placeholder="Например: Дон этого лета" value="${esc(th.title || "")}"></label>
+              <div class="tp-lbl">Своё фото в шапке</div>
+              <div class="tp-photo"><label class="pill sm ghost">${th.img ? "заменить фото" : "📷 загрузить фото"}<input type="file" accept="image/*" data-coverimg hidden></label>${th.img ? `<button class="pill sm ghost" type="button" data-noimg>убрать фото</button>` : ""}</div>
+            </div>`)
           : tab === "stk" ? `<p class="tp-hint">Нажми смайлик — он появится на обложке. Тащи пальцем, нажми — станет больше, × — убрать. До 8 штук.</p><div class="tp-stk">${STICKERS.map((e) => `<button type="button" data-addstk="${e}">${e}</button>`).join("")}</div>`
           : tab === "acc" ? `<div class="tp-acc">${ACCENTS.map((c) => `<button type="button" data-acc="${c}" aria-pressed="${th.accent === c}" style="background:${c}"></button>`).join("")}<button type="button" data-acc="" class="none" aria-pressed="${!th.accent}">нет</button></div>`
           : `<div class="tp-blocks">${[["rate", "Рейтинги в играх"], ["goes", "Записан на игры"]].map(([k, l]) => `<button class="host-row" type="button" data-blk="${k}" role="switch" aria-checked="${!th.hide.includes(k)}" style="border:0;padding:6px 0"><span class="hr-t"><b>${l}</b><small>${th.hide.includes(k) ? "скрыто" : "видно всем"}</small></span><i class="switch ${th.hide.includes(k) ? "" : "on"}"></i></button>`).join("")}</div>`}</div>
         <div class="tp-foot"><button class="pill sm ghost" type="button" data-tpreset>сбросить</button><button class="pill sm ghost" type="button" data-tpcancel>отмена</button><button class="pill sm" type="button" data-tpsave>сохранить</button></div>`;
     };
     const close = () => { panel.remove(); cover.removeEventListener("pointerdown", onDown); renderProfile(); };
-    panel.addEventListener("input", (e) => { if (e.target.matches("[data-owncolor]")) { th.cover = e.target.value; applyTheme(th, true); } });
+    panel.addEventListener("input", (e) => {
+      if (e.target.matches("[data-owncolor]")) { th.cover = e.target.value; th.img = null; applyTheme(th, true, prem); }
+      if (e.target.matches("[data-title]")) { th.title = e.target.value.slice(0, 40); applyTheme(th, true, prem); }
+    });
+    // own cover photo: shrink on the phone, upload into covers/<my id>/
+    panel.addEventListener("change", async (e) => {
+      if (!e.target.matches("[data-coverimg]")) return;
+      const f = e.target.files?.[0]; if (!f) return;
+      toast("Загружаю фото…");
+      try {
+        const bmp = await createImageBitmap(f), k = Math.min(1, 1400 / Math.max(bmp.width, bmp.height));
+        const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+        c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+        const blob = await new Promise((r) => c.toBlob(r, "image/webp", 0.85)) || await new Promise((r) => c.toBlob(r, "image/jpeg", 0.85));
+        const path = `${me.id}/${Date.now()}.${blob.type === "image/webp" ? "webp" : "jpg"}`;
+        const up = await sb.storage.from("covers").upload(path, blob, { contentType: blob.type, cacheControl: "31536000" });
+        if (up.error) return toast("Не получилось: " + humanErr(up.error));
+        th.img = sb.storage.from("covers").getPublicUrl(path).data.publicUrl; haptic("card"); draw();
+      } catch (err) { toast("Не получилось открыть фото"); }
+    });
     panel.addEventListener("click", async (e) => {
       const b = e.target.closest("button"); if (!b) return;
       if (b.dataset.tab) { tab = b.dataset.tab; return draw(); }
-      if (b.dataset.cover) { th.cover = b.dataset.cover === "dacha" ? null : b.dataset.cover; return draw(); }
+      if (b.dataset.cover) { th.cover = b.dataset.cover === "dacha" ? null : b.dataset.cover; th.img = null; return draw(); }
+      if (b.hasAttribute("data-dark")) { th.dark = !th.dark; return draw(); }
+      if (b.hasAttribute("data-noimg")) { th.img = null; return draw(); }
+      if (b.hasAttribute("data-gopremium")) { close(); return go("premium"); }
       if (b.dataset.addstk) { if (th.stickers.length >= 8) return toast("Максимум 8 стикеров"); th.stickers.push({ e: b.dataset.addstk, x: 15 + Math.round(Math.random() * 70), y: 25 + Math.round(Math.random() * 50), r: Math.round(Math.random() * 40 - 20), s: 1 }); haptic("tap"); return draw(); }
       if (b.dataset.acc !== undefined) { th.accent = b.dataset.acc || null; return draw(); }
       if (b.dataset.blk) { const k = b.dataset.blk; th.hide = th.hide.includes(k) ? th.hide.filter((x) => x !== k) : [...th.hide, k]; return draw(); }
       if (b.hasAttribute("data-tpreset")) { th = { stickers: [], hide: [] }; return draw(); }
       if (b.hasAttribute("data-tpcancel")) return close();
       if (b.hasAttribute("data-tpsave")) {
-        const clean = { cover: th.cover || null, accent: th.accent || null, hide: th.hide, stickers: th.stickers.map((x) => ({ e: x.e, x: Math.round(x.x), y: Math.round(x.y), r: Math.round(x.r || 0), s: +(+x.s || 1).toFixed(1) })) };
+        const clean = { cover: th.cover || null, accent: th.accent || null, hide: th.hide, ...(prem ? { dark: !!th.dark, title: String(th.title || "").trim().slice(0, 40) || null, img: th.img || null } : {}), stickers: th.stickers.map((x) => ({ e: x.e, x: Math.round(x.x), y: Math.round(x.y), r: Math.round(x.r || 0), s: +(+x.s || 1).toFixed(1) })) };
         const { error } = await sb.rpc("set_theme", { t: clean });
         if (error) return toast("Не получилось: " + humanErr(error));
         haptic("card"); toast("Страница оформлена ✨"); close();
