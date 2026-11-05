@@ -1390,6 +1390,19 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .bal-chip span { color: var(--blue); font-weight: 800; }
 .bal-chip.neg { background: #FFECEE; color: #C0162A; } .bal-chip.pos { background: #E7F8EE; color: #137A3E; }
 
+/* wallet icon, roles, host QR (05.11) */
+.wal-ic { width: 17px; height: 17px; flex: none; }
+.bal-pill .wal-ic { width: 18px; height: 18px; }
+.wk-joins { display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.wk-joins .pill { margin: 0; min-height: 36px; padding: 0 14px; }
+.ev-act .pill.ghost { box-shadow: none; }
+.sp-hosts { margin: 0 16px 10px; }
+.qr-who { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; color: var(--muted); }
+.qr-who .ava, .qr-who .prem { width: 26px; height: 26px; font-size: 13px; }
+.qr-who .prem .ava { width: 100%; height: 100%; } .qr-who .prem .cash { display: none; }
+.qr-who b { color: var(--ink); }
+.qr-mini { width: 140px; aspect-ratio: 1; object-fit: contain; border-radius: 14px; background: #fff; box-shadow: 0 0 0 1px var(--hair); padding: 6px; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1981,7 +1994,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105090424"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105091107"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2459,7 +2472,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!sb || !me) return;
     const [{ data: stats }, , { data: sstats }, { data: extra }] = await Promise.all([
       sb.rpc("player_stats", { p: id }), loadPeople(), sb.rpc("sport_stats", { p: id }),
-      sb.from("profiles").select("bio, created_at").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(), ev.loaded ? null : loadEvents(),
+      sb.from("profiles").select("bio, created_at, pay_qr").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(), ev.loaded ? null : loadEvents(),
     ]);
     if (S.view !== "profile" || profileId !== id) return;
     const row = people.find((p) => p.id === id) || (id === me.id ? { ...me, games: 0, wins: 0, hosted: 0 } : { nick: "Дачник", games: 0, wins: 0, hosted: 0 });
@@ -2472,7 +2485,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("profHead").innerHTML = `<div class="ph-top">${avaP({ ...row, id }, "lg")}
         <div class="ph-ach" id="phAch"></div></div>
       <div class="ph-name"><h1 class="h1">${esc(row.nick)}</h1>
-        ${isMe || isAnyHost() ? `<button class="bal-chip" type="button" id="profBal" data-uid="${id}">💰 баланс…</button>` : ""}
+        ${isMe || isAnyHost() ? `<button class="bal-chip" type="button" id="profBal" data-uid="${id}"><svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>баланс…</button>` : ""}
         <div class="ph-sub">${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}<span class="ph-since" id="phSince"></span></div></div>
       ${badges.length ? `<div class="prof-badges">${badges.map((b) => `<span class="cb host">${esc(b)}</span>`).join("")}</div>` : ""}
       ${isMe || canGrant ? `<div class="ph-acts" id="phActs"><button class="pill sm ghost" type="button" id="editNick">${isMe ? "изменить ник" : "ник дачнику"}</button></div>` : ""}`;
@@ -2537,7 +2550,14 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const premLine = !active ? "нет" : forever ? "навсегда" : `до ${until.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}`;
     const hostOf = [mafHost ? "мафию" : "", ...Object.values(SPORTS).filter((x) => sp.hosts.some((h) => h.sport === x.id && h.user_id === id)).map((x) => x.name.toLowerCase())].filter(Boolean);
     const hostLine = hostOf.length ? `Ведёт: ${hostOf.join(", ")}` : "Пока не ведущий";
-    $("profBtns").innerHTML = `${canGrant ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
+    const myQr = isMe && isAnyHost() ? extra?.pay_qr || "" : null;
+    $("profBtns").innerHTML = `${myQr !== null ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
+        <div class="eyebrow">Мой QR для оплат</div>
+        <p class="lead">Когда ты отмечаешься ведущим на игре, дачники платят за неё по этому QR.${canGrant ? " Твой QR ещё показывается, когда пополняют баланс." : ""}</p>
+        ${myQr ? `<img class="qr-mini" src="${esc(myQr)}" alt="Мой QR">` : `<p class="bio-meta" style="margin:0">QR ещё не загружен${canGrant ? "" : ": пока показывается QR владельца"}.</p>`}
+        <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="button" data-qrup>${myQr ? "заменить QR" : "загрузить QR"}</button>${myQr ? `<button class="pill sm ghost" type="button" data-qrdel>убрать</button>` : ""}</div>
+        <input type="file" accept="image/*" id="myQrFile" hidden>
+      </div></div></div>` : ""}${canGrant ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
         <div class="eyebrow">PREMIUM · выдаёшь только ты</div>
         <h2 class="h2">PREMIUM: ${premLine}</h2>
         <p class="lead">Премиум-дачник не видит рекламных плашек, а у всех в приложении отмечен золотом и плашкой PREMIUM.</p>
@@ -2558,7 +2578,21 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         </div>
       </div></div>` : ""}
       <button class="pill ghost sm" data-p="people">все дачники</button>${isMe && !inTG ? `<button class="pill dark sm" data-p="out">выйти</button>` : ""}`;
+    $("profBtns").onchange = async (e) => {
+      if (e.target.id !== "myQrFile" || !e.target.files[0]) return;
+      const f = e.target.files[0];
+      if (f.size > 4 * 1024 * 1024) return toast("Картинка больше 4 МБ, выбери поменьше");
+      toast("Загружаю QR…");
+      const path = `qr-${me.id}-${Date.now()}.${(f.type.split("/")[1] || "png").replace("jpeg", "jpg")}`;
+      const up = await sb.storage.from("pay").upload(path, f, { contentType: f.type, cacheControl: "31536000" });
+      if (up.error) return toast("Не получилось загрузить: " + humanErr(up.error));
+      const { error } = await sb.rpc("set_pay_qr", { url: sb.storage.from("pay").getPublicUrl(path).data.publicUrl });
+      if (error) return toast("Не получилось: " + humanErr(error));
+      toast("QR сохранён"); renderProfile();
+    };
     $("profBtns").onclick = async (e) => {
+      if (e.target.closest("[data-qrup]")) return $("myQrFile").click();
+      if (e.target.closest("[data-qrdel]")) { const { error } = await sb.rpc("set_pay_qr", { url: null }); if (error) return toast("Не получилось: " + humanErr(error)); toast("QR убран"); return renderProfile(); }
       const sh = e.target.closest("[data-shost]");
       if (sh && canGrant) {
         const on = sh.dataset.on === "on", x = SPORTS[sh.dataset.shost];
@@ -3814,7 +3848,13 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const DOW_CODE = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
   const dayParts = (iso) => { const [y, m, d] = iso.split("-").map(Number); const w = new Date(Date.UTC(y, m - 1, d)).getUTCDay(); return { d, m, y, w }; };
   const ev = { list: [], pays: {}, set: null, chan: null, editing: null, loaded: false };
-  const isMine = (e) => [...e.signups, ...(e.hosts || [])].some((x) => x.user_id === me.id);
+  const isMine = (e) => [...e.signups, ...(e.hosts || [])].some((x) => x.user_id === me?.id);
+  const myRoleOn = (e) => ((e.hosts || []).some((x) => x.user_id === me?.id) ? "host" : (e.signups || []).some((x) => x.user_id === me?.id) ? "player" : null);
+  const mineTag = (e) => `<span class="tag ok">${myRoleOn(e) === "host" ? "ты ведёшь" : "ты играешь"}</span>`;
+  // a host chooses: lead the date or just play it
+  const joinBtns = (attr, canLead, dis = "") => canLead
+    ? `<button class="pill sm" type="button" ${attr} data-role="host" ${dis}>я веду</button><button class="pill sm ghost" type="button" ${attr} data-role="player" ${dis}>я играю</button>`
+    : `<button class="pill sm" type="button" ${attr} data-role="player" ${dis}>я буду</button>`;
   const hostsLine = (e) => `<div class="ev-hosts"><span class="eyebrow">${(e.hosts || []).length > 1 ? "Ведущие" : "Ведущий"}</span>${(e.hosts || []).length
     ? e.hosts.map((x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP(x.profiles || {})}<span>${esc(x.profiles?.nick || "Ведущий")}</span></span>`).join("")
     : `<span class="ev-empty">ещё не отметился</span>`}</div>`;
@@ -3868,7 +3908,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!sb || !me) return;
     await sb.rpc("ensure_sport_events");
     const [{ data: list, error }, { data: hosts }, { data: places }, { data: series }] = await Promise.all([
-      sb.from("sport_events").select("*, sport_signups(user_id, created_at, profiles(id,nick,tg_username,tg_photo)), sport_results(user_id, result)")
+      sb.from("sport_events").select("*, sport_signups(user_id, created_at, role, profiles(id,nick,tg_username,tg_photo)), sport_results(user_id, result)")
         .neq("status", "removed").gte("day", addDays(bkkToday(), -120)).order("day").order("start_time"),
       sb.from("sport_hosts").select("sport, user_id"),
       sb.from("places").select("id, name, maps_url").order("name"),
@@ -3877,7 +3917,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     sp.places = places || [];
     sp.series = series || [];
     if (error) throw error;
-    sp.events = (list || []).map((e) => ({ ...e, signups: (e.sport_signups || []).sort((a, b) => a.created_at.localeCompare(b.created_at)), results: e.sport_results || [] }));
+    sp.events = (list || []).map((e) => { const all = (e.sport_signups || []).sort((a, b) => a.created_at.localeCompare(b.created_at));
+      return { ...e, hosts: all.filter((x) => x.role === "host"), signups: all.filter((x) => x.role !== "host"), results: e.sport_results || [] }; });
     sp.hosts = hosts || [];
     sp.loaded = true;
   })().finally(() => { sp.loading = null; }));
@@ -3939,18 +3980,18 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const weekCard = (x) => {
     const e = x.e, M = meta(x.kind), maf = x.kind === "mafia";
     const going = e.signups || [];
-    const mine = maf ? isMine(e) : going.some((g) => g.user_id === me?.id);
+    const mine = isMine(e);
     const done = !maf && e.status === "done";
     const info = maf ? [`начало ${x.time}`, `сбор ${hm(e.gather_time)}`, e.price ? `${e.price} ฿` : ""] : [x.time, e.price ? `${e.price} ฿` : "бесплатно"];
     const act = done ? `<span class="tag">сыграно</span>`
-      : mine ? `<span class="tag ok">${maf && canHost() ? "ты ведёшь" : "ты идёшь"}</span>`
-      : me ? `<button class="pill sm" type="button" data-wjoin>${maf && canHost() ? "я веду" : "я буду"}</button>` : "";
+      : mine ? mineTag(e)
+      : me ? `<span class="wk-joins">${joinBtns("data-wjoin", maf ? canHost() : isSportHost(x.kind))}</span>` : "";
     return `<div class="wk" data-kind="${x.kind}" data-id="${e.id}" style="--gc:${M.color}">
       <button class="wk-main" type="button" data-wopen><span class="wk-ic">${M.emoji}</span>
         <span class="wk-txt"><b>${M.name}</b><small>${info.filter(Boolean).map(esc).join(" · ")}</small></span><span class="wk-go">›</span></button>
       ${placeChip(e) ? `<div class="wk-place">${placeChip(e)}</div>` : ""}
       <div class="wk-foot"><span class="wk-faces">${faceList(going, 5)}</span><span class="wk-n">${going.length ? `${going.length} ${plural(going.length, "идёт", "идут", "идут")}` : "пока никого"}</span>${act}</div>
-      ${mine && !(maf && canHost()) && payBtn(x.kind, e) ? `<div class="wk-pay">${payBtn(x.kind, e)}</div>` : ""}
+      ${myRoleOn(e) === "player" && payBtn(x.kind, e) ? `<div class="wk-pay">${payBtn(x.kind, e)}</div>` : ""}
     </div>`;
   };
   const drawWeek = () => {
@@ -3970,11 +4011,13 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   $("weekList").onclick = async (e) => {
     const card = e.target.closest("[data-kind]"); if (!card) return;
     const kind = card.dataset.kind, id = card.dataset.id;
-    if (e.target.closest("[data-wjoin]")) {
+    const wj = e.target.closest("[data-wjoin]");
+    if (wj) {
       haptic("tap");
+      const role = wj.dataset.role || "player";
       const { error } = kind === "mafia"
-        ? await sb.from("signups").insert({ event_id: id, user_id: me.id })
-        : await sb.from("sport_signups").insert({ event_id: id, user_id: me.id });
+        ? await sb.from("signups").insert({ event_id: id, user_id: me.id, role })
+        : await sb.from("sport_signups").insert({ event_id: id, user_id: me.id, role });
       if (error) return toast("Не получилось: " + humanErr(error));
       if (kind === "mafia") { await loadEvents(); toast("Записал тебя на мафию", { label: "оплатить", run: () => go("events") }); }
       else { await loadSports(); toast(`Записал тебя: ${meta(kind).name.toLowerCase()}`); }
@@ -4071,7 +4114,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     else { const { data } = await sb.rpc("wallet", { u: id }); bal = +data?.balance || 0; }
     if (!$("profBal") || profileId !== id) return;
     b.className = "bal-chip" + (bal < 0 ? " neg" : bal > 0 ? " pos" : "");
-    b.innerHTML = `💰 Баланс: <b>${money(bal)}</b> <span>${isMe ? "пополнить ›" : "принять оплату ›"}</span>`;
+    b.innerHTML = `<svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>Баланс: <b>${money(bal)}</b> <span>${isMe ? "пополнить ›" : "принять оплату ›"}</span>`;
     b.onclick = () => {
       if (isMe) return openPay();
       const v = document.createElement("div"); v.className = "veil";
@@ -4173,15 +4216,16 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const X = SPORTS[sportId], t = bkkToday(), host = isSportHost(X.id);
     const list = sp.events.filter((e) => e.sport === X.id && e.day >= t && e.status === "open");
     $("spNext").innerHTML = `<div class="sec-title" style="margin-bottom:10px">Ближайшие игры</div>` + (list.length ? list.map((e) => {
-      const { d, m, w } = dayParts(e.day), mine = e.signups.some((x) => x.user_id === me.id);
+      const { d, m, w } = dayParts(e.day), mine = isMine(e);
       return `<article class="ticket ev sp-card" data-spev="${e.id}" style="margin-bottom:12px"><div class="ticket-in">
         <div class="ev-head"><div class="ev-date"><small>${DOW[w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
           <div class="sp-meta"><div class="eyebrow">${esc(dayLabel(e.day))}</div><b>${hm(e.start_time)}</b>
             <small>${e.price ? `${e.price} ฿ с человека` : "бесплатно"}</small>${placeChip(e)}${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
+        ${e.hosts.length ? `<div class="ev-hosts sp-hosts"><span class="eyebrow">${e.hosts.length > 1 ? "Ведущие" : "Ведущий"}</span>${e.hosts.map(spWho).join("")}</div>` : ""}
         <div class="ev-crew">${e.signups.map(spWho).join("") || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
-        <div class="ev-act">${mine ? `<span class="tag ok">ты идёшь</span><button class="linkish" type="button" data-spleave>не смогу</button>` : `<button class="pill sm" type="button" data-spjoin>я буду</button>`}
+        <div class="ev-act">${mine ? `${mineTag(e)}<button class="linkish" type="button" data-spleave>не смогу</button>` : joinBtns("data-spjoin", host)}
           <span class="ev-count">${e.signups.length} ${plural(e.signups.length, "идёт", "идут", "идут")}</span></div>
-        ${mine && payBtn(X.id, e) ? `<div class="wk-pay" style="padding:0 16px 12px">${payBtn(X.id, e)}</div>` : ""}
+        ${myRoleOn(e) === "player" && payBtn(X.id, e) ? `<div class="wk-pay" style="padding:0 16px 12px">${payBtn(X.id, e)}</div>` : ""}
         ${host ? `<div class="sp-host"><button class="linkish" type="button" data-spedit>${sp.editing === e.id ? "свернуть" : "изменить"}</button>${e.day <= t ? `<button class="pill sm dark" type="button" data-spres>отметить итоги</button>` : ""}</div>${sp.editing === e.id ? spForm(e) : ""}` : ""}
       </div></article>`;
     }).join("") : `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">${host ? "Ближайших игр нет. Поставь дату ниже — она появится в календаре на главной." : "Ближайших игр пока нет. Как только ведущий поставит дату, она появится здесь и в календаре на главной."}</p></div></div></div>`);
@@ -4282,7 +4326,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (b.closest("#spHero")) { const w = b.closest(".ev-who"); void w; return; }
     if (!card) return;
     const id = card.dataset.spev, evn = sp.events.find((x) => x.id === id);
-    if (b.hasAttribute("data-spjoin")) { haptic("tap"); spAction(() => sb.from("sport_signups").insert({ event_id: id, user_id: me.id }), "Записал тебя на игру"); }
+    if (b.hasAttribute("data-spjoin")) { haptic("tap"); const role = b.dataset.role || "player"; spAction(() => sb.from("sport_signups").insert({ event_id: id, user_id: me.id, role }), role === "host" ? "Ты ведёшь эту игру" : "Записал тебя на игру"); }
     else if (b.hasAttribute("data-spleave")) sheet({ eyebrow: "Запись", title: "Не сможешь прийти?", text: "Запись на эту игру отменится.", ok: "отменить запись", okClass: "red",
       onOk: () => spAction(() => sb.from("sport_signups").delete().eq("event_id", id).eq("user_id", me.id), "Запись отменена") });
     else if (b.hasAttribute("data-spedit")) { sp.editing = sp.editing === id ? null : id; drawSportNext(); }
@@ -4325,7 +4369,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const openResults = (evn) => {
     const X = SPORTS[evn.sport];
     const res = new Map(evn.results.map((r) => [r.user_id, r.result]));
-    const ids = [...new Set([...evn.signups.map((x) => x.user_id), ...evn.results.map((x) => x.user_id)])];
+    const ids = [...new Set([...evn.signups.map((x) => x.user_id), ...evn.results.map((x) => x.user_id)])]; // players only; a host who played can be added below
     const v = document.createElement("div"); v.className = "veil";
     const opts = X.draws ? [["win", "W", "победа"], ["draw", "=", "ничья"], ["loss", "L", "поражение"]] : [["win", "W", "победа"], ["loss", "L", "поражение"]];
     const draw = () => {
@@ -4388,7 +4432,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const b = $("hubBal"); if (!b) return;
     b.hidden = !me || !wal.loaded;
     b.className = "bal-pill" + (wal.balance < 0 ? " neg" : wal.balance > 0 ? " pos" : "");
-    b.innerHTML = `<span>💰</span>${money(wal.balance)}`;
+    b.innerHTML = `<svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>${money(wal.balance)}`;
     b.setAttribute("aria-label", "Баланс " + money(wal.balance));
   };
   $("hubBal").onclick = () => openPay();
@@ -4402,6 +4446,15 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   };
   document.addEventListener("click", (e) => { const b = e.target.closest("[data-pay]"); if (!b) return; e.stopPropagation(); e.preventDefault(); const [k, id] = b.dataset.pay.split(":"); openPay(k, id); }, true);
   let payCtx = null, payAmt = null, payMethod = "qr", payRecv = null;
+  // every host has his own QR; paying for a date shows the QR of the person hosting it, top-ups show the owner's
+  const qrs = new Map();
+  const loadQRs = async () => { const { data } = await sb.from("profiles").select("id, pay_qr").not("pay_qr", "is", null); qrs.clear(); (data || []).forEach((r) => qrs.set(r.id, r.pay_qr)); };
+  const ownerId = () => people.find((p) => String(p.tg_username || "").toLowerCase() === "tivishka")?.id;
+  const qrFor = (e) => {
+    for (const h of (e?.hosts || []).map((x) => x.user_id)) if (qrs.get(h)) return { url: qrs.get(h), who: personOf(h) };
+    const o = ownerId(); if (o && qrs.get(o)) return { url: qrs.get(o), who: personOf(o) };
+    return ev.set?.qr_url ? { url: ev.set.qr_url, who: null } : null;
+  };
   const openPay = (kind, id) => { haptic("tap"); payCtx = kind && id ? { kind, id } : null; payAmt = null; go("pay"); };
   const ctxEvent = () => (!payCtx ? null : payCtx.kind === "mafia" ? ev.list.find((x) => x.id === payCtx.id) : sp.events.find((x) => x.id === payCtx.id)) || null;
   const evTitle = (game, id, day) => { const M = meta(game || "mafia"); const e = id && (ev.list.find((x) => x.id === id) || sp.events.find((x) => x.id === id)); const d = e?.day || day; return `${M.emoji} ${game ? M.name : "Пополнение"}${d ? " · " + dayLabel(d) : ""}`; };
@@ -4411,7 +4464,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     else drawPay();
     try {
       await Promise.all([loadWallet(), ev.set ? null : sb.from("pay_settings").select("*").eq("id", 1).maybeSingle().then(({ data }) => { ev.set = data || ev.set; }),
-        ev.loaded ? null : loadEvents(), sp.loaded ? null : loadSports()]);
+        ev.loaded ? null : loadEvents(), sp.loaded ? null : loadSports(), loadQRs(), people.length ? null : loadPeople()]);
     } catch (x) { toast("Не получилось загрузить: " + humanErr(x)); }
     if (S.view !== "pay") return;
     drawPay(); drawPayHost();
@@ -4425,7 +4478,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <span>${bal < 0 ? "Это долг за игры, где ты был. Пополни, чтобы выйти в ноль" : bal > 0 ? "Предоплата: спишется за следующие игры" : "Всё оплачено, долгов нет"}</span>
         ${wal.pending ? `<em>⏳ ждёт подтверждения ведущего: +${money(wal.pending)}</em>` : ""}</div>
       ${e ? `<div class="pay-ctx" style="--gc:${meta(payCtx.kind).color}"><span class="wk-ic">${meta(payCtx.kind).emoji}</span><span class="wk-txt"><b>${meta(payCtx.kind).name} · ${e.price} ฿</b><small>${esc(dayLabel(e.day))} · ${hm(e.start_time)}${placeName(e) ? " · " + esc(placeName(e)) : ""}</small></span>${st === "paid" ? `<span class="pay-ok">оплачено ✓</span>` : st === "pending" ? `<span class="tag">проверяем</span>` : ""}</div>` : ""}`;
-    const qr = ev.set?.qr_url;
+    const q = qrFor(e), qr = q?.url;
     const chips = [...new Set([e?.price, bal < 0 ? -bal : null, 100, 250, 500].filter((x) => x > 0))].slice(0, 4);
     const pend = wal.txs.filter((t) => t.status === "pending");
     $("payBody").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:12px">
@@ -4436,7 +4489,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
           <button type="button" data-pm="qr" aria-pressed="${payMethod === "qr"}"><span>📱</span><b>QR-перевод</b><small>из приложения банка</small></button>
           <button type="button" data-pm="cash" aria-pressed="${payMethod === "cash"}"><span>💵</span><b>Наличными</b><small>ведущему на месте</small></button>
         </div>
-        ${payMethod === "qr" ? (qr ? `<div class="qr-card"><img src="${esc(qr)}" alt="QR-код для перевода"><p>Отсканируй в приложении банка и переведи <b>${money(+amt || 0)}</b>.${ev.set?.qr_note ? " " + esc(ev.set.qr_note) : ""}</p>
+        ${payMethod === "qr" ? (qr ? `<div class="qr-card">${q.who ? `<span class="qr-who">${avaP(q.who)}QR${e && (e.hosts || []).some((h) => h.user_id === q.who.id) ? " ведущего" : ""}: <b>${esc(q.who.nick)}</b></span>` : ""}<img src="${esc(qr)}" alt="QR-код для перевода"><p>Отсканируй в приложении банка и переведи <b>${money(+amt || 0)}</b>.${ev.set?.qr_note ? " " + esc(ev.set.qr_note) : ""}</p>
               <button class="pill sm ghost" type="button" data-qrsave>⬇ скачать QR</button></div>
             <button class="pill wide" type="button" data-send="qr">я перевёл ${money(+amt || 0)}</button>`
           : `<p class="lead">QR-код ещё не загружен. Пока можно отдать наличными.</p>`)
@@ -4482,7 +4535,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const b = e.target.closest("button"); if (!b) return;
     if (b.dataset.amt) { payAmt = +b.dataset.amt; return drawPay(); }
     if (b.dataset.pm) { payMethod = b.dataset.pm; haptic("tap"); return drawPay(); }
-    if (b.hasAttribute("data-qrsave")) return downloadQR();
+    if (b.hasAttribute("data-qrsave")) return downloadQR(qrFor(ctxEvent())?.url);
     if (b.dataset.send) {
       const amount = +($("payAmt").value || 0); if (!(amount >= 1)) return toast("Укажи сумму");
       const ctx = ctxEvent();
@@ -4513,7 +4566,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!sb || !me) return;
     await sb.rpc("ensure_events");
     const [{ data: list }, { data: set }, { data: hostIds }] = await Promise.all([
-      sb.from("events").select("*, pl:places(id,name,maps_url), signups(user_id, created_at, profiles(id,nick,tg_username,tg_photo))").gte("day", bkkToday()).neq("status", "removed").order("day").limit(10),
+      sb.from("events").select("*, pl:places(id,name,maps_url), signups(user_id, created_at, role, profiles(id,nick,tg_username,tg_photo))").gte("day", bkkToday()).neq("status", "removed").order("day").limit(10),
       sb.from("pay_settings").select("*").eq("id", 1).maybeSingle(),
       sb.rpc("host_ids"),
     ]);
@@ -4521,7 +4574,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     // hosts on a date are shown on top and are not counted or charged as players
     ev.list = (list || []).map((e) => {
       const all = (e.signups || []).sort((a, b) => a.created_at.localeCompare(b.created_at));
-      return { ...e, hosts: all.filter((x) => hostSet.has(x.user_id)), signups: all.filter((x) => !hostSet.has(x.user_id)) };
+      void hostSet; // a host can host or just play: the role is on the sign-up
+      return { ...e, hosts: all.filter((x) => x.role === "host"), signups: all.filter((x) => x.role !== "host") };
     });
     ev.set = set || null;
     ev.pays = {};
@@ -4559,8 +4613,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <span class="nc-t"><b>🎭 Мафия</b><small>${esc(dayLabel(e.day))} · начало ${hm(e.start_time)} · сбор ${hm(e.gather_time)}${e.price ? ` · ${e.price} ฿` : ""}</small></span><span class="wk-go">›</span></button>
       ${placeChip(e) ? `<div class="wk-place">${placeChip(e)}</div>` : ""}
       <div class="wk-foot"><span class="wk-faces">${faceList(e.signups, 6)}</span><span class="wk-n">${e.signups.length ? `${e.signups.length} ${plural(e.signups.length, "идёт", "идут", "идут")}` : "пока никого"}</span>
-        ${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span>` : `<button class="pill sm" type="button" data-join>${canHost() ? "я веду" : "я буду"}</button>`}</div>
-      ${mine && !canHost() && payBtn("mafia", e) ? `<div class="wk-pay">${payBtn("mafia", e)}</div>` : ""}
+        ${mine ? mineTag(e) : `<span class="wk-joins">${joinBtns("data-join", canHost())}</span>`}</div>
+      ${myRoleOn(e) === "player" && payBtn("mafia", e) ? `<div class="wk-pay">${payBtn("mafia", e)}</div>` : ""}
     </article>`;
   };
   const payState = (e, pay) => {
@@ -4624,7 +4678,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
             <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
             ${placeChip(e)}${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
         ${hostsLine(e)}
-        <div class="ev-act" style="padding-top:0">${isMine(e) ? `<span class="tag ok">ты ведёшь</span><button class="linkish" data-leave>не смогу</button>` : `<button class="pill sm" data-join ${off ? "disabled" : ""}>я веду эту игру</button>`}</div>
+        <div class="ev-act" style="padding-top:0">${isMine(e) ? `${mineTag(e)}<button class="linkish" data-leave>не смогу</button>` : joinBtns("data-join", true, off ? "disabled" : "")}</div>
         <div class="stats ev-stats">
           <div><b>${ps.length}</b><small>${plural(ps.length, "придёт", "придут", "придут")}</small></div>
           <div><b>${paid * e.price}</b><small>получено ฿ · ${paid} из ${ps.length}</small></div>
@@ -4690,9 +4744,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
             ${placeChip(e)}${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
         ${hostsLine(e)}
         <div class="ev-crew">${crew || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
-        <div class="ev-act">${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span><button class="linkish" data-leave>не смогу</button>` : `<button class="pill sm" data-join ${off ? "disabled" : ""}>${canHost() ? "я веду" : "я буду"}</button>`}
+        <div class="ev-act">${mine ? `${mineTag(e)}<button class="linkish" data-leave>не смогу</button>` : joinBtns("data-join", canHost(), off ? "disabled" : "")}
           <span class="ev-count">идут: ${e.signups.length}${paidCount(e) ? ` · <b>оплатили: ${paidCount(e)}</b>` : ""}</span></div>
-        ${mine && !off && !canHost() ? `<div class="wk-pay" style="padding:0 16px 14px">${payBtn("mafia", e)}</div>` : ""}
+        ${myRoleOn(e) === "player" && !off ? `<div class="wk-pay" style="padding:0 16px 14px">${payBtn("mafia", e)}</div>` : ""}
         <div class="stub"><span>${DOW_FULL[dayParts(e.day).w]}, ${d} ${MON_FULL[m - 1]}</span><b>${DOW_CODE[dayParts(e.day).w]} ${pad(d)}.${pad(m)}</b></div>
       </div></article>`;
     }).join("");
@@ -4740,8 +4794,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       .subscribe();
   };
   // Telegram shows its own save dialog; a browser gets the file through a blob link
-  const downloadQR = async () => {
-    const url = ev.set?.qr_url; if (!url) return;
+  const downloadQR = async (u) => {
+    const url = (typeof u === "string" && u) || ev.set?.qr_url; if (!url) return;
     const ext = (url.split("?")[0].match(/\.(png|jpe?g|webp)$/i)?.[1] || "png").toLowerCase();
     const name = `dacha-mafia-qr.${ext}`;
     const dl = url + (url.includes("?") ? "&" : "?") + "download=" + encodeURIComponent(name);
@@ -4769,7 +4823,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const card = e.target.closest("[data-ev]"); if (!card) return;
     const id = card.dataset.ev, b = e.target.closest("button"); if (!b) return;
     const event = ev.list.find((x) => x.id === id);
-    if (b.hasAttribute("data-join")) { haptic("tap"); evAction(() => sb.from("signups").insert({ event_id: id, user_id: me.id }), "Записал тебя на игру"); }
+    if (b.hasAttribute("data-join")) { haptic("tap"); const role = b.dataset.role || "player"; evAction(() => sb.from("signups").insert({ event_id: id, user_id: me.id, role }), role === "host" ? "Ты ведёшь эту игру" : "Записал тебя на игру"); }
     else if (b.hasAttribute("data-leave")) sheet({ eyebrow: "Запись", title: "Не сможешь прийти?", text: "Запись на эту игру отменится. Если ты уже перевёл деньги, скажи ведущему.", ok: "отменить запись",
       onOk: () => evAction(() => sb.from("signups").delete().eq("event_id", id).eq("user_id", me.id), "Запись отменена") });
     else if (b.dataset.m) return;
@@ -4801,7 +4855,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const card = e.target.closest("[data-ev]");
     if (card && e.target.closest("[data-join]")) {
       haptic("tap");
-      const { error } = await sb.from("signups").insert({ event_id: card.dataset.ev, user_id: me.id });
+      const { error } = await sb.from("signups").insert({ event_id: card.dataset.ev, user_id: me.id, role: e.target.closest("[data-join]").dataset.role || "player" });
       if (error) return toast("Не получилось: " + humanErr(error));
       await loadEvents(); drawHomeEvent();
       toast("Записал тебя на игру", { label: "оплатить", run: () => go("events") });
