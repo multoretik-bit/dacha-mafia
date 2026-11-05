@@ -2428,7 +2428,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105155159"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105163348"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4909,7 +4909,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
         <div class="bank-card ${bal < 0 ? "neg" : ""}"><div class="bank-top"><span class="pm-mark">DACHA <b>WALLET</b></span>${isPremium({ id }) ? `<span class="bank-prem">◆ PREMIUM</span>` : ""}</div>
           <small>Баланс</small><b>${money(bal)}</b><div class="bank-who">${esc(row.nick)}${row.tg_username ? " · @" + esc(row.tg_username) : ""}</div></div>
         ${tab === "main" ? `<div class="bank-acts">
-            <button type="button" data-pb="got"><i>＋</i><span>Получил</span></button>
+            ${canGrant ? `<button type="button" data-pb="got"><i>＋</i><span>Пополнить</span></button>` : ""}
             <button type="button" data-pb="send"><i>↗</i><span>Перевести</span></button>
             ${canGrant ? `<button type="button" data-pb="minus"><i>−</i><span>Списать</span></button>` : ""}
             <button type="button" data-pb="hist"><i>≡</i><span>История</span></button>
@@ -5485,7 +5485,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     });
     document.body.append(v);
   };
-  const evPayState = (id) => { const l = wal.txs.filter((t) => t.event_id === id && t.purpose !== "debt"); return l.some((t) => t.status === "confirmed" && t.purpose === "evpay" && t.amount < 0) ? "bal" : l.some((t) => t.status === "confirmed" && t.purpose === "topup") ? "paid" : l.some((t) => t.status === "pending") ? "pending" : null; };
+  const evPayState = (id) => { const l = wal.txs.filter((t) => t.event_id === id && t.purpose !== "debt"); return l.some((t) => t.status === "confirmed" && t.purpose === "evpay" && t.amount < 0) ? "bal" : l.some((t) => t.status === "confirmed" && (t.purpose === "gamepay" || t.purpose === "topup")) ? "paid" : l.some((t) => t.status === "pending") ? "pending" : null; };
   const avail = () => +(wal.available ?? wal.balance) || 0;
   const payBtn = (kind, e) => {
     if (!me || !e?.price) return "";
@@ -5568,7 +5568,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
             <button class="pill wide" type="button" data-send="cash">отдам ${money(+amt || 0)} наличными</button>`}
         <p class="bio-meta" style="margin:0">Деньги зачисляются, когда ведущий подтвердит, что получил.</p>
       </div>
-      ${pend.length ? `<div class="sec-label eyebrow">Ждут подтверждения</div>${pend.map((t) => `<div class="tx-row"><span class="tx-ic">⏳</span><span class="tx-t"><b>${t.purpose === "premium" ? `PREMIUM · ${t.amount} ${CUR[t.currency] || "฿"}` : t.purpose === "withdraw" ? `Вывод ${money(-t.amount)}` : `+${money(t.amount)} · ${t.method === "qr" ? "QR" : "наличные"}`}</b><small>${t.purpose === "premium" ? "покупка на месяц" : t.purpose === "withdraw" ? esc(t.note || "") : esc(evTitle(t.game, t.event_id))}</small></span><button class="linkish" type="button" data-cancel="${t.id}">отменить</button></div>`).join("")}` : ""}
+      ${pend.length ? `<div class="sec-label eyebrow">Ждут подтверждения</div>${pend.map((t) => `<div class="tx-row"><span class="tx-ic">⏳</span><span class="tx-t"><b>${t.purpose === "premium" ? `PREMIUM · ${t.amount} ${CUR[t.currency] || "฿"}` : t.purpose === "withdraw" ? `Вывод ${money(-t.amount)}` : t.purpose === "gamepay" ? `Оплата игры ${money(t.amount)} · ${t.method === "qr" ? "QR" : "наличные"}` : `+${money(t.amount)} · ${t.method === "qr" ? "QR" : "наличные"}`}</b><small>${t.purpose === "premium" ? "покупка на месяц" : t.purpose === "withdraw" ? esc(t.note || "") : esc(evTitle(t.game, t.event_id))}</small></span><button class="linkish" type="button" data-cancel="${t.id}">отменить</button></div>`).join("")}` : ""}
     </div></div>`;
     // history: charges (−) and money in (+)
     const rows = [
@@ -5578,6 +5578,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
       ...wal.txs.filter((t) => t.purpose === "withdraw" && t.status !== "pending").map((t) => ({ at: t.created_at, amt: t.status === "confirmed" ? t.amount : 0, ic: t.status === "rejected" ? "✕" : "↓", t: t.status === "rejected" ? `Вывод ${money(-t.amount)} не выполнен` : "Вывод денег", s: t.note || "" })),
       ...wal.txs.filter((t) => t.purpose === "evpay" && t.status === "confirmed").map((t) => ({ at: t.created_at, amt: t.amount, ic: t.amount < 0 ? "↗" : "↙", t: t.note || (t.amount < 0 ? "Оплата игры с баланса" : "Оплата за игру"), s: evTitle(t.game, t.event_id) })),
       ...wal.txs.filter((t) => t.purpose === "debt" && t.status === "confirmed").map((t) => ({ at: t.created_at, amt: t.amount, ic: "⚠️", t: "Долг за игру", s: evTitle(t.game, t.event_id) })),
+      ...wal.txs.filter((t) => t.purpose === "gamepay" && t.status === "confirmed").map((t) => ({ at: t.created_at, amt: 0, ic: "✓", t: `Игра оплачена · ${t.method === "qr" ? "QR" : "наличные"} ${money(t.amount)}`, s: evTitle(t.game, t.event_id) })),
       ...wal.txs.filter((t) => t.status !== "pending" && t.purpose === "topup").map((t) => ({ at: t.created_at, amt: t.status === "confirmed" ? t.amount : 0, ic: t.status === "rejected" ? "✕" : t.method === "transfer" ? (t.amount < 0 ? "↗" : "↙") : t.method === "adjust" ? (t.amount > 0 ? "＋" : "−") : t.method === "qr" ? "📱" : "💵",
         t: t.status === "rejected" ? `Не подтверждено · ${money(t.amount)}` : t.method === "transfer" || t.method === "adjust" ? (t.note || "Корректировка") : `Пополнение · ${t.method === "qr" ? "QR" : "наличные"}`, s: t.game ? evTitle(t.game, t.event_id) : new Date(t.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) })),
     ].sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 40);
@@ -5591,7 +5592,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
   // hosts: confirm requests, see debts, take money
   const drawPayHost = async () => {
     const box = $("payHost");
-    if (!isAnyHost()) { box.innerHTML = ""; return; }
+    if (!canGrant) { box.innerHTML = ""; return; }
     let [{ data: pend }, { data: bals }] = await Promise.all([
       sb.from("wallet_tx").select("id, user_id, amount, method, game, event_id, created_at, purpose, currency").eq("status", "pending").order("created_at"),
       sb.rpc("wallet_balances"),
@@ -5947,7 +5948,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
       const ids = ev.list.map((e) => e.id);
       const { data: txs0 } = await sb.from("wallet_tx").select("id, user_id, event_id, method, status, purpose, amount, created_at, decided_at").in("event_id", ids).order("created_at");
       ev.debts = new Set((txs0 || []).filter((t) => t.purpose === "debt" && t.status === "confirmed").map((t) => t.event_id + ":" + t.user_id));
-      const txs = (txs0 || []).filter((t) => t.purpose === "topup" || (t.purpose === "evpay" && t.amount < 0)).map((t) => (t.purpose === "evpay" ? { ...t, status: "confirmed" } : t));
+      const txs = (txs0 || []).filter((t) => t.purpose === "gamepay" || t.purpose === "topup" || (t.purpose === "evpay" && t.amount < 0)).map((t) => (t.purpose === "evpay" ? { ...t, status: "confirmed" } : t));
       ev.paid = {};
       // wallet rows in the shape the host screen knows: confirmed > pending > rejected
       const rank = { confirmed: 3, pending: 2, rejected: 1 };
@@ -6028,7 +6029,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
   // a compact attendee row for organizers: name + coloured status, three round actions
   const payRowHTML = (pp, isMeRow, o) => {
     const status = o.debt ? `<small class="st debt">в долг −${o.price} ฿</small>` : !o.price ? "" : o.st === "paid" ? `<small class="st ok">оплачено ✓</small>` : o.st === "claim" ? `<small class="st wait">${o.m === "qr" ? "проверь перевод" : "отдаст наличными"}</small>` : `<small class="st no">не оплачено</small>`;
-    const acts = o.host ? `<span class="pr-acts">${o.price && o.st !== "paid" ? `<button class="pr-b ok" type="button" ${o.got} title="Получил ${o.price} ฿" aria-label="Получил ${o.price} ฿">✓</button><button class="pr-b debt ${o.debt ? "on" : ""}" type="button" ${o.debt ? o.undebt : o.debtA} title="${o.debt ? "Убрать долг" : "Не заплатил → в долг"}" aria-label="${o.debt ? "Убрать долг" : "Не заплатил, в долг"}">${o.debt ? "снять" : "долг"}</button>` : ""}<button class="pr-b rm" type="button" ${o.rm} title="Убрать: не пришёл" aria-label="Убрать: не пришёл">×</button></span>` : "";
+    const acts = o.host ? `<span class="pr-acts">${o.price && o.st !== "paid" ? `<button class="pr-b ok" type="button" ${o.got} title="Получил ${o.price} ฿" aria-label="Получил ${o.price} ฿">✓</button>${!canGrant ? "" : `<button class="pr-b debt ${o.debt ? "on" : ""}" type="button" ${o.debt ? o.undebt : o.debtA} title="${o.debt ? "Убрать долг" : "Не заплатил → в долг"}" aria-label="${o.debt ? "Убрать долг" : "Не заплатил, в долг"}">${o.debt ? "снять" : "долг"}</button>`}` : ""}<button class="pr-b rm" type="button" ${o.rm} title="Убрать: не пришёл" aria-label="Убрать: не пришёл">×</button></span>` : "";
     return `<div class="pr-row">${avaP(pp)}<span class="pr-nm"><b>${esc(pp.nick)}${isMeRow ? " · ты" : ""}</b>${o.host ? status : ""}</span>${acts}</div>`;
   };
   // a host adds someone who came without signing up

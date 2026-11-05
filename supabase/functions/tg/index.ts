@@ -310,6 +310,8 @@ async function walletNotify(req: Request, body: any) {
       text = `💸 ${from?.nick || "Дачник"}${from?.tg_username ? " (@" + from.tg_username + ")" : ""} перевёл тебе ${t.amount} ฿ на счёт DACHA.`;
     } else if (t.method === "adjust") {
       text = `💸 На твой счёт DACHA пришло ${t.amount} ฿${t.note ? " · " + t.note : ""}.`;
+    } else if (t.purpose === "gamepay") {
+      text = `✅ Ведущий отметил: игра оплачена (${t.amount} ฿).`;
     } else {
       text = `✅ Оплата подтверждена: +${t.amount} ฿ на твой счёт DACHA.`;
     }
