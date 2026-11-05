@@ -1796,6 +1796,15 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
 .tp-foot .pill { margin: 0; }
 html:has(.theme-panel) .app { padding-bottom: 46vh; }
 
+/* locked profile (05.11) */
+.prof-card.is-locked { filter: grayscale(1); }
+.prof-card.is-locked .prof-cover { background: linear-gradient(135deg, #9AA0AA, #5E636C) !important; }
+.prof-card.is-locked .prof-head { align-items: center; text-align: center; }
+.lk-ava { position: relative; opacity: .6; }
+.lk-ic { position: absolute; right: -4px; bottom: -4px; width: 34px; height: 34px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 17px; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.lk-msg { margin: 4px 0 6px; padding: 12px 14px; border-radius: 14px; background: var(--soft); color: var(--muted); font-weight: 800; font-size: 14px; line-height: 1.4; }
+.crew-row.locked { filter: grayscale(1); opacity: .55; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -2428,7 +2437,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105163348"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105165412"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2566,10 +2575,12 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     premiumIds = new Set((ids || []).map((x) => (typeof x === "string" ? x : x.premium_ids)));
     const { data: ic } = await sb.from("profiles").select("id, prem_icon").not("prem_icon", "is", null);
     premIcons.clear(); (ic || []).forEach((r) => premIcons.set(r.id, r.prem_icon));
+    const { data: lk } = await sb.from("profiles").select("id").eq("locked", true);
+    lockedIds.clear(); (lk || []).forEach((r) => lockedIds.add(r.id));
     canGrant = !!g;
   };
   const CASH = '<i class="cash">💵</i><i class="cash">💸</i><i class="cash">💵</i><i class="cash">💰</i>';
-  const premIcons = new Map();
+  const premIcons = new Map(), lockedIds = new Set();
   const FACES = ["don", "maf", "mafc", "mafw", "mafl", "kom", "komw", "kur", "doc", "pat", "pri", "man", "manw", "mir", "mirp", "mirt", "mirg"];
   const premIconHTML = (v) => (String(v).startsWith("f:") ? `<img src="faces/${esc(String(v).slice(2))}.svg" alt="">` : esc(v));
   const avaP = (p, extra = "") => isPremium(p)
@@ -2926,9 +2937,23 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     if (!sb || !me) return;
     const [{ data: stats }, , { data: sstats }, { data: extra }] = await Promise.all([
       sb.rpc("player_stats", { p: id }), loadPeople(), sb.rpc("sport_stats", { p: id }),
-      sb.from("profiles").select("bio, created_at, pay_qr, pay_qr_label, pay_qr2, pay_qr2_label, birth_day, birth_month, birth_src, notify_all, notify_kinds, theme").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(), ev.loaded ? null : loadEvents(),
+      sb.from("profiles").select("bio, created_at, pay_qr, pay_qr_label, pay_qr2, pay_qr2_label, birth_day, birth_month, birth_src, notify_all, notify_kinds, theme, locked").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(), ev.loaded ? null : loadEvents(),
     ]);
     if (S.view !== "profile" || profileId !== id) return;
+    // a locked profile: grey and closed for everybody
+    const card0 = document.querySelector("#vProfile .prof-card");
+    card0.classList.toggle("is-locked", !!extra?.locked);
+    if (extra?.locked) {
+      const r0 = people.find((p) => p.id === id) || { id, nick: "Дачник" };
+      card0.classList.remove("is-prem", "has-acc", "editing"); card0.querySelector(".prof-cover").style.background = ""; card0.querySelector(".prof-cover").innerHTML = "";
+      $("profHead").innerHTML = `<div class="lk-ava">${ava(r0.nick, id, "lg", r0.tg_photo)}<span class="lk-ic">🔒</span></div><h1 class="h1">${esc(r0.nick)}</h1>
+        <p class="lk-msg">В связи с подозрительной активностью аккаунт был заблокирован. Просмотр недоступен</p>`;
+      ["profBio", "profGames", "profAch"].forEach((k) => { $(k).innerHTML = ""; $(k).hidden = k === "profBio"; });
+      $("profStub").textContent = "Аккаунт заблокирован";
+      $("profBtns").innerHTML = canGrant ? `<button class="pill sm" type="button" data-unlock>разблокировать</button>` : "";
+      $("profBtns").onclick = async (ev3) => { if (!ev3.target.closest("[data-unlock]")) return; const { error } = await sb.rpc("set_profile_lock", { u: id, on_: false }); if (error) return toast("Не получилось: " + humanErr(error)); lockedIds.delete(id); toast("Профиль разблокирован"); renderProfile(); };
+      return;
+    }
     const row = people.find((p) => p.id === id) || (id === me.id ? { ...me, games: 0, wins: 0, hosted: 0 } : { nick: "Дачник", games: 0, wins: 0, hosted: 0 });
     const isMe = id === me.id;
     const handle = tgLine(row);
@@ -3058,6 +3083,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
             <span class="hr-ic">${x.emoji}</span><span class="hr-t"><b>${x.name}</b><small>${on ? "ведёт" : "не ведёт"}</small></span><i class="switch ${on ? "on" : ""}"></i></button>`; }).join("")}
         </div>
       </div></div>` : ""}
+      ${canGrant && !isMe ? `<button class="pill sm red" type="button" data-lock>🔒 заблокировать профиль</button>` : ""}
       <button class="pill ghost sm" data-p="people">все дачники</button>${isMe && !inTG ? `<button class="pill dark sm" data-p="out">выйти</button>` : ""}`;
     $("profBtns").onchange = async (e) => {
       if (e.target.id !== "myQrFile" || !e.target.files[0]) return;
@@ -3072,6 +3098,8 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
       toast("QR сохранён"); renderProfile();
     };
     $("profBtns").onclick = async (e) => {
+      if (e.target.closest("[data-lock]")) return sheet({ eyebrow: "Профиль", title: `Заблокировать ${row.nick}?`, text: "Профиль станет серым и закрытым для всех: «В связи с подозрительной активностью аккаунт был заблокирован».", ok: "заблокировать", okClass: "red",
+        onOk: async () => { const { error } = await sb.rpc("set_profile_lock", { u: id, on_: true }); if (error) return toast("Не получилось: " + humanErr(error)); lockedIds.add(id); toast("Профиль заблокирован"); renderProfile(); } });
       if (e.target.closest("[data-nall]") || e.target.closest("[data-nk]")) {
         let all = extra?.notify_all !== false, kinds = [...(extra?.notify_kinds || [])];
         const nk = e.target.closest("[data-nk]");
@@ -4738,6 +4766,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
         p.is_host ? `<span class="cb host">🎭 ведущий</span>` : "",
         ...hostOf.map((x) => `<span class="cb host">${x.emoji} ведущий</span>`),
       ].filter(Boolean).join("");
+      if (lockedIds.has(p.id)) return `<button class="crew-row locked" type="button" data-id="${p.id}">${ava(p.nick, p.id, "", p.tg_photo)}<span class="nm"><b>${esc(p.nick)}</b><small>🔒 аккаунт заблокирован</small></span><span class="go">›</span></button>`;
       return `<button class="crew-row" type="button" data-id="${p.id}">${avaP(p)}
         <span class="nm"><b>${esc(p.nick)}${p.id === me.id ? " · ты" : ""}</b><small>${esc(tgLine(p) || "дачник")}</small>${chips ? `<span class="crew-badges">${chips}</span>` : ""}</span><span class="go">›</span></button>`;
     }).join("") : `<div class="empty-note">Никого не нашли по «${esc(q)}».</div>`;
