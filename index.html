@@ -1332,6 +1332,64 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .ph-coins { overflow: visible; max-height: none; }
 .ph-ach { padding-bottom: 0; }
 
+/* wallet & pay (05.11) */
+.bal-pill { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 999px; background: #fff; box-shadow: 0 0 0 1px var(--hair), 0 4px 12px -6px rgba(15,23,42,.25); font: 800 14px/1 var(--f-body); color: var(--navy-ink); font-variant-numeric: tabular-nums; }
+.bal-pill.neg { background: #FFECEE; color: #C0162A; box-shadow: 0 0 0 1px #FFC9CF; }
+.bal-pill.pos { background: #E7F8EE; color: #137A3E; box-shadow: 0 0 0 1px #BDEBCF; }
+.hub-top { gap: 8px; }
+.bal-card { border-radius: 26px; padding: 20px 20px 18px; display: grid; gap: 4px; color: #fff; background: linear-gradient(135deg, #0033FF, #092F80); box-shadow: var(--sh); }
+.bal-card.neg { background: linear-gradient(135deg, #E3263A, #8E0E1E); }
+.bal-card.pos { background: linear-gradient(135deg, #1F9D55, #0E5A30); }
+.bal-card small { font: 800 11px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; opacity: .8; }
+.bal-card b { font: 700 46px/1.05 var(--f-code); font-variant-numeric: tabular-nums; }
+.bal-card span { font-weight: 700; font-size: 13.5px; opacity: .92; }
+.bal-card em { font-style: normal; font-weight: 800; font-size: 13px; background: rgba(255,255,255,.18); border-radius: 10px; padding: 6px 10px; width: fit-content; margin-top: 4px; }
+.pay-ctx { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 12px 14px; border-radius: 18px; background: #fff; box-shadow: var(--sh); }
+.amt-row { display: flex; align-items: baseline; gap: 6px; border-bottom: 2px solid var(--hair); padding-bottom: 4px; }
+.amt-row .amt { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: 700 40px/1 var(--f-code); color: var(--ink); font-variant-numeric: tabular-nums; padding: 0; }
+.amt-row span { font: 700 26px/1 var(--f-code); color: var(--muted); }
+.amt-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.amt-chips .chip { font: 800 13px/1 var(--f-body); min-height: 34px; }
+.pm-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pm-tiles button { display: grid; justify-items: start; gap: 2px; padding: 12px 14px; border-radius: 18px; background: var(--soft); text-align: left; color: var(--ink); transition: transform .12s; }
+.pm-tiles button span { font-size: 24px; }
+.pm-tiles button b { font-weight: 800; font-size: 15px; }
+.pm-tiles button small { color: var(--muted); font-weight: 700; font-size: 12px; }
+.pm-tiles button[aria-pressed="true"] { background: var(--navy-ink); color: #fff; box-shadow: 0 10px 18px -12px rgba(7,27,77,.9); }
+.pm-tiles button[aria-pressed="true"] small { color: #AFC0FF; }
+.pm-tiles button:active { transform: scale(.97); }
+.qr-card { display: grid; justify-items: center; gap: 10px; padding: 16px; border-radius: 20px; background: #F7F8FB; text-align: center; }
+.qr-card img { width: min(70vw, 260px); aspect-ratio: 1; object-fit: contain; background: #fff; border-radius: 16px; padding: 10px; box-shadow: 0 8px 20px -12px rgba(15,23,42,.35); }
+.qr-card p { margin: 0; font-weight: 700; color: var(--muted); font-size: 13.5px; }
+.tx-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--hair); }
+.tx-ic { width: 38px; height: 38px; border-radius: 12px; background: var(--soft); display: grid; place-items: center; font-size: 18px; flex: none; }
+.tx-av .ava, .tx-av .prem { width: 38px; height: 38px; font-size: 18px; }
+.tx-av .prem .ava { width: 100%; height: 100%; }
+.tx-av .prem .cash { display: none; }
+.tx-t { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.tx-t b { font-weight: 800; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tx-t small { color: var(--muted); font-weight: 700; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tx-amt { font: 700 18px/1 var(--f-code); color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tx-amt.neg { color: #C0162A; } .tx-amt.pos { color: #137A3E; }
+.tx-row.host { flex-wrap: wrap; }
+.tx-acts { display: flex; gap: 10px; }
+.round.ok { background: #1F9D55; } .round.no { background: var(--red); }
+.recv-form { display: flex; gap: 6px; width: 100%; padding-left: 50px; box-sizing: border-box; }
+.recv-form .field { min-height: 40px; padding: 6px 10px; }
+.recv-form input { width: 90px; flex: none; }
+.recv-form .pill { margin: 0; }
+.pay-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 42px; border-radius: 14px; background: linear-gradient(135deg, #1F9D55, #138A43); color: #fff; font: 800 14.5px/1 var(--f-body); box-shadow: 0 8px 16px -10px rgba(19,138,67,.9); transition: transform .12s; }
+.pay-btn:active { transform: scale(.98); }
+.pay-btn.wait { background: #FFF6DA; color: #8A5A00; box-shadow: inset 0 0 0 1.5px #F5DFA0; }
+.pay-ok { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 36px; border-radius: 12px; background: #E7F8EE; color: #137A3E; font-weight: 800; font-size: 13.5px; box-sizing: border-box; }
+.pay-ctx .pay-ok { width: auto; padding: 0 10px; }
+.wk-pay { padding: 0 12px 12px 17px; }
+.next-card .wk-pay { padding-bottom: 14px; }
+.bal-chip { justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin: 4px 0 2px; padding: 6px 12px; border-radius: 12px; background: var(--soft); color: var(--navy-ink); font-weight: 700; font-size: 13px; width: fit-content; }
+.bal-chip b { font-weight: 800; }
+.bal-chip span { color: var(--blue); font-weight: 800; }
+.bal-chip.neg { background: #FFECEE; color: #C0162A; } .bal-chip.pos { background: #E7F8EE; color: #137A3E; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1508,6 +1566,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     <div class="game-on" id="gameOnHub" hidden></div>
     <div class="hub-top">
       <button class="crew-btn" id="goCrew" type="button" aria-label="Дачники"><span class="crew-faces" id="crewFaces"></span><span class="crew-n" id="crewN">дачники</span></button>
+      <button class="bal-pill" id="hubBal" type="button" hidden></button>
       <button class="icon-btn" id="hubMe" type="button" aria-label="Профиль"></button>
     </div>
     <div class="hub-hero">
@@ -1527,6 +1586,14 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       <button class="pill dark sm" id="goAnnounce" hidden>сделать анонс</button>
       <button class="pill dark sm" id="goPolls" hidden>опрос в боте</button>
     </div>
+  </section>
+
+  <!-- PAY: balance, QR / cash, history -->
+  <section id="vPay" class="col" hidden>
+    <div id="payTop"></div>
+    <div id="payBody"></div>
+    <div id="payHost"></div>
+    <div id="payHist"></div>
   </section>
 
   <!-- CREW: all people, social list -->
@@ -1914,7 +1981,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105084046"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105090424"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2204,7 +2271,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   });
 
   /* ---------- navigation ---------- */
-  const VIEWS = ["vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
+  const VIEWS = ["vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
   let profileId = null;
   const online = () => S.hostMode === "online";
   const hostView = () => {
@@ -2222,16 +2289,17 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     }
     if (view === "profile") { if (S.view !== "profile") profileFrom = S.view; profileId = arg || me?.id; }
     if (view === "sport") sportId = SPORTS[arg] ? arg : sportId;
+    if (view === "pay" && S.view !== "pay") payFrom = S.view;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "hub";
     try { if (inTG && tg?.BackButton) view === "hub" ? tg.BackButton.hide() : tg.BackButton.show(); } catch {}
     renderTabs(view);
     if (id !== "vLive") stopLive();
     ({
-      vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
+      vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
       vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople, vMonth: () => { boardMonth = null; drawMonth(); }, vDeck: renderDeck,
       vPick: renderPick, vCount: renderCount, vRoles: renderRoles, vLive: renderLive, vDeal: renderDeal, vDone: renderDone,
       vCard: renderCard, vNotes: () => renderNotes(false), vEvents: renderEvents, vPlayer: renderPlayer,
@@ -2243,10 +2311,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const setPhase = (p) => { if (online()) S.on.phase = p; else S.host.phase = p; go("host"); };
 
   // "up": mafia screens go back to the mafia home, everything else to DACHA
-  let profileFrom = null;
+  let profileFrom = null, payFrom = null;
   const upOf = (v) => {
     if (v === "profile") return profileFrom && profileFrom !== "profile" && profileFrom !== "auth" ? profileFrom : "hub";
     if (v === "month") return "people";
+    if (v === "pay") return payFrom && payFrom !== "pay" && payFrom !== "auth" ? payFrom : "hub";
     if (["card", "notes", "host", "events", "player", "people", "deck"].includes(v)) return "home";
     return "hub";
   };
@@ -2289,7 +2358,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("goPeople").hidden = !["home", "card", "notes", "host", "events", "player", "deck", "sport"].includes(view);
     $("goPeople").setAttribute("aria-label", view === "sport" ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("topTitle").hidden = !!set.length;
-    $("topTitle").textContent = { home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
+    $("topTitle").textContent = { pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
   };
 
   const renderHostAccess = () => {
@@ -2403,6 +2472,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("profHead").innerHTML = `<div class="ph-top">${avaP({ ...row, id }, "lg")}
         <div class="ph-ach" id="phAch"></div></div>
       <div class="ph-name"><h1 class="h1">${esc(row.nick)}</h1>
+        ${isMe || isAnyHost() ? `<button class="bal-chip" type="button" id="profBal" data-uid="${id}">💰 баланс…</button>` : ""}
         <div class="ph-sub">${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}<span class="ph-since" id="phSince"></span></div></div>
       ${badges.length ? `<div class="prof-badges">${badges.map((b) => `<span class="cb host">${esc(b)}</span>`).join("")}</div>` : ""}
       ${isMe || canGrant ? `<div class="ph-acts" id="phActs"><button class="pill sm ghost" type="button" id="editNick">${isMe ? "изменить ник" : "ник дачнику"}</button></div>` : ""}`;
@@ -2422,6 +2492,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       };
     };
     drawProfBio(id, isMe, extra);
+    drawProfBal(id, isMe, row);
     // win rate only from 5 games: fewer games say nothing
     const rate = row.games ? Math.round((row.wins / row.games) * 100) : 0;
     $("profStats").innerHTML = `<div><b>${row.games}</b><small>${plural(row.games, "игра", "игры", "игр")}</small></div><div><b>${row.wins}</b><small>${plural(row.wins, "победа", "победы", "побед")}</small></div>${row.games >= 5 ? `<div><b>${rate}%</b><small>побед</small></div>` : `<div><b>—</b><small>% побед с 5 игр</small></div>`}`;
@@ -3845,7 +3916,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("goPolls").hidden = !canGrant;
     drawGameOn();
     $("hubHello").innerHTML = me ? "" : loginPrompt();
-    drawCrewBtn(); drawWeek(); drawHubGames();
+    drawCrewBtn(); drawWeek(); drawHubGames(); drawBalPill();
     if (!me) return;
     const need = [];
     if (!sp.loaded) need.push(loadSports());
@@ -3879,6 +3950,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <span class="wk-txt"><b>${M.name}</b><small>${info.filter(Boolean).map(esc).join(" · ")}</small></span><span class="wk-go">›</span></button>
       ${placeChip(e) ? `<div class="wk-place">${placeChip(e)}</div>` : ""}
       <div class="wk-foot"><span class="wk-faces">${faceList(going, 5)}</span><span class="wk-n">${going.length ? `${going.length} ${plural(going.length, "идёт", "идут", "идут")}` : "пока никого"}</span>${act}</div>
+      ${mine && !(maf && canHost()) && payBtn(x.kind, e) ? `<div class="wk-pay">${payBtn(x.kind, e)}</div>` : ""}
     </div>`;
   };
   const drawWeek = () => {
@@ -3992,6 +4064,34 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     };
   };
   let profLast = null;
+  const drawProfBal = async (id, isMe, row) => {
+    const b = $("profBal"); if (!b) return;
+    let bal;
+    if (isMe) { try { await loadWallet(); } catch {} bal = +wal.balance || 0; }
+    else { const { data } = await sb.rpc("wallet", { u: id }); bal = +data?.balance || 0; }
+    if (!$("profBal") || profileId !== id) return;
+    b.className = "bal-chip" + (bal < 0 ? " neg" : bal > 0 ? " pos" : "");
+    b.innerHTML = `💰 Баланс: <b>${money(bal)}</b> <span>${isMe ? "пополнить ›" : "принять оплату ›"}</span>`;
+    b.onclick = () => {
+      if (isMe) return openPay();
+      const v = document.createElement("div"); v.className = "veil";
+      v.innerHTML = `<div class="ticket" role="dialog" aria-modal="true"><div class="ticket-in"><div class="t-body" style="gap:12px">
+        <div class="eyebrow">Баланс · ${esc(row.nick)}</div><h2 class="h1">${money(bal)}</h2>
+        <label class="amt-row"><input class="amt" type="number" min="1" step="10" value="${bal < 0 ? -bal : 100}" aria-label="Сумма"><span>฿</span></label>
+        <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" data-m="cash">получил наличными</button><button class="pill sm" data-m="qr">получил по QR</button>
+          ${canGrant ? `<button class="pill sm red" data-m="minus">списать</button>` : ""}<button class="pill sm ghost" data-close>закрыть</button></div>
+        <p class="bio-meta" style="margin:0">${canGrant ? "«Списать» уменьшает баланс вручную (например, за игру без записи)." : "Сумма сразу зачислится на баланс дачника."}</p></div></div></div>`;
+      v.addEventListener("click", async (ev2) => {
+        if (ev2.target === v || ev2.target.closest("[data-close]")) return v.remove();
+        const mb = ev2.target.closest("[data-m]"); if (!mb) return;
+        const amount = parseInt(v.querySelector("input").value, 10); if (!(amount >= 1)) return toast("Укажи сумму");
+        const { error } = mb.dataset.m === "minus" ? await sb.rpc("wallet_adjust", { u: id, amount: -amount, note: "Списание вручную" }) : await sb.rpc("pay_receive", { u: id, amount, m: mb.dataset.m });
+        if (error) return toast("Не получилось: " + humanErr(error));
+        v.remove(); toast(mb.dataset.m === "minus" ? "Списано" : "Баланс пополнен"); drawProfBal(id, isMe, row);
+      });
+      document.body.append(v);
+    };
+  };
   // profile: one tile per played game (tap = details sheet, tap on #N = rating), upcoming dates, achievements
   const drawProfGames = (id, row, sstats, rolesHTML, nRoles) => {
     const ranked = [...people].filter((p) => p.games > 0).sort((a, b) => b.wins - a.wins || b.games - a.games || a.nick.localeCompare(b.nick));
@@ -4081,6 +4181,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <div class="ev-crew">${e.signups.map(spWho).join("") || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
         <div class="ev-act">${mine ? `<span class="tag ok">ты идёшь</span><button class="linkish" type="button" data-spleave>не смогу</button>` : `<button class="pill sm" type="button" data-spjoin>я буду</button>`}
           <span class="ev-count">${e.signups.length} ${plural(e.signups.length, "идёт", "идут", "идут")}</span></div>
+        ${mine && payBtn(X.id, e) ? `<div class="wk-pay" style="padding:0 16px 12px">${payBtn(X.id, e)}</div>` : ""}
         ${host ? `<div class="sp-host"><button class="linkish" type="button" data-spedit>${sp.editing === e.id ? "свернуть" : "изменить"}</button>${e.day <= t ? `<button class="pill sm dark" type="button" data-spres>отметить итоги</button>` : ""}</div>${sp.editing === e.id ? spForm(e) : ""}` : ""}
       </div></article>`;
     }).join("") : `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">${host ? "Ближайших игр нет. Поставь дату ниже — она появится в календаре на главной." : "Ближайших игр пока нет. Как только ведущий поставит дату, она появится здесь и в календаре на главной."}</p></div></div></div>`);
@@ -4135,6 +4236,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         return `<div class="sp-past" data-spev="${e.id}"><div class="dd"><b>${d}</b><small>${MON[m - 1]}</small></div><div style="min-width:0;display:grid;gap:8px">
           ${has ? `<div class="sp-res" style="padding:0">${["win", "draw", "loss"].map((r) => { const c = chips(e, r); return c ? `<span class="lbl ${r}">${{ win: "Победили", draw: "Ничья", loss: "Проиграли" }[r]}</span><div class="ev-crew" style="padding:0">${c}</div>` : ""; }).join("")}</div>`
             : `<span class="bio-meta">${e.signups.length} ${plural(e.signups.length, "был записан", "были записаны", "были записаны")} · итоги ещё не отмечены</span>`}
+          ${(e.signups.some((x) => x.user_id === me.id) || e.results.some((x) => x.user_id === me.id)) && payBtn(e.sport, e) ? `<div>${payBtn(e.sport, e)}</div>` : ""}
           ${host ? `<div><button class="pill sm ${has ? "ghost" : "dark"}" type="button" data-spres>${has ? "изменить итоги" : "отметить итоги"}</button></div>` : ""}</div></div>`; }).join("")}
     </div></div>`;
   };
@@ -4257,6 +4359,156 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     document.body.append(v);
   };
 
+  /* =================== wallet: one balance for every game =================== */
+  const wal = { loaded: false, loading: null, balance: 0, pending: 0, txs: [], charges: [], chan: null };
+  const isAnyHost = () => !!me && (canHost() || canGrant || sp.hosts.some((h) => h.user_id === me.id));
+  const money = (n) => `${n < 0 ? "−" : n > 0 ? "" : ""}${Math.abs(+n || 0).toLocaleString("ru-RU")} ฿`;
+  const loadWallet = () => wal.loading || (wal.loading = (async () => {
+    if (!sb || !me) return;
+    const { data, error } = await sb.rpc("wallet", { u: me.id });
+    if (error) throw error;
+    Object.assign(wal, data, { loaded: true });
+  })().finally(() => { wal.loading = null; }));
+  const walletChanged = async () => {
+    try { await loadWallet(); } catch { return; }
+    drawBalPill();
+    if (S.view === "pay") drawPay();
+    if (S.view === "hub") drawWeek();
+    if (S.view === "home") drawHomeEvent();
+    if (S.view === "sport") drawSportNext();
+  };
+  const subscribeWallet = () => {
+    if (wal.chan || !sb || !me) return;
+    let t = 0;
+    wal.chan = sb.channel("wallet-" + me.id)
+      .on("postgres_changes", { event: "*", schema: "public", table: "wallet_tx" }, () => { clearTimeout(t); t = setTimeout(walletChanged, 500); })
+      .subscribe();
+  };
+  const drawBalPill = () => {
+    const b = $("hubBal"); if (!b) return;
+    b.hidden = !me || !wal.loaded;
+    b.className = "bal-pill" + (wal.balance < 0 ? " neg" : wal.balance > 0 ? " pos" : "");
+    b.innerHTML = `<span>💰</span>${money(wal.balance)}`;
+    b.setAttribute("aria-label", "Баланс " + money(wal.balance));
+  };
+  $("hubBal").onclick = () => openPay();
+  const evPayState = (id) => { const l = wal.txs.filter((t) => t.event_id === id); return l.some((t) => t.status === "confirmed") ? "paid" : l.some((t) => t.status === "pending") ? "pending" : null; };
+  const payBtn = (kind, e) => {
+    if (!me || !e?.price) return "";
+    const st = evPayState(e.id);
+    if (st === "paid") return `<span class="pay-ok">оплачено ✓</span>`;
+    if (st === "pending") return `<button class="pay-btn wait" type="button" data-pay="${kind}:${e.id}">⏳ ждём подтверждения</button>`;
+    return `<button class="pay-btn" type="button" data-pay="${kind}:${e.id}">💳 Оплатить ${e.price} ฿</button>`;
+  };
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-pay]"); if (!b) return; e.stopPropagation(); e.preventDefault(); const [k, id] = b.dataset.pay.split(":"); openPay(k, id); }, true);
+  let payCtx = null, payAmt = null, payMethod = "qr", payRecv = null;
+  const openPay = (kind, id) => { haptic("tap"); payCtx = kind && id ? { kind, id } : null; payAmt = null; go("pay"); };
+  const ctxEvent = () => (!payCtx ? null : payCtx.kind === "mafia" ? ev.list.find((x) => x.id === payCtx.id) : sp.events.find((x) => x.id === payCtx.id)) || null;
+  const evTitle = (game, id, day) => { const M = meta(game || "mafia"); const e = id && (ev.list.find((x) => x.id === id) || sp.events.find((x) => x.id === id)); const d = e?.day || day; return `${M.emoji} ${game ? M.name : "Пополнение"}${d ? " · " + dayLabel(d) : ""}`; };
+  const renderPay = async () => {
+    if (!sb || !me) { $("payTop").innerHTML = loginPrompt(); $("payBody").innerHTML = $("payHist").innerHTML = $("payHost").innerHTML = ""; return; }
+    if (!wal.loaded) $("payTop").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>Считаю баланс…</div></div></div></div>`;
+    else drawPay();
+    try {
+      await Promise.all([loadWallet(), ev.set ? null : sb.from("pay_settings").select("*").eq("id", 1).maybeSingle().then(({ data }) => { ev.set = data || ev.set; }),
+        ev.loaded ? null : loadEvents(), sp.loaded ? null : loadSports()]);
+    } catch (x) { toast("Не получилось загрузить: " + humanErr(x)); }
+    if (S.view !== "pay") return;
+    drawPay(); drawPayHost();
+  };
+  const drawPay = () => {
+    const bal = +wal.balance || 0, e = ctxEvent(), st = e ? evPayState(e.id) : null;
+    const def = e ? e.price : bal < 0 ? -bal : 250;
+    const amt = payAmt ?? def;
+    $("payTop").innerHTML = `<div class="bal-card ${bal < 0 ? "neg" : bal > 0 ? "pos" : ""}">
+        <small>Твой баланс</small><b>${money(bal)}</b>
+        <span>${bal < 0 ? "Это долг за игры, где ты был. Пополни, чтобы выйти в ноль" : bal > 0 ? "Предоплата: спишется за следующие игры" : "Всё оплачено, долгов нет"}</span>
+        ${wal.pending ? `<em>⏳ ждёт подтверждения ведущего: +${money(wal.pending)}</em>` : ""}</div>
+      ${e ? `<div class="pay-ctx" style="--gc:${meta(payCtx.kind).color}"><span class="wk-ic">${meta(payCtx.kind).emoji}</span><span class="wk-txt"><b>${meta(payCtx.kind).name} · ${e.price} ฿</b><small>${esc(dayLabel(e.day))} · ${hm(e.start_time)}${placeName(e) ? " · " + esc(placeName(e)) : ""}</small></span>${st === "paid" ? `<span class="pay-ok">оплачено ✓</span>` : st === "pending" ? `<span class="tag">проверяем</span>` : ""}</div>` : ""}`;
+    const qr = ev.set?.qr_url;
+    const chips = [...new Set([e?.price, bal < 0 ? -bal : null, 100, 250, 500].filter((x) => x > 0))].slice(0, 4);
+    const pend = wal.txs.filter((t) => t.status === "pending");
+    $("payBody").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:12px">
+        <div class="eyebrow">${e ? "Оплатить игру" : "Пополнить баланс"}</div>
+        <label class="amt-row"><input class="amt" id="payAmt" type="number" inputmode="numeric" min="1" max="100000" step="10" value="${amt}" aria-label="Сумма в батах"><span>฿</span></label>
+        <div class="amt-chips">${chips.map((c) => `<button type="button" class="chip" data-amt="${c}" aria-pressed="${c === +amt}">${c === -bal && bal < 0 ? `долг ${c}` : c} ฿</button>`).join("")}</div>
+        <div class="pm-tiles" role="group" aria-label="Способ оплаты">
+          <button type="button" data-pm="qr" aria-pressed="${payMethod === "qr"}"><span>📱</span><b>QR-перевод</b><small>из приложения банка</small></button>
+          <button type="button" data-pm="cash" aria-pressed="${payMethod === "cash"}"><span>💵</span><b>Наличными</b><small>ведущему на месте</small></button>
+        </div>
+        ${payMethod === "qr" ? (qr ? `<div class="qr-card"><img src="${esc(qr)}" alt="QR-код для перевода"><p>Отсканируй в приложении банка и переведи <b>${money(+amt || 0)}</b>.${ev.set?.qr_note ? " " + esc(ev.set.qr_note) : ""}</p>
+              <button class="pill sm ghost" type="button" data-qrsave>⬇ скачать QR</button></div>
+            <button class="pill wide" type="button" data-send="qr">я перевёл ${money(+amt || 0)}</button>`
+          : `<p class="lead">QR-код ещё не загружен. Пока можно отдать наличными.</p>`)
+          : `<p class="lead">Отдай <b>${money(+amt || 0)}</b> ведущему на месте. Как только он подтвердит, баланс пополнится.</p>
+            <button class="pill wide" type="button" data-send="cash">отдам ${money(+amt || 0)} наличными</button>`}
+        <p class="bio-meta" style="margin:0">Деньги зачисляются, когда ведущий подтвердит, что получил.</p>
+      </div>
+      ${pend.length ? `<div class="sec-label eyebrow">Ждут подтверждения</div>${pend.map((t) => `<div class="tx-row"><span class="tx-ic">⏳</span><span class="tx-t"><b>+${money(t.amount)} · ${t.method === "qr" ? "QR" : "наличные"}</b><small>${esc(evTitle(t.game, t.event_id))}</small></span><button class="linkish" type="button" data-cancel="${t.id}">отменить</button></div>`).join("")}` : ""}
+    </div></div>`;
+    // history: charges (−) and money in (+)
+    const rows = [
+      ...wal.charges.map((c) => ({ at: c.day + "T" + c.start_time, amt: -c.price, ic: meta(c.game).emoji, t: `${meta(c.game).name} · ${dayLabel(c.day)}`, s: c.place || "игра" })),
+      ...wal.txs.filter((t) => t.status !== "pending").map((t) => ({ at: t.created_at, amt: t.status === "confirmed" ? t.amount : 0, ic: t.status === "rejected" ? "✕" : t.method === "adjust" ? "✎" : t.method === "qr" ? "📱" : "💵",
+        t: t.status === "rejected" ? `Не подтверждено · ${money(t.amount)}` : t.method === "adjust" ? (t.note || "Корректировка") : `Пополнение · ${t.method === "qr" ? "QR" : "наличные"}`, s: t.game ? evTitle(t.game, t.event_id) : new Date(t.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) })),
+    ].sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 40);
+    $("payHist").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">История</div></div>
+      ${rows.length ? rows.map((r) => `<div class="tx-row"><span class="tx-ic">${r.ic}</span><span class="tx-t"><b>${esc(r.t)}</b><small>${esc(r.s)}</small></span><span class="tx-amt ${r.amt < 0 ? "neg" : r.amt > 0 ? "pos" : ""}">${r.amt > 0 ? "+" : ""}${r.amt ? money(r.amt) : "—"}</span></div>`).join("")
+        : `<div class="empty-note">Пока пусто. Здесь будут игры, за которые списались деньги, и пополнения.</div>`}
+      <div class="stub"><span>Списано ${money(wal.owed || 0)} · внесено ${money(wal.paid || 0)}</span><b>WALLET</b></div></div></div>`;
+  };
+  // hosts: confirm requests, see debts, take money
+  const drawPayHost = async () => {
+    const box = $("payHost");
+    if (!isAnyHost()) { box.innerHTML = ""; return; }
+    const [{ data: pend }, { data: bals }] = await Promise.all([
+      sb.from("wallet_tx").select("id, user_id, amount, method, game, event_id, created_at").eq("status", "pending").order("created_at"),
+      sb.rpc("wallet_balances"),
+    ]);
+    if (S.view !== "pay") return;
+    if (!people.length) await loadPeople();
+    const debts = (bals || []).filter((b) => +b.balance < 0).sort((a, b) => a.balance - b.balance);
+    box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">Ты ведущий · оплаты дачников</div><h2 class="h2">${(pend || []).length ? `Проверь ${(pend || []).length} ${plural((pend || []).length, "оплату", "оплаты", "оплат")}` : "Новых оплат нет"}</h2></div>
+      ${(pend || []).map((t) => { const pp = personOf(t.user_id); return `<div class="tx-row host"><span class="tx-av">${avaP(pp)}</span><span class="tx-t"><b>${esc(pp.nick)} · +${money(t.amount)}</b><small>${t.method === "qr" ? "📱 говорит, что перевёл по QR" : "💵 отдаст наличными"} · ${esc(evTitle(t.game, t.event_id))}</small></span>
+        <span class="tx-acts"><button class="round sm ok" type="button" data-decide="${t.id}" data-ok="1" aria-label="Получил">✓</button><button class="round sm no" type="button" data-decide="${t.id}" data-ok="0" aria-label="Не получил">✕</button></span></div>`; }).join("")}
+      <div class="sec-label eyebrow">Долги · ${debts.length}</div>
+      ${debts.length ? debts.map((b) => { const pp = personOf(b.user_id); return `<div class="tx-row host"><span class="tx-av">${avaP(pp)}</span><span class="tx-t"><b>${esc(pp.nick)}</b><small>${+b.pending ? `ждёт подтверждения +${money(b.pending)}` : esc(tgLine(pp))}</small></span><span class="tx-amt neg">${money(b.balance)}</span>
+        ${payRecv === b.user_id ? `<form class="recv-form" data-recv="${b.user_id}"><input class="field" name="a" type="number" min="1" step="10" value="${-b.balance}" aria-label="Сумма"><select class="field" name="m"><option value="cash">наличные</option><option value="qr">QR</option></select><button class="pill sm" type="submit">получил</button></form>` : `<button class="linkish" type="button" data-recvopen="${b.user_id}">принять</button>`}</div>`; }).join("")
+        : `<div class="empty-note">Должников нет 🎉</div>`}
+    </div></div>`;
+  };
+  $("vPay").addEventListener("input", (e) => { if (e.target.id === "payAmt") { payAmt = Math.max(0, parseInt(e.target.value, 10) || 0); $("vPay").querySelectorAll("[data-send]").forEach((b) => (b.textContent = b.dataset.send === "qr" ? `я перевёл ${money(payAmt)}` : `отдам ${money(payAmt)} наличными`)); $("vPay").querySelectorAll("[data-amt]").forEach((c) => c.setAttribute("aria-pressed", +c.dataset.amt === payAmt)); } });
+  $("vPay").addEventListener("click", async (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.amt) { payAmt = +b.dataset.amt; return drawPay(); }
+    if (b.dataset.pm) { payMethod = b.dataset.pm; haptic("tap"); return drawPay(); }
+    if (b.hasAttribute("data-qrsave")) return downloadQR();
+    if (b.dataset.send) {
+      const amount = +($("payAmt").value || 0); if (!(amount >= 1)) return toast("Укажи сумму");
+      const ctx = ctxEvent();
+      const { error } = await sb.rpc("pay_request", { amount, m: b.dataset.send, e: ctx ? ctx.id : null, g: ctx ? payCtx.kind : null });
+      if (error) return toast("Не получилось: " + humanErr(error));
+      haptic("card"); toast(b.dataset.send === "qr" ? "Отметил перевод. Ведущий проверит и подтвердит" : "Ведущий подтвердит, когда получит наличные");
+      payAmt = null; await walletChanged(); return;
+    }
+    if (b.dataset.cancel) { const { error } = await sb.rpc("pay_cancel", { tx: b.dataset.cancel }); if (error) return toast("Не получилось: " + humanErr(error)); return walletChanged(); }
+    if (b.dataset.decide) {
+      const { error } = await sb.rpc("pay_decide", { tx: b.dataset.decide, ok: b.dataset.ok === "1" });
+      if (error) return toast("Не получилось: " + humanErr(error));
+      toast(b.dataset.ok === "1" ? "Подтверждено, баланс пополнен" : "Отмечено: не получено"); haptic("tap");
+      return drawPayHost();
+    }
+    if (b.dataset.recvopen) { payRecv = b.dataset.recvopen; return drawPayHost(); }
+  });
+  $("vPay").addEventListener("submit", async (e) => {
+    const f = e.target.closest("[data-recv]"); if (!f) return;
+    e.preventDefault();
+    const amount = parseInt(f.elements.a.value, 10); if (!(amount >= 1)) return toast("Укажи сумму");
+    const { error } = await sb.rpc("pay_receive", { u: f.dataset.recv, amount, m: f.elements.m.value });
+    if (error) return toast("Не получилось: " + humanErr(error));
+    payRecv = null; toast("Записал: баланс пополнен"); drawPayHost();
+  });
+
   const loadEvents = async () => {
     if (!sb || !me) return;
     await sb.rpc("ensure_events");
@@ -4275,13 +4527,19 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     ev.pays = {};
     if (ev.list.length) {
       const ids = ev.list.map((e) => e.id);
-      const [{ data: pays }, { data: paidRows }] = await Promise.all([
-        sb.from("payments").select("*").in("event_id", ids),
-        sb.rpc("paid_status", { evs: ids }),
-      ]);
+      const { data: txs } = await sb.from("wallet_tx").select("id, user_id, event_id, method, status, created_at, decided_at").in("event_id", ids).order("created_at");
       ev.paid = {};
-      (paidRows || []).forEach((r) => (ev.paid[r.event_id + ":" + r.user_id] = r.st));
-      (pays || []).forEach((p) => (ev.pays[p.event_id + ":" + p.user_id] = p));
+      // wallet rows in the shape the host screen knows: confirmed > pending > rejected
+      const rank = { confirmed: 3, pending: 2, rejected: 1 };
+      (txs || []).forEach((t) => {
+        const k = t.event_id + ":" + t.user_id, cur = ev.pays[k];
+        const ids2 = { ...(cur?._ids || {}), [t.status]: t.id };
+        if (t.status === "confirmed" && canHost()) ev.paid[k] = "paid";
+        else if (t.status === "pending" && t.method === "qr" && canHost() && ev.paid[k] !== "paid") ev.paid[k] = "claimed";
+        if (cur && rank[cur._st] > rank[t.status]) { cur._ids = ids2; return; }
+        ev.pays[k] = { _ids: ids2, _st: t.status, method: t.method, claimed_at: t.status !== "rejected" && t.method === "qr" ? t.created_at : null,
+          confirmed_at: t.status === "confirmed" ? t.decided_at || t.created_at : null, rejected_at: t.status === "rejected" ? t.decided_at : null };
+      });
     }
     ev.loaded = true;
   };
@@ -4302,6 +4560,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       ${placeChip(e) ? `<div class="wk-place">${placeChip(e)}</div>` : ""}
       <div class="wk-foot"><span class="wk-faces">${faceList(e.signups, 6)}</span><span class="wk-n">${e.signups.length ? `${e.signups.length} ${plural(e.signups.length, "идёт", "идут", "идут")}` : "пока никого"}</span>
         ${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span>` : `<button class="pill sm" type="button" data-join>${canHost() ? "я веду" : "я буду"}</button>`}</div>
+      ${mine && !canHost() && payBtn("mafia", e) ? `<div class="wk-pay">${payBtn("mafia", e)}</div>` : ""}
     </article>`;
   };
   const payState = (e, pay) => {
@@ -4433,7 +4692,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <div class="ev-crew">${crew || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
         <div class="ev-act">${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span><button class="linkish" data-leave>не смогу</button>` : `<button class="pill sm" data-join ${off ? "disabled" : ""}>${canHost() ? "я веду" : "я буду"}</button>`}
           <span class="ev-count">идут: ${e.signups.length}${paidCount(e) ? ` · <b>оплатили: ${paidCount(e)}</b>` : ""}</span></div>
-        ${mine && !off && !canHost() ? payBlock(e) : ""}
+        ${mine && !off && !canHost() ? `<div class="wk-pay" style="padding:0 16px 14px">${payBtn("mafia", e)}</div>` : ""}
         <div class="stub"><span>${DOW_FULL[dayParts(e.day).w]}, ${d} ${MON_FULL[m - 1]}</span><b>${DOW_CODE[dayParts(e.day).w]} ${pad(d)}.${pad(m)}</b></div>
       </div></article>`;
     }).join("");
@@ -4513,10 +4772,24 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (b.hasAttribute("data-join")) { haptic("tap"); evAction(() => sb.from("signups").insert({ event_id: id, user_id: me.id }), "Записал тебя на игру"); }
     else if (b.hasAttribute("data-leave")) sheet({ eyebrow: "Запись", title: "Не сможешь прийти?", text: "Запись на эту игру отменится. Если ты уже перевёл деньги, скажи ведущему.", ok: "отменить запись",
       onOk: () => evAction(() => sb.from("signups").delete().eq("event_id", id).eq("user_id", me.id), "Запись отменена") });
-    else if (b.dataset.m) evAction(() => sb.rpc("set_payment", { e: id, m: b.dataset.m, claimed: false }));
+    else if (b.dataset.m) return;
     else if (b.hasAttribute("data-qrdl")) downloadQR();
-    else if (b.hasAttribute("data-claim")) evAction(() => sb.rpc("set_payment", { e: id, m: "qr", claimed: true }), "Отметил перевод. Ведущий подтвердит");
-    else if (b.dataset.st) evAction(() => sb.rpc("set_pay_status", { e: id, u: b.dataset.u, st: b.getAttribute("aria-pressed") === "true" ? "none" : b.dataset.st }));
+    else if (b.hasAttribute("data-claim")) evAction(() => sb.rpc("pay_request", { amount: event.price, m: "qr", e: id, g: "mafia" }), "Отметил перевод. Ведущий подтвердит");
+    else if (b.dataset.st) {
+      // host: "got N ฿" / "didn't get" → the wallet (pressing the lit button again undoes it)
+      const u = b.dataset.u, pay = payOf(id, u), ids = pay?._ids || {}, on = b.getAttribute("aria-pressed") === "true";
+      evAction(async () => {
+        if (b.dataset.st === "paid") {
+          if (on) return ids.confirmed ? sb.rpc("pay_undo", { tx: ids.confirmed }) : { error: null };
+          if (ids.pending) return sb.rpc("pay_decide", { tx: ids.pending, ok: true });
+          return sb.rpc("pay_receive", { u, amount: event.price, m: "cash", e: id, g: "mafia" });
+        }
+        if (on) return { error: null };
+        if (ids.pending) return sb.rpc("pay_decide", { tx: ids.pending, ok: false });
+        if (ids.confirmed) return sb.rpc("pay_undo", { tx: ids.confirmed });
+        return { error: null };
+      });
+    }
     else if (b.hasAttribute("data-edit")) { ev.editing = ev.editing === id ? null : id; drawEvents(); }
     else if (b.hasAttribute("data-evremove")) sheet({ eyebrow: "Дата", title: "Убрать эту дату?", text: "Игра пропадёт из расписания у всех. Записи останутся в базе.", ok: "убрать", okClass: "red",
       onOk: () => { ev.editing = null; ev.sel = null; return evAction(() => sb.rpc("remove_event", { e: id }), "Дата убрана"); } });
@@ -4797,6 +5070,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     loadPeople().then(() => { if (S.view === "home") renderHome(); if (S.view === "hub") drawCrewBtn(); });
     loadSports().then(() => { if (S.view === "hub") { drawWeek(); drawHubGames(); } }).catch(() => {});
     subscribeSports();
+    loadWallet().then(() => { drawBalPill(); if (S.view === "hub") drawWeek(); if (S.view === "home") drawHomeEvent(); }).catch(() => {});
+    subscribeWallet();
     loadPremium().then(() => { renderMeBtn(); if (!["auth"].includes(S.view)) go(S.view); }).catch(() => {});
     loadEvents().then(() => { drawHomeEvent(); if (S.view === "hub") { drawWeek(); drawHubGames(); } }).catch(() => {});
     ["ads/ruslan.webp", "ads/boss.webp", "ads/beach.jpg"].forEach((src) => (new Image().src = src));
@@ -4812,6 +5087,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (ev.chan) { sb.removeChannel(ev.chan); ev.chan = null; }
     ev.list = []; ev.loaded = false;
     if (sp.chan) { sb.removeChannel(sp.chan); sp.chan = null; }
+    if (wal.chan) { sb.removeChannel(wal.chan); wal.chan = null; }
+    Object.assign(wal, { loaded: false, balance: 0, pending: 0, txs: [], charges: [] }); drawBalPill();
     sp.events = []; sp.hosts = []; sp.loaded = false; sp.board = {};
     my.seat = null; people = []; S.on.gameId = null; stopLive(); renderMeBtn(); $("cardDot").hidden = true; save();
   };
