@@ -2266,7 +2266,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105104225"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105105437"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3031,10 +3031,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if ($("vPick").hidden) return;
     // today's sign-ups come in by themselves once, in the order they signed up
     const t = todayEvent();
-    if (t && t.signups.length && S.on.autoFrom !== t.id && !S.on.lineup.length) {
+    if (t && t.signups.length && S.on.autoFrom !== t.id) {
+      S.on.lineup = [];                       // a new date: start from its sign-ups
       const n = addSignups(t);
       S.on.autoFrom = t.id; save();
-      if (n) toast(`Добавил ${n} ${plural(n, "записавшегося", "записавшихся", "записавшихся")} на сегодня`, { label: "рассадить", run: () => openSeating() });
+      if (n) toast(`Выбрал ${n} ${plural(n, "записавшегося", "записавшихся", "записавшихся")} на ${dayLabel(t.day)}`, { label: "рассадить", run: () => openSeating() });
     }
     drawPick();
   };
@@ -3064,7 +3065,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     S.on.gameId = row.dataset.lg; S.on.test = false; live.showRoles = false; live.finishOnOpen = b.hasAttribute("data-lgend");
     save(); syncNotesGame(); haptic("tap"); go("host");
   };
-  const todayEvent = () => ev.list.find((e) => e.day === bkkToday() && e.status === "open") || null;
+  // the nearest mafia date from today on: its sign-ups are picked for the game
+  const todayEvent = () => ev.list.find((e) => e.day >= bkkToday() && e.status === "open") || null;
   const addSignups = (t) => {
     let n = 0;
     t.signups.forEach((x) => {
