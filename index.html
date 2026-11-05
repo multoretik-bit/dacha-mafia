@@ -1873,6 +1873,8 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 .seat-sheet2 { gap: 12px; }
 .bot-ava { display: grid; place-items: center; border-radius: 50%; background: var(--soft, #EEF0F5); overflow: hidden; }
 .bot-ava svg { width: 72%; height: 72%; fill: #B9C0CE; margin-top: 18%; }
+.ss-acts { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.ss-acts [data-close] { flex: 1; max-width: 220px; }
 .bots-row { display: flex; justify-content: center; margin-top: 4px; }
 .bots-row .pill[hidden] { display: none; }
 .ss-h { display: flex; align-items: center; gap: 12px; padding-right: 40px; }
@@ -2521,7 +2523,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105173558"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105173905"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -6683,7 +6685,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
         <div class="ss-h">${avaP({ nick: p.name, id: p.uid || p.name, tg_photo: p.photo })}<span><b>${esc(p.name)}${p.self ? " · ты" : ""}</b><small>место ${esc(p.seat)}${p.out ? " · выбыл" : ""}</small></span></div>
         <div class="ss-colors">${TRUST.map(([c, l, sub]) => `<button type="button" class="c-${c}" data-sc="${c}" aria-pressed="${(p.c || "gray") === c}"><i></i><b>${l}</b><small>${sub}</small></button>`).join("")}</div>
         <textarea class="field ss-note" placeholder="Что говорил, за кого голосовал…">${esc(p.note || "")}</textarea>
-        <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ${p.out ? "" : "red"}" type="button" data-sout>${p.out ? "вернуть в игру" : "выбыл"}</button><button class="pill sm ghost" type="button" data-close>готово</button></div>
+        <div class="ss-acts"><button class="pill" type="button" data-close>готово</button><button class="pill sm ${p.out ? "ghost" : "red"}" type="button" data-sout>${p.out ? "вернуть в игру" : "выбыл"}</button></div>
         <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
     };
     draw();
