@@ -2428,7 +2428,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105151119"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105151200"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2792,11 +2792,11 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
   $("goNotes").onclick = () => go("notes");
   $("goPlayer").onclick = () => go("player");
   $("tabEvents").onclick = () => go("events");
-  $("goList").onclick = () => { haptic("tap"); ["sport", "sportorg", "sportrate"].includes(S.view) ? go("sportlist", sportId) : go("events"); };
+  $("goList").onclick = () => { haptic("tap"); ["sport", "sportorg", "sportrate", "sportlist"].includes(S.view) ? go("sportlist", sportId) : go("events"); };
   $("goPeople").onclick = () => {
     if (!me) return go("auth");
     if (S.view === "crew") return go("ratings");
-    if (S.view === "sport" || S.view === "sportorg") return go("sportrate", sportId);
+    if (["sport", "sportorg", "sportlist"].includes(S.view)) return go("sportrate", sportId);
     if (S.view === "sportrate") return;
     go("people");
   };
@@ -2822,6 +2822,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     // rating of the current game, next to the avatar
     $("goPeople").hidden = !["home", "card", "notes", "host", "events", "player", "deck", "sport", "sportorg", "sportlist", "crew"].includes(view);
     $("goList").hidden = !me || !["home", "card", "notes", "host", "player", "deck", "people", "month", "sport", "sportorg", "sportrate"].includes(view);
+    $("goPeople").setAttribute("aria-label", ["sport", "sportorg", "sportlist", "sportrate"].includes(view) ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("goPeople").setAttribute("aria-label", view === "sport" ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("topTitle").hidden = !!set.length;
     $("topTitle").textContent = { ratings: "рейтинги", cevent: "ивент", host: "раздача", events: "запись", sportlist: "запись", sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
@@ -3183,12 +3184,12 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     await loadPeople();
     if (S.view !== "people") return;
     drawTeamWins();
-    const list = [...people].sort((a, b) => b.wins - a.wins || b.games - a.games || a.nick.localeCompare(b.nick));
+    const list = [...people].filter((p) => p.games > 0).sort((a, b) => b.wins - a.wins || b.games - a.games || a.nick.localeCompare(b.nick));
     $("peopleList").innerHTML = list.map((p, i) => `<button class="lb-row${!p.games && !p.hosted ? " never" : ""}" data-id="${p.id}"${!p.games && !p.hosted ? ' title="ещё не играл, только заходил в приложение"' : ""}>
         <span class="rank">${i + 1}</span>${avaP(p)}
         <span class="nm">${esc(p.nick)}${p.id === me.id ? " · ты" : ""}<small>${[tgLine(p), p.is_host ? "ведущий" : "", `${p.games} ${plural(p.games, "игра", "игры", "игр")}`, p.hosted ? `вёл ${p.hosted}` : ""].filter(Boolean).map(esc).join(" · ")}</small></span>
         <span class="rs-num">${p.wins}<small>${plural(p.wins, "победа", "победы", "побед")}</small></span></button>`).join("");
-    $("peopleStub").textContent = `${list.length} ${plural(list.length, "дачник", "дачника", "дачников")}`;
+    $("peopleStub").textContent = `${list.length} ${plural(list.length, "игрок", "игрока", "игроков")}`;
   };
   $("peopleList").onclick = (e) => { const b = e.target.closest("[data-id]"); if (b) go("profile", b.dataset.id); };
 
