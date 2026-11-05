@@ -156,8 +156,9 @@ async function broadcast(req: Request, body: any) {
   let chats: number[];
   if (body.test) chats = [me!.tg_id];
   else {
-    const { data } = await admin.from("profiles").select("tg_id").not("tg_id", "is", null).or(`notify_all.eq.true,notify_kinds.cs.{${game}}`);
-    chats = (data || []).map((r: any) => r.tg_id).filter((id: number) => !(id >= 990000000 && id <= 990000099));
+    const { data } = await admin.from("profiles").select("id,tg_id").not("tg_id", "is", null).or(`notify_all.eq.true,notify_kinds.cs.{${game}}`);
+    const { data: bl } = await admin.rpc("blocked_ids"); const blocked = new Set((bl || []).map((x: any) => typeof x === "string" ? x : x.blocked_ids));
+    chats = (data || []).filter((r: any) => !blocked.has(r.id)).map((r: any) => r.tg_id).filter((id: number) => !(id >= 990000000 && id <= 990000099));
   }
   let sent = 0;
   const failed: Record<string, number> = {};
@@ -225,7 +226,7 @@ async function joinFromButton(cq: any) {
   if (ex) await answer("Ты уже записан ✓");
   else {
     const { error } = await admin.from(table).insert({ event_id: e, user_id: prof.id, role: "player" });
-    if (error) return answer("Не получилось записать, попробуй в приложении", true);
+    if (error) return answer(/blocked/.test(error.message) ? "Долг 1000 ฿ и больше — сначала пополни баланс в приложении" : "Не получилось записать, попробуй в приложении", true);
     await answer(`Записал тебя, ${prof.nick} ✓ Оплатить можно в приложении`);
   }
   const { count } = await admin.from(table).select("user_id", { count: "exact", head: true }).eq("event_id", e).eq("role", "player");
@@ -361,8 +362,10 @@ async function decideCevent(id: string, ok: boolean) {
   if (ok) {
     const text = "✨ Новый ивент на даче\n\n" + await ceventText(ev);
     const day = nextDay(ev);
-    const { data: people } = await admin.from("profiles").select("tg_id").not("tg_id", "is", null).or("notify_all.eq.true,notify_kinds.cs.{community}");
+    const { data: people } = await admin.from("profiles").select("id,tg_id").not("tg_id", "is", null).or("notify_all.eq.true,notify_kinds.cs.{community}");
+    const { data: bl } = await admin.rpc("blocked_ids"); const blocked = new Set((bl || []).map((x: any) => typeof x === "string" ? x : x.blocked_ids));
     for (const r of people || []) {
+      if (blocked.has(r.id)) continue;
       if (r.tg_id >= 990000000 && r.tg_id <= 990000099) continue;
       const res: any = await tgApi("sendMessage", { chat_id: r.tg_id, text, reply_markup: { inline_keyboard: [[{ text: "✋ Я буду", callback_data: `cj:${id}:${day}` }], [{ text: "Открыть в приложении", web_app: { url: APP + "?v=cevent&e=" + id } }]] } });
       if (res.ok) sent++;
@@ -397,7 +400,7 @@ async function ceventJoin(cq: any) {
   const day = day0 >= bkkToday() ? day0 : nextDay(ev);
   const { data: ex } = await admin.from("csignups").select("user_id").eq("event_id", id).eq("day", day).eq("user_id", prof.id).maybeSingle();
   if (ex) await answer("Ты уже записан ✓");
-  else { const { error } = await admin.from("csignups").insert({ event_id: id, day, user_id: prof.id }); if (error) return answer("Не получилось, попробуй в приложении", true); await answer(`Записал тебя, ${prof.nick} ✓`); }
+  else { const { error } = await admin.from("csignups").insert({ event_id: id, day, user_id: prof.id }); if (error) return answer(/blocked/.test(error.message) ? "Долг 1000 ฿ и больше — сначала пополни баланс в приложении" : "Не получилось, попробуй в приложении", true); await answer(`Записал тебя, ${prof.nick} ✓`); }
   const { count } = await admin.from("csignups").select("user_id", { count: "exact", head: true }).eq("event_id", id).eq("day", day);
   const kb = cq.message?.reply_markup?.inline_keyboard;
   if (kb && cq.message) await tgApi("editMessageReplyMarkup", { chat_id: cq.message.chat.id, message_id: cq.message.message_id, reply_markup: { inline_keyboard: kb.map((row: any[]) => row.map((b: any) => (b.callback_data === cq.data ? { ...b, text: `✋ Я буду · ${count ?? ""}`.trim() } : b))) } });

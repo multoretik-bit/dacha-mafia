@@ -1719,6 +1719,16 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .ce-wk[aria-pressed="true"] { background: #F1EAFE; border-color: #7B3FE4; color: #5B2BC9; }
 .ce-rq-d { white-space: normal !important; }
 
+/* debts & block (05.11) */
+.sl-tag.debt { background: #FFECEE; color: #C0162A; }
+.sl-row .pill.ghost { background: var(--soft); color: var(--navy-ink); box-shadow: none; }
+html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !important; }
+.block-screen { min-height: 80vh; display: grid; place-items: center; padding: 20px 4px; }
+.bk-in { display: grid; gap: 12px; text-align: center; justify-items: center; max-width: 340px; }
+.bk-ic { font-size: 56px; }
+.bk-in h1 { margin: 0; font: 800 26px/1.1 var(--f-display); color: var(--navy-ink); }
+.bk-in p { margin: 0; font-weight: 600; color: var(--muted); }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1890,6 +1900,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     <button class="icon-btn rate-btn" id="goPeople" type="button" aria-label="Рейтинг" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/></svg></button>
     <button class="icon-btn" id="meBtn" aria-label="Профиль"></button>
   </header>
+
+  <div class="block-screen" id="blockScreen" hidden></div>
 
   <!-- HUB: DACHA main page -->
   <section id="vHub" class="col" hidden>
@@ -2344,7 +2356,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105131921"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105135619"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2673,6 +2685,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const id = { cevent: "vCev", sportlist: "vSport", sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "hub";
+    if (typeof checkBlock === "function") try { checkBlock(); } catch {}
     try { if (inTG && tg?.BackButton) view === "hub" ? tg.BackButton.hide() : tg.BackButton.show(); } catch {}
     renderTabs(view);
     if (id !== "vLive") stopLive();
@@ -4859,8 +4872,13 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!e) { box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">Ближайших игр нет.</p></div></div></div>`; return; }
     const pays = {};
     if (host) {
-      const { data } = await sb.from("wallet_tx").select("id, user_id, status, purpose, method").eq("event_id", e.id);
-      (data || []).forEach((r) => { const st = r.status === "confirmed" ? "paid" : r.status === "pending" ? "claim" : null; if (st && pays[r.user_id]?.st !== "paid") pays[r.user_id] = { st, id: r.id, m: r.method }; });
+      const { data } = await sb.from("wallet_tx").select("id, user_id, status, purpose, method, amount").eq("event_id", e.id);
+      (data || []).forEach((r) => {
+        if (r.purpose === "debt") { if (r.status === "confirmed") (pays[r.user_id] = pays[r.user_id] || {}).debt = true; return; }
+        if (r.purpose === "evpay" && r.amount > 0) return;
+        const st = r.status === "confirmed" ? "paid" : r.status === "pending" ? "claim" : null;
+        if (st && pays[r.user_id]?.st !== "paid") pays[r.user_id] = { ...(pays[r.user_id] || {}), st, id: r.id, m: r.method };
+      });
     }
     if (S.view !== "sportlist" || slSel !== e.id) return;
     const rows = e.signups, paidN = rows.filter((x) => pays[x.user_id]?.st === "paid").length;
@@ -4872,7 +4890,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
           ${host && e.price && rows.length ? `<div class="sl-sum"><span class="ok">оплатили ${paidN}</span><span class="no">не оплатили ${rows.length - paidN}</span><span>ждём ${money((rows.length - paidN) * e.price)}</span></div>` : ""}</div>
         ${e.hosts.length ? `<div class="sl-hosts"><span class="eyebrow">${e.hosts.length > 1 ? "Ведущие" : "Ведущий"}</span>${e.hosts.map((x) => esc(personOf(x.user_id).nick)).join(", ")}</div>` : ""}
         ${rows.map((x) => { const pp = personOf(x.user_id), st = pays[x.user_id]?.st;
-          return `<div class="sl-row"><span class="so-who">${avaP(pp)}<b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b></span>${host ? `${tag(x.user_id)}${e.price && st !== "paid" ? `<button class="pill sm" type="button" data-slgot="${x.user_id}">получил ${e.price} ฿</button>` : ""}<button class="x-rm" type="button" data-slrm="${x.user_id}" aria-label="Убрать: не пришёл">×</button>` : ""}</div>`; }).join("")}
+          const debt = pays[x.user_id]?.debt;
+          return `<div class="sl-row"><span class="so-who">${avaP(pp)}<b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b></span>${host ? `${debt ? `<span class="sl-tag debt">в долг −${e.price} ฿</span>` : tag(x.user_id)}${e.price && st !== "paid" ? `<button class="pill sm" type="button" data-slgot="${x.user_id}">получил ${e.price} ฿</button>${debt ? `<button class="pill sm ghost" type="button" data-slundebt="${x.user_id}">убрать долг</button>` : `<button class="pill sm ghost" type="button" data-sldebt="${x.user_id}">не заплатил → в долг</button>`}` : ""}<button class="x-rm" type="button" data-slrm="${x.user_id}" aria-label="Убрать: не пришёл">×</button>` : ""}</div>`; }).join("")}
         ${host ? addCameHTML(e, "data-sladd") : ""}
       </div></div>`;
     box.dataset.pays = JSON.stringify(pays);
@@ -4889,6 +4908,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       if (r.error) return toast("Не получилось: " + humanErr(r.error));
       notifyTx(p?.st === "claim" ? p.id : r.data); haptic("tap"); toast(`Записал оплату: ${personOf(u).nick}`); return drawSportList();
     }
+    if (b.dataset.sldebt) return sheet({ eyebrow: "Долг", title: `${personOf(b.dataset.sldebt).nick} не заплатил?`, text: `С его баланса спишется ${e.price} ฿ в долг. Когда отдаст — нажми «получил».`, ok: "в долг", okClass: "red",
+      onOk: async () => { const { error } = await sb.rpc("host_debt", { g: X.id, e: e.id, u: b.dataset.sldebt, on_: true }); if (error) return toast("Не получилось: " + humanErr(error)); toast("Записал в долг"); drawSportList(); } });
+    if (b.dataset.slundebt) { const { error } = await sb.rpc("host_debt", { g: X.id, e: e.id, u: b.dataset.slundebt, on_: false }); if (error) return toast("Не получилось: " + humanErr(error)); toast("Долг убран"); return drawSportList(); }
     if (b.dataset.slrm) {
       const u = b.dataset.slrm;
       return sheet({ eyebrow: "Запись", title: `Убрать ${personOf(u).nick}?`, text: "Отметился, но не пришёл: уберём из списка игры, за неё ничего не спишется.", ok: "убрать", okClass: "red",
@@ -5152,6 +5174,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const { data, error } = await sb.rpc("wallet", { u: me.id });
     if (error) throw error;
     Object.assign(wal, data, { loaded: true });
+    try { checkBlock(); } catch {}
   })().finally(() => { wal.loading = null; }));
   const notifyTx = (id) => { if (id && sb) sb.functions.invoke("tg", { body: { action: "wallet_notify", tx: id } }).catch(() => {}); };
   const walletChanged = async () => {
@@ -5173,7 +5196,15 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       .on("postgres_changes", { event: "*", schema: "public", table: "wallet_tx" }, () => { clearTimeout(t); t = setTimeout(walletChanged, 500); })
       .subscribe();
   };
+  const checkBlock = () => {
+    const on = !!me && wal.loaded && +wal.balance <= -1000 && !["pay", "premium"].includes(S.view);
+    document.documentElement.classList.toggle("is-blocked", on);
+    const b = $("blockScreen"); b.hidden = !on; if (!on) return;
+    b.innerHTML = `<div class="bk-in"><div class="bk-ic">⛔</div><h1>Доступ на паузе</h1><p>На балансе <b>${money(wal.balance)}</b> — это долг за игры. С долгом от 1000 ฿ запись на игры и анонсы закрыты.</p><p>Пополни баланс — и всё сразу откроется.</p><button class="pill wide" type="button" id="bkPay">пополнить баланс</button></div>`;
+    $("bkPay").onclick = () => openPay();
+  };
   const drawBalPill = () => {
+    checkBlock();
     const b = $("hubBal"); if (!b) return;
     b.hidden = !me || !wal.loaded;
     b.className = "bal-pill" + (wal.balance < 0 ? " neg" : wal.balance > 0 ? " pos" : "");
@@ -5262,7 +5293,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     });
     document.body.append(v);
   };
-  const evPayState = (id) => { const l = wal.txs.filter((t) => t.event_id === id); return l.some((t) => t.status === "confirmed" && t.purpose === "evpay") ? "bal" : l.some((t) => t.status === "confirmed") ? "paid" : l.some((t) => t.status === "pending") ? "pending" : null; };
+  const evPayState = (id) => { const l = wal.txs.filter((t) => t.event_id === id && t.purpose !== "debt"); return l.some((t) => t.status === "confirmed" && t.purpose === "evpay" && t.amount < 0) ? "bal" : l.some((t) => t.status === "confirmed" && t.purpose === "topup") ? "paid" : l.some((t) => t.status === "pending") ? "pending" : null; };
   const avail = () => +(wal.available ?? wal.balance) || 0;
   const payBtn = (kind, e) => {
     if (!me || !e?.price) return "";
@@ -5308,7 +5339,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const amt = payAmt ?? def;
     $("payTop").innerHTML = `<div class="bal-card ${bal < 0 ? "neg" : bal > 0 ? "pos" : ""}">
         <small>Твой баланс</small><b>${money(bal)}</b>
-        <span>${bal < 0 ? "Это долг за игры, где ты был. Пополни, чтобы выйти в ноль" : bal > 0 ? "Предоплата: спишется за следующие игры" : "Всё оплачено, долгов нет"}</span>
+        <span>${bal <= -1000 ? "Долг 1000 ฿ и больше: запись на игры закрыта, пока не пополнишь" : bal < 0 ? "Это долг: ведущий отметил, что ты не заплатил за игру. Пополни, чтобы выйти в ноль" : bal > 0 ? "Предоплата: спишется за следующие игры" : "Всё оплачено, долгов нет"}</span>
         ${wal.pending ? `<em>⏳ ждёт подтверждения ведущего: +${money(wal.pending)}</em>` : ""}</div>
       ${e ? `<div class="pay-ctx" style="--gc:${meta(payCtx.kind).color}"><span class="wk-ic">${meta(payCtx.kind).emoji}</span><span class="wk-txt"><b>${meta(payCtx.kind).name} · ${e.price} ฿</b><small>${esc(dayLabel(e.day))} · ${hm(e.start_time)}${placeName(e) ? " · " + esc(placeName(e)) : ""}</small></span>${st === "paid" || st === "bal" ? `<span class="pay-ok">оплачено ✓</span>` : st === "pending" ? `<span class="tag">проверяем</span>` : ""}</div>` : ""}`;
     const q = qrFor(e), qr = q?.url;
@@ -5331,7 +5362,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         ${pm === "bal" ? (!(e.hosts || []).length
             ? `<p class="lead">Оплата с баланса откроется, когда на эту игру отметится ведущий: деньги уходят ему. Пока можно QR или наличными.</p>`
             : avail() >= e.price
-            ? `<p class="lead">С баланса уйдёт <b>${money(e.price)}</b> ведущему <b>${esc(personOf(e.hosts[0].user_id).nick)}</b>. Игра сразу станет оплаченной, деньги перейдут, когда игра начнётся. Отменишь запись — останутся у тебя.</p>
+            ? `<p class="lead">С баланса сразу уйдёт <b>${money(e.price)}</b> ведущему <b>${esc(personOf(e.hosts[0].user_id).nick)}</b>, игра станет оплаченной.</p>
                <button class="pill wide pm-btn" type="button" data-frombal>оплатить с баланса · ${money(e.price)}</button>`
             : `<p class="lead">На балансе доступно ${money(avail())}, не хватает <b>${money(e.price - avail())}</b>. Пополни баланс или выбери QR / наличные.</p>
                <button class="pill wide ghost" type="button" data-topup>пополнить баланс</button>`)
@@ -5349,19 +5380,19 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     </div></div>`;
     // history: charges (−) and money in (+)
     const rows = [
-      ...wal.charges.map((c) => ({ at: c.day + "T" + c.start_time, amt: -c.price, ic: meta(c.game).emoji, t: `${meta(c.game).name} · ${dayLabel(c.day)}`, s: c.place || "игра" })),
+      ...[].map((c) => ({ at: c.day + "T" + c.start_time, amt: -c.price, ic: meta(c.game).emoji, t: `${meta(c.game).name} · ${dayLabel(c.day)}`, s: c.place || "игра" })),
       ...wal.txs.filter((t) => t.status !== "pending" && t.purpose === "premium").map((t) => ({ at: t.created_at, amt: 0, ic: t.status === "rejected" ? "✕" : "◆",
         t: `PREMIUM · ${t.amount} ${CUR[t.currency] || "฿"}${t.status === "rejected" ? " · не подтверждено" : ""}`, s: "покупка на месяц" })),
       ...wal.txs.filter((t) => t.purpose === "withdraw" && t.status !== "pending").map((t) => ({ at: t.created_at, amt: t.status === "confirmed" ? t.amount : 0, ic: t.status === "rejected" ? "✕" : "↓", t: t.status === "rejected" ? `Вывод ${money(-t.amount)} не выполнен` : "Вывод денег", s: t.note || "" })),
-      ...wal.txs.filter((t) => t.purpose === "evpay").map((t) => ({ at: t.created_at, amt: 0, ic: "🔒", t: `Оплачено с баланса${t.peer_id ? " → " + personOf(t.peer_id).nick : ""}`, s: evTitle(t.game, t.event_id) })),
-      ...(wal.income || []).map((x) => ({ at: x.at, amt: x.amount, ic: "↙", t: `Оплата за игру от ${x.nick || "дачника"}`, s: evTitle(x.game, x.event_id) })),
+      ...wal.txs.filter((t) => t.purpose === "evpay" && t.status === "confirmed").map((t) => ({ at: t.created_at, amt: t.amount, ic: t.amount < 0 ? "↗" : "↙", t: t.note || (t.amount < 0 ? "Оплата игры с баланса" : "Оплата за игру"), s: evTitle(t.game, t.event_id) })),
+      ...wal.txs.filter((t) => t.purpose === "debt" && t.status === "confirmed").map((t) => ({ at: t.created_at, amt: t.amount, ic: "⚠️", t: "Долг за игру", s: evTitle(t.game, t.event_id) })),
       ...wal.txs.filter((t) => t.status !== "pending" && t.purpose === "topup").map((t) => ({ at: t.created_at, amt: t.status === "confirmed" ? t.amount : 0, ic: t.status === "rejected" ? "✕" : t.method === "transfer" ? (t.amount < 0 ? "↗" : "↙") : t.method === "adjust" ? (t.amount > 0 ? "＋" : "−") : t.method === "qr" ? "📱" : "💵",
         t: t.status === "rejected" ? `Не подтверждено · ${money(t.amount)}` : t.method === "transfer" || t.method === "adjust" ? (t.note || "Корректировка") : `Пополнение · ${t.method === "qr" ? "QR" : "наличные"}`, s: t.game ? evTitle(t.game, t.event_id) : new Date(t.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) })),
     ].sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 40);
     $("payHist").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">История</div></div>
       ${rows.length ? rows.map((r) => `<div class="tx-row"><span class="tx-ic">${r.ic}</span><span class="tx-t"><b>${esc(r.t)}</b><small>${esc(r.s)}</small></span><span class="tx-amt ${r.amt < 0 ? "neg" : r.amt > 0 ? "pos" : ""}">${r.amt > 0 ? "+" : ""}${r.amt ? money(r.amt) : "—"}</span></div>`).join("")
         : `<div class="empty-note">Пока пусто. Здесь будут игры, за которые списались деньги, и пополнения.</div>`}
-      <div class="stub"><span>Списано ${money(wal.owed || 0)} · внесено ${money(wal.paid || 0)}</span><b>WALLET</b></div></div></div>
+      <div class="stub"><span>${+wal.owed ? `Долгов ${money(wal.owed)}` : "Долгов нет"}</span><b>WALLET</b></div></div></div>
       ${isPremium(me) ? "" : `<button class="pm-card" type="button" id="payPrem"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>`}`;
     if ($("payPrem")) $("payPrem").onclick = () => go("premium");
   };
@@ -5722,7 +5753,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     ev.pays = {};
     if (ev.list.length) {
       const ids = ev.list.map((e) => e.id);
-      const { data: txs } = await sb.from("wallet_tx").select("id, user_id, event_id, method, status, created_at, decided_at").in("event_id", ids).order("created_at");
+      const { data: txs0 } = await sb.from("wallet_tx").select("id, user_id, event_id, method, status, purpose, amount, created_at, decided_at").in("event_id", ids).order("created_at");
+      ev.debts = new Set((txs0 || []).filter((t) => t.purpose === "debt" && t.status === "confirmed").map((t) => t.event_id + ":" + t.user_id));
+      const txs = (txs0 || []).filter((t) => t.purpose === "topup" || (t.purpose === "evpay" && t.amount < 0)).map((t) => (t.purpose === "evpay" ? { ...t, status: "confirmed" } : t));
       ev.paid = {};
       // wallet rows in the shape the host screen knows: confirmed > pending > rejected
       const rank = { confirmed: 3, pending: 2, rejected: 1 };
@@ -5910,7 +5943,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
           ${host && e.price && rows.length ? `<div class="sl-sum"><span class="ok">оплатили ${paidN}</span><span class="no">не оплатили ${rows.length - paidN}</span><span>ждём ${money((rows.length - paidN) * e.price)}</span></div>` : ""}</div>
         <div class="sl-hosts"><span class="eyebrow">${(e.hosts || []).length > 1 ? "Ведущие" : "Ведущий"}</span>${(e.hosts || []).length ? e.hosts.map((x) => esc((x.profiles || personOf(x.user_id)).nick)).join(", ") : `<span class="bio-meta">ещё не отметился</span>`}</div>
         ${rows.map((x) => { const pp = x.profiles ? { ...personOf(x.user_id), ...x.profiles, id: x.user_id } : personOf(x.user_id), s2 = st(x.user_id);
-          return `<div class="sl-row"><span class="so-who">${avaP(pp)}<b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b></span>${host ? `${tag(x.user_id)}${e.price && s2 !== "paid" ? `<button class="pill sm" type="button" data-st="paid" data-u="${x.user_id}" aria-pressed="false">получил ${e.price} ฿</button>` : ""}<button class="x-rm" type="button" data-unsign="${x.user_id}" data-nick="${esc(pp.nick)}" aria-label="Убрать: не пришёл">×</button>` : ""}</div>`; }).join("")}
+          const debt = ev.debts?.has(e.id + ":" + x.user_id);
+          return `<div class="sl-row"><span class="so-who">${avaP(pp)}<b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b></span>${host ? `${debt ? `<span class="sl-tag debt">в долг −${e.price} ฿</span>` : tag(x.user_id)}${e.price && s2 !== "paid" ? `<button class="pill sm" type="button" data-st="paid" data-u="${x.user_id}" aria-pressed="false">получил ${e.price} ฿</button>${debt ? `<button class="pill sm ghost" type="button" data-undebt="${x.user_id}">убрать долг</button>` : `<button class="pill sm ghost" type="button" data-debt="${x.user_id}">не заплатил → в долг</button>`}` : ""}<button class="x-rm" type="button" data-unsign="${x.user_id}" data-nick="${esc(pp.nick)}" aria-label="Убрать: не пришёл">×</button>` : ""}</div>`; }).join("")}
         ${host ? addCameHTML(e, "data-addsign") : ""}
         <div class="ev-act" style="padding-top:12px">${mine ? `${mineTag(e)}<button class="linkish" type="button" data-leave>не смогу</button>` : joinBtns("data-join", host, off ? "disabled" : "")}</div>
         ${myRoleOn(e) === "player" && !off ? `<div class="wk-pay" style="padding:0 16px 14px">${payBtn("mafia", e)}</div>` : ""}
@@ -5988,6 +6022,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const card = e.target.closest("[data-ev]"); if (!card) return;
     const id = card.dataset.ev, b = e.target.closest("button"); if (!b) return;
     const event = ev.list.find((x) => x.id === id);
+    if (b.dataset.debt) return sheet({ eyebrow: "Долг", title: `${personOf(b.dataset.debt).nick} не заплатил?`, text: `С его баланса спишется ${event.price} ฿ в долг. Когда отдаст — нажми «получил».`, ok: "в долг", okClass: "red",
+      onOk: () => evAction(() => sb.rpc("host_debt", { g: "mafia", e: id, u: b.dataset.debt, on_: true }), "Записал в долг") });
+    if (b.dataset.undebt) return evAction(() => sb.rpc("host_debt", { g: "mafia", e: id, u: b.dataset.undebt, on_: false }), "Долг убран");
     if (b.hasAttribute("data-addsign")) {
       return pickPerson({ title: "Кто пришёл?", sub: "Добавить без записи", exclude: cameIds(event), onPick: (u) => evAction(() => sb.rpc("host_signup", { g: "mafia", e: id, u, on_: true }), `Добавил: ${personOf(u).nick}`) });
     }
