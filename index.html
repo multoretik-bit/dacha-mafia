@@ -2021,7 +2021,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     <div class="games" id="hubGames"></div>
     <div class="sec-title" id="ceTitle">Ивенты дачников</div>
     <div id="hubCev"></div>
-    <button class="pm-card" type="button" id="hubPrem" hidden><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ на счёт каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>
+    <button class="pm-card" type="button" id="hubPrem" hidden><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ и 50 🍅 каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>
     <div data-ad-slot></div>
     <div class="row-btns">
       <button class="pill dark sm" id="goReq" type="button" hidden>📥 запросы</button>
@@ -2456,7 +2456,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105171047"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105171456"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3063,7 +3063,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     const v2q = (sel) => $("profBtns").querySelector(sel);
     const qrUrlOf = (n) => (n === 1 ? extra?.pay_qr : extra?.pay_qr2) || null;
     document.querySelector("#vProfile .prof-card").classList.toggle("is-prem", isPremium({ id }));
-    const premCard = isMe ? `<button class="pm-card" type="button" data-p="premium"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">${isPremium(me) ? "PREMIUM активен · продлить" : "+200 ฿ каждый месяц, без рекламы, своя иконка"}</span><span class="pm-card-p">${isPremium(me) ? "›" : "от 400 ฿ / мес ›"}</span></button>` : "";
+    const premCard = isMe ? `<button class="pm-card" type="button" data-p="premium"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">${isPremium(me) ? "PREMIUM активен · продлить" : "+200 ฿ и 50 🍅 каждый месяц, без рекламы, своя иконка"}</span><span class="pm-card-p">${isPremium(me) ? "›" : "от 400 ฿ / мес ›"}</span></button>` : "";
     const ICONS_P = ["🔥", "⚡", "👑", "🦁", "🐺", "🦅", "🌙", "⭐", "🎯", "🍀", "💎", "🃏", "🎭", "🏐", "⚽", "🌴"];
     const iconPick = isMe && isPremium(me) ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
         <div class="eyebrow">◆ PREMIUM · твоя иконка</div><p class="lead">Она будет на твоей аватарке во всех списках.</p>
@@ -3090,7 +3090,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
       </div></div></div>` : ""}${canGrant ? `<div class="pm-grant">
         <div class="pm-mark">DACHA <b>PREMIUM</b> · выдаёшь только ты</div>
         <h2>${active ? `PREMIUM ${forever ? "навсегда" : premLine}` : "Без PREMIUM"}</h2>
-        <p>Без рекламы, +200 ฿ на счёт за каждый выданный месяц, своя иконка и тёмный профиль.</p>
+        <p>Без рекламы, +200 ฿ и 50 🍅 за каждый выданный месяц, своя иконка и тёмный профиль.</p>
         <div class="pm-opts">
           <button type="button" data-prem="1"><b>+1</b><small>месяц</small></button>
           <button type="button" data-prem="3"><b>+3</b><small>месяца</small></button>
@@ -5642,7 +5642,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
       ${rows.length ? rows.map((r) => `<div class="tx-row"><span class="tx-ic">${r.ic}</span><span class="tx-t"><b>${esc(r.t)}</b><small>${esc(r.s)}</small></span><span class="tx-amt ${r.amt < 0 ? "neg" : r.amt > 0 ? "pos" : ""}">${r.amt > 0 ? "+" : ""}${r.amt ? money(r.amt) : "—"}</span></div>`).join("")
         : `<div class="empty-note">Пока пусто. Здесь будут игры, за которые списались деньги, и пополнения.</div>`}
       <div class="stub"><span>${+wal.owed ? `Долгов ${money(wal.owed)}` : "Долгов нет"}</span><b>WALLET</b></div></div></div>
-      ${isPremium(me) ? "" : `<button class="pm-card" type="button" id="payPrem"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>`}`;
+      ${isPremium(me) ? "" : `<button class="pm-card" type="button" id="payPrem"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ и 50 🍅 каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>`}`;
     if ($("payPrem")) $("payPrem").onclick = () => go("premium");
   };
   // hosts: confirm requests, see debts, take money
@@ -5732,6 +5732,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
         <p>${on ? (forever ? "Навсегда. Спасибо, что поддерживаешь дачу." : until ? `Активен до ${new Date(until).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}. Можно продлить заранее — месяц добавится.` : "Активен.") : "Поддержи дачу и получи особый статус среди своих."}</p>
         <ul class="pm-list">
           <li><i>◆</i><span><b>+200 ฿ на счёт каждый месяц</b>трать как угодно: игры, переводы друзьям</span></li>
+          <li><i>◆</i><span><b>+50 🍅 помидоров каждый месяц</b>бросай в друзей сколько хочешь</span></li>
           <li><i>◆</i><span><b>Без рекламы</b>ни баннеров, ни всплывающих плашек</span></li>
           <li><i>◆</i><span><b>Своя иконка</b>на аватарке во всех списках и в профиле</span></li>
           <li><i>◆</i><span><b>Тёмный премиум-профиль</b>и знак PREMIUM рядом с ником</span></li>
@@ -5762,7 +5763,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
         : `<p class="lead">Оплата в ${pmCur === "RUB" ? "рублях" : "долларах"} — переводом. Напиши @tivishka, он пришлёт реквизиты, а после перевода нажми «я оплатил».</p>
           <a class="pill wide ghost" href="${tg2}" target="_blank" rel="noopener" data-tglink>написать @tivishka</a>
           <button class="pill wide pm-btn" type="button" data-pmsend="transfer">я оплатил ${PREM_PRICE[pmCur]} ${CUR[pmCur]}</button>`}
-        <p class="bio-meta" style="margin:0">PREMIUM включится, когда @tivishka подтвердит оплату, и сразу придёт +200 ฿ на счёт.</p>
+        <p class="bio-meta" style="margin:0">PREMIUM включится, когда @tivishka подтвердит оплату, и сразу придут +200 ฿ на счёт и 50 🍅.</p>
       </div></div></div>`;
   };
   $("vPremium").addEventListener("click", async (e) => {

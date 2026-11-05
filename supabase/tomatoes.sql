@@ -55,3 +55,5 @@ revoke all on function buy_tomatoes(int) from public, anon;
 grant execute on function buy_tomatoes(int) to authenticated;
 
 alter publication supabase_realtime add table tomato_throws;
+
+-- 06.11: every PREMIUM month also gives +50 tomatoes (premium_extend: +200 ฿ and +50 🍅)

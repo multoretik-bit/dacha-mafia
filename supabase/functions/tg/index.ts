@@ -280,7 +280,7 @@ ${who?.nick || "Дачник"}${who?.tg_username ? " (@" + who.tg_username + ")"
     chat_id: own.tg_id,
     text: `◆ PREMIUM
 ${who?.nick || "Дачник"}${who?.tg_username ? " (@" + who.tg_username + ")" : ""} оплатил ${tx.amount} ${cur} · ${how}.
-Проверь оплату и подтверди в приложении: PREMIUM включится на месяц и +200 ฿ на счёт.`,
+Проверь оплату и подтверди в приложении: PREMIUM включится на месяц, +200 ฿ и 50 🍅.`,
     reply_markup: { inline_keyboard: [[{ text: "Открыть оплаты", web_app: { url: APP + "?v=requests" } }]] },
   });
   return json({ ok: true });
@@ -304,7 +304,7 @@ async function walletNotify(req: Request, body: any) {
     if (t.purpose === "withdraw") {
       text = `💸 Вывод ${-t.amount} ฿ выполнен. Деньги отправлены: ${t.note || "как ты просил"}.`;
     } else if (t.purpose === "premium") {
-      text = "◆ DACHA PREMIUM включён на месяц!\nБез рекламы, своя иконка и +200 ฿ на твой счёт.";
+      text = "◆ DACHA PREMIUM включён на месяц!\nБез рекламы, своя иконка, +200 ฿ на счёт и 50 🍅.";
     } else if (t.method === "transfer") {
       const { data: from } = await admin.from("profiles").select("nick,tg_username").eq("id", t.peer_id).maybeSingle();
       text = `💸 ${from?.nick || "Дачник"}${from?.tg_username ? " (@" + from.tg_username + ")" : ""} перевёл тебе ${t.amount} ฿ на счёт DACHA.`;
