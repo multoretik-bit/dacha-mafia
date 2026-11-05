@@ -1403,6 +1403,69 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .qr-who b { color: var(--ink); }
 .qr-mini { width: 140px; aspect-ratio: 1; object-fit: contain; border-radius: 14px; background: #fff; box-shadow: 0 0 0 1px var(--hair); padding: 6px; }
 
+/* ================= PREMIUM v2: quiet, dark, solid ================= */
+:root { --pm-ink: #121216; --pm-ink2: #23232C; --pm-champ: #CDB78A; --pm-champ-lo: #8C7A55; }
+.prem .cash { display: none !important; }
+.ava.premium { animation: none !important; box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--pm-champ) !important; }
+.icon-btn .ava.premium { box-shadow: none !important; }
+.icon-btn:has(.ava.premium) { box-shadow: 0 0 0 2px var(--pm-champ), 0 4px 12px -6px rgba(0,0,0,.45); }
+.prem-badge, .ev-who:has(.premium)::after, .pick:has(.premium) .nm::after, .lb-row:has(.premium) .nm::after, .pl:has(.premium) .pl-who b::after, .me-card:has(.premium) .who b::after, .prof-head:has(.premium) .h1::after, .prow:has(.premium) .hrow b::after, .prem-name::after {
+  background: var(--pm-ink); color: var(--pm-champ); animation: none; box-shadow: inset 0 0 0 1px rgba(205,183,138,.45);
+  font: 800 8.5px/1 var(--f-body); letter-spacing: .2em; padding: 4px 7px 3px 8px; border-radius: 6px;
+}
+.prof-head:has(.premium) .h1::after { font-size: 10px; padding: 5px 9px 4px 10px; }
+.ev-who:has(.premium), .pick:has(.premium), .lb-row:has(.premium), .prow:has(.premium) { box-shadow: none; background: inherit !important; color: inherit; }
+.ev-who:has(.premium) { background: var(--pm-ink) !important; color: #F2EBDD; box-shadow: inset 0 0 0 1px rgba(205,183,138,.45); }
+.ev-who:has(.premium)::after { background: transparent; box-shadow: none; padding: 0 2px; }
+.lb-row:has(.premium) { background: linear-gradient(90deg, rgba(18,18,22,.06), rgba(18,18,22,0) 70%) !important; box-shadow: inset 3px 0 0 var(--pm-ink); }
+.pick:has(.premium) { box-shadow: inset 0 0 0 1.5px var(--pm-champ); background: #fff !important; color: var(--ink); }
+.pick[aria-pressed="true"]:has(.premium) { background: var(--pm-ink) !important; border-color: var(--pm-ink); color: #F2EBDD; }
+.pick[aria-pressed="true"]:has(.premium) .ord { color: var(--pm-champ); }
+.pl:has(.premium) { box-shadow: 0 0 0 1.5px var(--pm-champ); }
+.pl:has(.premium) .pl-in { background: #FBFAF6; }
+.me-card:has(.premium) { background: #fff; }
+.prem-name { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: inherit !important; }
+.prem-name::after { -webkit-text-fill-color: var(--pm-champ); }
+/* premium profile */
+.prof-card.is-prem { background: #FBFAF6; box-shadow: 0 0 0 1px rgba(205,183,138,.55), 0 18px 40px -22px rgba(18,18,22,.6); }
+.prof-card.is-prem .prof-cover { position: relative; background:
+    radial-gradient(90% 160% at 92% -30%, rgba(205,183,138,.42), transparent 60%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.035) 0 1px, transparent 1px 9px),
+    linear-gradient(135deg, #0E0E12, #26262F); }
+.prof-card.is-prem .prof-cover::after { content: "DACHA · PREMIUM"; position: absolute; right: 16px; top: 14px; font: 800 10px/1 var(--f-body); letter-spacing: .32em; color: var(--pm-champ); }
+.prof-card.is-prem .ava.lg { box-shadow: 0 0 0 3px #FBFAF6, 0 0 0 4.5px var(--pm-champ), 0 12px 22px -12px rgba(0,0,0,.6) !important; }
+.prof-card.is-prem .stub { background: var(--pm-ink); color: var(--pm-champ); border-top: 0; }
+.prof-card.is-prem .stub b { color: var(--pm-champ); }
+.prof-card.is-prem .sec-label, .prof-card.is-prem .lb-row { border-color: rgba(205,183,138,.25); }
+/* buy page */
+.pm-hero { border-radius: 26px; padding: 24px 20px 20px; color: #F2EBDD; display: grid; gap: 10px; box-shadow: var(--sh);
+  background: radial-gradient(90% 70% at 100% 0%, rgba(205,183,138,.28), transparent 60%), repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 9px), linear-gradient(160deg, #0E0E12, #24242D); }
+.pm-mark { font: 600 11px/1 var(--f-body); letter-spacing: .34em; color: var(--pm-champ); }
+.pm-mark b { font-weight: 900; }
+.pm-hero h1 { margin: 4px 0 0; font: 800 26px/1.1 var(--f-display); color: #fff; }
+.pm-hero p { margin: 0; font-weight: 600; opacity: .8; }
+.pm-list { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 10px; }
+.pm-list li { display: flex; gap: 12px; align-items: baseline; }
+.pm-list i { font-style: normal; color: var(--pm-champ); font-size: 11px; }
+.pm-list b { display: block; font-weight: 800; color: #fff; }
+.pm-list span { font-weight: 600; font-size: 13.5px; opacity: .75; }
+.pm-price { display: flex; align-items: baseline; gap: 8px; margin-top: 8px; padding-top: 14px; border-top: 1px solid rgba(205,183,138,.25); }
+.pm-price b { font: 700 34px/1 var(--f-code); color: var(--pm-champ); }
+.pm-price span { opacity: .7; font-weight: 700; }
+.pm-cur { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pm-cur button { display: grid; gap: 2px; padding: 10px 6px; border-radius: 14px; background: var(--soft); color: var(--ink); text-align: center; }
+.pm-cur button b { font: 700 19px/1 var(--f-code); }
+.pm-cur button small { color: var(--muted); font-weight: 700; font-size: 11.5px; }
+.pm-cur button[aria-pressed="true"] { background: var(--pm-ink); color: var(--pm-champ); }
+.pm-cur button[aria-pressed="true"] small { color: #B3A57F; }
+#vPremium .pm-tiles button[aria-pressed="true"] { background: var(--pm-ink); }
+.pill.pm-btn { background: var(--pm-ink); color: var(--pm-champ); box-shadow: 0 10px 20px -12px rgba(0,0,0,.8); }
+.pm-card { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; width: 100%; box-sizing: border-box; padding: 14px 16px; border-radius: 20px; text-align: left; color: #F2EBDD;
+  background: radial-gradient(80% 140% at 100% 0%, rgba(205,183,138,.3), transparent 60%), linear-gradient(135deg, #0E0E12, #26262F); box-shadow: var(--sh); }
+.pm-card .pm-mark { flex-basis: 100%; }
+.pm-card-t { flex: 1; font-weight: 700; font-size: 14px; }
+.pm-card-p { font-weight: 800; color: var(--pm-champ); font-size: 13.5px; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1599,6 +1662,12 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       <button class="pill dark sm" id="goAnnounce" hidden>сделать анонс</button>
       <button class="pill dark sm" id="goPolls" hidden>опрос в боте</button>
     </div>
+  </section>
+
+  <!-- PREMIUM: what it gives and how to buy -->
+  <section id="vPremium" class="col" hidden>
+    <div id="pmTop"></div>
+    <div id="pmBuy"></div>
   </section>
 
   <!-- PAY: balance, QR / cash, history -->
@@ -1994,7 +2063,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105091107"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105092008"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2284,7 +2353,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   });
 
   /* ---------- navigation ---------- */
-  const VIEWS = ["vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
+  const VIEWS = ["vPremium", "vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
   let profileId = null;
   const online = () => S.hostMode === "online";
   const hostView = () => {
@@ -2295,7 +2364,16 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     }
     return { count: "vCount", roles: "vRoles", deal: "vDeal", done: "vDone" }[S.host.phase];
   };
+  // the back button walks back through the screens you opened, down to the DACHA main page
+  const navStack = [];
+  let navBack = false, navReady = false;
+  const goBack = () => { haptic("tap"); const t = navStack.pop(); navBack = true; try { go(t ? t.v : "hub", t?.a); } finally { navBack = false; } };
   const go = (view, arg) => {
+    if (navReady && !navBack && S.view && (S.view !== view || (view === "profile" && arg && arg !== profileId) || (view === "sport" && arg && arg !== sportId))) {
+      navStack.push({ v: S.view, a: S.view === "profile" ? profileId : S.view === "sport" ? sportId : undefined });
+      if (navStack.length > 40) navStack.shift();
+    }
+    if (view === "hub") navStack.length = 0;
     if (view === "host" && !canHost()) {
       if (me) toast("Раздавать карты может только ведущий");
       view = "home";
@@ -2305,14 +2383,14 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (view === "pay" && S.view !== "pay") payFrom = S.view;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "hub";
     try { if (inTG && tg?.BackButton) view === "hub" ? tg.BackButton.hide() : tg.BackButton.show(); } catch {}
     renderTabs(view);
     if (id !== "vLive") stopLive();
     ({
-      vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
+      vPremium: renderPremium, vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
       vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople, vMonth: () => { boardMonth = null; drawMonth(); }, vDeck: renderDeck,
       vPick: renderPick, vCount: renderCount, vRoles: renderRoles, vLive: renderLive, vDeal: renderDeal, vDone: renderDone,
       vCard: renderCard, vNotes: () => renderNotes(false), vEvents: renderEvents, vPlayer: renderPlayer,
@@ -2332,8 +2410,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (["card", "notes", "host", "events", "player", "people", "deck"].includes(v)) return "home";
     return "hub";
   };
-  $("goHome").onclick = () => go(upOf(S.view));
-  try { if (inTG) tg?.BackButton?.onClick(() => go(upOf(S.view))); } catch {}
+  $("goHome").onclick = goBack;
+  try { if (inTG) tg?.BackButton?.onClick(goBack); } catch {}
   $("goCrew").onclick = () => (me ? go("crew") : go("auth"));
   $("hubMe").onclick = () => (me ? go("profile", me.id) : go("auth"));
   $("goDeck2").onclick = () => go("deck");
@@ -2371,7 +2449,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("goPeople").hidden = !["home", "card", "notes", "host", "events", "player", "deck", "sport"].includes(view);
     $("goPeople").setAttribute("aria-label", view === "sport" ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("topTitle").hidden = !!set.length;
-    $("topTitle").textContent = { pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
+    $("topTitle").textContent = { premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
   };
 
   const renderHostAccess = () => {
@@ -2551,7 +2629,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const hostOf = [mafHost ? "мафию" : "", ...Object.values(SPORTS).filter((x) => sp.hosts.some((h) => h.sport === x.id && h.user_id === id)).map((x) => x.name.toLowerCase())].filter(Boolean);
     const hostLine = hostOf.length ? `Ведёт: ${hostOf.join(", ")}` : "Пока не ведущий";
     const myQr = isMe && isAnyHost() ? extra?.pay_qr || "" : null;
-    $("profBtns").innerHTML = `${myQr !== null ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
+    document.querySelector("#vProfile .prof-card").classList.toggle("is-prem", isPremium({ id }));
+    const premCard = isMe ? `<button class="pm-card" type="button" data-p="premium"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">${isPremium(me) ? "PREMIUM активен · продлить" : "Без рекламы и с премиум-профилем"}</span><span class="pm-card-p">${isPremium(me) ? "›" : "от 400 ฿ / мес ›"}</span></button>` : "";
+    $("profBtns").innerHTML = `${premCard}${myQr !== null ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
         <div class="eyebrow">Мой QR для оплат</div>
         <p class="lead">Когда ты отмечаешься ведущим на игре, дачники платят за неё по этому QR.${canGrant ? " Твой QR ещё показывается, когда пополняют баланс." : ""}</p>
         ${myQr ? `<img class="qr-mini" src="${esc(myQr)}" alt="Мой QR">` : `<p class="bio-meta" style="margin:0">QR ещё не загружен${canGrant ? "" : ": пока показывается QR владельца"}.</p>`}
@@ -2626,6 +2706,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         renderMeBtn(); return renderProfile();
       }
       const b = e.target.closest("[data-p]"); if (!b) return;
+      if (b.dataset.p === "premium") return go("premium");
       if (b.dataset.p === "people") go("crew");
       else sheet({ eyebrow: "Аккаунт", title: "Выйти из аккаунта?", text: "Карты перестанут приходить на этот телефон, пока не войдёшь снова.", ok: "выйти", onOk: async () => { await sb.auth.signOut(); me = null; afterLogout(); go("home"); toast("Ты вышел из аккаунта"); } });
     };
@@ -4415,6 +4496,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   })().finally(() => { wal.loading = null; }));
   const walletChanged = async () => {
     try { await loadWallet(); } catch { return; }
+    if (!isPremium(me)) loadPremium().then(renderMeBtn).catch(() => {});
+    if (S.view === "premium") drawPremium();
     drawBalPill();
     if (S.view === "pay") drawPay();
     if (S.view === "hub") drawWeek();
@@ -4481,6 +4564,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const q = qrFor(e), qr = q?.url;
     const chips = [...new Set([e?.price, bal < 0 ? -bal : null, 100, 250, 500].filter((x) => x > 0))].slice(0, 4);
     const pend = wal.txs.filter((t) => t.status === "pending");
+    void pend;
     $("payBody").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:12px">
         <div class="eyebrow">${e ? "Оплатить игру" : "Пополнить баланс"}</div>
         <label class="amt-row"><input class="amt" id="payAmt" type="number" inputmode="numeric" min="1" max="100000" step="10" value="${amt}" aria-label="Сумма в батах"><span>฿</span></label>
@@ -4497,32 +4581,37 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
             <button class="pill wide" type="button" data-send="cash">отдам ${money(+amt || 0)} наличными</button>`}
         <p class="bio-meta" style="margin:0">Деньги зачисляются, когда ведущий подтвердит, что получил.</p>
       </div>
-      ${pend.length ? `<div class="sec-label eyebrow">Ждут подтверждения</div>${pend.map((t) => `<div class="tx-row"><span class="tx-ic">⏳</span><span class="tx-t"><b>+${money(t.amount)} · ${t.method === "qr" ? "QR" : "наличные"}</b><small>${esc(evTitle(t.game, t.event_id))}</small></span><button class="linkish" type="button" data-cancel="${t.id}">отменить</button></div>`).join("")}` : ""}
+      ${pend.length ? `<div class="sec-label eyebrow">Ждут подтверждения</div>${pend.map((t) => `<div class="tx-row"><span class="tx-ic">⏳</span><span class="tx-t"><b>${t.purpose === "premium" ? `PREMIUM · ${t.amount} ${CUR[t.currency] || "฿"}` : `+${money(t.amount)} · ${t.method === "qr" ? "QR" : "наличные"}`}</b><small>${t.purpose === "premium" ? "покупка на месяц" : esc(evTitle(t.game, t.event_id))}</small></span><button class="linkish" type="button" data-cancel="${t.id}">отменить</button></div>`).join("")}` : ""}
     </div></div>`;
     // history: charges (−) and money in (+)
     const rows = [
       ...wal.charges.map((c) => ({ at: c.day + "T" + c.start_time, amt: -c.price, ic: meta(c.game).emoji, t: `${meta(c.game).name} · ${dayLabel(c.day)}`, s: c.place || "игра" })),
-      ...wal.txs.filter((t) => t.status !== "pending").map((t) => ({ at: t.created_at, amt: t.status === "confirmed" ? t.amount : 0, ic: t.status === "rejected" ? "✕" : t.method === "adjust" ? "✎" : t.method === "qr" ? "📱" : "💵",
+      ...wal.txs.filter((t) => t.status !== "pending" && t.purpose === "premium").map((t) => ({ at: t.created_at, amt: 0, ic: t.status === "rejected" ? "✕" : "◆",
+        t: `PREMIUM · ${t.amount} ${CUR[t.currency] || "฿"}${t.status === "rejected" ? " · не подтверждено" : ""}`, s: "покупка на месяц" })),
+      ...wal.txs.filter((t) => t.status !== "pending" && t.purpose !== "premium").map((t) => ({ at: t.created_at, amt: t.status === "confirmed" ? t.amount : 0, ic: t.status === "rejected" ? "✕" : t.method === "adjust" ? "✎" : t.method === "qr" ? "📱" : "💵",
         t: t.status === "rejected" ? `Не подтверждено · ${money(t.amount)}` : t.method === "adjust" ? (t.note || "Корректировка") : `Пополнение · ${t.method === "qr" ? "QR" : "наличные"}`, s: t.game ? evTitle(t.game, t.event_id) : new Date(t.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) })),
     ].sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 40);
     $("payHist").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">История</div></div>
       ${rows.length ? rows.map((r) => `<div class="tx-row"><span class="tx-ic">${r.ic}</span><span class="tx-t"><b>${esc(r.t)}</b><small>${esc(r.s)}</small></span><span class="tx-amt ${r.amt < 0 ? "neg" : r.amt > 0 ? "pos" : ""}">${r.amt > 0 ? "+" : ""}${r.amt ? money(r.amt) : "—"}</span></div>`).join("")
         : `<div class="empty-note">Пока пусто. Здесь будут игры, за которые списались деньги, и пополнения.</div>`}
-      <div class="stub"><span>Списано ${money(wal.owed || 0)} · внесено ${money(wal.paid || 0)}</span><b>WALLET</b></div></div></div>`;
+      <div class="stub"><span>Списано ${money(wal.owed || 0)} · внесено ${money(wal.paid || 0)}</span><b>WALLET</b></div></div></div>
+      ${isPremium(me) ? "" : `<button class="pm-card" type="button" id="payPrem"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">Без рекламы и с премиум-профилем</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>`}`;
+    if ($("payPrem")) $("payPrem").onclick = () => go("premium");
   };
   // hosts: confirm requests, see debts, take money
   const drawPayHost = async () => {
     const box = $("payHost");
     if (!isAnyHost()) { box.innerHTML = ""; return; }
-    const [{ data: pend }, { data: bals }] = await Promise.all([
-      sb.from("wallet_tx").select("id, user_id, amount, method, game, event_id, created_at").eq("status", "pending").order("created_at"),
+    let [{ data: pend }, { data: bals }] = await Promise.all([
+      sb.from("wallet_tx").select("id, user_id, amount, method, game, event_id, created_at, purpose, currency").eq("status", "pending").order("created_at"),
       sb.rpc("wallet_balances"),
     ]);
     if (S.view !== "pay") return;
     if (!people.length) await loadPeople();
     const debts = (bals || []).filter((b) => +b.balance < 0).sort((a, b) => a.balance - b.balance);
+    pend = (pend || []).filter((t) => t.purpose !== "premium" || canGrant);
     box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">Ты ведущий · оплаты дачников</div><h2 class="h2">${(pend || []).length ? `Проверь ${(pend || []).length} ${plural((pend || []).length, "оплату", "оплаты", "оплат")}` : "Новых оплат нет"}</h2></div>
-      ${(pend || []).map((t) => { const pp = personOf(t.user_id); return `<div class="tx-row host"><span class="tx-av">${avaP(pp)}</span><span class="tx-t"><b>${esc(pp.nick)} · +${money(t.amount)}</b><small>${t.method === "qr" ? "📱 говорит, что перевёл по QR" : "💵 отдаст наличными"} · ${esc(evTitle(t.game, t.event_id))}</small></span>
+      ${(pend || []).map((t) => { const pp = personOf(t.user_id); return `<div class="tx-row host"><span class="tx-av">${avaP(pp)}</span><span class="tx-t"><b>${esc(pp.nick)} · ${t.purpose === "premium" ? `◆ PREMIUM ${t.amount} ${CUR[t.currency] || "฿"}` : "+" + money(t.amount)}</b><small>${t.method === "qr" ? "📱 говорит, что перевёл по QR" : t.method === "transfer" ? "🏦 говорит, что перевёл" : "💵 отдаст наличными"} · ${t.purpose === "premium" ? "PREMIUM на месяц" : esc(evTitle(t.game, t.event_id))}</small></span>
         <span class="tx-acts"><button class="round sm ok" type="button" data-decide="${t.id}" data-ok="1" aria-label="Получил">✓</button><button class="round sm no" type="button" data-decide="${t.id}" data-ok="0" aria-label="Не получил">✕</button></span></div>`; }).join("")}
       <div class="sec-label eyebrow">Долги · ${debts.length}</div>
       ${debts.length ? debts.map((b) => { const pp = personOf(b.user_id); return `<div class="tx-row host"><span class="tx-av">${avaP(pp)}</span><span class="tx-t"><b>${esc(pp.nick)}</b><small>${+b.pending ? `ждёт подтверждения +${money(b.pending)}` : esc(tgLine(pp))}</small></span><span class="tx-amt neg">${money(b.balance)}</span>
@@ -4560,6 +4649,80 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const { error } = await sb.rpc("pay_receive", { u: f.dataset.recv, amount, m: f.elements.m.value });
     if (error) return toast("Не получилось: " + humanErr(error));
     payRecv = null; toast("Записал: баланс пополнен"); drawPayHost();
+  });
+
+  /* =================== PREMIUM: buy for a month =================== */
+  const PREM_PRICE = { THB: 400, RUB: 1000, USD: 12 }, CUR = { THB: "฿", RUB: "₽", USD: "$" };
+  let pmCur = "THB", pmMethod = "qr";
+  const premTx = () => wal.txs.find((t) => t.purpose === "premium" && t.status === "pending");
+  const renderPremium = async () => {
+    drawPremium();
+    if (!sb || !me) return;
+    try { await Promise.all([loadWallet(), loadQRs(), people.length ? null : loadPeople(), loadPremium()]); } catch {}
+    if (S.view === "premium") drawPremium();
+  };
+  const drawPremium = async () => {
+    const on = isPremium(me);
+    let until = null;
+    if (me && on) { const { data } = await sb.from("profiles").select("premium_until").eq("id", me.id).maybeSingle(); until = data?.premium_until; }
+    if (S.view !== "premium") return;
+    const forever = until && /infinity/i.test(String(until));
+    const pend = me ? premTx() : null, bal = +wal.balance || 0, q = qrFor(null);
+    $("pmTop").innerHTML = `<div class="pm-hero">
+        <div class="pm-mark">DACHA <b>PREMIUM</b></div>
+        <h1>${on ? "У тебя PREMIUM" : "Стань PREMIUM-дачником"}</h1>
+        <p>${on ? (forever ? "Навсегда. Спасибо, что поддерживаешь дачу." : until ? `Активен до ${new Date(until).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}. Можно продлить заранее — месяц добавится.` : "Активен.") : "Поддержи дачу и получи особый статус среди своих."}</p>
+        <ul class="pm-list">
+          <li><i>◆</i><span><b>Без рекламы</b>ни баннеров, ни всплывающих плашек</span></li>
+          <li><i>◆</i><span><b>Тёмный премиум-профиль</b>особая обложка и отделка, которую видят все</span></li>
+          <li><i>◆</i><span><b>Знак PREMIUM</b>в списках игроков, рейтингах и заметках</span></li>
+        </ul>
+        <div class="pm-price"><b>${PREM_PRICE[pmCur]} ${CUR[pmCur]}</b><span>за месяц</span></div>
+      </div>`;
+    if (!me) { $("pmBuy").innerHTML = loginPrompt(); return; }
+    if (forever) { $("pmBuy").innerHTML = ""; return; }
+    if (pend) {
+      $("pmBuy").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:10px"><div class="eyebrow">Заявка отправлена</div>
+        <h2 class="h2">⏳ Ждёт подтверждения @tivishka</h2><p class="lead">${pend.amount} ${CUR[pend.currency] || "฿"} · ${pend.method === "qr" ? "перевод по QR" : pend.method === "cash" ? "наличными" : "перевод"}. Как только оплату подтвердят, PREMIUM включится сам.</p>
+        <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ghost" type="button" data-pmcancel="${pend.id}">отменить заявку</button></div></div></div></div>`;
+      return;
+    }
+    const tg2 = "https://t.me/tivishka?text=" + encodeURIComponent(`Привет! Хочу купить DACHA PREMIUM на месяц за ${PREM_PRICE[pmCur]} ${CUR[pmCur]}. Пришли, пожалуйста, реквизиты.`);
+    $("pmBuy").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:12px">
+        <div class="eyebrow">${on ? "Продлить на месяц" : "Купить на месяц"}</div>
+        <div class="pm-cur" role="group" aria-label="Валюта">${Object.keys(PREM_PRICE).map((c) => `<button type="button" data-pmcur="${c}" aria-pressed="${c === pmCur}"><b>${PREM_PRICE[c]} ${CUR[c]}</b><small>${c === "THB" ? "бат" : c === "RUB" ? "рубли" : "доллары"}</small></button>`).join("")}</div>
+        ${pmCur === "THB" ? `
+          ${bal >= PREM_PRICE.THB ? `<button class="pill wide pm-btn" type="button" data-pmbal>оплатить с баланса · ${money(PREM_PRICE.THB)}</button><p class="bio-meta" style="margin:0;text-align:center">или переводом / наличными:</p>` : ""}
+          <div class="pm-tiles" role="group" aria-label="Способ оплаты">
+            <button type="button" data-pmm="qr" aria-pressed="${pmMethod === "qr"}"><span>📱</span><b>QR-перевод</b><small>из приложения банка</small></button>
+            <button type="button" data-pmm="cash" aria-pressed="${pmMethod === "cash"}"><span>💵</span><b>Наличными</b><small>лично @tivishka</small></button>
+          </div>
+          ${pmMethod === "qr" ? (q ? `<div class="qr-card"><img src="${esc(q.url)}" alt="QR-код для перевода"><p>Переведи <b>400 ฿</b> и нажми кнопку ниже.</p><button class="pill sm ghost" type="button" data-pmqr>⬇ скачать QR</button></div>` : `<p class="lead">QR ещё не загружен — выбери наличные.</p>`)
+            : `<p class="lead">Отдай <b>400 ฿</b> лично @tivishka.</p>`}
+          <button class="pill wide pm-btn" type="button" data-pmsend="${pmMethod}">${pmMethod === "qr" ? "я перевёл 400 ฿" : "отдам 400 ฿ наличными"}</button>`
+        : `<p class="lead">Оплата в ${pmCur === "RUB" ? "рублях" : "долларах"} — переводом. Напиши @tivishka, он пришлёт реквизиты, а после перевода нажми «я оплатил».</p>
+          <a class="pill wide ghost" href="${tg2}" target="_blank" rel="noopener" data-tglink>написать @tivishka</a>
+          <button class="pill wide pm-btn" type="button" data-pmsend="transfer">я оплатил ${PREM_PRICE[pmCur]} ${CUR[pmCur]}</button>`}
+        <p class="bio-meta" style="margin:0">PREMIUM включится, когда @tivishka подтвердит оплату.</p>
+      </div></div></div>`;
+  };
+  $("vPremium").addEventListener("click", async (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.pmcur) { pmCur = b.dataset.pmcur; haptic("tap"); return drawPremium(); }
+    if (b.dataset.pmm) { pmMethod = b.dataset.pmm; haptic("tap"); return drawPremium(); }
+    if (b.hasAttribute("data-pmqr")) return downloadQR(qrFor(null)?.url);
+    if (b.dataset.pmcancel) { const { error } = await sb.rpc("pay_cancel", { tx: b.dataset.pmcancel }); if (error) return toast("Не получилось: " + humanErr(error)); await loadWallet(); return drawPremium(); }
+    if (b.hasAttribute("data-pmbal")) {
+      return sheet({ eyebrow: "PREMIUM", title: "Оплатить с баланса?", text: `С баланса спишется ${money(PREM_PRICE.THB)}, PREMIUM включится сразу на месяц.`, ok: "оплатить", onOk: async () => {
+        const { error } = await sb.rpc("premium_from_balance"); if (error) return toast("Не получилось: " + humanErr(error));
+        haptic("card"); toast("PREMIUM включён ✦"); await Promise.all([loadWallet(), loadPremium()]); renderMeBtn(); drawPremium(); } });
+    }
+    if (b.dataset.pmsend) {
+      const { error } = await sb.rpc("premium_request", { cur: pmCur, m: b.dataset.pmsend });
+      if (error) return toast("Не получилось: " + humanErr(error));
+      haptic("card"); toast("Заявка отправлена. PREMIUM включится после подтверждения");
+      await loadWallet(); drawPremium();
+    }
   });
 
   const loadEvents = async () => {
@@ -5192,6 +5355,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     }
     if (!S.hostMode) S.hostMode = me ? "online" : "offline";
     go(startView);
+    navReady = true;
+    if (startView !== "hub") navStack.push({ v: "hub" });
   };
   start();
 })();
