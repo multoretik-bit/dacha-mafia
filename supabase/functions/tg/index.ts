@@ -92,6 +92,7 @@ async function auth(initData: string) {
   const userId = res.data.user.id;
   const { data: prof } = await admin.from("profiles").select("tg_photo").eq("id", userId).maybeSingle();
   later(mirrorPhoto(userId, u.photo_url, prof?.tg_photo ?? null));
+  later(syncBirthday(userId, u.id));
   const s = res.data.session!;
   return json({ access_token: s.access_token, refresh_token: s.refresh_token });
 }
@@ -316,6 +317,14 @@ async function walletNotify(req: Request, body: any) {
     sent++;
   }
   return json({ ok: true, sent });
+}
+
+// birthday from the Telegram profile (if the person shows it); a date set by hand is kept
+async function syncBirthday(userId: string, tgId: number) {
+  const r: any = await tgApi("getChat", { chat_id: tgId });
+  const b = r?.result?.birthdate;
+  if (!b?.day || !b?.month) return;
+  await admin.from("profiles").update({ birth_day: b.day, birth_month: b.month, birth_year: b.year ?? null, birth_src: "tg" }).eq("id", userId).or("birth_src.is.null,birth_src.eq.tg");
 }
 
 async function adminOf(req: Request) {

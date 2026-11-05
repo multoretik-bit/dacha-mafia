@@ -1676,6 +1676,19 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .pm-tiles button.locked { opacity: .55; }
 .pm-tiles button.locked[aria-pressed="true"] { opacity: 1; }
 
+/* birthdays (05.11) */
+.ph-bday { color: #B0408A; font-weight: 800; font-size: 12.5px; flex-basis: 100%; }
+.bd-list { display: grid; }
+.bd-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 16px; border-top: 1px solid var(--hair); text-align: left; color: var(--ink); width: 100%; box-sizing: border-box; }
+.bd-row > .ava, .bd-row > .prem { width: 40px; height: 40px; font-size: 18px; }
+.bd-row > .prem .ava { width: 100%; height: 100%; } .bd-row .prem .cash { display: none; }
+.bd-row .nm { display: grid; gap: 1px; min-width: 0; } .bd-row .nm b { font-weight: 800; font-size: 14.5px; } .bd-row .nm small { color: var(--muted); font-weight: 700; font-size: 12px; }
+.bd-when { font-weight: 800; font-size: 12.5px; color: var(--navy-ink); background: var(--soft); padding: 6px 10px; border-radius: 99px; white-space: nowrap; }
+.bd-row.today .bd-when { background: #FCE4F2; color: #B0408A; }
+.cb.bd { background: #FCE4F2; color: #B0408A; }
+.bd-form { display: grid; gap: 8px; width: 100%; }
+.bd-sel { display: grid; grid-template-columns: 90px 1fr; gap: 8px; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1866,6 +1879,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       <div class="week-days" id="weekDays" role="tablist" aria-label="Дни недели"></div>
       <div class="week-list" id="weekList"></div>
     </div></div>
+    <div id="hubBdays" hidden></div>
     <div class="sec-title">Игры</div>
     <div class="games" id="hubGames"></div>
     <button class="pm-card" type="button" id="hubPrem" hidden><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ на счёт каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>
@@ -2293,7 +2307,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105114402"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105114717"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2787,7 +2801,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!sb || !me) return;
     const [{ data: stats }, , { data: sstats }, { data: extra }] = await Promise.all([
       sb.rpc("player_stats", { p: id }), loadPeople(), sb.rpc("sport_stats", { p: id }),
-      sb.from("profiles").select("bio, created_at, pay_qr, pay_qr_label, pay_qr2, pay_qr2_label").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(), ev.loaded ? null : loadEvents(),
+      sb.from("profiles").select("bio, created_at, pay_qr, pay_qr_label, pay_qr2, pay_qr2_label, birth_day, birth_month, birth_src").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(), ev.loaded ? null : loadEvents(),
     ]);
     if (S.view !== "profile" || profileId !== id) return;
     const row = people.find((p) => p.id === id) || (id === me.id ? { ...me, games: 0, wins: 0, hosted: 0 } : { nick: "Дачник", games: 0, wins: 0, hosted: 0 });
@@ -2801,9 +2815,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <div class="ph-ach" id="phAch"></div></div>
       <div class="ph-name"><h1 class="h1">${esc(row.nick)}</h1>
         ${me ? `<button class="bal-chip" type="button" id="profBal" data-uid="${id}"><svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>баланс…</button>` : ""}
-        <div class="ph-sub">${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}<span class="ph-since" id="phSince"></span></div></div>
+        <div class="ph-sub">${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}<span class="ph-since" id="phSince"></span><span class="ph-bday" id="phBday" hidden></span></div></div>
       ${badges.length ? `<div class="prof-badges">${badges.map((b) => `<span class="cb host">${esc(b)}</span>`).join("")}</div>` : ""}
-      ${isMe || canGrant ? `<div class="ph-acts" id="phActs"><button class="pill sm ghost" type="button" id="editNick">${isMe ? "изменить ник" : "ник дачнику"}</button></div>` : ""}`;
+      ${isMe || canGrant ? `<div class="ph-acts" id="phActs"><button class="pill sm ghost" type="button" id="editNick">${isMe ? "ник" : "ник дачнику"}</button></div>` : ""}`;
     if (isMe || canGrant) $("editNick").onclick = () => {
       $("editNick").outerHTML = `<form class="nick-edit" id="nickForm"><input class="field" id="nickInput" maxlength="24" value="${esc(row.nick)}" aria-label="Новый ник"><button class="round sm" type="submit" aria-label="Сохранить ник">✓</button></form>`;
       $("nickInput").focus(); $("nickInput").select();
@@ -4384,6 +4398,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!ev.loaded) need.push(loadEvents());
     if (!people.length) need.push(loadPeople());
     if (need.length) Promise.all(need).then(() => { if (S.view === "hub") { drawCrewBtn(); drawWeek(); drawHubGames(); } }).catch(() => {});
+    loadBdays().then(() => { if (S.view === "hub") drawHubBdays(); }).catch(() => {});
+    drawHubBdays();
   };
   const drawCrewBtn = () => {
     const withPhoto = people.filter((p) => p.tg_photo).sort((a, b) => b.games - a.games);
@@ -4391,6 +4407,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("crewN").textContent = people.length ? `${people.length} ${plural(people.length, "дачник", "дачника", "дачников")}` : "дачники";
   };
   $("hubPrem").onclick = () => go("premium");
+  $("hubBdays").onclick = (e) => { const b = e.target.closest("[data-id]"); if (b) go("profile", b.dataset.id); };
   $("goReq").onclick = () => go("requests");
   $("gameOnHub").onclick = () => go(canHost() && S.on.gameId ? "host" : "player");
 
@@ -4473,6 +4490,29 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   };
   $("hubGames").onclick = (e) => { const b = e.target.closest("[data-game]"); if (!b) return; haptic("tap"); b.dataset.game === "mafia" ? go("home") : go("sport", b.dataset.game); };
 
+  /* ---------- birthdays (day + month only) ---------- */
+  const bdays = new Map(); let bdaysAt = 0;
+  const loadBdays = async (force) => {
+    if (!sb || !me || (!force && Date.now() - bdaysAt < 5 * 60e3)) return;
+    const { data } = await sb.from("profiles").select("id, birth_day, birth_month").not("birth_day", "is", null);
+    bdays.clear(); (data || []).forEach((r) => bdays.set(r.id, { d: r.birth_day, m: r.birth_month })); bdaysAt = Date.now();
+  };
+  const bdayIn = (b) => {             // days until the next birthday (0 = today)
+    const t = bkkToday(), [y] = t.split("-").map(Number);
+    const at = (yy) => `${yy}-${pad(b.m)}-${pad(b.d)}`;
+    let next = at(y); if (next < t) next = at(y + 1);
+    return Math.round((Date.parse(next) - Date.parse(t)) / 864e5);
+  };
+  const bdayText = (b) => `${b.d} ${MON_FULL[b.m - 1]}`;
+  const bdaySoon = (b) => { const n = bdayIn(b); return n === 0 ? "сегодня 🎉" : n === 1 ? "завтра" : `${b.d} ${MON[b.m - 1]}`; };
+  const drawHubBdays = () => {
+    const box = $("hubBdays"); if (!box) return;
+    const list = [...bdays.entries()].map(([id, b]) => ({ id, b, n: bdayIn(b) })).filter((x) => x.n <= 7 && people.some((p) => p.id === x.id)).sort((a, b) => a.n - b.n);
+    box.hidden = !list.length;
+    box.innerHTML = list.length ? `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:6px"><div class="eyebrow">🎂 Скоро дни рождения</div></div>
+      <div class="bd-list">${list.map((x) => { const pp = personOf(x.id); return `<button class="bd-row ${x.n === 0 ? "today" : ""}" type="button" data-id="${x.id}">${avaP(pp)}<span class="nm"><b>${esc(pp.nick)}</b><small>${esc(bdayText(x.b))}</small></span><span class="bd-when">${x.n === 0 ? "сегодня 🎉" : x.n === 1 ? "завтра" : `через ${x.n} ${plural(x.n, "день", "дня", "дней")}`}</span></button>`; }).join("")}</div></div></div>` : "";
+  };
+
   /* ---------- crew: social list of everybody ---------- */
   const sportBoard = async (k, month) => {
     const key = k + ":" + (month || "all");
@@ -4486,7 +4526,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const box = $("crewList");
     if (!sb || !me) { box.innerHTML = `<div class="empty-note">${loginPrompt()}</div>`; return; }
     if (!people.length) box.innerHTML = `<div class="empty-note"><div class="wait"><span class="pulse"></span>Загружаю дачников…</div></div>`;
-    const [, v, f] = await Promise.all([loadPeople(), sportBoard("volley").catch(() => []), sportBoard("foot").catch(() => []), sp.loaded ? null : loadSports().catch(() => {})]);
+    const [, v, f] = await Promise.all([loadPeople(), sportBoard("volley").catch(() => []), sportBoard("foot").catch(() => []), sp.loaded ? null : loadSports().catch(() => {}), loadBdays().catch(() => {})]);
     if (S.view !== "crew") return;
     const by = (list) => Object.fromEntries(list.map((x) => [x.id, x]));
     crewData = { v: by(v), f: by(f) };
@@ -4503,6 +4543,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       const v = crewData.v[p.id], f = crewData.f[p.id];
       const hostOf = Object.values(SPORTS).filter((x) => sp.hosts.some((h) => h.sport === x.id && h.user_id === p.id));
       const chips = [
+        bdays.get(p.id) && bdayIn(bdays.get(p.id)) <= 14 ? `<span class="cb bd">🎂 ${esc(bdaySoon(bdays.get(p.id)))}</span>` : "",
         p.games ? `<span class="cb">🎭 ${p.wins} ${plural(+p.wins, "победа", "победы", "побед")}</span>` : "",
         v ? `<span class="cb">🏐 ${v.wins} ${plural(+v.wins, "победа", "победы", "побед")}</span>` : "",
         f ? `<span class="cb">⚽ ${f.wins} ${plural(+f.wins, "победа", "победы", "побед")}</span>` : "",
@@ -4519,11 +4560,24 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   /* ---------- profile: about + ratings in every game ---------- */
   const drawProfBio = (id, isMe, extra) => {
     const bio = extra?.bio || "", since = extra?.created_at ? new Date(extra.created_at) : null;
+    const bd = extra?.birth_day ? { d: extra.birth_day, m: extra.birth_month } : null;
+    if ($("phBday") && bd) { $("phBday").hidden = false; const n = bdayIn(bd); $("phBday").textContent = `🎂 ${bdayText(bd)}${n === 0 ? " · сегодня! 🎉" : n === 1 ? " · завтра" : n <= 7 ? ` · через ${n} ${plural(n, "день", "дня", "дней")}` : ""}`; }
     if ($("phSince") && since && !isNaN(since)) $("phSince").textContent = `на даче с ${MON_FULL[since.getMonth()]} ${since.getFullYear()}`;
     $("profBio").innerHTML = bio ? `<p class="bio-text">${esc(bio)}</p>` : "";
     $("profBio").hidden = !bio;
     if (!isMe) return;
-    $("phActs")?.insertAdjacentHTML("beforeend", `<button class="pill sm ghost" type="button" id="bioEdit">${bio ? "о себе" : "+ о себе"}</button>`);
+    $("phActs")?.insertAdjacentHTML("beforeend", `<button class="pill sm ghost" type="button" id="bioEdit">${bio ? "о себе" : "+ о себе"}</button><button class="pill sm ghost" type="button" id="bdayEdit">${bd ? "🎂 дата" : "+ 🎂 день рождения"}</button>`);
+    $("bdayEdit").onclick = () => {
+      $("profBio").hidden = false;
+      $("profBio").innerHTML = `<form class="bd-form" id="bdForm"><span class="eyebrow">День рождения${extra?.birth_src === "tg" ? " · из Telegram" : ""}</span>
+        <div class="bd-sel"><select class="field" name="d">${Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}" ${bd?.d === i + 1 ? "selected" : ""}>${i + 1}</option>`).join("")}</select>
+        <select class="field" name="m">${MON_FULL.map((x, i) => `<option value="${i + 1}" ${bd?.m === i + 1 ? "selected" : ""}>${x}</option>`).join("")}</select></div>
+        <p class="bio-meta" style="margin:0">Все увидят только день и месяц.</p>
+        <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="submit">сохранить</button>${bd ? `<button class="pill sm ghost" type="button" data-bdclear>убрать</button>` : ""}</div></form>`;
+      const f = $("bdForm");
+      f.onsubmit = async (ev2) => { ev2.preventDefault(); const { error } = await sb.rpc("set_birthday", { d: +f.elements.d.value, m: +f.elements.m.value }); if (error) return toast("Не получилось: " + humanErr(error)); bdaysAt = 0; toast("Сохранено 🎂"); renderProfile(); };
+      f.querySelector("[data-bdclear]")?.addEventListener("click", async () => { const { error } = await sb.rpc("set_birthday", { d: null, m: null }); if (error) return toast("Не получилось: " + humanErr(error)); bdaysAt = 0; renderProfile(); });
+    };
     $("bioEdit").onclick = () => {
       $("profBio").hidden = false;
       $("profBio").innerHTML = `<form class="bio-form" id="bioForm"><textarea class="field" id="bioInput" maxlength="160" placeholder="Например: люблю играть за мафию, по субботам волейбол">${esc(bio)}</textarea>
