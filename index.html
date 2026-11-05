@@ -1829,6 +1829,9 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 .ph-acts.own:not(:has(form)) { display: none; }
 .ph-mini { margin-left: auto; align-self: flex-end; position: relative; width: 40px; height: 40px; flex: none; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px var(--hair), 0 4px 12px -6px rgba(15,23,42,.3); display: grid; place-items: center; font-size: 19px; }
 .ph-mini:active { transform: scale(.92); }
+#phGear { color: var(--ink); }
+#phGear svg { transition: transform .35s ease; }
+#phGear:active svg { transform: rotate(60deg); }
 .ph-mini.tm i { position: absolute; right: -4px; top: -4px; min-width: 18px; height: 18px; padding: 0 4px; box-sizing: border-box; border-radius: 99px; background: #E0221A; color: #fff; font: 800 10.5px/18px var(--f-body); font-style: normal; text-align: center; }
 .ph-top { align-items: flex-end; }
 .pm-menu { display: grid; border-radius: 18px; background: #fff; box-shadow: var(--sh); overflow: hidden; }
@@ -1838,6 +1841,45 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 .pm-menu .pmt { display: grid; gap: 1px; min-width: 0; }
 .pm-menu .pmt b { font-weight: 800; font-size: 15px; } .pm-menu .pmt small { color: var(--muted); font-weight: 700; font-size: 12px; }
 .pm-menu button:active { background: var(--soft); }
+
+/* notes: round table (06.11) */
+.tbl-box { padding: 6px 0 4px; }
+.tbl { position: relative; width: min(100%, 440px); aspect-ratio: 1; margin: 0 auto; touch-action: none; }
+.tbl-felt { position: absolute; inset: 20%; border-radius: 50%; display: grid; place-content: center; justify-items: center; gap: 2px; color: #F2EBDD;
+  background: radial-gradient(circle at 40% 35%, #2E6B4A, #1A4630 60%, #0F2E1F); box-shadow: 0 0 0 8px #6B4226, 0 0 0 11px #4A2C18, 0 18px 30px -12px rgba(0,0,0,.55), inset 0 6px 24px rgba(0,0,0,.35); }
+.tbl-felt b { font: 700 40px/1 var(--f-code); color: #fff; }
+.tbl-felt small { font-weight: 800; font-size: 12px; opacity: .8; }
+.tbl-tally { display: flex; gap: 6px; margin-top: 6px; }
+.tbl-tally span { min-width: 26px; height: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 99px; display: grid; place-items: center; font: 700 13px/1 var(--f-code); }
+.tbl-tally .red { background: #E3263A; color: #fff; } .tbl-tally .black { background: #111; color: #fff; box-shadow: 0 0 0 1px rgba(255,255,255,.3); } .tbl-tally .gray { background: #A3ABBD; color: #111; }
+.seat { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 2px; width: calc(var(--sz) + 22px); touch-action: none; user-select: none; -webkit-user-select: none; }
+.seat { --ring: #A3ABBD; }
+.seat-ring { position: relative; width: var(--sz); height: var(--sz); border-radius: 50%; padding: 2px; box-sizing: border-box; background: #fff; border: 5px solid var(--ring); box-shadow: 0 6px 12px -6px rgba(0,0,0,.45); transition: border-color .2s; }
+.seat-ring .ava, .seat-ring .prem { width: 100%; height: 100%; font-size: calc(var(--sz) * .36); box-shadow: none; }
+.seat-ring .prem .ava { width: 100%; height: 100%; } .seat-ring .prem .cash, .seat-ring .prem-ic { display: none; }
+.seat.c-black { --ring: #111; } .seat.c-red { --ring: #E3263A; }
+.seat-n { position: absolute; top: -6px; left: 2px; min-width: 18px; height: 18px; padding: 0 4px; box-sizing: border-box; border-radius: 99px; background: #fff; color: var(--ink); font: 700 11px/18px var(--f-code); font-style: normal; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+.seat-note { position: absolute; top: -6px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 10px; line-height: 18px; font-style: normal; }
+.seat-nm { font-weight: 800; font-size: 11.5px; color: var(--ink); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.seat.self .seat-nm { color: var(--blue); }
+.seat.out .seat-ring > * { filter: grayscale(1); opacity: .35; } .seat.out .seat-ring { border-color: color-mix(in srgb, var(--ring) 45%, #fff); }
+.seat.out .seat-ring::after { content: "✕"; position: absolute; inset: 0; display: grid; place-items: center; color: #E3263A; font-size: calc(var(--sz) * .6); font-weight: 900; }
+.seat.out .seat-nm { text-decoration: line-through; color: var(--muted); }
+.seat.dragging { z-index: 5; transform: translate(-50%, -50%) scale(1.15); }
+.seat.dragging .seat-ring { box-shadow: 0 14px 24px -8px rgba(0,0,0,.6); }
+.tbl-box.sorting .seat:not(.dragging) { opacity: .7; }
+.seat-sheet2 { gap: 12px; }
+.ss-h { display: flex; align-items: center; gap: 12px; padding-right: 40px; }
+.ss-h .ava, .ss-h .prem { width: 48px; height: 48px; font-size: 22px; } .ss-h .prem .ava { width: 100%; height: 100%; } .ss-h .prem .cash { display: none; }
+.ss-h span { display: grid; gap: 2px; } .ss-h b { font: 800 18px/1.2 var(--f-body); color: var(--ink); } .ss-h small { color: var(--muted); font-weight: 700; font-size: 12.5px; }
+.ss-colors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ss-colors button { display: grid; justify-items: center; gap: 3px; padding: 10px 4px; border-radius: 16px; background: #fff; box-shadow: inset 0 0 0 1.5px var(--hair); color: var(--ink); }
+.ss-colors i { width: 26px; height: 26px; border-radius: 50%; }
+.ss-colors .c-gray i { background: #A3ABBD; } .ss-colors .c-black i { background: #111; } .ss-colors .c-red i { background: #E3263A; }
+.ss-colors b { font-weight: 800; font-size: 13.5px; } .ss-colors small { color: var(--muted); font-weight: 700; font-size: 11.5px; }
+.ss-colors button[aria-pressed="true"] { box-shadow: inset 0 0 0 2.5px var(--navy-ink); background: #F4F6FA; }
+.ss-note { min-height: 110px; resize: vertical; font-weight: 600; }
+#board { display: none; }
 
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
@@ -2457,8 +2499,9 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
       <div class="ticket empty" id="notesEmpty" hidden><div class="ticket-in">
         <div class="t-body" id="notesEmptyBody"></div>
       </div></div>
+      <div class="tbl-box" id="tableBox"></div>
       <p class="drag-hint" id="dragHint" hidden>зажми игрока и перетащи, чтобы расставить как удобно</p>
-      <div class="players" id="players"></div>
+      <div class="players" id="players" hidden></div>
       <div data-ad-slot></div>
     </div>
   </section>
@@ -2471,7 +2514,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105171825"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105173015"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3023,7 +3066,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     if (myTomatoes === null) await loadTomatoes().catch(() => {});
     if (S.view === "profile" && profileId === id) {
       // own page: everything behind one gear; someone else's: a small tomato to throw
-      $("phAch")?.insertAdjacentHTML("afterend", isMe ? `<button class="ph-mini" type="button" id="phGear" aria-label="Настройки профиля" title="Настройки">⚙️</button>`
+      $("phAch")?.insertAdjacentHTML("afterend", isMe ? `<button class="ph-mini" type="button" id="phGear" aria-label="Настройки профиля" title="Настройки"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>`
         : `<button class="ph-mini tm" type="button" id="phTomato" aria-label="Бросить помидор" title="Бросить помидор">🍅<i id="tomatoN">${myTomatoes ?? 0}</i></button>`);
       if (isMe) { $("phActs")?.classList.add("own"); $("phGear").onclick = () => openProfMenu(); }
       else $("phTomato").onclick = () => throwTomato(id);
@@ -5817,7 +5860,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     if (S.view !== "requests") return;
     // game payments are checked by the game's hosts in «Запись»; here only app balance top-ups
     const by = (k) => (pend || []).filter((t) => t.purpose === k && (k !== "topup" || !t.event_id));
-    const reqN = (pend || []).filter((t) => t.purpose !== "topup" || !t.event_id).length + ce.list.filter((e) => e.status === "pending").length;
+    const reqN = (pend || []).filter((t) => ["premium", "withdraw"].includes(t.purpose) || (t.purpose === "topup" && !t.event_id)).length + ce.list.filter((e) => e.status === "pending").length;
     const when = (d) => new Date(d).toLocaleString("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
     const row = (t) => { const pp = personOf(t.user_id);
       const what = t.purpose === "premium" ? `◆ PREMIUM · ${t.amount} ${CUR[t.currency] || "฿"}` : t.purpose === "withdraw" ? `↓ вывести ${money(-t.amount)}` : `+${money(t.amount)}`;
@@ -5862,7 +5905,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
   const refreshReqCount = async () => {
     const b = $("goReq"); if (!b) return;
     b.hidden = !canGrant; if (!canGrant || !sb) return;
-    const [{ count: c1 }, { count: c2 }] = await Promise.all([sb.from("wallet_tx").select("id", { count: "exact", head: true }).eq("status", "pending").or("purpose.neq.topup,event_id.is.null"), sb.from("cevents").select("id", { count: "exact", head: true }).eq("status", "pending")]);
+    const [{ count: c1 }, { count: c2 }] = await Promise.all([sb.from("wallet_tx").select("id", { count: "exact", head: true }).eq("status", "pending").in("purpose", ["topup", "premium", "withdraw"]).is("event_id", null), sb.from("cevents").select("id", { count: "exact", head: true }).eq("status", "pending")]);
     const count = (c1 || 0) + (c2 || 0);
     b.innerHTML = `📥 запросы${count ? ` <i class="req-n">${count}</i>` : ""}`;
   };
@@ -6555,7 +6598,8 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     $("notesStatus").hidden = !ps.length;
     $("notesStatus").innerHTML = liveNow ? `<span class="pulse"></span>Игра идёт · записи видишь только ты` : "Игра завершена · это записи прошлой игры. Новые появятся с новой раздачей";
     $("notesEmpty").hidden = ps.length > 0;
-    $("dragHint").hidden = ps.filter((p) => !p.out).length < 2;
+    $("dragHint").hidden = ps.length < 2;
+    $("dragHint").textContent = "нажми на игрока — заметки и цвет · зажми и тащи — пересадить";
     if (!ps.length) {
       $("notesEmptyBody").innerHTML = !sb || !me
         ? `<h2 class="h2">Записи работают в игре через Telegram</h2><p class="lead">Открой бота @dacha_gay и нажми «Дача». Когда ведущий раздаст карты, здесь появятся все игроки за столом.</p><div class="row-btns"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`
@@ -6581,6 +6625,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
       box.append(el);
     });
     if (!order.some((p) => p.out)) outLabel?.remove();
+    drawTable();
     if (!animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     rowEls.forEach((el, id) => {
       if (!first.has(id)) return;
@@ -6594,6 +6639,80 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     });
   };
   const pById = (id) => S.notes.players.find((p) => p.id === id);
+  /* ---------- notes as a round table: avatars around, ring = your colour; tap = notes, hold & drag = reseat ---------- */
+  const TRUST = [["gray", "Серый", "не знаю"], ["black", "Чёрный", "мафия"], ["red", "Красный", "верю"]];
+  const shortName = (n) => { const t = String(n || "").trim(); return t.length > 9 ? t.slice(0, 8) + "…" : t; };
+  const drawTable = () => {
+    const box = $("tableBox"); if (!box) return;
+    const ps = S.notes.players || [];
+    if (!ps.length) { box.innerHTML = ""; return; }
+    const n = ps.length, R = n > 14 ? 44 : 42, sz = n > 16 ? 38 : n > 12 ? 44 : n > 8 ? 50 : 56;
+    const alive = ps.filter((p) => !p.out), cnt = (c) => alive.filter((p) => (p.c || "gray") === c).length;
+    box.innerHTML = `<div class="tbl" style="--sz:${sz}px">
+      <div class="tbl-felt"><b>${alive.length}</b><small>в игре из ${n}</small>
+        <div class="tbl-tally"><span class="red">${cnt("red")}</span><span class="black">${cnt("black")}</span><span class="gray">${cnt("gray")}</span></div></div>
+      ${ps.map((p, i) => { const a = ((-90 + (i * 360) / n) * Math.PI) / 180;
+        return `<button class="seat c-${p.c || "gray"} ${p.out ? "out" : ""} ${p.self ? "self" : ""}" type="button" data-pid="${esc(p.id)}" data-i="${i}" style="left:${(50 + R * Math.cos(a)).toFixed(2)}%;top:${(50 + R * Math.sin(a)).toFixed(2)}%">
+          <span class="seat-ring">${avaP({ nick: p.name, id: p.uid || p.name, tg_photo: p.photo })}</span><i class="seat-n">${esc(p.seat)}</i>${p.note ? `<em class="seat-note">✎</em>` : ""}
+          <span class="seat-nm">${esc(shortName(p.name))}</span></button>`; }).join("")}
+    </div>`;
+  };
+  const openSeat = (p) => {
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    const draw = () => {
+      v.innerHTML = `<div class="bank seat-sheet2" role="dialog" aria-modal="true" aria-label="${esc(p.name)}">
+        <div class="ss-h">${avaP({ nick: p.name, id: p.uid || p.name, tg_photo: p.photo })}<span><b>${esc(p.name)}${p.self ? " · ты" : ""}</b><small>место ${esc(p.seat)}${p.out ? " · выбыл" : ""}</small></span></div>
+        <div class="ss-colors">${TRUST.map(([c, l, sub]) => `<button type="button" class="c-${c}" data-sc="${c}" aria-pressed="${(p.c || "gray") === c}"><i></i><b>${l}</b><small>${sub}</small></button>`).join("")}</div>
+        <textarea class="field ss-note" placeholder="Что говорил, за кого голосовал…">${esc(p.note || "")}</textarea>
+        <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ${p.out ? "" : "red"}" type="button" data-sout>${p.out ? "вернуть в игру" : "выбыл"}</button><button class="pill sm ghost" type="button" data-close>готово</button></div>
+        <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
+    };
+    draw();
+    v.addEventListener("input", (e) => { if (e.target.classList.contains("ss-note")) { p.note = e.target.value; save(true); } });
+    v.addEventListener("click", (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) { v.remove(); renderNotes(false); return; }
+      const c = e.target.closest("[data-sc]");
+      if (c) { p.c = c.dataset.sc; save(); haptic("tap"); draw(); drawTable(); return; }
+      if (e.target.closest("[data-sout]")) { p.out = !p.out; p.outAt = p.out ? Date.now() : 0; save(); if (p.out) toast(`${p.name} выбыл`); v.remove(); renderNotes(false); }
+    });
+    document.body.append(v);
+  };
+  (() => {
+    const box = $("tableBox");
+    let pend = null, drag = null;
+    const center = () => { const r = box.querySelector(".tbl").getBoundingClientRect(); return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, r }; };
+    box.addEventListener("pointerdown", (e) => {
+      const el = e.target.closest(".seat"); if (!el) return;
+      pend = { el, x: e.clientX, y: e.clientY, t: setTimeout(() => {
+        if (!pend) return;
+        drag = { el, id: el.dataset.pid };
+        el.classList.add("dragging"); box.classList.add("sorting");
+        try { navigator.vibrate?.(15); } catch {} haptic("tap");
+      }, 380) };
+      el.setPointerCapture?.(e.pointerId);
+    });
+    box.addEventListener("pointermove", (e) => {
+      if (pend && !drag && Math.hypot(e.clientX - pend.x, e.clientY - pend.y) > 10) { clearTimeout(pend.t); pend = null; }
+      if (!drag) return;
+      e.preventDefault();
+      const { r } = center();
+      drag.el.style.left = (((e.clientX - r.left) / r.width) * 100).toFixed(2) + "%";
+      drag.el.style.top = (((e.clientY - r.top) / r.height) * 100).toFixed(2) + "%";
+    });
+    const end = (e) => {
+      if (drag) {
+        const { cx, cy } = center(), ps = S.notes.players, n = ps.length;
+        let ang = (Math.atan2(e.clientY - cy, e.clientX - cx) * 180) / Math.PI + 90; if (ang < 0) ang += 360;
+        const to = Math.round((ang / 360) * n) % n, from = ps.findIndex((q) => q.id === drag.id);
+        if (from >= 0 && to !== from) { const [m] = ps.splice(from, 1); ps.splice(to, 0, m); save(); }
+        drag.el.classList.remove("dragging"); box.classList.remove("sorting"); drag = null; drawTable(); return;
+      }
+      if (pend) { clearTimeout(pend.t); const p = pById(pend.el.dataset.pid); pend = null; if (p && e.type === "pointerup") openSeat(p); }
+    };
+    box.addEventListener("pointerup", end);
+    box.addEventListener("pointercancel", end);
+  })();
+
   $("players").addEventListener("click", (e) => {
     const row = e.target.closest(".pl"); if (!row) return;
     const p = pById(row.dataset.id); if (!p) return;
