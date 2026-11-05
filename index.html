@@ -1824,6 +1824,21 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 .tomato-fx.out { transition: opacity .8s ease; opacity: 0; }
 .tomato-fx.out .tm-cv { pointer-events: none; }
 
+/* profile gear & tomato mini (06.11) */
+.ph-acts.own > button { display: none !important; }
+.ph-acts.own:not(:has(form)) { display: none; }
+.ph-mini { margin-left: auto; align-self: flex-end; position: relative; width: 40px; height: 40px; flex: none; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px var(--hair), 0 4px 12px -6px rgba(15,23,42,.3); display: grid; place-items: center; font-size: 19px; }
+.ph-mini:active { transform: scale(.92); }
+.ph-mini.tm i { position: absolute; right: -4px; top: -4px; min-width: 18px; height: 18px; padding: 0 4px; box-sizing: border-box; border-radius: 99px; background: #E0221A; color: #fff; font: 800 10.5px/18px var(--f-body); font-style: normal; text-align: center; }
+.ph-top { align-items: flex-end; }
+.pm-menu { display: grid; border-radius: 18px; background: #fff; box-shadow: var(--sh); overflow: hidden; }
+.pm-menu button { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 11px 14px; border-top: 1px solid var(--hair); text-align: left; color: var(--ink); }
+.pm-menu button:first-child { border-top: 0; }
+.pm-menu .pmi { width: 40px; height: 40px; border-radius: 12px; background: var(--soft); display: grid; place-items: center; font-size: 20px; }
+.pm-menu .pmt { display: grid; gap: 1px; min-width: 0; }
+.pm-menu .pmt b { font-weight: 800; font-size: 15px; } .pm-menu .pmt small { color: var(--muted); font-weight: 700; font-size: 12px; }
+.pm-menu button:active { background: var(--soft); }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -2456,7 +2471,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105171456"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105171825"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3007,10 +3022,11 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     if (isMe) $("phActs")?.insertAdjacentHTML("beforeend", `<button class="pill sm ghost" type="button" id="themeEdit">🎨 стиль</button>`), ($("themeEdit").onclick = () => openThemeEditor(extra?.theme || null));
     if (myTomatoes === null) await loadTomatoes().catch(() => {});
     if (S.view === "profile" && profileId === id) {
-      if (!$("phActs")) $("profHead").insertAdjacentHTML("beforeend", `<div class="ph-acts" id="phActs"></div>`);
-      $("phActs").insertAdjacentHTML("beforeend", isMe ? `<button class="pill sm ghost tm-btn" type="button" id="tomatoBtn" title="Мои помидоры">🍅 <b>${myTomatoes ?? 0}</b> · купить</button>`
-        : `<button class="pill sm ghost tm-btn" type="button" id="tomatoBtn" title="Бросить помидор">🍅 <b>${myTomatoes ?? 0}</b></button>`);
-      $("tomatoBtn").onclick = () => (isMe ? buyTomatoes() : throwTomato(id));
+      // own page: everything behind one gear; someone else's: a small tomato to throw
+      $("phAch")?.insertAdjacentHTML("afterend", isMe ? `<button class="ph-mini" type="button" id="phGear" aria-label="Настройки профиля" title="Настройки">⚙️</button>`
+        : `<button class="ph-mini tm" type="button" id="phTomato" aria-label="Бросить помидор" title="Бросить помидор">🍅<i id="tomatoN">${myTomatoes ?? 0}</i></button>`);
+      if (isMe) { $("phActs")?.classList.add("own"); $("phGear").onclick = () => openProfMenu(); }
+      else $("phTomato").onclick = () => throwTomato(id);
     }
     drawProfBal(id, isMe, row);
     // win rate only from 5 games: fewer games say nothing
@@ -6048,6 +6064,26 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     cv.addEventListener("pointercancel", () => { last = null; });
     setTimeout(finish, 30000);
   };
+  const openProfMenu = () => {
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    const items = [["nick", "✏️", "Ник", "как тебя видят дачники"], ["bio", "📝", "О себе", "пара слов в профиле"], ["bday", "🎂", "День рождения", "увидят день и месяц"],
+      ["style", "🎨", "Стиль страницы", "фон, цвет, стикеры"], ["tomato", "🍅", `Помидоры · ${myTomatoes ?? 0}`, "купить ещё — 1 ฿ за штуку"]];
+    v.innerHTML = `<div class="bank" role="dialog" aria-modal="true" aria-label="Настройки профиля"><div class="ps-h"><div class="eyebrow">Настройки</div><h2 class="h2">Мой профиль</h2></div>
+      <div class="pm-menu">${items.map(([k, ic, t, sub]) => `<button type="button" data-pm2="${k}"><span class="pmi">${ic}</span><span class="pmt"><b>${esc(t)}</b><small>${sub}</small></span><span class="wk-go">›</span></button>`).join("")}</div>
+      <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
+    v.addEventListener("click", (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      const b = e.target.closest("[data-pm2]"); if (!b) return;
+      v.remove();
+      const k = b.dataset.pm2;
+      if (k === "nick") { $("phActs")?.classList.add("show-form"); $("editNick")?.click(); }
+      else if (k === "bio") { $("bioEdit")?.click(); $("profBio")?.scrollIntoView({ behavior: "smooth", block: "center" }); }
+      else if (k === "bday") { $("bdayEdit")?.click(); $("profBio")?.scrollIntoView({ behavior: "smooth", block: "center" }); }
+      else if (k === "style") $("themeEdit")?.click();
+      else if (k === "tomato") buyTomatoes();
+    });
+    document.body.append(v);
+  };
   const buyTomatoes = () => choose({ eyebrow: "🍅 Помидоры", title: "Купить помидоры", text: `Каждый стоит 1 ฿ с баланса — это деньги на развитие DACHA. Сейчас у тебя ${myTomatoes ?? 0} 🍅.`,
     options: [5, 10, 30].map((n) => ({ label: `${n} 🍅 за ${n} ฿`, run: async () => {
       const { data, error } = await sb.rpc("buy_tomatoes", { n });
@@ -6061,7 +6097,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     if (error) return toast(/too fast/.test(error.message) ? "Не так быстро — подожди пару секунд" : /no tomatoes/.test(error.message) ? "Помидоры кончились" : "Не получилось: " + humanErr(error));
     myTomatoes = data; haptic("tap");
     toast(`🍅 полетел в ${personOf(toId).nick}! Осталось ${data}`);
-    const b = $("tomatoBtn"); if (b) b.innerHTML = `🍅 <b>${data}</b>`;
+    if ($("tomatoN")) $("tomatoN").textContent = data;
   };
 
   const loadEvents = async () => {
