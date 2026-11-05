@@ -2247,7 +2247,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105102427"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105102520"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4662,7 +4662,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     sp.mode = S.view === "sportorg" ? "org" : S.view === "sportrate" ? "rate" : "player";
     const org = sp.mode === "org", rate = sp.mode === "rate";
     $("spHero").hidden = org || rate; $("spRate").hidden = !rate; $("spPast").hidden = org || rate; $("soDay").hidden = !org;
-    $("spNext").hidden = rate; $("spNew").hidden = rate;
+    $("spNext").hidden = rate || org; $("spNew").hidden = rate;
     $("spOrgBtn").hidden = org || rate || !isSportHost(X.id);
     const hosts = sp.hosts.filter((h) => h.sport === X.id).map((h) => personOf(h.user_id));
     $("spHero").innerHTML = `<div class="sport-hero ${X.id}"><span class="sh-emoji" aria-hidden="true">${X.emoji}</span>
