@@ -1255,6 +1255,43 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .deck-link .dl-go { font: 600 18px/1 var(--f-code); }
 .deck-link:active { background: var(--soft); }
 
+/* ads: smaller and calmer (05.11) */
+.ad { max-width: 330px; }
+.ad.float { width: min(calc(100vw - 72px), 320px); }
+.ad.float.in { animation-duration: .6s; animation-timing-function: cubic-bezier(.2,.9,.3,1); }
+.ad-art { animation-duration: 6s; }
+.ad-art img { filter: drop-shadow(0 6px 10px rgba(7,27,77,.22)); }
+.ad-bill { opacity: .8; }
+
+/* profile v4: compact social header */
+.prof-cover { height: 64px; }
+.prof-card .prof-head { margin-top: -30px; padding: 0 16px 14px; align-items: stretch; text-align: left; gap: 10px; }
+.ph-top { display: flex; align-items: flex-end; gap: 14px; }
+.prof-card .ava.lg, .prof-card .ph-top .prem { width: 84px; height: 84px; font-size: 40px; }
+.prof-card .ph-top .prem .ava.lg { width: 100%; height: 100%; }
+.ph-cnt { flex: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding-bottom: 2px; }
+.ph-cnt div { text-align: center; }
+.ph-cnt b { display: block; font: 700 22px/1.1 var(--f-code); color: var(--ink); font-variant-numeric: tabular-nums; }
+.ph-cnt small { font-weight: 700; font-size: 12px; color: var(--muted); }
+.ph-name { display: grid; gap: 2px; }
+.prof-card .ph-name .h1 { font-size: 21px; }
+.ph-sub { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; }
+.ph-sub .tg-line { font-size: 13.5px; }
+.ph-since { color: var(--muted); font-weight: 700; font-size: 12.5px; }
+.ph-sub .tg-line + .ph-since::before { content: "· "; }
+.prof-card .prof-badges { justify-content: flex-start; }
+.ph-acts { display: flex; flex-wrap: wrap; gap: 6px; }
+.ph-acts .pill { margin: 0; min-height: 34px; padding: 0 14px; font-size: 13px; flex: 1; }
+.ph-acts .nick-edit { flex-basis: 100%; max-width: none; }
+#profBio { padding: 0 16px 14px; justify-items: start; text-align: left; margin-top: -4px; }
+#profBio .bio-text { max-width: none; font-size: 14.5px; }
+.prof-card #profGames > .sec-label:first-child { padding-top: 12px; }
+.pg-icons { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+.pgi-main { padding-top: 10px; }
+.pgi-ic { width: 38px; height: 38px; font-size: 20px; }
+.pgi-place { font-size: 26px; }
+.pgi .pgi-place { margin-bottom: 8px; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1568,7 +1605,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       <div class="t-body">
         <div class="eyebrow">Вход</div>
         <h1 class="h1" id="authTitle">Заходи через Telegram</h1>
-        <p class="lead" id="authLead">Аккаунты дачников живут в Telegram-боте. Открой бота и нажми «Играть»: ты сразу окажешься в списке участников, регистрация не нужна.</p>
+        <p class="lead" id="authLead">Аккаунты дачников живут в Telegram-боте. Открой бота и нажми «Дача»: ты сразу окажешься в списке участников, регистрация не нужна.</p>
         <a class="pill wide" href="https://t.me/dacha_gay" target="_blank" rel="noopener" data-tglink>открыть @dacha_gay</a>
         <p class="err" id="auErr" role="alert"></p>
       </div>
@@ -1837,7 +1874,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105082127"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105083153"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2070,7 +2107,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   };
   const showAd = (force) => {
     if (adFloat.classList.contains("in") || adBlocked() || noAds()) return;
-    if (!force && Date.now() - adShownAt < 25000) return;
+    // calmer: at most once in 90 s, after a deal/card at most once in 45 s
+    if (Date.now() - adShownAt < (force ? 45000 : 90000)) return;
     const typing = !!document.activeElement?.matches?.("input, textarea");
     const dock = [...document.querySelectorAll("main > section:not([hidden]) .dock")][0];
     const a = pickAd();
@@ -2082,12 +2120,12 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     adFloat.style.setProperty("--ad-lift", dock && !typing ? `${Math.round(dock.getBoundingClientRect().height)}px` : "0px");
     adFloat.classList.remove("out"); void adFloat.offsetWidth; adFloat.classList.add("in");
     adShownAt = Date.now();
-    clearTimeout(adHideT); adHideT = setTimeout(hideAd, 8000);
+    clearTimeout(adHideT); adHideT = setTimeout(hideAd, 6000);
   };
   adFloat.addEventListener("click", (e) => { if (e.target.closest(".ad-x")) { e.stopPropagation(); hideAd(); } });
   document.addEventListener("click", (e) => { if (e.target.closest(".ad.float [data-ad]")) setTimeout(hideAd, 300); });
   document.addEventListener("focusin", (e) => { if (e.target.matches?.("textarea, .pl-name")) setTimeout(() => showAd(), 1500); });
-  setInterval(() => { if (document.visibilityState === "visible") showAd(); }, 30000);
+  setInterval(() => { if (document.visibilityState === "visible") showAd(); }, 60000);
 
   /* ---------- toast & sheets ---------- */
   let toastT;
@@ -2261,7 +2299,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     else if (!me && inTG) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>${authError ? esc(authError) : "Входим через Telegram…"}</div></div></div></div>`;
     else if (!me) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body">
         <h2 class="h2">Заходи через Telegram</h2>
-        <p class="lead">Открой бота @dacha_gay и нажми «Играть»: ты сразу появишься в списке дачников, карты ролей будут приходить на телефон, а в профиле копятся игры и победы.</p>
+        <p class="lead">Открой бота @dacha_gay и нажми «Дача»: ты сразу появишься в списке дачников, карты ролей будут приходить на телефон, а в профиле копятся игры и победы.</p>
         <div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>
       </div></div></div>`;
     else {
@@ -2320,10 +2358,14 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const handle = tgLine(row);
     const mafHost = row.is_host || (isMe && canHost());
     const badges = [mafHost ? "🎭 ведущий мафии" : "", ...Object.values(SPORTS).filter((x) => sp.hosts.some((h) => h.sport === x.id && h.user_id === id)).map((x) => `${x.emoji} ведущий: ${x.name.toLowerCase()}`)].filter(Boolean);
-    $("profHead").innerHTML = `${avaP({ ...row, id }, "lg")}<div><h1 class="h1">${esc(row.nick)}</h1>
-      ${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}</div>
+    const sAll = sstats || [];
+    const totG = (+row.games || 0) + sAll.reduce((t, x) => t + +x.games, 0), totW = (+row.wins || 0) + sAll.reduce((t, x) => t + +x.wins, 0);
+    $("profHead").innerHTML = `<div class="ph-top">${avaP({ ...row, id }, "lg")}
+        <div class="ph-cnt"><div><b>${totG}</b><small>${plural(totG, "игра", "игры", "игр")}</small></div><div><b>${totW}</b><small>${plural(totW, "победа", "победы", "побед")}</small></div><div><b id="cntAch">·</b><small id="cntAchL">ачивок</small></div></div></div>
+      <div class="ph-name"><h1 class="h1">${esc(row.nick)}</h1>
+        <div class="ph-sub">${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}<span class="ph-since" id="phSince"></span></div></div>
       ${badges.length ? `<div class="prof-badges">${badges.map((b) => `<span class="cb host">${esc(b)}</span>`).join("")}</div>` : ""}
-      ${isMe || canGrant ? `<button class="linkish" id="editNick">${isMe ? "изменить ник" : "изменить ник дачнику"}</button>` : ""}`;
+      ${isMe || canGrant ? `<div class="ph-acts" id="phActs"><button class="pill sm ghost" type="button" id="editNick">${isMe ? "изменить ник" : "ник дачнику"}</button></div>` : ""}`;
     if (isMe || canGrant) $("editNick").onclick = () => {
       $("editNick").outerHTML = `<form class="nick-edit" id="nickForm"><input class="field" id="nickInput" maxlength="24" value="${esc(row.nick)}" aria-label="Новый ник"><button class="round sm" type="submit" aria-label="Сохранить ник">✓</button></form>`;
       $("nickInput").focus(); $("nickInput").select();
@@ -2355,6 +2397,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     drawProfGames(id, row, sstats || [], $("profRoles").innerHTML, (stats || []).length);
     const { data: achs } = await sb.from("user_achievements").select("awarded_at, achievements(id,title,description,icon)").eq("user_id", id).order("awarded_at");
     const list = (achs || []).filter((a) => a.achievements);
+    if ($("cntAch")) { $("cntAch").textContent = list.length; $("cntAchL").textContent = plural(list.length, "ачивка", "ачивки", "ачивок"); }
     $("profAch").innerHTML = list.length ? `<div class="sec-label eyebrow">Ачивки · ${list.length}</div><div class="ach-list">${list.map((a, i) =>
       `<button class="ach" type="button" data-ach="${i}"><span class="coin"><img src="${esc(a.achievements.icon)}" alt=""></span><b>${esc(a.achievements.title)}</b></button>`).join("")}</div>` : "";
     $("profAch").onclick = (e) => {
@@ -2517,7 +2560,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const list = $("pickList"), empty = $("pickEmpty");
     if (!sb || !me) {
       list.innerHTML = ""; empty.hidden = false;
-      empty.innerHTML = sb ? `Онлайн-раздача работает через Telegram. <a class="linkish" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>Открой бота @dacha_gay</a> и нажми «Играть».` : "Нет связи с сервером. Включи интернет или выбери «один телефон».";
+      empty.innerHTML = sb ? `Онлайн-раздача работает через Telegram. <a class="linkish" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>Открой бота @dacha_gay</a> и нажми «Дача».` : "Нет связи с сервером. Включи интернет или выбери «один телефон».";
       $("guestForm").hidden = true; drawPickSum(); return;
     }
     $("guestForm").hidden = false;
@@ -2584,7 +2627,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     q.innerHTML = `${t ? `<button class="pill sm" type="button" data-allsigned ${missing ? "" : "disabled"}>${missing ? `выбрать всех записавшихся (${t.signups.length})` : `все записавшиеся выбраны ✓`}</button>` : ""}
       ${seatBtn}${L.length ? `<button class="linkish" type="button" data-clearpick>снять всех</button>` : ""}`;
     empty.hidden = people.length > 1;
-    empty.textContent = "Пока в списке только ты. Скинь друзьям бота @dacha_gay: как только они нажмут «Играть», появятся здесь.";
+    empty.textContent = "Пока в списке только ты. Скинь друзьям бота @dacha_gay: как только они нажмут «Дача», появятся здесь.";
     $("guestChips").innerHTML = L.map((x, i) => (x.g ? `<span class="gchip"><b>${i + 1}</b>${esc(x.g)}<button type="button" data-rmg="${i}" aria-label="Убрать гостя">×</button></span>` : "")).join("");
     drawPickSum();
   };
@@ -3253,7 +3296,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       empty.innerHTML = !sb
         ? `<div class="ticket"><div class="ticket-in"><div class="t-body"><h1 class="h1">Нет связи</h1><p class="lead">Карта приходит через интернет. Проверь связь и обнови страницу.</p></div></div></div>`
         : !me
-        ? `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">${inTG ? "Входим через Telegram…" : "Карты приходят в Telegram"}</h1><p class="lead">${inTG ? esc(authError || "Секунду, подключаемся к даче.") : "Открой бота @dacha_gay и нажми «Играть». Ведущий отметит тебя, и карта роли придёт прямо туда."}</p>${inTG ? "" : `<div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`}</div></div></div>`
+        ? `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">${inTG ? "Входим через Telegram…" : "Карты приходят в Telegram"}</h1><p class="lead">${inTG ? esc(authError || "Секунду, подключаемся к даче.") : "Открой бота @dacha_gay и нажми «Дача». Ведущий отметит тебя, и карта роли придёт прямо туда."}</p>${inTG ? "" : `<div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`}</div></div></div>`
         : `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">Ждём раздачи</h1>
             <div class="wait"><span class="pulse"></span>На связи как ${esc(me.nick)}</div>
             <p class="lead">Как только ведущий отметит тебя и нажмёт «Начать игру», карта появится здесь, а бот пришлёт сообщение. Обновлять ничего не нужно.</p></div>
@@ -3711,7 +3754,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (inTG) return `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>${authError ? esc(authError) : "Входим через Telegram…"}</div></div></div></div>`;
     return `<div class="ticket"><div class="ticket-in"><div class="t-body">
         <h2 class="h2">Заходи через Telegram</h2>
-        <p class="lead">Открой бота @dacha_gay и нажми «Играть»: появишься среди дачников, сможешь записываться на мафию, волейбол и футбол и копить победы в рейтингах.</p>
+        <p class="lead">Открой бота @dacha_gay и нажми «Дача»: появишься среди дачников, сможешь записываться на мафию, волейбол и футбол и копить победы в рейтингах.</p>
         <div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>
       </div></div></div>`;
   };
@@ -3848,13 +3891,14 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   /* ---------- profile: about + ratings in every game ---------- */
   const drawProfBio = (id, isMe, extra) => {
     const bio = extra?.bio || "", since = extra?.created_at ? new Date(extra.created_at) : null;
-    const sinceTxt = since && !isNaN(since) ? `на даче с ${MON_FULL[since.getMonth()]} ${since.getFullYear()}` : "";
-    $("profBio").innerHTML = `${bio ? `<p class="bio-text">${esc(bio)}</p>` : isMe ? `<p class="bio-meta">Расскажи о себе: пара слов увидят все дачники</p>` : ""}
-      ${sinceTxt ? `<span class="bio-meta">${sinceTxt}</span>` : ""}
-      ${isMe ? `<button class="linkish" type="button" id="bioEdit">${bio ? "изменить «о себе»" : "добавить «о себе»"}</button>` : ""}`;
+    if ($("phSince") && since && !isNaN(since)) $("phSince").textContent = `на даче с ${MON_FULL[since.getMonth()]} ${since.getFullYear()}`;
+    $("profBio").innerHTML = bio ? `<p class="bio-text">${esc(bio)}</p>` : "";
+    $("profBio").hidden = !bio;
     if (!isMe) return;
+    $("phActs")?.insertAdjacentHTML("beforeend", `<button class="pill sm ghost" type="button" id="bioEdit">${bio ? "о себе" : "+ о себе"}</button>`);
     $("bioEdit").onclick = () => {
-      $("bioEdit").outerHTML = `<form class="bio-form" id="bioForm"><textarea class="field" id="bioInput" maxlength="160" placeholder="Например: люблю играть за мафию, по субботам волейбол">${esc(bio)}</textarea>
+      $("profBio").hidden = false;
+      $("profBio").innerHTML = `<form class="bio-form" id="bioForm"><textarea class="field" id="bioInput" maxlength="160" placeholder="Например: люблю играть за мафию, по субботам волейбол">${esc(bio)}</textarea>
         <div class="row-btns"><button class="pill sm" type="submit">сохранить</button></div></form>`;
       const inp = $("bioInput"); inp.focus();
       $("bioForm").onsubmit = async (ev2) => {
@@ -4274,7 +4318,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const renderEvents = async () => {
     const box = $("eventsList");
     if (!sb || !me) {
-      box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><h2 class="h2">Запись работает через Telegram</h2><p class="lead">Открой бота @dacha_gay и нажми «Играть», чтобы записаться на субботу.</p><div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div></div></div></div>`;
+      box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><h2 class="h2">Запись работает через Telegram</h2><p class="lead">Открой бота @dacha_gay и нажми «Дача», чтобы записаться на субботу.</p><div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div></div></div></div>`;
       $("paySettings").innerHTML = ""; return;
     }
     if (ev.loaded) drawEvents();
@@ -4460,7 +4504,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("dragHint").hidden = ps.filter((p) => !p.out).length < 2;
     if (!ps.length) {
       $("notesEmptyBody").innerHTML = !sb || !me
-        ? `<h2 class="h2">Записи работают в игре через Telegram</h2><p class="lead">Открой бота @dacha_gay и нажми «Играть». Когда ведущий раздаст карты, здесь появятся все игроки за столом.</p><div class="row-btns"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`
+        ? `<h2 class="h2">Записи работают в игре через Telegram</h2><p class="lead">Открой бота @dacha_gay и нажми «Дача». Когда ведущий раздаст карты, здесь появятся все игроки за столом.</p><div class="row-btns"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`
         : notesGameId()
         ? `<div class="wait"><span class="pulse"></span>Загружаю игроков…</div>`
         : `<h2 class="h2">Записи появятся с раздачей</h2><p class="lead">Как только ведущий разошлёт карты, здесь сами появятся все, кто в игре. Цвет меняй по ходу: серый — не знаю, чёрный — мафия, красный — верю. Записи видишь только ты.</p>`;

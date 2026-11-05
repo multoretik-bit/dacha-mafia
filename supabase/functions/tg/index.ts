@@ -2,7 +2,7 @@
 // POST {action:"auth", initData}   -> verifies Telegram mini app data, returns a Supabase session
 // POST {action:"notify", game_id}  -> host only: bot tells every player their card has arrived
 // POST {action:"poll", question, options, test} / {action:"poll_close", poll_id} -> @tivishka only
-// POST ?hook=1 (Telegram webhook)  -> answers /start with an "Играть" button, takes poll answers (callback_query pv:<poll>:<i>)
+// POST ?hook=1 (Telegram webhook)  -> answers /start with a "Дача" button, takes poll answers (callback_query pv:<poll>:<i>)
 import { createClient } from "npm:@supabase/supabase-js@2.117.0";
 
 const BOT = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
@@ -254,7 +254,7 @@ async function pollVote(cq: any) {
   if (p.closed_at) return answer("Опрос уже закрыт");
   if (!(i >= 0 && i < p.options.length)) return answer("Нет такого ответа");
   const { data: prof } = await admin.from("profiles").select("id").eq("tg_id", cq.from.id).maybeSingle();
-  if (!prof) return answer("Сначала нажми «Играть» в боте, чтобы попасть в список дачников");
+  if (!prof) return answer("Сначала нажми «Дача» в боте, чтобы попасть в список дачников");
   await admin.from("poll_votes").upsert({ poll_id: p.id, user_id: prof.id, option: i, voted_at: new Date().toISOString() });
   const counts = await tally(p.id, p.options.length);
   if (cq.message) {
@@ -271,8 +271,8 @@ async function hook(req: Request) {
   if (msg?.chat?.type === "private") {
     await tgApi("sendMessage", {
       chat_id: msg.chat.id,
-      text: "Добро пожаловать на дачу! Жми «Играть»: ты сразу появишься в списке дачников. Когда ведущий раздаст роли, карта придёт сюда.",
-      reply_markup: { inline_keyboard: [[{ text: "Играть", web_app: { url: APP } }]] },
+      text: "DACHA — дом вдали от дома\n\nНажми «Дача» и попадёшь в расписание ближайших ивентов, рейтинги и профили друзей. Когда ведущий мафии раздаст роли, карта придёт сюда.",
+      reply_markup: { inline_keyboard: [[{ text: "Дача", web_app: { url: APP } }]] },
     });
   }
   return new Response("ok");
