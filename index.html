@@ -1264,8 +1264,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .ad-bill { opacity: .8; }
 
 /* profile v4: compact social header */
-.prof-cover { height: 64px; }
-.prof-card .prof-head { margin-top: -30px; padding: 0 16px 14px; align-items: stretch; text-align: left; gap: 10px; }
+.prof-card .prof-cover { height: 64px; }
+.prof-card .prof-head { margin-top: -22px; padding: 0 16px 14px; align-items: stretch; text-align: left; gap: 10px; }
 .ph-top { display: flex; align-items: flex-end; gap: 14px; }
 .prof-card .ava.lg, .prof-card .ph-top .prem { width: 84px; height: 84px; font-size: 40px; }
 .prof-card .ph-top .prem .ava.lg { width: 100%; height: 100%; }
@@ -1291,6 +1291,46 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .pgi-ic { width: 38px; height: 38px; font-size: 20px; }
 .pgi-place { font-size: 26px; }
 .pgi .pgi-place { margin-bottom: 8px; }
+
+/* places, next game, series (05.11) */
+.place-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; box-sizing: border-box; padding: 6px 10px 6px 8px; border-radius: 12px; background: #EEF3FF; color: var(--navy-ink); text-decoration: none; font-weight: 800; font-size: 13px; margin-top: 6px; }
+.place-chip { min-width: 0; justify-self: start; }
+.place-chip .pc-n { flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.place-chip .pc-go { color: var(--blue); font-weight: 800; font-size: 12px; white-space: nowrap; margin-left: 2px; }
+.place-chip:active { transform: scale(.97); }
+.wk-place { padding: 0 12px 6px 17px; margin-top: -6px; }
+.wk-place .place-chip { margin-top: 0; }
+.next-card { position: relative; border-radius: 22px; background: #fff; box-shadow: var(--sh); overflow: hidden; }
+.next-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 5px; background: var(--gc); }
+.nc-main { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 14px 10px 17px; text-align: left; }
+.nc-date { width: 52px; flex: none; text-align: center; border-radius: 14px; background: var(--navy-ink); color: #fff; padding: 6px 0; }
+.nc-date small { display: block; font: 800 9.5px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; color: #AFC0FF; }
+.nc-date b { display: block; font: 600 26px/1.05 var(--f-code); }
+.nc-t { display: grid; gap: 3px; min-width: 0; flex: 1; }
+.nc-t b { font: 800 17px/1.2 var(--f-body); color: var(--ink); }
+.nc-t small { color: var(--muted); font-weight: 700; font-size: 12.5px; }
+.next-card .wk-place { margin-top: -4px; }
+.next-card .wk-foot { padding-bottom: 12px; }
+.sh-every { display: inline-flex; width: fit-content; padding: 6px 10px; border-radius: 12px; background: rgba(255,255,255,.22); font-weight: 800; font-size: 13px; }
+.ser-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--hair); }
+.ser-row.off { opacity: .55; }
+.ser-t { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.ser-t b { font-weight: 800; font-size: 14.5px; }
+.ser-t small { color: var(--muted); font-weight: 700; font-size: 12.5px; }
+.sp-form select.field, .ev-form select.field { appearance: auto; }
+.new-place { display: grid; gap: 8px; margin-top: 8px; }
+.new-place[hidden] { display: none; }
+.focus-pulse { animation: focusPulse 1s ease-in-out 2; }
+@keyframes focusPulse { 50% { box-shadow: 0 0 0 4px rgba(0,51,255,.35), var(--sh); } }
+
+.ph-ach { flex: 1; min-width: 0; display: grid; gap: 2px; justify-items: start; align-self: flex-end; padding-bottom: 2px; }
+.ph-ach small { color: var(--muted); font-weight: 700; font-size: 12px; }
+.ph-coins { display: flex; gap: 6px; flex-wrap: wrap; max-height: 46px; overflow: hidden; }
+.ach.mini { width: auto; gap: 0; }
+.ach.mini .coin { width: 38px; height: 38px; animation: none; }
+.ach.mini .coin img { filter: drop-shadow(0 2px 3px rgba(80,50,0,.3)); }
+.ph-coins { overflow: visible; max-height: none; }
+.ph-ach { padding-bottom: 0; }
 
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
@@ -1874,7 +1914,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105083153"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105084046"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2361,7 +2401,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const sAll = sstats || [];
     const totG = (+row.games || 0) + sAll.reduce((t, x) => t + +x.games, 0), totW = (+row.wins || 0) + sAll.reduce((t, x) => t + +x.wins, 0);
     $("profHead").innerHTML = `<div class="ph-top">${avaP({ ...row, id }, "lg")}
-        <div class="ph-cnt"><div><b>${totG}</b><small>${plural(totG, "игра", "игры", "игр")}</small></div><div><b>${totW}</b><small>${plural(totW, "победа", "победы", "побед")}</small></div><div><b id="cntAch">·</b><small id="cntAchL">ачивок</small></div></div></div>
+        <div class="ph-ach" id="phAch"></div></div>
       <div class="ph-name"><h1 class="h1">${esc(row.nick)}</h1>
         <div class="ph-sub">${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}<span class="ph-since" id="phSince"></span></div></div>
       ${badges.length ? `<div class="prof-badges">${badges.map((b) => `<span class="cb host">${esc(b)}</span>`).join("")}</div>` : ""}
@@ -2397,7 +2437,6 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     drawProfGames(id, row, sstats || [], $("profRoles").innerHTML, (stats || []).length);
     const { data: achs } = await sb.from("user_achievements").select("awarded_at, achievements(id,title,description,icon)").eq("user_id", id).order("awarded_at");
     const list = (achs || []).filter((a) => a.achievements);
-    if ($("cntAch")) { $("cntAch").textContent = list.length; $("cntAchL").textContent = plural(list.length, "ачивка", "ачивки", "ачивок"); }
     $("profAch").innerHTML = list.length ? `<div class="sec-label eyebrow">Ачивки · ${list.length}</div><div class="ach-list">${list.map((a, i) =>
       `<button class="ach" type="button" data-ach="${i}"><span class="coin"><img src="${esc(a.achievements.icon)}" alt=""></span><b>${esc(a.achievements.title)}</b></button>`).join("")}</div>` : "";
     $("profAch").onclick = (e) => {
@@ -2412,6 +2451,14 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       v.addEventListener("click", (ev) => { if (ev.target === v || ev.target.closest("[data-close]")) v.remove(); });
       document.body.append(v);
     };
+    // achievements live in the header, next to the avatar
+    if ($("phAch")) {
+      $("phAch").innerHTML = list.length
+        ? `<div class="ph-coins">${list.map((a, i) => `<button class="ach mini" type="button" data-ach="${i}" aria-label="Ачивка: ${esc(a.achievements.title)}"><span class="coin"><img src="${esc(a.achievements.icon)}" alt=""></span></button>`).join("")}</div>`
+        : `<small>ачивок пока нет</small>`;
+      $("phAch").onclick = $("profAch").onclick;
+      $("profAch").innerHTML = "";
+    }
     $("profStub").textContent = `Вёл игр: ${row.hosted || 0}`;
     const { data: pr } = await sb.from("profiles").select("premium_until").eq("id", id).maybeSingle();
     const until = pr?.premium_until ? new Date(pr.premium_until) : null, active = until && (isNaN(until) || until > new Date());
@@ -3713,18 +3760,51 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const MAFIA_META = { id: "mafia", name: "Мафия", emoji: "🎭", code: "MAF", color: "#E3263A" };
   const meta = (k) => SPORTS[k] || MAFIA_META;
   let sportId = "volley";
-  const sp = { events: [], hosts: [], loaded: false, loading: null, chan: null, board: {}, scope: "all", month: null, editing: null };
+  const sp = { events: [], hosts: [], places: [], series: [], loaded: false, loading: null, chan: null, board: {}, scope: "all", month: null, editing: null, focus: null, seriesEdit: null };
   const addDays = (iso, k) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d + k)).toISOString().slice(0, 10); };
   const dayLabel = (iso) => { const t = bkkToday(); if (iso === t) return "сегодня"; if (iso === addDays(t, 1)) return "завтра"; const { d, m, w } = dayParts(iso); return `${DOW[w]}, ${d} ${MON[m - 1]}`; };
   const isSportHost = (k) => !!me && (canGrant || sp.hosts.some((h) => h.sport === k && h.user_id === me.id));
+  // places: every date can have one; the link opens Google Maps (or a search by name)
+  const placeOf = (e) => (e?.place_id && (sp.places.find((p) => p.id === e.place_id) || e.pl)) || null;
+  const placeName = (e) => placeOf(e)?.name || e?.place || "";
+  const mapsUrl = (pl, name) => pl?.maps_url || (name ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(name + " Phuket") : "");
+  const placeChip = (e) => { const pl = placeOf(e), n = pl?.name || e?.place; return n ? `<a class="place-chip" href="${esc(mapsUrl(pl, n))}" target="_blank" rel="noopener" data-maplink><span class="pc-pin">📍</span><span class="pc-n">${esc(n)}</span><span class="pc-go">карта ›</span></a>` : ""; };
+  document.addEventListener("click", (e) => { const a = e.target.closest("[data-maplink]"); if (!a) return; e.stopPropagation(); if (inTG && tg?.openLink) { e.preventDefault(); tg.openLink(a.href); } }, true);
+  const placeSelect = (cur) => `<select class="field" name="plid">
+      <option value="">без места</option>${sp.places.map((p) => `<option value="${p.id}" ${p.id === cur ? "selected" : ""}>${esc(p.name)}</option>`).join("")}<option value="new">+ новое место…</option></select>
+    <span class="new-place" hidden><input class="field" name="pln" maxlength="80" placeholder="Название места"><input class="field" name="plu" maxlength="600" placeholder="Ссылка на Google Maps (можно без неё)"></span>`;
+  document.addEventListener("change", (e) => { if (e.target.name !== "plid") return; const box = e.target.closest("form")?.querySelector(".new-place"); if (box) box.hidden = e.target.value !== "new"; });
+  const placeFromForm = async (f) => {
+    const v = f.elements.plid?.value; if (v !== "new") return v || null;
+    const name = f.elements.pln.value.trim(); if (!name) throw new Error("Напиши название нового места");
+    let url = f.elements.plu.value.trim() || null; if (url && !/^https?:\/\//i.test(url)) url = "https://" + url;
+    const m = url && url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    const { data, error } = await sb.from("places").insert({ name, maps_url: url, lat: m ? +m[1] : null, lng: m ? +m[2] : null, created_by: me.id }).select("id").single();
+    if (error) throw error;
+    sp.places.push({ id: data.id, name, maps_url: url });
+    return data.id;
+  };
+  const EVERY = ["каждое воскресенье", "каждый понедельник", "каждый вторник", "каждую среду", "каждый четверг", "каждую пятницу", "каждую субботу"];
+  // open one date: mafia — its card in «запись», sport — its card on the sport page
+  const focusCard = (sel) => { let n = 0; const t = setInterval(() => { const el = document.querySelector(sel); if (el && el.offsetParent) { clearInterval(t); el.scrollIntoView({ behavior: "smooth", block: "center" }); el.classList.add("focus-pulse"); setTimeout(() => el.classList.remove("focus-pulse"), 2000); } if (++n > 30) clearInterval(t); }, 120); };
+  const openEvent = (kind, id) => {
+    haptic("tap");
+    if (kind === "mafia") { ev.sel = id; go("events"); focusCard(`#eventsList [data-ev="${id}"]`); }
+    else { sp.focus = id; go("sport", kind); focusCard(`#spNext [data-spev="${id}"]`); }
+  };
   const personOf = (uid) => people.find((p) => p.id === uid) || { id: uid, nick: "Дачник" };
   const loadSports = () => sp.loading || (sp.loading = (async () => {
     if (!sb || !me) return;
-    const [{ data: list, error }, { data: hosts }] = await Promise.all([
+    await sb.rpc("ensure_sport_events");
+    const [{ data: list, error }, { data: hosts }, { data: places }, { data: series }] = await Promise.all([
       sb.from("sport_events").select("*, sport_signups(user_id, created_at, profiles(id,nick,tg_username,tg_photo)), sport_results(user_id, result)")
         .neq("status", "removed").gte("day", addDays(bkkToday(), -120)).order("day").order("start_time"),
       sb.from("sport_hosts").select("sport, user_id"),
+      sb.from("places").select("id, name, maps_url").order("name"),
+      sb.from("sport_series").select("*").order("dow"),
     ]);
+    sp.places = places || [];
+    sp.series = series || [];
     if (error) throw error;
     sp.events = (list || []).map((e) => ({ ...e, signups: (e.sport_signups || []).sort((a, b) => a.created_at.localeCompare(b.created_at)), results: e.sport_results || [] }));
     sp.hosts = hosts || [];
@@ -3790,13 +3870,14 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const going = e.signups || [];
     const mine = maf ? isMine(e) : going.some((g) => g.user_id === me?.id);
     const done = !maf && e.status === "done";
-    const info = maf ? [`сбор ${hm(e.gather_time)}`, `начало ${x.time}`, e.price ? `${e.price} ฿` : ""] : [x.time, e.place, e.price ? `${e.price} ฿` : ""];
+    const info = maf ? [`начало ${x.time}`, `сбор ${hm(e.gather_time)}`, e.price ? `${e.price} ฿` : ""] : [x.time, e.price ? `${e.price} ฿` : "бесплатно"];
     const act = done ? `<span class="tag">сыграно</span>`
       : mine ? `<span class="tag ok">${maf && canHost() ? "ты ведёшь" : "ты идёшь"}</span>`
       : me ? `<button class="pill sm" type="button" data-wjoin>${maf && canHost() ? "я веду" : "я буду"}</button>` : "";
     return `<div class="wk" data-kind="${x.kind}" data-id="${e.id}" style="--gc:${M.color}">
       <button class="wk-main" type="button" data-wopen><span class="wk-ic">${M.emoji}</span>
         <span class="wk-txt"><b>${M.name}</b><small>${info.filter(Boolean).map(esc).join(" · ")}</small></span><span class="wk-go">›</span></button>
+      ${placeChip(e) ? `<div class="wk-place">${placeChip(e)}</div>` : ""}
       <div class="wk-foot"><span class="wk-faces">${faceList(going, 5)}</span><span class="wk-n">${going.length ? `${going.length} ${plural(going.length, "идёт", "идут", "идут")}` : "пока никого"}</span>${act}</div>
     </div>`;
   };
@@ -3828,12 +3909,12 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       if (S.view === "hub") { drawWeek(); drawHubGames(); }
       return;
     }
-    if (e.target.closest("[data-wopen]")) return kind === "mafia" ? go("events") : go("sport", kind);
+    if (e.target.closest("[data-wopen]")) return openEvent(kind, id);
   };
   const drawHubGames = () => {
     const t = bkkToday();
     const next = (k) => (k === "mafia" ? ev.list.find((e) => e.status === "open") : sp.events.find((e) => e.sport === k && e.status === "open" && e.day >= t));
-    const line = (k) => { const n = next(k); return n ? `ближайшая: <b>${esc(dayLabel(n.day))} · ${hm(n.start_time)}</b>` : me ? "дату скоро поставят" : "войди, чтобы записаться"; };
+    const line = (k) => { const n = next(k); return n ? `ближайшая: <b>${esc(dayLabel(n.day))} · ${hm(n.start_time)}</b>${k === "mafia" && placeName(n) ? `<br>📍 ${esc(placeName(n))}` : ""}` : me ? "дату скоро поставят" : "войди, чтобы записаться"; };
     const mafArt = ["cards/maf.webp", "cards/kom-3.webp", "cards/don-2.webp"];
     $("hubGames").innerHTML = ["mafia", "volley", "foot"].map((k) => {
       const M = meta(k);
@@ -3965,6 +4046,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const hosts = sp.hosts.filter((h) => h.sport === X.id).map((h) => personOf(h.user_id));
     $("spHero").innerHTML = `<div class="sport-hero ${X.id}"><span class="sh-emoji" aria-hidden="true">${X.emoji}</span>
       <div class="eyebrow">DACHA · ${X.code}</div><h1>${X.name}</h1><p>${X.tag}</p>
+      ${sp.series.filter((x) => x.sport === X.id && x.active).map((x) => `<span class="sh-every">🗓 ${esc(seriesLine(x))}</span>`).join("")}
       <div class="sh-hosts">${hosts.length ? `<span>${hosts.length > 1 ? "Ведущие:" : "Ведущий:"}</span>${hosts.map((p) => `<span class="ev-who">${avaP(p)}<span>${esc(p.nick)}</span></span>`).join("")}` : `<span>Ведущего пока нет: его назначает @tivishka</span>`}</div></div>`;
     $("spCode").textContent = X.code;
     if (!sb || !me) { $("spNext").innerHTML = loginPrompt(); $("spNew").innerHTML = $("spPast").innerHTML = $("spBoard").innerHTML = ""; return; }
@@ -3981,7 +4063,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const spForm = (e) => `<form class="sp-form" data-spform="${e ? e.id : "new"}">
       <label>дата<input class="field" type="date" name="d" min="${bkkToday()}" value="${e ? e.day : ""}" required></label>
       <label>начало<input class="field" type="time" name="t" value="${e ? hm(e.start_time) : "18:00"}" required></label>
-      <label class="wide">место<input class="field" name="pl" maxlength="80" value="${esc(e?.place || "")}" placeholder="Например: пляж Карон, сетка у кафе"></label>
+      <label class="wide">место${placeSelect(e ? e.place_id : sp.places.find((p) => sp.series.some((x) => x.sport === sportId && x.place_id === p.id))?.id)}</label>
       <label>цена, бат<input class="field" type="number" name="p" min="0" step="10" value="${e ? e.price : 0}"></label>
       <label>заметка<input class="field" name="n" maxlength="200" value="${esc(e?.note || "")}" placeholder="что взять"></label>
       <div class="row-btns wide" style="justify-content:flex-start"><button class="pill sm" type="submit">${e ? "сохранить" : "поставить игру"}</button>
@@ -3994,8 +4076,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       const { d, m, w } = dayParts(e.day), mine = e.signups.some((x) => x.user_id === me.id);
       return `<article class="ticket ev sp-card" data-spev="${e.id}" style="margin-bottom:12px"><div class="ticket-in">
         <div class="ev-head"><div class="ev-date"><small>${DOW[w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
-          <div class="sp-meta"><div class="eyebrow">${esc(dayLabel(e.day))}</div><b>${hm(e.start_time)}${e.place ? " · " + esc(e.place) : ""}</b>
-            <small>${e.price ? `${e.price} ฿ с человека` : "бесплатно"}</small>${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
+          <div class="sp-meta"><div class="eyebrow">${esc(dayLabel(e.day))}</div><b>${hm(e.start_time)}</b>
+            <small>${e.price ? `${e.price} ฿ с человека` : "бесплатно"}</small>${placeChip(e)}${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
         <div class="ev-crew">${e.signups.map(spWho).join("") || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
         <div class="ev-act">${mine ? `<span class="tag ok">ты идёшь</span><button class="linkish" type="button" data-spleave>не смогу</button>` : `<button class="pill sm" type="button" data-spjoin>я буду</button>`}
           <span class="ev-count">${e.signups.length} ${plural(e.signups.length, "идёт", "идут", "идут")}</span></div>
@@ -4003,9 +4085,45 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       </div></article>`;
     }).join("") : `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">${host ? "Ближайших игр нет. Поставь дату ниже — она появится в календаре на главной." : "Ближайших игр пока нет. Как только ведущий поставит дату, она появится здесь и в календаре на главной."}</p></div></div></div>`);
   };
+  const seriesLine = (x) => `${EVERY[x.dow]} в ${hm(x.start_time)}${placeName(x) ? " · " + placeName(x) : ""}`;
+  const seriesForm = (x) => `<form class="sp-form" data-seriesform="${x ? x.id : "new"}">
+      <label>день недели<select class="field" name="dw">${[1, 2, 3, 4, 5, 6, 0].map((d) => `<option value="${d}" ${(x ? x.dow : 4) === d ? "selected" : ""}>${DOW_FULL[d]}</option>`).join("")}</select></label>
+      <label>начало<input class="field" type="time" name="t" value="${x ? hm(x.start_time) : "19:00"}" required></label>
+      <label class="wide">место${placeSelect(x?.place_id)}</label>
+      <label>цена, бат<input class="field" type="number" name="p" min="0" step="10" value="${x ? x.price : 0}"></label>
+      <label>заметка<input class="field" name="n" maxlength="200" value="${esc(x?.note || "")}" placeholder="что взять"></label>
+      <div class="row-btns wide" style="justify-content:flex-start"><button class="pill sm" type="submit">${x ? "сохранить" : "добавить"}</button>
+        ${x ? `<button class="pill sm ${x.active ? "red" : "ghost"}" type="button" data-seroff="${x.id}">${x.active ? "остановить" : "возобновить"}</button>` : ""}
+        <button class="pill sm ghost" type="button" data-sercancel>отмена</button></div>
+    </form>`;
+  const saveSeries = async (f) => {
+    const id = f.dataset.seriesform, v = (k) => f.elements[k].value;
+    let place_id; try { place_id = await placeFromForm(f); } catch (x) { return toast(humanErr(x)); }
+    const row = { dow: +v("dw"), start_time: v("t"), place_id, price: Math.max(0, parseInt(v("p"), 10) || 0), note: v("n").trim() || null };
+    const t = bkkToday();
+    if (id === "new") {
+      const { error } = await sb.from("sport_series").insert({ ...row, sport: sportId, created_by: me.id });
+      if (error) return toast("Не получилось: " + humanErr(error));
+    } else {
+      const old = sp.series.find((x) => x.id === id);
+      const { error } = await sb.from("sport_series").update(row).eq("id", id);
+      if (error) return toast("Не получилось: " + humanErr(error));
+      // future open dates follow the series; a new weekday moves them
+      const fut = sb.from("sport_events");
+      if (old && old.dow !== row.dow) await fut.update({ status: "removed" }).eq("series_id", id).eq("status", "open").gte("day", t);
+      else await fut.update({ start_time: row.start_time, place_id, place: sp.places.find((p) => p.id === place_id)?.name || null, price: row.price, note: row.note }).eq("series_id", id).eq("status", "open").gte("day", t);
+    }
+    sp.seriesEdit = null;
+    spAction(() => sb.rpc("ensure_sport_events"), "Расписание обновлено");
+  };
   const drawSportNew = () => {
-    const X = SPORTS[sportId];
-    $("spNew").innerHTML = isSportHost(X.id) ? `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:12px"><div class="eyebrow">Ты ведущий · ${X.name.toLowerCase()}</div><h2 class="h2">Поставить игру</h2></div>${spForm(null)}</div></div>` : "";
+    const X = SPORTS[sportId], host = isSportHost(X.id), ser = sp.series.filter((x) => x.sport === X.id);
+    const serBox = host ? `<div class="ticket" style="margin-bottom:12px"><div class="ticket-in"><div class="t-body" style="padding-bottom:10px"><div class="eyebrow">Ты ведущий · расписание</div><h2 class="h2">Каждую неделю</h2>
+        <p class="lead" style="font-size:13.5px">Регулярная игра сама появляется в календаре на 4 недели вперёд. Отдельную дату можно поменять или убрать в её карточке.</p></div>
+        ${ser.map((x) => `<div class="ser-row ${x.active ? "" : "off"}"><span class="ser-t"><b>${esc(seriesLine(x))}</b><small>${x.active ? (x.price ? x.price + " ฿" : "бесплатно") : "остановлено"}</small></span><button class="linkish" type="button" data-seredit="${x.id}">${sp.seriesEdit === x.id ? "свернуть" : "изменить"}</button></div>${sp.seriesEdit === x.id ? seriesForm(x) : ""}`).join("")}
+        ${sp.seriesEdit === "new" ? seriesForm(null) : `<div class="row-btns" style="justify-content:flex-start;padding:4px 12px 14px"><button class="pill sm ghost" type="button" data-sernew>+ регулярная игра</button></div>`}
+      </div></div>` : "";
+    $("spNew").innerHTML = serBox + (host ? `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:12px"><div class="eyebrow">Ты ведущий · ${X.name.toLowerCase()}</div><h2 class="h2">Поставить разовую игру</h2></div>${spForm(null)}</div></div>` : "");
   };
   const drawSportPast = () => {
     const X = SPORTS[sportId], t = bkkToday(), host = isSportHost(X.id);
@@ -4071,11 +4189,32 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       onOk: () => { sp.editing = null; return spAction(() => sb.from("sport_events").update({ status: "removed" }).eq("id", id), "Дата убрана"); } });
     else if (b.hasAttribute("data-spres") && evn) openResults(evn);
   });
-  $("vSport").addEventListener("submit", (e) => {
+  $("spNew").addEventListener("click", async (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.seredit) { sp.seriesEdit = sp.seriesEdit === b.dataset.seredit ? null : b.dataset.seredit; drawSportNew(); }
+    else if (b.hasAttribute("data-sernew")) { sp.seriesEdit = "new"; drawSportNew(); }
+    else if (b.hasAttribute("data-sercancel")) { sp.seriesEdit = null; drawSportNew(); }
+    else if (b.dataset.seroff) {
+      const x = sp.series.find((y) => y.id === b.dataset.seroff); if (!x) return;
+      const stop = x.active;
+      const run = async () => {
+        const { error } = await sb.from("sport_series").update({ active: !stop }).eq("id", x.id);
+        if (error) return toast("Не получилось: " + humanErr(error));
+        if (stop) await sb.from("sport_events").update({ status: "removed" }).eq("series_id", x.id).eq("status", "open").gte("day", addDays(bkkToday(), 1));
+        sp.seriesEdit = null;
+        spAction(() => sb.rpc("ensure_sport_events"), stop ? "Регулярная игра остановлена" : "Регулярная игра возобновлена");
+      };
+      stop ? sheet({ eyebrow: "Расписание", title: "Остановить регулярную игру?", text: "Будущие даты пропадут из календаря (сегодняшняя останется). Потом можно возобновить.", ok: "остановить", okClass: "red", onOk: run }) : run();
+    }
+  });
+  $("vSport").addEventListener("submit", async (e) => {
+    const sf = e.target.closest("[data-seriesform]");
+    if (sf) { e.preventDefault(); return saveSeries(sf); }
     const f = e.target.closest("[data-spform]"); if (!f) return;
     e.preventDefault();
     const v = (k) => f.elements[k].value, id = f.dataset.spform;
-    const row = { day: v("d"), start_time: v("t"), place: v("pl").trim() || null, price: Math.max(0, parseInt(v("p"), 10) || 0), note: v("n").trim() || null };
+    let place_id; try { place_id = await placeFromForm(f); } catch (x) { return toast(humanErr(x)); }
+    const row = { day: v("d"), start_time: v("t"), place_id, place: sp.places.find((p) => p.id === place_id)?.name || null, price: Math.max(0, parseInt(v("p"), 10) || 0), note: v("n").trim() || null };
     if (!row.day) return toast("Выбери дату");
     if (id === "new") spAction(() => sb.from("sport_events").insert({ ...row, sport: sportId, created_by: me.id }), "Игра в календаре").then((ok) => ok && haptic("card"));
     else { sp.editing = null; spAction(() => sb.from("sport_events").update(row).eq("id", id), "Сохранено"); }
@@ -4122,7 +4261,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!sb || !me) return;
     await sb.rpc("ensure_events");
     const [{ data: list }, { data: set }, { data: hostIds }] = await Promise.all([
-      sb.from("events").select("*, signups(user_id, created_at, profiles(id,nick,tg_username,tg_photo))").gte("day", bkkToday()).neq("status", "removed").order("day").limit(10),
+      sb.from("events").select("*, pl:places(id,name,maps_url), signups(user_id, created_at, profiles(id,nick,tg_username,tg_photo))").gte("day", bkkToday()).neq("status", "removed").order("day").limit(10),
       sb.from("pay_settings").select("*").eq("id", 1).maybeSingle(),
       sb.rpc("host_ids"),
     ]);
@@ -4155,18 +4294,15 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         </div><div class="mode-stub"><span>Saturday</span></div></div></div></button>`;
       return;
     }
-    const { d, m } = dayParts(e.day), mine = isMine(e);
-    const crew = e.signups.map((x) => whoChip(e, x)).join("");
-    box.innerHTML = `<article class="ticket ev is-next" data-ev="${e.id}"><div class="ticket-in">
-      <div class="ev-head"><div class="ev-date"><small>${DOW[dayParts(e.day).w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
-        <div style="min-width:0"><div class="eyebrow">Следующая игра</div>
-          <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
-          ${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
-      ${hostsLine(e)}
-      <div class="ev-crew">${crew || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
-      <div class="ev-act">${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span><button class="linkish" data-goev>${canHost() ? "подробнее" : "оплата"}</button>` : `<button class="pill sm" data-join>${canHost() ? "я веду" : "я буду"}</button>`}<span class="ev-count">идут: ${e.signups.length}${paidCount(e) ? ` · <b>оплатили: ${paidCount(e)}</b>` : ""}</span></div>
-      <button class="stub ev-go" data-goev><span>Все даты мафии и оплата</span><b>→</b></button>
-    </div></article>`;
+    const { d, m, w } = dayParts(e.day), mine = isMine(e);
+    box.innerHTML = `<div class="sec-title" style="margin:0 2px 10px">Следующая игра</div>
+      <article class="next-card" data-ev="${e.id}" style="--gc:#E3263A">
+      <button class="nc-main" type="button" data-goev><span class="nc-date"><small>${DOW[w]}</small><b>${d}</b><small>${MON[m - 1]}</small></span>
+        <span class="nc-t"><b>🎭 Мафия</b><small>${esc(dayLabel(e.day))} · начало ${hm(e.start_time)} · сбор ${hm(e.gather_time)}${e.price ? ` · ${e.price} ฿` : ""}</small></span><span class="wk-go">›</span></button>
+      ${placeChip(e) ? `<div class="wk-place">${placeChip(e)}</div>` : ""}
+      <div class="wk-foot"><span class="wk-faces">${faceList(e.signups, 6)}</span><span class="wk-n">${e.signups.length ? `${e.signups.length} ${plural(e.signups.length, "идёт", "идут", "идут")}` : "пока никого"}</span>
+        ${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span>` : `<button class="pill sm" type="button" data-join>${canHost() ? "я веду" : "я буду"}</button>`}</div>
+    </article>`;
   };
   const payState = (e, pay) => {
     if (pay?.confirmed_at) return `<span class="tag ok">оплачено ✓</span>`;
@@ -4197,6 +4333,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <label>сбор<input class="field" type="time" name="g" value="${hm(e.gather_time)}" required></label>
         <label>начало<input class="field" type="time" name="s" value="${hm(e.start_time)}" required></label>
         <label>цена, бат<input class="field" type="number" name="p" min="0" step="10" value="${e.price}" required></label>
+        <label class="wide">место${placeSelect(e.place_id)}</label>
         <label class="wide">заметка для всех<input class="field" name="n" maxlength="200" value="${esc(e.note || "")}" placeholder="Например: берём настолку, адрес тот же"></label>
         <div class="row-btns wide" style="justify-content:flex-start"><button class="pill sm" type="submit">сохранить</button>
         <button class="pill sm ${e.status === "open" ? "red" : "ghost"}" type="button" data-evstatus>${e.status === "open" ? "отменить игру" : "вернуть игру"}</button>
@@ -4226,7 +4363,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <div class="ev-head"><div class="ev-date"><small>${DOW[dayParts(e.day).w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
           <div style="min-width:0"><div class="eyebrow">${off ? "Игра отменена" : "Для ведущего"}</div>
             <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
-            ${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
+            ${placeChip(e)}${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
         ${hostsLine(e)}
         <div class="ev-act" style="padding-top:0">${isMine(e) ? `<span class="tag ok">ты ведёшь</span><button class="linkish" data-leave>не смогу</button>` : `<button class="pill sm" data-join ${off ? "disabled" : ""}>я веду эту игру</button>`}</div>
         <div class="stats ev-stats">
@@ -4291,7 +4428,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <div class="ev-head"><div class="ev-date"><small>${DOW[dayParts(e.day).w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
           <div style="min-width:0"><div class="eyebrow">${off ? "Игра отменена" : e.id === nextId ? "Ближайшая игра" : DOW_FULL[dayParts(e.day).w]}</div>
             <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
-            ${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
+            ${placeChip(e)}${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
         ${hostsLine(e)}
         <div class="ev-crew">${crew || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
         <div class="ev-act">${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span><button class="linkish" data-leave>не смогу</button>` : `<button class="pill sm" data-join ${off ? "disabled" : ""}>${canHost() ? "я веду" : "я буду"}</button>`}
@@ -4386,7 +4523,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     else if (b.hasAttribute("data-evstatus")) evAction(() => sb.from("events").update({ status: event.status === "open" ? "cancelled" : "open" }).eq("id", id), event.status === "open" ? "Игра отменена" : "Игра снова в расписании");
   });
   $("homeEvent").addEventListener("click", async (e) => {
-    if (e.target.closest("[data-goev]")) return go("events");
+    const nc = e.target.closest("[data-goev]");
+    if (nc) { const c = nc.closest("[data-ev]"); return c ? openEvent("mafia", c.dataset.ev) : go("events"); }
     const card = e.target.closest("[data-ev]");
     if (card && e.target.closest("[data-join]")) {
       haptic("tap");
@@ -4396,12 +4534,13 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       toast("Записал тебя на игру", { label: "оплатить", run: () => go("events") });
     }
   });
-  $("eventsList").addEventListener("submit", (e) => {
+  $("eventsList").addEventListener("submit", async (e) => {
     const f = e.target.closest("[data-evform]"); if (!f) return;
     e.preventDefault();
     const id = f.closest("[data-ev]").dataset.ev, v = (k) => f.elements[k].value;
+    let place_id; try { place_id = await placeFromForm(f); } catch (x) { return toast(humanErr(x)); }
     ev.editing = null;
-    evAction(() => sb.from("events").update({ gather_time: v("g"), start_time: v("s"), price: Math.max(0, parseInt(v("p"), 10) || 0), note: v("n").trim() || null }).eq("id", id), "Сохранено");
+    evAction(() => sb.from("events").update({ gather_time: v("g"), start_time: v("s"), price: Math.max(0, parseInt(v("p"), 10) || 0), place_id, note: v("n").trim() || null }).eq("id", id), "Сохранено");
   });
   $("paySettings").addEventListener("click", (e) => { if (e.target.closest("#qrPick")) $("qrFile").click(); });
   $("paySettings").addEventListener("change", async (e) => {
