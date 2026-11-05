@@ -1649,6 +1649,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .wk-joins { align-items: center; }
 .wk-leave { padding: 6px 4px; font-size: 13px; }
 
+.ic-grid.faces button { height: 52px; padding: 2px; background: #F4F6FA; }
+.ic-grid.faces img { width: 46px; height: 46px; display: block; margin: 0 auto; }
+.prem-ic img { width: 100%; height: 100%; border-radius: 50%; background: #fff; display: block; }
+.prem-ic:has(img) { background: #fff; overflow: hidden; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -2266,7 +2271,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105105437"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105110148"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2408,8 +2413,10 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   };
   const CASH = '<i class="cash">💵</i><i class="cash">💸</i><i class="cash">💵</i><i class="cash">💰</i>';
   const premIcons = new Map();
+  const FACES = ["don", "maf", "mafc", "mafw", "mafl", "kom", "komw", "kur", "doc", "pat", "pri", "man", "manw", "mir", "mirp", "mirt", "mirg"];
+  const premIconHTML = (v) => (String(v).startsWith("f:") ? `<img src="faces/${esc(String(v).slice(2))}.svg" alt="">` : esc(v));
   const avaP = (p, extra = "") => isPremium(p)
-    ? `<span class="prem">${ava(p?.nick, p?.id, extra + " premium", p?.tg_photo)}${premIcons.get(p?.id || p?.uid || p?.user_id) ? `<i class="prem-ic">${esc(premIcons.get(p?.id || p?.uid || p?.user_id))}</i>` : ""}</span>`
+    ? `<span class="prem">${ava(p?.nick, p?.id, extra + " premium", p?.tg_photo)}${premIcons.get(p?.id || p?.uid || p?.user_id) ? `<i class="prem-ic">${premIconHTML(premIcons.get(p?.id || p?.uid || p?.user_id))}</i>` : ""}</span>`
     : ava(p?.nick, p?.id, extra, p?.tg_photo);
   const canHost = () => !!me?.canHost;
   const tgLine = (p) => (p?.tg_username ? "@" + p.tg_username : p?.tg_name || "");
@@ -2846,6 +2853,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const ICONS_P = ["🔥", "⚡", "👑", "🦁", "🐺", "🦅", "🌙", "⭐", "🎯", "🍀", "💎", "🃏", "🎭", "🏐", "⚽", "🌴"];
     const iconPick = isMe && isPremium(me) ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
         <div class="eyebrow">◆ PREMIUM · твоя иконка</div><p class="lead">Она будет на твоей аватарке во всех списках.</p>
+        <div class="eyebrow" style="margin-top:2px">Дачники с карт</div>
+        <div class="ic-grid faces">${FACES.map((f) => `<button type="button" data-picon="f:${f}" aria-pressed="${premIcons.get(me.id) === "f:" + f}"><img src="faces/${f}.svg" alt=""></button>`).join("")}</div>
+        <div class="eyebrow" style="margin-top:2px">Смайлики</div>
         <div class="ic-grid">${ICONS_P.map((x) => `<button type="button" data-picon="${x}" aria-pressed="${premIcons.get(me.id) === x}">${x}</button>`).join("")}<button type="button" data-picon="" aria-pressed="${!premIcons.get(me.id)}" class="ic-none">без</button></div>
       </div></div></div>` : "";
     $("profBtns").innerHTML = `${premCard}${iconPick}${myQr !== null ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
