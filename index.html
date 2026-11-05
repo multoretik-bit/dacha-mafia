@@ -1908,6 +1908,8 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 /* full dark profile (PREMIUM) */
 body.pdark { --bg: #0A0D16; }
 html:not(.hw) body.pdark, html body.pdark { background: #0A0D16; }
+html:not(.hw) body.pdark .ground, html body.pdark .ground { background: #0A0D16; }
+html:not(.hw) body.pdark::before { background: #0A0D16; }
 html body.pdark::before { background: #0A0D16; }
 html:has(body.pdark) { background: #0A0D16; }
 #vProfile.th-dark .pgo { background: color-mix(in srgb, var(--gc) 16%, #141927); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gc) 40%, transparent); }
@@ -2557,7 +2559,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105180022"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105180308"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2878,7 +2880,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   let navBack = false, navReady = false;
   const goBack = () => { haptic("tap"); const t = navStack.pop(); navBack = true; try { go(t ? t.v : "hub", t?.a); } finally { navBack = false; } };
   const go = (view, arg) => {
-    if (view !== "profile") document.body.classList.remove("pdark");
+    if (view !== "profile") setPdark(false);
     if (navReady && !navBack && S.view && (S.view !== view || (view === "profile" && arg && arg !== profileId) || (view === "sport" && arg && arg !== sportId))) {
       navStack.push({ v: S.view, a: S.view === "profile" ? profileId : ["sport", "sportorg", "sportrate", "sportlist"].includes(S.view) ? sportId : S.view === "cevent" ? ceId : undefined });
       if (navStack.length > 40) navStack.shift();
@@ -3074,7 +3076,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     card0.classList.toggle("is-locked", !!extra?.locked);
     if (extra?.locked) {
       const r0 = people.find((p) => p.id === id) || { id, nick: "Дачник" };
-      card0.classList.remove("is-prem", "has-acc", "editing"); $("vProfile").classList.remove("th-dark"); document.body.classList.remove("pdark"); card0.querySelector(".prof-cover").style.background = ""; card0.querySelector(".prof-cover").innerHTML = "";
+      card0.classList.remove("is-prem", "has-acc", "editing"); $("vProfile").classList.remove("th-dark"); setPdark(false); card0.querySelector(".prof-cover").style.background = ""; card0.querySelector(".prof-cover").innerHTML = "";
       $("profHead").innerHTML = `<div class="lk-ava">${ava(r0.nick, id, "lg", r0.tg_photo)}<span class="lk-ic">🔒</span></div><h1 class="h1">${esc(r0.nick)}</h1>
         <p class="lk-msg">В связи с подозрительной активностью аккаунт был заблокирован. Просмотр недоступен</p>`;
       ["profBio", "profGames", "profAch"].forEach((k) => { $(k).innerHTML = ""; $(k).hidden = k === "profBio"; });
@@ -4955,6 +4957,17 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     mint: "linear-gradient(135deg, #43E97B, #38F9D7)", peach: "linear-gradient(135deg, #FFDEE9, #B5FFFC)", fire: "linear-gradient(135deg, #F12711, #F5AF19)",
     sky: "linear-gradient(180deg, #A1C4FD, #C2E9FB)", gold: "linear-gradient(135deg, #BF953F, #FCF6BA 45%, #B38728 70%, #FBF5B7)",
   };
+  function setPdark(on) { // hoisted: go() may run before this line
+    if (document.body.classList.contains("pdark") === on) return;
+    document.body.classList.toggle("pdark", on);
+    const tg = window.Telegram?.WebApp, hw = document.documentElement.classList.contains("hw");
+    try {
+      tg?.setHeaderColor?.(on ? "#0A0D16" : hw ? "#FFA24C" : "#FFF1C9");
+      tg?.setBackgroundColor?.(on ? "#0A0D16" : hw ? "#F07A1A" : "#F4F5F9");
+      tg?.setBottomBarColor?.(on ? "#0A0D16" : hw ? "#3B1150" : "#F4F5F9");
+    } catch {}
+    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = on ? "#0A0D16" : hw ? "#FFA24C" : "#FFF1C9";
+  }
   const SCENES = { sunset: "Закат", beach: "Пляж", waves: "Волны", hills: "Горы", night: "Ночь", aurora: "Сияние", tropic: "Тропики", clouds: "Облака", mafia: "Мафия", memphis: "Мемфис", party: "Праздник" };
   const ACCENTS = ["#071B4D", "#0033FF", "#E3263A", "#FF7A1A", "#16A34A", "#7B3FE4", "#E0218A", "#0EA5B7", "#B8860B"];
   const STICKERS = ["😎", "🔥", "💛", "⭐", "🌴", "🍉", "🎭", "🏐", "⚽", "♟️", "🎲", "👑", "🦋", "🌸", "🍀", "🌙", "☕", "🍕", "🎧", "📸", "🚀", "🐱", "🐶", "🦄", "💎", "🌈", "🥥", "🏝️", "🎉", "✨"];
@@ -4964,7 +4977,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const t = th || {}, img = prem ? t.img : null, title = prem ? String(t.title || "").trim() : "", dark = prem && !!t.dark;
     cover.style.background = coverCss(t.cover, img);
     $("vProfile").classList.toggle("th-dark", dark);
-    document.body.classList.toggle("pdark", dark && S.view === "profile");
+    setPdark(dark && S.view === "profile");
     card.style.setProperty("--acc", t.accent || "");
     card.classList.toggle("has-acc", !!t.accent);
     card.classList.toggle("hide-rate", !!t.hide?.includes("rate"));
