@@ -1543,6 +1543,46 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .add-came .field { min-height: 42px; font-size: 13.5px; color: var(--blue); font-weight: 800; }
 .tx-row.host .tx-t b { white-space: normal; }
 
+/* picker, premium grant, roles (05.11) */
+.pick-sheet { max-height: 86vh; grid-template-rows: auto auto minmax(0, 1fr); }
+.ps-h { display: grid; gap: 4px; padding: 4px 4px 0; }
+.ps-list { overflow-y: auto; display: grid; align-content: start; border-radius: 18px; background: #fff; box-shadow: var(--sh); max-height: 58vh; }
+.ps-row { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 9px 14px; border-top: 1px solid var(--hair); text-align: left; color: var(--ink); width: 100%; box-sizing: border-box; }
+.ps-row:first-child { border-top: 0; }
+.ps-row[hidden] { display: none; }
+.ps-row > .ava, .ps-row > .prem { width: 42px; height: 42px; font-size: 20px; }
+.ps-row > .prem .ava { width: 100%; height: 100%; } .ps-row .prem .cash { display: none; }
+.ps-row .nm { display: grid; gap: 1px; min-width: 0; }
+.ps-row .nm b { font-weight: 800; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ps-row .nm small { color: var(--muted); font-weight: 700; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ps-add { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: #E9EEFF; color: var(--blue); font-weight: 900; }
+.ps-row:active { background: var(--soft); }
+.add-came { padding: 8px 16px 12px; }
+.add-came-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 46px; border-radius: 14px; border: 1.5px dashed #BFC8DA; background: #F7F9FD; color: var(--blue); font-weight: 800; font-size: 14px; }
+.add-came-btn span { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: #E9EEFF; }
+.add-came-btn:active { background: #EEF3FF; }
+.pick-who { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border-radius: 14px; background: var(--soft); text-align: left; color: var(--ink); box-sizing: border-box; }
+.pick-who .ava, .pick-who .prem { width: 38px; height: 38px; font-size: 18px; }
+.pick-who .prem .ava { width: 100%; height: 100%; } .pick-who .prem .cash { display: none; }
+.pick-who span { display: grid; gap: 1px; flex: 1; min-width: 0; }
+.pick-who b { font-weight: 800; font-size: 15px; }
+.pick-who small { color: var(--muted); font-weight: 700; font-size: 12px; }
+.pick-who em { font-style: normal; color: var(--blue); font-weight: 800; font-size: 13px; }
+.pw-plus { flex: none !important; width: 38px; height: 38px; border-radius: 50%; display: grid !important; place-items: center; background: #E9EEFF; color: var(--blue); font-weight: 900; font-size: 18px; }
+.pm-grant { width: 100%; box-sizing: border-box; border-radius: 22px; padding: 18px; display: grid; gap: 8px; color: #F2EBDD; box-shadow: var(--sh);
+  background: radial-gradient(90% 120% at 100% 0%, rgba(205,183,138,.3), transparent 60%), repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 9px), linear-gradient(150deg, #101015, #262630); }
+.pm-grant h2 { margin: 2px 0 0; font: 800 20px/1.2 var(--f-display); color: #fff; }
+.pm-grant p { margin: 0; font-weight: 600; font-size: 13.5px; opacity: .75; }
+.pm-opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); gap: 8px; margin-top: 6px; }
+.pm-opts button { display: grid; justify-items: center; gap: 2px; padding: 10px 4px; border-radius: 14px; background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1px rgba(205,183,138,.35); color: var(--pm-champ); }
+.pm-opts button b { font: 700 22px/1 var(--f-code); }
+.pm-opts button small { font-weight: 800; font-size: 11px; color: #D8CCB0; }
+.pm-opts button.off { color: #FF9AA5; box-shadow: inset 0 0 0 1px rgba(255,120,135,.4); }
+.pm-opts button:active { transform: scale(.96); }
+.role-seg { margin-top: 2px; }
+.role-seg button { min-height: 44px; font-size: 14px; }
+.next-more { margin: 0 4px; color: var(--muted); font-weight: 700; font-size: 13px; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1818,8 +1858,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       <button class="mode" id="goHost" hidden>
         <div class="ticket"><div class="ticket-in">
           <div class="mode-main">
-            <div class="mode-code">HST</div>
-            <div class="mode-title">Я ведущий</div>
+            <div class="mode-code">ORG</div>
+            <div class="mode-title">Я организатор</div>
             <div class="mode-text">Раздача ролей, запись и оплата игроков</div>
             <div class="resume" id="resumeHost" hidden></div>
           </div>
@@ -2147,7 +2187,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105100512"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105101020"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2735,14 +2775,16 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
             <input class="field" data-qlabel="${n}" maxlength="40" value="${esc(lab)}" placeholder="${n === 1 ? "Подпись: за игру" : "Подпись: на чай"}">
             <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="button" data-qrup="${n}">${url ? "заменить" : "загрузить"}</button>${url ? `<button class="pill sm ghost" type="button" data-qrlab="${n}">сохранить подпись</button><button class="linkish" type="button" data-qrdel="${n}">убрать</button>` : ""}</div></div>`; }).join("")}</div>
         <input type="file" accept="image/*" id="myQrFile" hidden>
-      </div></div></div>` : ""}${canGrant ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
-        <div class="eyebrow">PREMIUM · выдаёшь только ты</div>
-        <h2 class="h2">PREMIUM: ${premLine}</h2>
-        <p class="lead">Премиум-дачник не видит рекламы, получает +200 ฿ в месяц, свою иконку и тёмный премиум-профиль.</p>
-        <div class="row-btns" style="justify-content:flex-start">
-          <button class="pill sm" data-prem="1">месяц</button><button class="pill sm" data-prem="3">3 месяца</button><button class="pill sm dark" data-prem="inf">навсегда</button>
-          ${active ? `<button class="pill sm ghost" data-prem="off">снять</button>` : ""}
-        </div></div></div></div>
+      </div></div></div>` : ""}${canGrant ? `<div class="pm-grant">
+        <div class="pm-mark">DACHA <b>PREMIUM</b> · выдаёшь только ты</div>
+        <h2>${active ? `PREMIUM ${forever ? "навсегда" : premLine}` : "Без PREMIUM"}</h2>
+        <p>Без рекламы, +200 ฿ на счёт за каждый выданный месяц, своя иконка и тёмный профиль.</p>
+        <div class="pm-opts">
+          <button type="button" data-prem="1"><b>+1</b><small>месяц</small></button>
+          <button type="button" data-prem="3"><b>+3</b><small>месяца</small></button>
+          <button type="button" data-prem="inf"><b>∞</b><small>навсегда</small></button>
+          ${active ? `<button type="button" data-prem="off" class="off"><b>✕</b><small>снять</small></button>` : ""}
+        </div></div>
       <div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:8px;padding-bottom:6px">
         <div class="eyebrow">Ведущий · назначаешь только ты</div>
         <h2 class="h2">${hostLine}</h2>
@@ -4081,7 +4123,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const MAFIA_META = { id: "mafia", name: "Мафия", emoji: "🎭", code: "MAF", color: "#E3263A" };
   const meta = (k) => SPORTS[k] || MAFIA_META;
   let sportId = "volley";
-  const sp = { events: [], hosts: [], places: [], series: [], loaded: false, loading: null, chan: null, board: {}, scope: "all", month: null, editing: null, focus: null, seriesEdit: null };
+  const sp = { mode: "player", showAll: false, events: [], hosts: [], places: [], series: [], loaded: false, loading: null, chan: null, board: {}, scope: "all", month: null, editing: null, focus: null, seriesEdit: null };
   const addDays = (iso, k) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d + k)).toISOString().slice(0, 10); };
   const dayLabel = (iso) => { const t = bkkToday(); if (iso === t) return "сегодня"; if (iso === addDays(t, 1)) return "завтра"; const { d, m, w } = dayParts(iso); return `${DOW[w]}, ${d} ${MON[m - 1]}`; };
   const isSportHost = (k) => !!me && (canGrant || sp.hosts.some((h) => h.sport === k && h.user_id === me.id));
@@ -4480,9 +4522,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         ${e ? `<button class="pill sm ghost" type="button" data-spcancel>отмена</button><button class="pill sm red" type="button" data-spremove>убрать дату</button>` : ""}</div>
     </form>`;
   const drawSportNext = () => {
-    const X = SPORTS[sportId], t = bkkToday(), host = isSportHost(X.id);
-    const list = sp.events.filter((e) => e.sport === X.id && e.day >= t && e.status === "open");
-    $("spNext").innerHTML = `<div class="sec-title" style="margin-bottom:10px">Ближайшие игры</div>` + (list.length ? list.map((e) => {
+    const X = SPORTS[sportId], t = bkkToday(), canOrg = isSportHost(X.id), host = canOrg && sp.mode === "org";
+    const all = sp.events.filter((e) => e.sport === X.id && e.day >= t && e.status === "open");
+    const list = host ? all : all.slice(0, 1), more = all.slice(1);
+    $("spNext").innerHTML = (canOrg ? `<div class="seg role-seg" role="group" aria-label="Режим"><button type="button" data-spmode="player" aria-pressed="${!host}">Я игрок</button><button type="button" data-spmode="org" aria-pressed="${host}">Я организатор</button></div>` : "")
+      + `<div class="sec-title" style="margin:${canOrg ? "14px" : "0"} 2px 10px">${host ? "Все ближайшие игры" : "Следующая игра"}</div>` + (list.length ? list.map((e) => {
       const { d, m, w } = dayParts(e.day), mine = isMine(e);
       return `<article class="ticket ev sp-card" data-spev="${e.id}" style="margin-bottom:12px"><div class="ticket-in">
         <div class="ev-head"><div class="ev-date"><small>${DOW[w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
@@ -4496,7 +4540,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         ${myRoleOn(e) === "player" && payBtn(X.id, e) ? `<div class="wk-pay" style="padding:0 16px 12px">${payBtn(X.id, e)}</div>` : ""}
         ${host ? `<div class="sp-host"><button class="linkish" type="button" data-spedit>${sp.editing === e.id ? "свернуть" : "изменить"}</button>${e.day <= t ? `<button class="pill sm dark" type="button" data-spres>отметить итоги</button>` : ""}</div>${sp.editing === e.id ? spForm(e) : ""}` : ""}
       </div></article>`;
-    }).join("") : `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">${host ? "Ближайших игр нет. Поставь дату ниже — она появится в календаре на главной." : "Ближайших игр пока нет. Как только ведущий поставит дату, она появится здесь и в календаре на главной."}</p></div></div></div>`);
+    }).join("") + (!host && more.length ? `<p class="next-more">Дальше: ${more.slice(0, 4).map((e) => `${esc(dayLabel(e.day))} ${hm(e.start_time)}`).join(" · ")}</p>` : "")
+      : `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">${host ? "Ближайших игр нет. Поставь дату ниже — она появится в календаре на главной." : "Ближайших игр пока нет. Как только ведущий поставит дату, она появится здесь и в календаре на главной."}</p></div></div></div>`);
   };
   const seriesLine = (x) => `${EVERY[x.dow]} в ${hm(x.start_time)}${placeName(x) ? " · " + placeName(x) : ""}`;
   const seriesForm = (x) => `<form class="sp-form" data-seriesform="${x ? x.id : "new"}">
@@ -4530,7 +4575,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     spAction(() => sb.rpc("ensure_sport_events"), "Расписание обновлено");
   };
   const drawSportNew = () => {
-    const X = SPORTS[sportId], host = isSportHost(X.id), ser = sp.series.filter((x) => x.sport === X.id);
+    const X = SPORTS[sportId], host = isSportHost(X.id) && sp.mode === "org", ser = sp.series.filter((x) => x.sport === X.id);
     const serBox = host ? `<div class="ticket" style="margin-bottom:12px"><div class="ticket-in"><div class="t-body" style="padding-bottom:10px"><div class="eyebrow">Ты ведущий · расписание</div><h2 class="h2">Каждую неделю</h2>
         <p class="lead" style="font-size:13.5px">Регулярная игра сама появляется в календаре на 4 недели вперёд. Отдельную дату можно поменять или убрать в её карточке.</p></div>
         ${ser.map((x) => `<div class="ser-row ${x.active ? "" : "off"}"><span class="ser-t"><b>${esc(seriesLine(x))}</b><small>${x.active ? (x.price ? x.price + " ฿" : "бесплатно") : "остановлено"}</small></span><button class="linkish" type="button" data-seredit="${x.id}">${sp.seriesEdit === x.id ? "свернуть" : "изменить"}</button></div>${sp.seriesEdit === x.id ? seriesForm(x) : ""}`).join("")}
@@ -4539,7 +4584,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("spNew").innerHTML = serBox + (host ? `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:12px"><div class="eyebrow">Ты ведущий · ${X.name.toLowerCase()}</div><h2 class="h2">Поставить разовую игру</h2></div>${spForm(null)}</div></div>` : "");
   };
   const drawSportPast = () => {
-    const X = SPORTS[sportId], t = bkkToday(), host = isSportHost(X.id);
+    const X = SPORTS[sportId], t = bkkToday(), host = isSportHost(X.id) && sp.mode === "org";
     const list = sp.events.filter((e) => e.sport === X.id && (e.day < t || e.status === "done")).reverse().slice(0, 8);
     if (!list.length) { $("spPast").innerHTML = ""; return; }
     const chips = (e, r) => e.results.filter((x) => x.result === r).map((x) => spWho({ user_id: x.user_id })).join("");
@@ -4591,6 +4636,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   $("vSport").addEventListener("click", (e) => {
     const card = e.target.closest("[data-spev]"), b = e.target.closest("button");
     if (!b) return;
+    if (b.dataset.spmode) { sp.mode = b.dataset.spmode; haptic("tap"); drawSportNext(); drawSportNew(); drawSportPast(); return; }
     if (b.closest("#spHero")) { const w = b.closest(".ev-who"); void w; return; }
     if (!card) return;
     const id = card.dataset.spev, evn = sp.events.find((x) => x.id === id);
@@ -4602,6 +4648,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     else if (b.hasAttribute("data-spremove")) sheet({ eyebrow: "Дата", title: "Убрать эту дату?", text: "Игра пропадёт из календаря у всех.", ok: "убрать", okClass: "red",
       onOk: () => { sp.editing = null; return spAction(() => sb.from("sport_events").update({ status: "removed" }).eq("id", id), "Дата убрана"); } });
     else if (b.hasAttribute("data-spres") && evn) openResults(evn);
+    else if (b.hasAttribute("data-spaddsign") && evn) {
+      pickPerson({ title: "Кто пришёл?", sub: "Добавить без записи", exclude: cameIds(evn), onPick: (u) => spAction(() => sb.rpc("host_signup", { g: evn.sport, e: id, u, on_: true }), `Добавил: ${personOf(u).nick}`) });
+    }
     else if (b.dataset.spunsign) {
       const pp = personOf(b.dataset.spunsign);
       sheet({ eyebrow: "Запись", title: `Убрать ${pp.nick}?`, text: "Отметился, но не пришёл: уберём из списка игры, за неё ничего не спишется.", ok: "убрать", okClass: "red",
@@ -4660,7 +4709,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <div class="res-list">${ids.length ? ids.map((u) => { const p = personOf(u);
           return `<div class="res-row">${avaP(p)}<b>${esc(p.nick)}</b><span class="res-seg">${opts.map(([r, l, t]) => `<button type="button" data-u="${u}" data-r="${r}" aria-pressed="${res.get(u) === r}" aria-label="${esc(p.nick)}: ${t}">${l}</button>`).join("")}</span></div>`; }).join("")
           : `<div class="week-empty">На эту игру никто не записывался. Добавь игроков ниже.</div>`}</div>
-        <div class="res-add"><select class="field" id="resAdd" aria-label="Добавить дачника"><option value="">+ добавить дачника</option>${rest.map((p) => `<option value="${p.id}">${esc(p.nick)}${p.tg_username ? " · @" + esc(p.tg_username) : ""}</option>`).join("")}</select></div>
+        <button class="add-came-btn" type="button" data-resadd><span>＋</span>Добавить дачника</button>
         <p class="bio-meta" style="margin:0">Победа: ${n("win")} · ${X.draws ? `ничья: ${n("draw")} · ` : ""}поражение: ${n("loss")} · без отметки: ${ids.length - n("win") - n("loss") - n("draw")}</p>
         <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="button" data-save>сохранить итоги</button><button class="pill sm ghost" type="button" data-close>закрыть</button></div>
       </div></div></div>`;
@@ -4669,6 +4718,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     v.addEventListener("change", (e) => { if (e.target.id === "resAdd" && e.target.value) { ids.push(e.target.value); draw(); } });
     v.addEventListener("click", async (e) => {
       if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      if (e.target.closest("[data-resadd]")) return pickPerson({ title: "Кто ещё играл?", sub: "Добавить в итоги", exclude: ids, onPick: (u) => { ids.push(u); draw(); } });
       const b = e.target.closest("[data-r]");
       if (b) { const u = b.dataset.u; res.get(u) === b.dataset.r ? res.delete(u) : res.set(u, b.dataset.r); haptic("tap"); const st = v.querySelector(".res-list").scrollTop; draw(); v.querySelector(".res-list").scrollTop = st; return; }
       if (e.target.closest("[data-save]")) {
@@ -4726,7 +4776,6 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     let tab = mode || "main", to = toId || "", amt = "";
     const draw = () => {
       const bal = +wal.balance || 0;
-      const list = [...people].filter((p) => p.id !== me.id).sort((a, b) => a.nick.localeCompare(b.nick));
       v.innerHTML = `<div class="bank" role="dialog" aria-modal="true" aria-label="Баланс">
         <div class="bank-card ${bal < 0 ? "neg" : ""}"><div class="bank-top"><span class="pm-mark">DACHA <b>WALLET</b></span>${isPremium(me) ? `<span class="bank-prem">◆ PREMIUM</span>` : ""}</div>
           <small>Баланс</small><b>${money(bal)}</b>
@@ -4747,7 +4796,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
           </form>`
         : `<form class="bank-send" data-sendform>
             <div class="eyebrow">Перевод дачнику</div>
-            <select class="field" name="to" required><option value="">Кому перевести?</option>${list.map((p) => `<option value="${p.id}" ${p.id === to ? "selected" : ""}>${esc(p.nick)}${p.tg_username ? " · @" + esc(p.tg_username) : ""}</option>`).join("")}</select>
+            <button class="pick-who" type="button" data-b="pickto">${to ? `${avaP(personOf(to))}<span><b>${esc(personOf(to).nick)}</b><small>${esc(tgLine(personOf(to)))}</small></span><em>сменить</em>` : `<span class="pw-plus">＋</span><span><b>Кому перевести?</b><small>выбери дачника</small></span>`}</button>
+            <input type="hidden" name="to" value="${to}">
             <label class="amt-row"><input class="amt" name="a" type="number" inputmode="numeric" min="1" max="${Math.max(avail(), 0)}" step="1" value="${amt}" placeholder="0" required aria-label="Сумма"><span>฿</span></label>
             <input class="field" name="n" maxlength="80" placeholder="Сообщение (можно пусто)">
             <p class="bio-meta" style="margin:0">${avail() > 0 ? `Можно перевести до ${money(avail())}. Деньги придут сразу, бот напишет получателю.` : "На балансе пока нет свободных денег для перевода — сначала пополни."}</p>
@@ -4767,6 +4817,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       if (k === "history") { v.remove(); return openPay(); }
       if (k === "premium") { v.remove(); return go("premium"); }
       if (k === "send") { tab = "send"; return draw(); }
+      if (k === "pickto") { amt = v.querySelector("[name=a]")?.value || amt; return pickPerson({ title: "Кому перевести?", exclude: [me.id], onPick: (u) => { to = u; draw(); } }); }
       if (k === "withdraw") { tab = "withdraw"; return draw(); }
       if (k === "main") { tab = "main"; return draw(); }
     });
@@ -5164,12 +5215,27 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       ${pay?.rejected_at ? `<p class="lead" style="color:var(--red)">Ведущий отметил, что не получил оплату. ${m === "qr" ? "Проверь перевод и нажми «я перевёл» ещё раз или отдай наличными." : "Подойди к ведущему и отдай наличные или переведи по QR."}</p>` : ""}
     </div>`;
   };
-  // a host adds someone who came without signing up
-  const addCameHTML = (e, attr) => {
-    const on = new Set([...(e.signups || []), ...(e.hosts || [])].map((x) => x.user_id));
-    const rest = people.filter((p) => !on.has(p.id)).sort((a, b) => a.nick.localeCompare(b.nick));
-    return `<div class="add-came"><select class="field" ${attr} aria-label="Добавить пришедшего"><option value="">＋ добавить, кто пришёл без записи</option>${rest.map((p) => `<option value="${p.id}">${esc(p.nick)}${p.tg_username ? " · @" + esc(p.tg_username) : ""}</option>`).join("")}</select></div>`;
+  // choose a person: a sheet with search, avatars and @username
+  const pickPerson = ({ title, sub = "", exclude = [], onPick }) => {
+    const ex = new Set(exclude);
+    const list = people.filter((p) => !ex.has(p.id)).sort((a, b) => a.nick.localeCompare(b.nick));
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    v.innerHTML = `<div class="bank pick-sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+        <div class="ps-h">${sub ? `<div class="eyebrow">${esc(sub)}</div>` : ""}<h2 class="h2">${esc(title)}</h2></div>
+        <input class="field" type="search" placeholder="Найти по нику или @username" data-q autocomplete="off" enterkeyhint="search">
+        <div class="ps-list">${list.map((p) => `<button class="ps-row" type="button" data-pick="${p.id}" data-s="${esc((p.nick + " " + (p.tg_username || "")).toLowerCase())}">${avaP(p)}<span class="nm"><b>${esc(p.nick)}</b><small>${esc(tgLine(p) || "дачник")}</small></span><span class="ps-add">＋</span></button>`).join("") || `<div class="empty-note">Некого добавить.</div>`}</div>
+        <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
+    v.addEventListener("input", (e) => { if (!e.target.matches("[data-q]")) return; const q = e.target.value.trim().toLowerCase().replace(/^@/, ""); v.querySelectorAll("[data-pick]").forEach((r) => (r.hidden = !!q && !r.dataset.s.includes(q))); });
+    v.addEventListener("click", (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      const r = e.target.closest("[data-pick]"); if (!r) return;
+      haptic("tap"); v.remove(); onPick(r.dataset.pick);
+    });
+    document.body.append(v);
   };
+  // a host adds someone who came without signing up
+  const addCameHTML = (e, attr) => `<div class="add-came"><button class="add-came-btn" type="button" ${attr}="${e.id}"><span>＋</span>Добавить, кто пришёл без записи</button></div>`;
+  const cameIds = (e) => [...(e.signups || []), ...(e.hosts || [])].map((x) => x.user_id);
   const editHTML = (e) => `<div class="row-btns" style="justify-content:flex-start;padding:4px 16px 0"><button class="linkish" data-edit>${ev.editing === e.id ? "свернуть" : "изменить время, цену, заметку"}</button></div>
     ${ev.editing === e.id ? `<form class="ev-form" data-evform style="padding:0 16px 14px">
         <label>сбор<input class="field" type="time" name="g" value="${hm(e.gather_time)}" required></label>
@@ -5353,6 +5419,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const card = e.target.closest("[data-ev]"); if (!card) return;
     const id = card.dataset.ev, b = e.target.closest("button"); if (!b) return;
     const event = ev.list.find((x) => x.id === id);
+    if (b.hasAttribute("data-addsign")) {
+      return pickPerson({ title: "Кто пришёл?", sub: "Добавить без записи", exclude: cameIds(event), onPick: (u) => evAction(() => sb.rpc("host_signup", { g: "mafia", e: id, u, on_: true }), `Добавил: ${personOf(u).nick}`) });
+    }
     if (b.dataset.unsign) {
       return sheet({ eyebrow: "Запись", title: `Убрать ${b.dataset.nick || "дачника"}?`, text: "Отметился, но не пришёл: уберём из списка игры, за неё ничего не спишется.", ok: "убрать", okClass: "red",
         onOk: () => evAction(() => sb.rpc("host_signup", { g: "mafia", e: id, u: b.dataset.unsign, on_: false }), "Убрал из списка") });
