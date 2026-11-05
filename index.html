@@ -2344,7 +2344,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105122201"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105131921"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -5515,9 +5515,12 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       sb.from("wallet_tx").select("id, user_id, amount, method, game, event_id, created_at, purpose, currency, note").eq("status", "pending").order("created_at"),
       sb.from("wallet_tx").select("id, user_id, amount, method, purpose, currency, note, status, decided_at").in("purpose", ["premium", "withdraw"]).neq("status", "pending").order("decided_at", { ascending: false }).limit(12),
       people.length ? null : loadPeople(),
+      loadCevents().catch(() => {}),
     ]);
     if (S.view !== "requests") return;
-    const by = (k) => (pend || []).filter((t) => t.purpose === k);
+    // game payments are checked by the game's hosts in «Запись»; here only app balance top-ups
+    const by = (k) => (pend || []).filter((t) => t.purpose === k && (k !== "topup" || !t.event_id));
+    const reqN = (pend || []).filter((t) => t.purpose !== "topup" || !t.event_id).length + ce.list.filter((e) => e.status === "pending").length;
     const when = (d) => new Date(d).toLocaleString("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
     const row = (t) => { const pp = personOf(t.user_id);
       const what = t.purpose === "premium" ? `◆ PREMIUM · ${t.amount} ${CUR[t.currency] || "฿"}` : t.purpose === "withdraw" ? `↓ вывести ${money(-t.amount)}` : `+${money(t.amount)}`;
@@ -5526,11 +5529,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <span class="tx-acts"><button class="round sm ok" type="button" data-rq="${t.id}" data-ok="1" aria-label="${t.purpose === "withdraw" ? "Выплатил" : "Получил"}">✓</button><button class="round sm no" type="button" data-rq="${t.id}" data-ok="0" aria-label="Отклонить">✕</button></span></div>`; };
     const sec = (title, hint, list) => `<div class="ticket" style="margin-bottom:12px"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">${title} · ${list.length}</div><p class="bio-meta" style="margin:0">${hint}</p></div>
       ${list.length ? list.map(row).join("") : `<div class="empty-note">Новых нет.</div>`}</div></div>`;
-    box.innerHTML = `<div class="pm-hero" style="margin-bottom:12px"><div class="pm-mark">DACHA <b>ЗАПРОСЫ</b></div><h1>${(pend || []).length ? `${(pend || []).length} ${plural((pend || []).length, "запрос ждёт", "запроса ждут", "запросов ждут")}` : "Всё разобрано"}</h1><p>Покупки PREMIUM, вывод денег и пополнения баланса. ✓ — подтвердить, ✕ — отклонить.</p></div>
+    box.innerHTML = `<div class="pm-hero" style="margin-bottom:12px"><div class="pm-mark">DACHA <b>ЗАПРОСЫ</b></div><h1>${reqN ? `${reqN} ${plural(reqN, "запрос ждёт", "запроса ждут", "запросов ждут")}` : "Всё разобрано"}</h1><p>Новые ивенты, покупки PREMIUM, вывод денег и пополнения баланса. ✓ — подтвердить, ✕ — отклонить.</p></div>
       ${await cevReqHTML()}
       ${sec("◆ Покупки PREMIUM", "✓ — PREMIUM включится на месяц и придёт +200 ฿.", by("premium"))}
       ${sec("↓ Вывод денег", "Сначала выплати человеку, потом ✓ — сумма спишется с его баланса.", by("withdraw"))}
-      ${sec("＋ Пополнения и оплаты игр", "✓ — деньги пришли, баланс человека пополнится.", by("topup"))}
+      ${sec("＋ Пополнения баланса", "✓ — деньги пришли, баланс человека пополнится.", by("topup"))}
       ${(done || []).length ? `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">Недавно решённые</div></div>
         ${(done || []).map((t) => `<div class="tx-row"><span class="tx-ic">${t.status === "confirmed" ? "✓" : "✕"}</span><span class="tx-t"><b>${esc(personOf(t.user_id).nick)} · ${t.purpose === "premium" ? `PREMIUM ${t.amount} ${CUR[t.currency] || "฿"}` : `вывод ${money(-t.amount)}`}</b><small>${t.status === "confirmed" ? "подтверждено" : "отклонено"} · ${t.decided_at ? when(t.decided_at) : ""}</small></span></div>`).join("")}</div></div>` : ""}`;
   };
@@ -5562,7 +5565,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const refreshReqCount = async () => {
     const b = $("goReq"); if (!b) return;
     b.hidden = !canGrant; if (!canGrant || !sb) return;
-    const [{ count: c1 }, { count: c2 }] = await Promise.all([sb.from("wallet_tx").select("id", { count: "exact", head: true }).eq("status", "pending"), sb.from("cevents").select("id", { count: "exact", head: true }).eq("status", "pending")]);
+    const [{ count: c1 }, { count: c2 }] = await Promise.all([sb.from("wallet_tx").select("id", { count: "exact", head: true }).eq("status", "pending").or("purpose.neq.topup,event_id.is.null"), sb.from("cevents").select("id", { count: "exact", head: true }).eq("status", "pending")]);
     const count = (c1 || 0) + (c2 || 0);
     b.innerHTML = `📥 запросы${count ? ` <i class="req-n">${count}</i>` : ""}`;
   };
