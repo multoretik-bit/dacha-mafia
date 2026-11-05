@@ -1663,6 +1663,16 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .wk-foot .wk-joins { margin-left: auto; flex-wrap: nowrap; }
 .wk-foot .wk-joins .tag { white-space: nowrap; }
 
+/* one button system for sign-up actions in every game */
+.wk-joins .pill, .ev-act .pill, .nc-act .pill { margin: 0; min-height: 36px; padding: 0 16px; border-radius: 999px; font: 800 13.5px/1 var(--f-body); text-transform: none; letter-spacing: 0; background: var(--navy-ink); color: #fff; box-shadow: none; text-shadow: none; }
+.wk-joins .pill.ghost, .ev-act .pill.ghost { background: var(--soft); color: var(--navy-ink); }
+.wk-joins .pill:disabled, .ev-act .pill:disabled { background: var(--gray); color: #fff; }
+.tag.ok.mine { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; background: #E7F8EE; color: #137A3E; font: 800 13.5px/1 var(--f-body); letter-spacing: 0; text-transform: none; border: 0; white-space: nowrap; }
+.wk-leave, .ev-act [data-leave], .ev-act [data-spleave] { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; background: var(--soft); color: var(--navy-ink); font: 800 13.5px/1 var(--f-body); text-decoration: none; }
+.wk-leave:active, .ev-act [data-leave]:active, .ev-act [data-spleave]:active { background: #FFE1E5; color: var(--red); }
+.ev-act { gap: 8px; }
+.ev-act .ev-count { text-transform: none; letter-spacing: 0; font: 700 13px/1 var(--f-body); color: var(--muted); }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -2280,7 +2290,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105113211"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105113418"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4255,7 +4265,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const ev = { list: [], pays: {}, set: null, chan: null, editing: null, loaded: false };
   const isMine = (e) => [...e.signups, ...(e.hosts || [])].some((x) => x.user_id === me?.id);
   const myRoleOn = (e) => ((e.hosts || []).some((x) => x.user_id === me?.id) ? "host" : (e.signups || []).some((x) => x.user_id === me?.id) ? "player" : null);
-  const mineTag = (e) => `<span class="tag ok">${myRoleOn(e) === "host" ? "ты ведёшь" : "ты играешь"}</span>`;
+  const mineTag = (e) => `<span class="tag ok mine">${myRoleOn(e) === "host" ? "ты ведёшь ✓" : "ты играешь ✓"}</span>`;
   // a host chooses: lead the date or just play it
   const joinBtns = (attr, canLead, dis = "") => canLead
     ? `<button class="pill sm" type="button" ${attr} data-role="host" ${dis}>я веду</button><button class="pill sm ghost" type="button" ${attr} data-role="player" ${dis}>я играю</button>`
