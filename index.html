@@ -1871,12 +1871,8 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 .tseat.dragging .seat-ring { box-shadow: 0 14px 24px -8px rgba(0,0,0,.6); }
 .tbl-box.sorting .tseat:not(.dragging) { opacity: .7; }
 .seat-sheet2 { gap: 12px; }
-.bot-ava { display: grid; place-items: center; border-radius: 50%; background: var(--soft, #EEF0F5); overflow: hidden; }
-.bot-ava svg { width: 72%; height: 72%; fill: #B9C0CE; margin-top: 18%; }
 .ss-acts { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .ss-acts [data-close] { flex: 1; max-width: 220px; }
-.bots-row { display: flex; justify-content: center; margin-top: 4px; }
-.bots-row .pill[hidden] { display: none; }
 .ss-h { display: flex; align-items: center; gap: 12px; padding-right: 40px; }
 .ss-h .ava, .ss-h .prem { width: 48px; height: 48px; font-size: 22px; } .ss-h .prem .ava { width: 100%; height: 100%; } .ss-h .prem .cash { display: none; }
 .ss-h span { display: grid; gap: 2px; } .ss-h b { font: 800 18px/1.2 var(--f-body); color: var(--ink); } .ss-h small { color: var(--muted); font-weight: 700; font-size: 12.5px; }
@@ -2508,7 +2504,6 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
         <div class="t-body" id="notesEmptyBody"></div>
       </div></div>
       <div class="tbl-box" id="tableBox"></div>
-      <div class="bots-row"><button class="pill sm ghost" type="button" id="botsBtn" hidden></button></div>
       <p class="drag-hint" id="dragHint" hidden>зажми игрока и перетащи, чтобы расставить как удобно</p>
       <div class="players" id="players" hidden></div>
       <div data-ad-slot></div>
@@ -2523,7 +2518,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105173905"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105174058"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -6635,9 +6630,6 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     });
     if (!order.some((p) => p.out)) outLabel?.remove();
     drawTable();
-    const hasBots = ps.some((p) => p.bot);
-    $("botsBtn").hidden = !canGrant;
-    $("botsBtn").textContent = hasBots ? "убрать тест-ботов" : "＋ 6 тест-ботов";
     if (!animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     rowEls.forEach((el, id) => {
       if (!first.has(id)) return;
@@ -6651,18 +6643,9 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     });
   };
   const pById = (id) => S.notes.players.find((p) => p.id === id);
-  // only for @tivishka: 6 empty bots on this phone to try the table (never sent anywhere)
-  $("botsBtn").onclick = () => {
-    const ps = S.notes.players || (S.notes.players = []);
-    if (ps.some((p) => p.bot)) S.notes.players = ps.filter((p) => !p.bot);
-    else { let top = ps.reduce((m, p) => Math.max(m, +p.seat || 0), 0);
-      for (let i = 1; i <= 6; i++) { top++; ps.push({ id: "bot" + i, seat: top, name: "Бот " + i, uid: null, photo: "", handle: "тест", self: false, c: "gray", note: "", out: false, outAt: 0, bot: true }); } }
-    save(); haptic("tap"); renderNotes(false);
-  };
   /* ---------- notes as a round table: avatars around, ring = your colour; tap = notes, hold & drag = reseat ---------- */
   const TRUST = [["gray", "Серый", "не знаю"], ["black", "Чёрный", "мафия"], ["red", "Красный", "верю"]];
   const shortName = (n) => { const t = String(n || "").trim(); return t.length > 9 ? t.slice(0, 8) + "…" : t; };
-  const BOT_AVA = `<span class="ava bot-ava"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="4.2"/><path d="M4 21c.8-4.4 4-6.6 8-6.6s7.2 2.2 8 6.6z"/></svg></span>`;
   const drawTable = () => {
     const box = $("tableBox"); if (!box) return;
     const ps = S.notes.players || [];
@@ -6674,7 +6657,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
         <div class="tbl-tally"><span class="red">${cnt("red")}</span><span class="black">${cnt("black")}</span><span class="gray">${cnt("gray")}</span></div></div>
       ${ps.map((p, i) => { const a = ((-90 + (i * 360) / n) * Math.PI) / 180;
         return `<button class="tseat c-${p.c || "gray"} ${p.out ? "out" : ""} ${p.self ? "self" : ""}" type="button" data-pid="${esc(p.id)}" data-i="${i}" style="left:${(50 + R * Math.cos(a)).toFixed(2)}%;top:${(50 + R * Math.sin(a)).toFixed(2)}%">
-          <span class="seat-ring">${p.bot ? BOT_AVA : avaP({ nick: p.name, id: p.uid || p.name, tg_photo: p.photo })}</span><i class="seat-n">${esc(p.seat)}</i>${p.note ? `<em class="seat-note">✎</em>` : ""}
+          <span class="seat-ring">${avaP({ nick: p.name, id: p.uid || p.name, tg_photo: p.photo })}</span><i class="seat-n">${esc(p.seat)}</i>${p.note ? `<em class="seat-note">✎</em>` : ""}
           <span class="seat-nm">${esc(shortName(p.name))}</span></button>`; }).join("")}
     </div>`;
   };
@@ -6877,6 +6860,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 
   const start = async () => {
     S = load() || fresh();
+    if (S.notes?.players?.some((p) => p.bot)) { S.notes.players = S.notes.players.filter((p) => !p.bot); save(); } // old test bots
     if (!S.custom) S.custom = [];
     S.custom.filter((r) => /^священник$/i.test(r.name.trim())).forEach((r) => {
       [S.host.counts, S.on.counts].forEach((c) => { if (c && r.id in c) { c.pri = (c.pri || 0) + c[r.id]; delete c[r.id]; } });
