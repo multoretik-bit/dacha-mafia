@@ -1627,6 +1627,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .an-fields .wide { grid-column: 1 / -1; }
 .an-fields .field { min-height: 44px; padding: 8px 10px; }
 
+/* add buttons: quiet, in the app's ink */
+.add-came-btn { color: var(--navy-ink); border-color: #D3D9E4; background: #FAFBFD; }
+.add-came-btn span { background: var(--navy-ink); color: #fff; font-size: 14px; }
+.add-came-btn:active { background: var(--soft); }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -2242,7 +2247,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105102300"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105102427"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
