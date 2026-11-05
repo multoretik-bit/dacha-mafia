@@ -1133,9 +1133,33 @@ html.hw {
 @keyframes pkBob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
 @keyframes ghostBob { 0%, 100% { translate: 0 0; rotate: -4deg; } 50% { translate: 0 -8px; rotate: 4deg; } }
 @keyframes pkGlow { 0%, 100% { filter: drop-shadow(0 0 12px rgba(255, 190, 60, .55)); } 50% { filter: drop-shadow(0 0 26px rgba(255, 170, 40, .95)); } }
+/* MAINTENANCE: remove this block, #maint and its script when the new DACHA is live */
+html.maint, html.maint body { overflow: hidden; }
+html.maint .app, html.maint .ground ~ *:not(#maint) { visibility: hidden; }
+#maint { position: fixed; inset: 0; z-index: 2147483647; display: none; place-items: center; padding: 24px; background: #FEC948; text-align: center; }
+html.maint #maint { display: grid; }
+#maint .m-box { display: grid; gap: 18px; justify-items: center; max-width: 340px; }
+#maint img { width: 150px; height: auto; animation: mFloat 3s ease-in-out infinite; }
+#maint h1 { margin: 0; font: 900 24px/1.2 Unbounded, system-ui, sans-serif; color: #092F80; }
+#maint p { margin: 0; font: 700 16px/1.45 Manrope, system-ui, sans-serif; color: #2B3A5C; }
+#maint .m-dots { display: flex; gap: 8px; }
+#maint .m-dots i { width: 10px; height: 10px; border-radius: 50%; background: #092F80; animation: mDot 1.2s ease-in-out infinite; }
+#maint .m-dots i:nth-child(2) { animation-delay: .2s; } #maint .m-dots i:nth-child(3) { animation-delay: .4s; }
+@keyframes mFloat { 50% { transform: translateY(-8px) rotate(-3deg); } }
+@keyframes mDot { 50% { opacity: .25; transform: scale(.7); } }
 </style>
 </head>
 <body>
+<div id="maint" role="alert"><div class="m-box"><img src="logo-dacha.png" alt="DACHA"><h1>Ведутся технические работы</h1><p>Скоро дача заработает</p><div class="m-dots"><i></i><i></i><i></i></div></div></div>
+<script>
+  (function () {
+    var u = null; try { u = window.Telegram.WebApp.initDataUnsafe.user; } catch (e) {}
+    var dev = /[?&]dev=1/.test(location.search) || (u && String(u.username || "").toLowerCase() === "tivishka");
+    if (dev) { var m = document.getElementById("maint"); m && m.remove(); return; }
+    document.documentElement.classList.add("maint");
+    try { window.Telegram.WebApp.ready(); window.Telegram.WebApp.expand(); } catch (e) {}
+  })();
+</script>
 <div class="ground"></div>
 <div class="hw-only hw-sky" aria-hidden="true"><i class="moon"></i><img class="pk pk1" src="hw/pumpkin.svg" alt=""><img class="pk pk2" src="hw/pumpkin.svg" alt=""></div>
 <div class="hw-only hw-fly" aria-hidden="true"><img class="bat b1" src="hw/bat.svg" alt=""><img class="bat b2" src="hw/bat.svg" alt=""><img class="bat b3" src="hw/bat.svg" alt=""><img class="ghost" src="hw/ghost.svg" alt=""></div>
@@ -1510,7 +1534,7 @@ html.hw {
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105063258"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105074659"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
