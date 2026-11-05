@@ -1632,6 +1632,20 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .add-came-btn span { background: var(--navy-ink); color: #fff; font-size: 14px; }
 .add-came-btn:active { background: var(--soft); }
 
+/* «запись» screen (05.11) */
+.list-btn svg { width: 22px; height: 22px; }
+.sl-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 16px; border-top: 1px solid var(--hair); }
+.sl-row .so-who { flex: 1 1 140px; }
+.sl-row .pill { margin: 0; min-height: 34px; padding: 0 12px; font-size: 12.5px; }
+.sl-row .pill:not(.ghost) { background: var(--navy-ink); box-shadow: none; }
+.sl-row .x-rm { width: 28px; height: 28px; margin: 0; }
+.sl-tag { font-weight: 800; font-size: 11.5px; padding: 6px 9px; border-radius: 99px; white-space: nowrap; }
+.sl-tag.ok { background: #E7F8EE; color: #137A3E; } .sl-tag.wait { background: #FFF6DA; color: #8A5A00; } .sl-tag.no { background: var(--soft); color: var(--muted); }
+.sl-sum { display: flex; flex-wrap: wrap; gap: 6px; }
+.sl-sum span { font-weight: 800; font-size: 12.5px; padding: 6px 10px; border-radius: 99px; background: var(--soft); color: var(--navy-ink); }
+.sl-sum .ok { background: #E7F8EE; color: #137A3E; } .sl-sum .no { background: #FFECEE; color: #C0162A; }
+.sl-hosts { padding: 0 16px 10px; display: flex; gap: 8px; align-items: baseline; font-weight: 800; font-size: 13.5px; color: var(--ink); }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1799,6 +1813,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       <button role="tab" id="tabNotes" aria-selected="false" hidden>заметки</button>
     </div>
     <div class="top-title" id="topTitle" hidden></div>
+    <button class="icon-btn list-btn" id="goList" type="button" aria-label="Запись" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4.5V3.5h6v1M9 10h6M9 14h6M9 18h3"/></svg></button>
     <button class="icon-btn rate-btn" id="goPeople" type="button" aria-label="Рейтинг" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/></svg></button>
     <button class="icon-btn" id="meBtn" aria-label="Профиль"></button>
   </header>
@@ -1877,6 +1892,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       </div></div>
     </button>
     <div id="soDay" hidden></div>
+    <div id="spList" hidden></div>
     <div id="spNext"></div>
     <div id="spNew"></div>
     <div id="spPast"></div>
@@ -2247,7 +2263,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105102520"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105103222"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2557,7 +2573,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const goBack = () => { haptic("tap"); const t = navStack.pop(); navBack = true; try { go(t ? t.v : "hub", t?.a); } finally { navBack = false; } };
   const go = (view, arg) => {
     if (navReady && !navBack && S.view && (S.view !== view || (view === "profile" && arg && arg !== profileId) || (view === "sport" && arg && arg !== sportId))) {
-      navStack.push({ v: S.view, a: S.view === "profile" ? profileId : S.view === "sport" || S.view === "sportorg" || S.view === "sportrate" ? sportId : undefined });
+      navStack.push({ v: S.view, a: S.view === "profile" ? profileId : ["sport", "sportorg", "sportrate", "sportlist"].includes(S.view) ? sportId : undefined });
       if (navStack.length > 40) navStack.shift();
     }
     if (view === "hub") navStack.length = 0;
@@ -2566,11 +2582,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       view = "home";
     }
     if (view === "profile") { if (S.view !== "profile") profileFrom = S.view; profileId = arg || me?.id; }
-    if (view === "sport" || view === "sportorg" || view === "sportrate") sportId = SPORTS[arg] ? arg : sportId;
+    if (["sport", "sportorg", "sportrate", "sportlist"].includes(view)) sportId = SPORTS[arg] ? arg : sportId;
     if (view === "pay" && S.view !== "pay") payFrom = S.view;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { sportlist: "vSport", sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "hub";
     try { if (inTG && tg?.BackButton) view === "hub" ? tg.BackButton.hide() : tg.BackButton.show(); } catch {}
@@ -2607,6 +2623,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   $("goNotes").onclick = () => go("notes");
   $("goPlayer").onclick = () => go("player");
   $("tabEvents").onclick = () => go("events");
+  $("goList").onclick = () => { haptic("tap"); ["sport", "sportorg", "sportrate"].includes(S.view) ? go("sportlist", sportId) : go("events"); };
   $("goPeople").onclick = () => {
     if (!me) return go("auth");
     if (S.view === "sport" || S.view === "sportorg") return go("sportrate", sportId);
@@ -2625,8 +2642,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const renderTabs = (view) => {
     let set = [];
     if (view === "card" || view === "notes" || view === "player") set = ["tabCard", "tabNotes"];
-    else if (view === "host" || (view === "events" && canHost())) set = ["tabHost", "tabEvents"];
-    else if (view === "events") set = ["tabEvents"];
+    // the host's "раздача / запись" tabs are gone: «запись» is an icon now
     ["tabHost", "tabEvents", "tabCard", "tabNotes"].forEach((id) => {
       $(id).hidden = !set.includes(id);
       $(id).setAttribute("aria-selected", { tabHost: "host", tabEvents: "events", tabCard: "card", tabNotes: "notes" }[id] === view);
@@ -2634,10 +2650,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("tabEvents").textContent = canHost() ? "запись" : "запись на игру";
     $("tabsBox").hidden = !set.length;
     // rating of the current game, next to the avatar
-    $("goPeople").hidden = !["home", "card", "notes", "host", "events", "player", "deck", "sport", "sportorg"].includes(view);
+    $("goPeople").hidden = !["home", "card", "notes", "host", "events", "player", "deck", "sport", "sportorg", "sportlist"].includes(view);
+    $("goList").hidden = !me || !["home", "card", "notes", "host", "player", "deck", "people", "month", "sport", "sportorg", "sportrate"].includes(view);
     $("goPeople").setAttribute("aria-label", view === "sport" ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("topTitle").hidden = !!set.length;
-    $("topTitle").textContent = { sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
+    $("topTitle").textContent = { host: "раздача", events: "запись", sportlist: "запись", sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
   };
 
   const renderHostAccess = () => {
@@ -2986,6 +3003,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 
   /* ---------- host: mode switch ---------- */
   const renderModeSeg = () => document.querySelectorAll("[data-modeseg]").forEach((el) => {
+    S.hostMode = "online"; el.hidden = true; el.innerHTML = ""; return;
     el.innerHTML = `<button type="button" data-mode="online" aria-pressed="${online()}">онлайн</button><button type="button" data-mode="offline" aria-pressed="${!online()}">один телефон</button>`;
   });
   document.addEventListener("click", (e) => {
@@ -4655,15 +4673,64 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     }
   });
 
+  /* ---------- «запись»: who signed up, who paid (sport) ---------- */
+  let slSel = null;
+  const drawSportList = async () => {
+    const box = $("spList"); if (!box || sp.mode !== "list") return;
+    const X = SPORTS[sportId], t = bkkToday(), host = isSportHost(X.id);
+    const list = sp.events.filter((e) => e.sport === X.id && e.status !== "removed" && e.day >= addDays(t, -1)).slice(0, 6);
+    if (!slSel || !list.some((e) => e.id === slSel)) slSel = (list.find((e) => e.day >= t) || list[0])?.id || null;
+    const e = list.find((x) => x.id === slSel);
+    if (!e) { box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">Ближайших игр нет.</p></div></div></div>`; return; }
+    const pays = {};
+    if (host) {
+      const { data } = await sb.from("wallet_tx").select("id, user_id, status, purpose, method").eq("event_id", e.id);
+      (data || []).forEach((r) => { const st = r.status === "confirmed" ? "paid" : r.status === "pending" ? "claim" : null; if (st && pays[r.user_id]?.st !== "paid") pays[r.user_id] = { st, id: r.id, m: r.method }; });
+    }
+    if (S.view !== "sportlist" || slSel !== e.id) return;
+    const rows = e.signups, paidN = rows.filter((x) => pays[x.user_id]?.st === "paid").length;
+    const tag = (u) => { const p = pays[u]; return !e.price ? "" : p?.st === "paid" ? `<span class="sl-tag ok">оплачено ✓</span>` : p?.st === "claim" ? `<span class="sl-tag wait">${p.m === "qr" ? "проверь перевод" : "отдаст наличными"}</span>` : `<span class="sl-tag no">не оплачено</span>`; };
+    box.innerHTML = `<div class="ev-days so-days" role="group" aria-label="Дата">${list.map((x) => { const q = dayParts(x.day); return `<button class="chip" type="button" data-slsel="${x.id}" aria-pressed="${x.id === e.id}">${x.day === t ? "сегодня" : `${q.d} ${MON[q.m - 1]}`}</button>`; }).join("")}</div>
+      <div class="ticket"><div class="ticket-in">
+        <div class="t-body" style="padding-bottom:8px"><div class="eyebrow">${X.emoji} ${X.name} · ${esc(dayLabel(e.day))} · ${hm(e.start_time)}</div>
+          <h2 class="h2">${rows.length ? `Записались ${rows.length}` : "Пока никто не записался"}</h2>
+          ${host && e.price && rows.length ? `<div class="sl-sum"><span class="ok">оплатили ${paidN}</span><span class="no">не оплатили ${rows.length - paidN}</span><span>ждём ${money((rows.length - paidN) * e.price)}</span></div>` : ""}</div>
+        ${e.hosts.length ? `<div class="sl-hosts"><span class="eyebrow">${e.hosts.length > 1 ? "Ведущие" : "Ведущий"}</span>${e.hosts.map((x) => esc(personOf(x.user_id).nick)).join(", ")}</div>` : ""}
+        ${rows.map((x) => { const pp = personOf(x.user_id), st = pays[x.user_id]?.st;
+          return `<div class="sl-row"><span class="so-who">${avaP(pp)}<b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b></span>${host ? `${tag(x.user_id)}${e.price && st !== "paid" ? `<button class="pill sm" type="button" data-slgot="${x.user_id}">получил ${e.price} ฿</button>` : ""}<button class="x-rm" type="button" data-slrm="${x.user_id}" aria-label="Убрать: не пришёл">×</button>` : ""}</div>`; }).join("")}
+        ${host ? addCameHTML(e, "data-sladd") : ""}
+      </div></div>`;
+    box.dataset.pays = JSON.stringify(pays);
+  };
+  $("spList").addEventListener("click", async (ev2) => {
+    const b = ev2.target.closest("button"); if (!b) return;
+    const X = SPORTS[sportId], e = sp.events.find((x) => x.id === slSel);
+    if (b.dataset.slsel) { slSel = b.dataset.slsel; haptic("tap"); return drawSportList(); }
+    if (!e) return;
+    const pays = JSON.parse($("spList").dataset.pays || "{}");
+    if (b.dataset.slgot) {
+      const u = b.dataset.slgot, p = pays[u];
+      const r = p?.st === "claim" ? await sb.rpc("pay_decide", { tx: p.id, ok: true }) : await sb.rpc("pay_receive", { u, amount: e.price, m: "cash", e: e.id, g: X.id });
+      if (r.error) return toast("Не получилось: " + humanErr(r.error));
+      notifyTx(p?.st === "claim" ? p.id : r.data); haptic("tap"); toast(`Записал оплату: ${personOf(u).nick}`); return drawSportList();
+    }
+    if (b.dataset.slrm) {
+      const u = b.dataset.slrm;
+      return sheet({ eyebrow: "Запись", title: `Убрать ${personOf(u).nick}?`, text: "Отметился, но не пришёл: уберём из списка игры, за неё ничего не спишется.", ok: "убрать", okClass: "red",
+        onOk: () => spAction(() => sb.rpc("host_signup", { g: X.id, e: e.id, u, on_: false }), "Убрал из списка") });
+    }
+    if (b.hasAttribute("data-sladd")) return pickPerson({ title: "Кто пришёл?", sub: "Добавить без записи", exclude: cameIds(e), onPick: (u) => spAction(() => sb.rpc("host_signup", { g: X.id, e: e.id, u, on_: true }), `Добавил: ${personOf(u).nick}`) });
+  });
+
   const spMonthNow = () => bkkToday().slice(0, 7);
-  const isSportView = () => S.view === "sport" || S.view === "sportorg" || S.view === "sportrate";
+  const isSportView = () => ["sport", "sportorg", "sportrate", "sportlist"].includes(S.view);
   const renderSport = async (quiet) => {
     const X = SPORTS[sportId];
-    sp.mode = S.view === "sportorg" ? "org" : S.view === "sportrate" ? "rate" : "player";
-    const org = sp.mode === "org", rate = sp.mode === "rate";
-    $("spHero").hidden = org || rate; $("spRate").hidden = !rate; $("spPast").hidden = org || rate; $("soDay").hidden = !org;
-    $("spNext").hidden = rate || org; $("spNew").hidden = rate;
-    $("spOrgBtn").hidden = org || rate || !isSportHost(X.id);
+    sp.mode = S.view === "sportorg" ? "org" : S.view === "sportrate" ? "rate" : S.view === "sportlist" ? "list" : "player";
+    const org = sp.mode === "org", rate = sp.mode === "rate", lst = sp.mode === "list";
+    $("spHero").hidden = org || rate || lst; $("spRate").hidden = !rate; $("spPast").hidden = org || rate || lst; $("soDay").hidden = !org;
+    $("spNext").hidden = rate || org || lst; $("spNew").hidden = rate || lst; $("spList").hidden = !lst;
+    $("spOrgBtn").hidden = org || rate || lst || !isSportHost(X.id);
     const hosts = sp.hosts.filter((h) => h.sport === X.id).map((h) => personOf(h.user_id));
     $("spHero").innerHTML = `<div class="sport-hero ${X.id}"><span class="sh-emoji" aria-hidden="true">${X.emoji}</span>
       <div class="eyebrow">DACHA · ${X.code}</div><h1>${X.name}</h1><p>${X.tag}</p>
@@ -4681,6 +4748,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     drawSportNext(); drawSportNew(); drawSportPast(); drawSportBoard();
     $("spOrgBtn").hidden = sp.mode !== "player" || !isSportHost(X.id);
     if (sp.mode === "org") { if (!isSportHost(X.id)) return go("sport", X.id); drawOrgDay(); }
+    if (sp.mode === "list") drawSportList();
   };
   const spWho = (x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP({ ...(x.profiles || personOf(x.user_id)), id: x.user_id })}<span>${esc((x.profiles || personOf(x.user_id)).nick)}</span></span>`;
   const spForm = (e) => `<form class="sp-form" data-spform="${e ? e.id : "new"}">
@@ -4703,9 +4771,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <div class="ev-head"><div class="ev-date"><small>${DOW[w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
           <div class="sp-meta"><div class="eyebrow">${esc(dayLabel(e.day))}</div><b>${hm(e.start_time)}</b>
             <small>${e.price ? `${e.price} ฿ с человека` : "бесплатно"}</small>${placeChip(e)}${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
-        ${e.hosts.length ? `<div class="ev-hosts sp-hosts"><span class="eyebrow">${e.hosts.length > 1 ? "Ведущие" : "Ведущий"}</span>${e.hosts.map(spWho).join("")}</div>` : ""}
-        <div class="ev-crew">${e.signups.map((x) => host ? spWho(x).replace(/<\/span>$/, `<button class="x-rm sm" type="button" data-spunsign="${x.user_id}" aria-label="Убрать: не пришёл">×</button></span>`) : spWho(x)).join("") || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
-        ${host ? addCameHTML(e, "data-spaddsign") : ""}
+        <div class="ev-crew" hidden>${e.signups.map((x) => host ? spWho(x).replace(/<\/span>$/, `<button class="x-rm sm" type="button" data-spunsign="${x.user_id}" aria-label="Убрать: не пришёл">×</button></span>`) : spWho(x)).join("") || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
         <div class="ev-act">${mine ? `${mineTag(e)}<button class="linkish" type="button" data-spleave>не смогу</button>` : joinBtns("data-spjoin", host)}
           <span class="ev-count">${e.signups.length} ${plural(e.signups.length, "идёт", "идут", "идут")}</span></div>
         ${myRoleOn(e) === "player" && payBtn(X.id, e) ? `<div class="wk-pay" style="padding:0 16px 12px">${payBtn(X.id, e)}</div>` : ""}
@@ -4801,7 +4867,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (okMsg) toast(okMsg);
     sp.board = {};
     await loadSports().catch(() => {});
-    if (isSportView()) { drawSportNext(); drawSportNew(); drawSportPast(); drawSportBoard(); drawOrgDay(); }
+    if (isSportView()) { drawSportNext(); drawSportNew(); drawSportPast(); drawSportBoard(); drawOrgDay(); drawSportList(); }
     return true;
   };
   $("vSport").addEventListener("click", (e) => {
@@ -5357,7 +5423,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       <button class="nc-main" type="button" data-goev><span class="nc-date"><small>${DOW[w]}</small><b>${d}</b><small>${MON[m - 1]}</small></span>
         <span class="nc-t"><b>🎭 Мафия</b><small>${esc(dayLabel(e.day))} · начало ${hm(e.start_time)} · сбор ${hm(e.gather_time)}${e.price ? ` · ${e.price} ฿` : ""}</small></span><span class="wk-go">›</span></button>
       ${placeChip(e) ? `<div class="wk-place">${placeChip(e)}</div>` : ""}
-      <div class="wk-foot"><span class="wk-faces">${faceList(e.signups, 6)}</span><span class="wk-n">${e.signups.length ? `${e.signups.length} ${plural(e.signups.length, "идёт", "идут", "идут")}` : "пока никого"}</span>
+      <div class="wk-foot"><span class="wk-n">${e.signups.length ? `${e.signups.length} ${plural(e.signups.length, "идёт", "идут", "идут")}` : "пока никого"}</span>
         ${mine ? mineTag(e) : `<span class="wk-joins">${joinBtns("data-join", canHost())}</span>`}</div>
       ${myRoleOn(e) === "player" && payBtn("mafia", e) ? `<div class="wk-pay">${payBtn("mafia", e)}</div>` : ""}
     </article>`;
@@ -5971,7 +6037,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         if (ev === "SIGNED_OUT" && me) { me = null; afterLogout(); go("hub"); }
       });
     }
-    if (!S.hostMode) S.hostMode = me ? "online" : "offline";
+    S.hostMode = "online";
     go(startView);
     navReady = true;
     if (startView !== "hub") navStack.push({ v: "hub" });
