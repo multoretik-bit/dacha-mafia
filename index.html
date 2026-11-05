@@ -2378,7 +2378,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105140229"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105141106"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4395,6 +4395,8 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
   let sportId = "volley";
   const sp = { mode: "player", showAll: false, events: [], hosts: [], places: [], series: [], loaded: false, loading: null, chan: null, board: {}, scope: "all", month: null, editing: null, focus: null, seriesEdit: null };
   const addDays = (iso, k) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d + k)).toISOString().slice(0, 10); };
+  // a game stays "current" for 4 hours after it starts (even with results saved)
+  const stillOn = (e) => Date.parse(`${e.day}T${hm(e.start_time) || "00:00"}:00+07:00`) + 4 * 3600e3 > Date.now();
   const dayLabel = (iso) => { const t = bkkToday(); if (iso === t) return "сегодня"; if (iso === addDays(t, 1)) return "завтра"; const { d, m, w } = dayParts(iso); return `${DOW[w]}, ${d} ${MON[m - 1]}`; };
   const isSportHost = (k) => !!me && (canGrant || sp.hosts.some((h) => h.sport === k && h.user_id === me.id));
   // places: every date can have one; the link opens Google Maps (or a search by name)
@@ -4587,7 +4589,8 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
   };
   const drawHubGames = () => {
     const t = bkkToday();
-    const next = (k) => (k === "mafia" ? ev.list.find((e) => e.status === "open") : sp.events.find((e) => e.sport === k && e.status === "open" && e.day >= t));
+    void t;
+    const next = (k) => (k === "mafia" ? ev.list.find((e) => e.status === "open" && stillOn(e)) : sp.events.find((e) => e.sport === k && e.status !== "removed" && stillOn(e)));
     const line = (k) => { const n = next(k); return n ? `ближайшая: <b>${esc(dayLabel(n.day))} · ${hm(n.start_time)}</b>${k === "mafia" && placeName(n) ? `<br>📍 ${esc(placeName(n))}` : ""}` : me ? "дату скоро поставят" : "войди, чтобы записаться"; };
     const mafArt = ["cards/maf.webp", "cards/kom-3.webp", "cards/don-2.webp"];
     $("hubGames").innerHTML = ["mafia", "volley", "foot"].map((k) => {
@@ -5004,7 +5007,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
     </form>`;
   const drawSportNext = () => {
     const X = SPORTS[sportId], t = bkkToday(), canOrg = isSportHost(X.id), host = canOrg && sp.mode === "org";
-    const all = sp.events.filter((e) => e.sport === X.id && e.day >= t && e.status === "open");
+    const all = sp.events.filter((e) => e.sport === X.id && e.status !== "removed" && stillOn(e));
     const list = host ? all : all.slice(0, 1), more = all.slice(1);
     void canOrg;
     $("spNext").innerHTML = `<div class="sec-title" style="margin:0 2px 10px">${host ? "Все ближайшие даты" : "Следующая игра"}</div>` + (list.length ? list.map((e) => {
@@ -5783,7 +5786,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
     if (!sb || !me) return;
     await sb.rpc("ensure_events");
     const [{ data: list }, { data: set }, { data: hostIds }] = await Promise.all([
-      sb.from("events").select("*, pl:places(id,name,maps_url), signups(user_id, created_at, role, profiles(id,nick,tg_username,tg_photo))").gte("day", bkkToday()).neq("status", "removed").order("day").limit(10),
+      sb.from("events").select("*, pl:places(id,name,maps_url), signups(user_id, created_at, role, profiles(id,nick,tg_username,tg_photo))").gte("day", addDays(bkkToday(), -1)).neq("status", "removed").order("day").limit(11),
       sb.from("pay_settings").select("*").eq("id", 1).maybeSingle(),
       sb.rpc("host_ids"),
     ]);
@@ -5793,7 +5796,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
       const all = (e.signups || []).sort((a, b) => a.created_at.localeCompare(b.created_at));
       void hostSet; // a host can host or just play: the role is on the sign-up
       return { ...e, hosts: all.filter((x) => x.role === "host"), signups: all.filter((x) => x.role !== "host") };
-    });
+    }).filter((e) => e.day >= bkkToday() || stillOn(e));   // last night's game stays until 4 h after its start
     ev.set = set || null;
     ev.pays = {};
     if (ev.list.length) {
