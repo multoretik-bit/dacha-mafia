@@ -1906,7 +1906,8 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 .tp-photo { display: flex; gap: 8px; flex-wrap: wrap; }
 .tp-photo label { cursor: pointer; }
 /* full dark profile (PREMIUM) */
-body.pdark { background: #0A0D16; }
+body.pdark { --bg: #0A0D16; }
+html:not(.hw) body.pdark, html body.pdark { background: #0A0D16; }
 html body.pdark::before { background: #0A0D16; }
 html:has(body.pdark) { background: #0A0D16; }
 #vProfile.th-dark .pgo { background: color-mix(in srgb, var(--gc) 16%, #141927); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gc) 40%, transparent); }
@@ -2556,7 +2557,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105175753"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105180022"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2701,13 +2702,14 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const CASH = '<i class="cash">💵</i><i class="cash">💸</i><i class="cash">💵</i><i class="cash">💰</i>';
   const premIcons = new Map(), lockedIds = new Set();
   const FACES = ["don", "maf", "mafc", "mafw", "mafl", "kom", "komw", "kur", "doc", "pat", "pri", "man", "manw", "mir", "mirp", "mirt", "mirg"];
+  const ART_V = "3"; // bump when faces/icons are redrawn, phones keep old pictures otherwise
   const PICONS = ["fire", "bolt", "crown", "star", "moon", "gem", "target", "clover", "heart", "palm", "mask", "volley", "ball", "spade", "dice", "sun"];
   const EMO_IC = { "🔥": "fire", "⚡": "bolt", "👑": "crown", "🦁": "sun", "🐺": "moon", "🦅": "bolt", "🌙": "moon", "⭐": "star", "🎯": "target", "🍀": "clover", "💎": "gem", "🃏": "spade", "🎭": "mask", "🏐": "volley", "⚽": "ball", "🌴": "palm" };
   const premIconHTML = (v) => {
     v = String(v);
-    if (v.startsWith("f:")) return `<img src="faces/${esc(v.slice(2))}.svg" alt="">`;
+    if (v.startsWith("f:")) return `<img src="faces/${esc(v.slice(2))}.svg?v=${ART_V}" alt="">`;
     const ic = v.startsWith("i:") ? v.slice(2) : EMO_IC[v];
-    return ic ? `<img src="icons/${esc(ic)}.svg" alt="">` : esc(v);
+    return ic ? `<img src="icons/${esc(ic)}.svg?v=${ART_V}" alt="">` : esc(v);
   };
   const avaP = (p, extra = "") => isPremium(p)
     ? `<span class="prem">${ava(p?.nick, p?.id, extra + " premium", p?.tg_photo)}${premIcons.get(p?.id || p?.uid || p?.user_id) ? `<i class="prem-ic">${premIconHTML(premIcons.get(p?.id || p?.uid || p?.user_id))}</i>` : ""}</span>`
@@ -3177,9 +3179,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const iconPick = isMe && isPremium(me) ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
         <div class="eyebrow">◆ PREMIUM · твоя иконка</div><p class="lead">Она будет на твоей аватарке во всех списках.</p>
         <div class="eyebrow" style="margin-top:2px">Дачники с карт</div>
-        <div class="ic-grid faces">${FACES.map((f) => `<button type="button" data-picon="f:${f}" aria-pressed="${premIcons.get(me.id) === "f:" + f}"><img src="faces/${f}.svg" alt=""></button>`).join("")}</div>
+        <div class="ic-grid faces">${FACES.map((f) => `<button type="button" data-picon="f:${f}" aria-pressed="${premIcons.get(me.id) === "f:" + f}"><img src="faces/${f}.svg?v=${ART_V}" alt=""></button>`).join("")}</div>
         <div class="eyebrow" style="margin-top:2px">Значки</div>
-        <div class="ic-grid faces">${PICONS.map((x) => `<button type="button" data-picon="i:${x}" aria-pressed="${curI === x}"><img src="icons/${x}.svg" alt=""></button>`).join("")}<button type="button" data-picon="" aria-pressed="${!curIc}" class="ic-none">без</button></div>
+        <div class="ic-grid faces">${PICONS.map((x) => `<button type="button" data-picon="i:${x}" aria-pressed="${curI === x}"><img src="icons/${x}.svg?v=${ART_V}" alt=""></button>`).join("")}<button type="button" data-picon="" aria-pressed="${!curIc}" class="ic-none">без</button></div>
       </div></div></div>` : "";
     const NK = [["mafia", "🎭 Мафия"], ["volley", "🏐 Волейбол"], ["foot", "⚽ Футбол"], ["community", "✨ Ивенты дачников"]];
     const nAll = extra?.notify_all !== false, nKinds = extra?.notify_kinds || [];
