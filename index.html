@@ -1469,6 +1469,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 /* bank sheet, premium icon (05.11) */
 .bank-veil { align-items: flex-end; }
 .bank { position: relative; width: 100%; max-width: 460px; display: grid; gap: 12px; padding: 16px; border-radius: 28px 28px 0 0; background: var(--bg); animation: rise .3s cubic-bezier(.2,.8,.2,1); box-sizing: border-box; padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px)); }
+.bank { grid-template-columns: minmax(0, 1fr); }
+.bank > *, .bank-send > * { min-width: 0; }
+.bank-send .amt { width: 100%; }
 .bank-card { border-radius: 22px; padding: 18px 18px 16px; color: #F2EBDD; display: grid; gap: 2px; box-shadow: var(--sh);
   background: radial-gradient(90% 120% at 100% 0%, rgba(205,183,138,.3), transparent 60%), repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 9px), linear-gradient(150deg, #101015, #262630); }
 .bank-card.neg > b { color: #FF8A96; }
@@ -2092,7 +2095,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105093248"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105093647"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4242,28 +4245,73 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     else { const { data } = await sb.rpc("wallet", { u: id }); bal = +data?.balance || 0; }
     if (!$("profBal") || profileId !== id) return;
     b.className = "bal-chip" + (bal < 0 ? " neg" : bal > 0 ? " pos" : "");
-    b.innerHTML = `<svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>Баланс: <b>${money(bal)}</b>${isMe ? "" : ` <span>принять оплату ›</span>`}`;
+    b.innerHTML = `<svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>Баланс: <b>${money(bal)}</b>${isMe ? "" : ` <span>›</span>`}`;
     b.onclick = () => {
       if (isMe) return openBank();
-      const v = document.createElement("div"); v.className = "veil";
-      v.innerHTML = `<div class="ticket" role="dialog" aria-modal="true"><div class="ticket-in"><div class="t-body" style="gap:12px">
-        <div class="eyebrow">Баланс · ${esc(row.nick)}</div><h2 class="h1">${money(bal)}</h2>
-        <label class="amt-row"><input class="amt" type="number" min="1" step="10" value="${bal < 0 ? -bal : 100}" aria-label="Сумма"><span>฿</span></label>
-        <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" data-m="cash">получил наличными</button><button class="pill sm" data-m="qr">получил по QR</button>
-          ${canGrant ? `<button class="pill sm red" data-m="minus">списать</button>` : ""}<button class="pill sm dark" data-m="send">↗ перевести со своего счёта</button><button class="pill sm ghost" data-close>закрыть</button></div>
-        <p class="bio-meta" style="margin:0">${canGrant ? "«Списать» уменьшает баланс вручную (например, за игру без записи)." : "Сумма сразу зачислится на баланс дачника."}</p></div></div></div>`;
-      v.addEventListener("click", async (ev2) => {
-        if (ev2.target === v || ev2.target.closest("[data-close]")) return v.remove();
-        const mb = ev2.target.closest("[data-m]"); if (!mb) return;
-        if (mb.dataset.m === "send") { v.remove(); return openBank("send", id); }
-        const amount = parseInt(v.querySelector("input").value, 10); if (!(amount >= 1)) return toast("Укажи сумму");
-        const { data: rid, error } = mb.dataset.m === "minus" ? await sb.rpc("wallet_adjust", { u: id, amount: -amount, note: "Списание вручную" }) : await sb.rpc("pay_receive", { u: id, amount, m: mb.dataset.m });
-        if (error) return toast("Не получилось: " + humanErr(error));
-        if (mb.dataset.m !== "minus") notifyTx(rid);
-        v.remove(); toast(mb.dataset.m === "minus" ? "Списано" : "Баланс пополнен"); drawProfBal(id, isMe, row);
-      });
-      document.body.append(v);
+      openPersonBank(id, row, bal, () => drawProfBal(id, isMe, row));
     };
+  };
+  // hosts: someone's wallet like a bank card — got money, send, write off, history
+  const openPersonBank = async (id, row, bal, done) => {
+    haptic("tap");
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    let tab = "main", hist = null;
+    const amtForm = (kind) => `<form class="bank-send" data-pform="${kind}">
+        <div class="eyebrow">${kind === "minus" ? "Списать с баланса" : "Получил деньги"}</div>
+        ${kind === "got" ? `<div class="pm-tiles" role="group"><button type="button" data-gm="cash" aria-pressed="true"><span>💵</span><b>Наличными</b></button><button type="button" data-gm="qr" aria-pressed="false"><span>📱</span><b>По QR</b></button></div>` : ""}
+        <label class="amt-row"><input class="amt" name="a" type="number" inputmode="numeric" min="1" step="1" value="${kind === "got" && bal < 0 ? -bal : ""}" placeholder="0" required aria-label="Сумма"><span>฿</span></label>
+        ${kind === "minus" ? `<input class="field" name="n" maxlength="80" placeholder="За что (например: игра без записи)">` : ""}
+        <p class="bio-meta" style="margin:0">${kind === "minus" ? "Баланс уменьшится сразу." : "Сумма сразу зачислится, бот напишет человеку."}</p>
+        <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ${kind === "minus" ? "red" : ""}" type="submit">${kind === "minus" ? "списать" : "зачислить"}</button><button class="pill sm ghost" type="button" data-pb="main">назад</button></div>
+      </form>`;
+    const draw = () => {
+      v.innerHTML = `<div class="bank" role="dialog" aria-modal="true" aria-label="Баланс ${esc(row.nick)}">
+        <div class="bank-card ${bal < 0 ? "neg" : ""}"><div class="bank-top"><span class="pm-mark">DACHA <b>WALLET</b></span>${isPremium({ id }) ? `<span class="bank-prem">◆ PREMIUM</span>` : ""}</div>
+          <small>Баланс</small><b>${money(bal)}</b><div class="bank-who">${esc(row.nick)}${row.tg_username ? " · @" + esc(row.tg_username) : ""}</div></div>
+        ${tab === "main" ? `<div class="bank-acts">
+            <button type="button" data-pb="got"><i>＋</i><span>Получил</span></button>
+            <button type="button" data-pb="send"><i>↗</i><span>Перевести</span></button>
+            ${canGrant ? `<button type="button" data-pb="minus"><i>−</i><span>Списать</span></button>` : ""}
+            <button type="button" data-pb="hist"><i>≡</i><span>История</span></button>
+          </div>`
+        : tab === "hist" ? `<div class="bank-send"><div class="eyebrow">История · ${esc(row.nick)}</div>${hist === null ? `<div class="wait"><span class="pulse"></span>Загружаю…</div>` : hist.length ? hist.map((r) => `<div class="tx-row" style="padding:8px 0"><span class="tx-ic">${r.ic}</span><span class="tx-t"><b>${esc(r.t)}</b><small>${esc(r.s)}</small></span><span class="tx-amt ${r.amt < 0 ? "neg" : r.amt > 0 ? "pos" : ""}">${r.amt > 0 ? "+" : ""}${r.amt ? money(r.amt) : "—"}</span></div>`).join("") : `<p class="bio-meta">Пока пусто.</p>`}
+            <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ghost" type="button" data-pb="main">назад</button></div></div>`
+        : amtForm(tab)}
+        <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button>
+      </div>`;
+    };
+    draw();
+    v.addEventListener("click", async (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      const gm = e.target.closest("[data-gm]");
+      if (gm) { v.querySelectorAll("[data-gm]").forEach((x) => x.setAttribute("aria-pressed", x === gm)); return; }
+      const b = e.target.closest("[data-pb]"); if (!b) return;
+      const k = b.dataset.pb;
+      if (k === "send") { v.remove(); return openBank("send", id); }
+      tab = k; draw();
+      if (k === "hist") {
+        const { data } = await sb.rpc("wallet", { u: id });
+        hist = [
+          ...(data?.charges || []).map((c) => ({ at: c.day + "T" + c.start_time, amt: -c.price, ic: meta(c.game).emoji, t: `${meta(c.game).name} · ${dayLabel(c.day)}`, s: c.place || "игра" })),
+          ...(data?.txs || []).filter((t) => t.status === "confirmed").map((t) => ({ at: t.created_at, amt: t.purpose === "premium" ? 0 : t.amount, ic: t.purpose === "premium" ? "◆" : t.method === "transfer" ? (t.amount < 0 ? "↗" : "↙") : t.method === "adjust" ? (t.amount > 0 ? "＋" : "−") : t.method === "qr" ? "📱" : "💵",
+            t: t.purpose === "premium" ? `PREMIUM · ${t.amount} ${CUR[t.currency] || "฿"}` : t.note || (t.method === "qr" ? "Пополнение · QR" : "Пополнение · наличные"), s: new Date(t.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) })),
+        ].sort((a, b2) => String(b2.at).localeCompare(String(a.at))).slice(0, 30);
+        if (tab === "hist") draw();
+      }
+    });
+    v.addEventListener("submit", async (e) => {
+      const f = e.target.closest("[data-pform]"); if (!f) return;
+      e.preventDefault();
+      const amount = parseInt(f.elements.a.value, 10); if (!(amount >= 1)) return toast("Укажи сумму");
+      const minus = f.dataset.pform === "minus";
+      const m = v.querySelector('[data-gm][aria-pressed="true"]')?.dataset.gm || "cash";
+      const { data: rid, error } = minus ? await sb.rpc("wallet_adjust", { u: id, amount: -amount, note: f.elements.n?.value.trim() || "Списание" }) : await sb.rpc("pay_receive", { u: id, amount, m });
+      if (error) return toast("Не получилось: " + humanErr(error));
+      if (!minus) notifyTx(rid);
+      haptic("card"); toast(minus ? `Списано ${money(amount)}` : `Зачислено ${money(amount)}`);
+      bal += minus ? -amount : amount; tab = "main"; draw(); done?.();
+    });
+    document.body.append(v);
   };
   // profile: one tile per played game (tap = details sheet, tap on #N = rating), upcoming dates, achievements
   const drawProfGames = (id, row, sstats, rolesHTML, nRoles) => {
@@ -4590,7 +4638,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         : `<form class="bank-send" data-sendform>
             <div class="eyebrow">Перевод дачнику</div>
             <select class="field" name="to" required><option value="">Кому перевести?</option>${list.map((p) => `<option value="${p.id}" ${p.id === to ? "selected" : ""}>${esc(p.nick)}${p.tg_username ? " · @" + esc(p.tg_username) : ""}</option>`).join("")}</select>
-            <label class="amt-row"><input class="amt" name="a" type="number" inputmode="numeric" min="1" max="${Math.max(bal, 0)}" step="10" value="${amt}" placeholder="0" required aria-label="Сумма"><span>฿</span></label>
+            <label class="amt-row"><input class="amt" name="a" type="number" inputmode="numeric" min="1" max="${Math.max(bal, 0)}" step="1" value="${amt}" placeholder="0" required aria-label="Сумма"><span>฿</span></label>
             <input class="field" name="n" maxlength="80" placeholder="Сообщение (можно пусто)">
             <p class="bio-meta" style="margin:0">${bal > 0 ? `Можно перевести до ${money(bal)}. Деньги придут сразу, бот напишет получателю.` : "На балансе пока нет денег для перевода — сначала пополни."}</p>
             <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="submit" ${bal > 0 ? "" : "disabled"}>перевести</button><button class="pill sm ghost" type="button" data-b="main">назад</button></div>
@@ -4675,7 +4723,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     void pend;
     $("payBody").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:12px">
         <div class="eyebrow">${e ? "Оплатить игру" : "Пополнить баланс"}</div>
-        <label class="amt-row"><input class="amt" id="payAmt" type="number" inputmode="numeric" min="1" max="100000" step="10" value="${amt}" aria-label="Сумма в батах"><span>฿</span></label>
+        <label class="amt-row"><input class="amt" id="payAmt" type="number" inputmode="numeric" min="1" max="100000" step="1" value="${amt}" aria-label="Сумма в батах"><span>฿</span></label>
         <div class="amt-chips">${chips.map((c) => `<button type="button" class="chip" data-amt="${c}" aria-pressed="${c === +amt}">${c === -bal && bal < 0 ? `долг ${c}` : c} ฿</button>`).join("")}</div>
         <div class="pm-tiles" role="group" aria-label="Способ оплаты">
           <button type="button" data-pm="qr" aria-pressed="${payMethod === "qr"}"><span>📱</span><b>QR-перевод</b><small>из приложения банка</small></button>
@@ -4723,7 +4771,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <span class="tx-acts"><button class="round sm ok" type="button" data-decide="${t.id}" data-ok="1" aria-label="Получил">✓</button><button class="round sm no" type="button" data-decide="${t.id}" data-ok="0" aria-label="Не получил">✕</button></span></div>`; }).join("")}
       <div class="sec-label eyebrow">Долги · ${debts.length}</div>
       ${debts.length ? debts.map((b) => { const pp = personOf(b.user_id); return `<div class="tx-row host"><span class="tx-av">${avaP(pp)}</span><span class="tx-t"><b>${esc(pp.nick)}</b><small>${+b.pending ? `ждёт подтверждения +${money(b.pending)}` : esc(tgLine(pp))}</small></span><span class="tx-amt neg">${money(b.balance)}</span>
-        ${payRecv === b.user_id ? `<form class="recv-form" data-recv="${b.user_id}"><input class="field" name="a" type="number" min="1" step="10" value="${-b.balance}" aria-label="Сумма"><select class="field" name="m"><option value="cash">наличные</option><option value="qr">QR</option></select><button class="pill sm" type="submit">получил</button></form>` : `<button class="linkish" type="button" data-recvopen="${b.user_id}">принять</button>`}</div>`; }).join("")
+        ${payRecv === b.user_id ? `<form class="recv-form" data-recv="${b.user_id}"><input class="field" name="a" type="number" min="1" step="1" value="${-b.balance}" aria-label="Сумма"><select class="field" name="m"><option value="cash">наличные</option><option value="qr">QR</option></select><button class="pill sm" type="submit">получил</button></form>` : `<button class="linkish" type="button" data-recvopen="${b.user_id}">принять</button>`}</div>`; }).join("")
         : `<div class="empty-note">Должников нет 🎉</div>`}
     </div></div>`;
   };
