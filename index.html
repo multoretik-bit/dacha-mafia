@@ -1281,7 +1281,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .ph-sub .tg-line + .ph-since::before { content: "· "; }
 .prof-card .prof-badges { justify-content: flex-start; }
 .ph-acts { display: flex; flex-wrap: wrap; gap: 6px; }
-.ph-acts .pill { margin: 0; min-height: 34px; padding: 0 14px; font-size: 13px; flex: 1; }
+.ph-acts .pill { margin: 0; min-height: 34px; padding: 0 12px; font-size: 13px; flex: 1 1 auto; white-space: nowrap; }
 .ph-acts .nick-edit { flex-basis: 100%; max-width: none; }
 #profBio { padding: 0 16px 14px; justify-items: start; text-align: left; margin-top: -4px; }
 #profBio .bio-text { max-width: none; font-size: 14.5px; }
@@ -1761,6 +1761,40 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
 .pr-b.debt { width: auto; padding: 0 11px; border-radius: 99px; background: #FFF1F2; color: #C0162A; font-size: 12px; font-weight: 800; }
 .pr-b.debt.on { background: #C0162A; color: #fff; }
 .pr-b.rm { background: var(--soft); color: var(--muted); }
+
+/* profile decoration (05.11) */
+.prof-card .prof-cover { position: relative; overflow: hidden; transition: height .2s; }
+.prof-card .prof-cover.tall { height: 104px; }
+.stk { position: absolute; transform: translate(-50%, -50%) rotate(var(--r)) scale(var(--s)); font-size: 28px; line-height: 1; filter: drop-shadow(0 3px 4px rgba(0,0,0,.25)); user-select: none; -webkit-user-select: none; touch-action: none; }
+.prof-card.editing .prof-cover { outline: 2px dashed rgba(255,255,255,.85); outline-offset: -6px; cursor: grab; }
+.prof-card.editing .prof-cover.tall, .prof-card.editing .prof-cover { height: 120px; }
+.stk-x { position: absolute; right: -10px; top: -10px; width: 18px; height: 18px; border-radius: 50%; background: #fff; color: var(--ink); font-size: 12px; font-weight: 900; line-height: 1; box-shadow: 0 1px 4px rgba(0,0,0,.3); transform: scale(calc(1 / var(--s))); }
+.prof-card.has-acc .ph-name .h1 { color: var(--acc); }
+.prof-card.has-acc .ava.lg { box-shadow: 0 0 0 4px #fff, 0 0 0 6.5px var(--acc) !important; }
+.prof-card.has-acc .ph-acts .pill.ghost { color: var(--acc); }
+.prof-card.hide-rate .pb-rate, .prof-card.hide-goes .pb-goes { display: none; }
+.theme-panel { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); z-index: 60; width: min(100%, 560px); box-sizing: border-box; background: #fff; border-radius: 24px 24px 0 0; box-shadow: 0 -10px 30px -10px rgba(15,23,42,.35); padding: 12px 14px calc(14px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 10px; animation: rise .3s cubic-bezier(.2,.8,.2,1); }
+.tp-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--soft); padding: 3px; border-radius: 999px; }
+.tp-tabs button { min-height: 36px; border-radius: 999px; font-weight: 800; font-size: 13px; color: var(--muted); }
+.tp-tabs button[aria-pressed="true"] { background: #fff; color: var(--navy-ink); box-shadow: 0 1px 4px rgba(15,23,42,.14); }
+.tp-body { max-height: 34vh; overflow-y: auto; }
+.tp-covers { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 8px; }
+.tp-covers button, .tp-own { height: 44px; border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+.tp-covers button[aria-pressed="true"] { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--navy-ink); }
+.tp-own { position: relative; display: grid; place-items: center; background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red); overflow: hidden; }
+.tp-own input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+.tp-own span { font-weight: 800; font-size: 11px; color: #fff; text-shadow: 0 1px 2px #000; pointer-events: none; }
+.tp-hint { margin: 0 0 8px; color: var(--muted); font-weight: 700; font-size: 12.5px; }
+.tp-stk { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; }
+.tp-stk button { height: 40px; border-radius: 10px; font-size: 22px; background: var(--soft); }
+.tp-stk button:active { transform: scale(.9); }
+.tp-acc { display: flex; flex-wrap: wrap; gap: 10px; }
+.tp-acc button { width: 40px; height: 40px; border-radius: 50%; }
+.tp-acc button[aria-pressed="true"] { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--navy-ink); }
+.tp-acc button.none { width: auto; padding: 0 14px; border-radius: 99px; background: var(--soft); font-weight: 800; font-size: 12.5px; color: var(--muted); }
+.tp-foot { display: flex; gap: 6px; justify-content: flex-end; }
+.tp-foot .pill { margin: 0; }
+html:has(.theme-panel) .app { padding-bottom: 46vh; }
 
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
@@ -2394,7 +2428,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105141709"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105151119"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2891,7 +2925,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
     if (!sb || !me) return;
     const [{ data: stats }, , { data: sstats }, { data: extra }] = await Promise.all([
       sb.rpc("player_stats", { p: id }), loadPeople(), sb.rpc("sport_stats", { p: id }),
-      sb.from("profiles").select("bio, created_at, pay_qr, pay_qr_label, pay_qr2, pay_qr2_label, birth_day, birth_month, birth_src, notify_all, notify_kinds").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(), ev.loaded ? null : loadEvents(),
+      sb.from("profiles").select("bio, created_at, pay_qr, pay_qr_label, pay_qr2, pay_qr2_label, birth_day, birth_month, birth_src, notify_all, notify_kinds, theme").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(), ev.loaded ? null : loadEvents(),
     ]);
     if (S.view !== "profile" || profileId !== id) return;
     const row = people.find((p) => p.id === id) || (id === me.id ? { ...me, games: 0, wins: 0, hosted: 0 } : { nick: "Дачник", games: 0, wins: 0, hosted: 0 });
@@ -2924,6 +2958,8 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
       };
     };
     drawProfBio(id, isMe, extra);
+    applyTheme(extra?.theme || null, false);
+    if (isMe) $("phActs")?.insertAdjacentHTML("beforeend", `<button class="pill sm ghost" type="button" id="themeEdit">🎨 стиль</button>`), ($("themeEdit").onclick = () => openThemeEditor(extra?.theme || null));
     drawProfBal(id, isMe, row);
     // win rate only from 5 games: fewer games say nothing
     const rate = row.games ? Math.round((row.wins / row.games) * 100) : 0;
@@ -4717,7 +4753,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
     $("profBio").innerHTML = bio ? `<p class="bio-text">${esc(bio)}</p>` : "";
     $("profBio").hidden = !bio;
     if (!isMe) return;
-    $("phActs")?.insertAdjacentHTML("beforeend", `<button class="pill sm ghost" type="button" id="bioEdit">${bio ? "о себе" : "+ о себе"}</button><button class="pill sm ghost" type="button" id="bdayEdit">${bd ? "🎂 дата" : "+ 🎂 день рождения"}</button>`);
+    $("phActs")?.insertAdjacentHTML("beforeend", `<button class="pill sm ghost" type="button" id="bioEdit">о себе</button><button class="pill sm ghost" type="button" id="bdayEdit">🎂</button>`);
     $("bdayEdit").onclick = () => {
       $("profBio").hidden = false;
       $("profBio").innerHTML = `<form class="bd-form" id="bdForm"><span class="eyebrow">День рождения${extra?.birth_src === "tg" ? " · из Telegram" : ""}</span>
@@ -4743,6 +4779,97 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
       };
     };
   };
+  /* ---------- profile decoration: cover, accent, emoji stickers, hidden blocks ---------- */
+  const COVERS = {
+    dacha: "radial-gradient(120% 140% at 15% 0%, #FFE08A 0%, #FFC83D 38%, rgba(255,200,61,0) 70%), linear-gradient(120deg, #0033FF, #092F80)",
+    sunrise: "linear-gradient(135deg, #FFB347, #FF5E62)", ocean: "linear-gradient(135deg, #2193B0, #6DD5ED)", forest: "linear-gradient(135deg, #134E5E, #71B280)",
+    candy: "linear-gradient(135deg, #F78CA0, #F9748F 50%, #FE9A8B)", night: "linear-gradient(135deg, #0F2027, #203A43 50%, #2C5364)", violet: "linear-gradient(135deg, #7F00FF, #E100FF)",
+    mint: "linear-gradient(135deg, #43E97B, #38F9D7)", peach: "linear-gradient(135deg, #FFDEE9, #B5FFFC)", fire: "linear-gradient(135deg, #F12711, #F5AF19)",
+    sky: "linear-gradient(180deg, #A1C4FD, #C2E9FB)", gold: "linear-gradient(135deg, #BF953F, #FCF6BA 45%, #B38728 70%, #FBF5B7)",
+  };
+  const ACCENTS = ["#071B4D", "#0033FF", "#E3263A", "#FF7A1A", "#16A34A", "#7B3FE4", "#E0218A", "#0EA5B7", "#B8860B"];
+  const STICKERS = ["😎", "🔥", "💛", "⭐", "🌴", "🍉", "🎭", "🏐", "⚽", "♟️", "🎲", "👑", "🦋", "🌸", "🍀", "🌙", "☕", "🍕", "🎧", "📸", "🚀", "🐱", "🐶", "🦄", "💎", "🌈", "🥥", "🏝️", "🎉", "✨"];
+  const coverCss = (c) => !c ? "" : String(c).startsWith("#") ? `linear-gradient(135deg, ${c}, color-mix(in srgb, ${c} 55%, #000))` : COVERS[c] || "";
+  const applyTheme = (th, editing) => {
+    const card = document.querySelector("#vProfile .prof-card"), cover = card?.querySelector(".prof-cover"); if (!card || !cover) return;
+    const t = th || {};
+    cover.style.background = coverCss(t.cover);
+    card.style.setProperty("--acc", t.accent || "");
+    card.classList.toggle("has-acc", !!t.accent);
+    card.classList.toggle("hide-rate", !!t.hide?.includes("rate"));
+    card.classList.toggle("hide-goes", !!t.hide?.includes("goes"));
+    const st = (t.stickers || []).slice(0, 8);
+    cover.classList.toggle("tall", st.length > 0);
+    cover.innerHTML = st.map((x, i) => `<span class="stk" data-i="${i}" style="left:${+x.x || 50}%;top:${+x.y || 50}%;--r:${+x.r || 0}deg;--s:${+x.s || 1}">${esc(x.e)}${editing ? `<button class="stk-x" type="button" data-stkx="${i}" aria-label="Убрать">×</button>` : ""}</span>`).join("");
+    card.classList.toggle("editing", !!editing);
+  };
+  const openThemeEditor = (cur) => {
+    let th = JSON.parse(JSON.stringify(cur || {})), tab = "cover";
+    th.stickers = th.stickers || []; th.hide = th.hide || [];
+    const card = document.querySelector("#vProfile .prof-card"), cover = card.querySelector(".prof-cover");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    const panel = document.createElement("div"); panel.className = "theme-panel";
+    const draw = () => {
+      applyTheme(th, true);
+      panel.innerHTML = `<div class="tp-tabs">${[["cover", "Фон"], ["stk", "Стикеры"], ["acc", "Цвет"], ["blocks", "Блоки"]].map(([k, l]) => `<button type="button" data-tab="${k}" aria-pressed="${k === tab}">${l}</button>`).join("")}</div>
+        <div class="tp-body">${tab === "cover" ? `<div class="tp-covers">${Object.keys(COVERS).map((k) => `<button type="button" data-cover="${k}" aria-pressed="${(th.cover || "dacha") === k}" style="background:${COVERS[k]}"></button>`).join("")}<label class="tp-own" title="Свой цвет"><input type="color" data-owncolor value="${String(th.cover || "").startsWith("#") ? th.cover : "#7B3FE4"}"><span>свой</span></label></div>`
+          : tab === "stk" ? `<p class="tp-hint">Нажми смайлик — он появится на обложке. Тащи пальцем, нажми — станет больше, × — убрать. До 8 штук.</p><div class="tp-stk">${STICKERS.map((e) => `<button type="button" data-addstk="${e}">${e}</button>`).join("")}</div>`
+          : tab === "acc" ? `<div class="tp-acc">${ACCENTS.map((c) => `<button type="button" data-acc="${c}" aria-pressed="${th.accent === c}" style="background:${c}"></button>`).join("")}<button type="button" data-acc="" class="none" aria-pressed="${!th.accent}">нет</button></div>`
+          : `<div class="tp-blocks">${[["rate", "Рейтинги в играх"], ["goes", "Записан на игры"]].map(([k, l]) => `<button class="host-row" type="button" data-blk="${k}" role="switch" aria-checked="${!th.hide.includes(k)}" style="border:0;padding:6px 0"><span class="hr-t"><b>${l}</b><small>${th.hide.includes(k) ? "скрыто" : "видно всем"}</small></span><i class="switch ${th.hide.includes(k) ? "" : "on"}"></i></button>`).join("")}</div>`}</div>
+        <div class="tp-foot"><button class="pill sm ghost" type="button" data-tpreset>сбросить</button><button class="pill sm ghost" type="button" data-tpcancel>отмена</button><button class="pill sm" type="button" data-tpsave>сохранить</button></div>`;
+    };
+    const close = () => { panel.remove(); cover.removeEventListener("pointerdown", onDown); renderProfile(); };
+    panel.addEventListener("input", (e) => { if (e.target.matches("[data-owncolor]")) { th.cover = e.target.value; applyTheme(th, true); } });
+    panel.addEventListener("click", async (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.tab) { tab = b.dataset.tab; return draw(); }
+      if (b.dataset.cover) { th.cover = b.dataset.cover === "dacha" ? null : b.dataset.cover; return draw(); }
+      if (b.dataset.addstk) { if (th.stickers.length >= 8) return toast("Максимум 8 стикеров"); th.stickers.push({ e: b.dataset.addstk, x: 15 + Math.round(Math.random() * 70), y: 25 + Math.round(Math.random() * 50), r: Math.round(Math.random() * 40 - 20), s: 1 }); haptic("tap"); return draw(); }
+      if (b.dataset.acc !== undefined) { th.accent = b.dataset.acc || null; return draw(); }
+      if (b.dataset.blk) { const k = b.dataset.blk; th.hide = th.hide.includes(k) ? th.hide.filter((x) => x !== k) : [...th.hide, k]; return draw(); }
+      if (b.hasAttribute("data-tpreset")) { th = { stickers: [], hide: [] }; return draw(); }
+      if (b.hasAttribute("data-tpcancel")) return close();
+      if (b.hasAttribute("data-tpsave")) {
+        const clean = { cover: th.cover || null, accent: th.accent || null, hide: th.hide, stickers: th.stickers.map((x) => ({ e: x.e, x: Math.round(x.x), y: Math.round(x.y), r: Math.round(x.r || 0), s: +(+x.s || 1).toFixed(1) })) };
+        const { error } = await sb.rpc("set_theme", { t: clean });
+        if (error) return toast("Не получилось: " + humanErr(error));
+        haptic("card"); toast("Страница оформлена ✨"); close();
+      }
+    });
+    // drag stickers on the cover
+    let drag = null;
+    const onDown = (e) => {
+      const x = e.target.closest("[data-stkx]");
+      if (x) { th.stickers.splice(+x.dataset.stkx, 1); return draw(); }
+      const el = e.target.closest(".stk"); if (!el) return;
+      e.preventDefault();
+      drag = { i: +el.dataset.i, el, sx: e.clientX, sy: e.clientY, moved: false };
+      el.setPointerCapture?.(e.pointerId);
+    };
+    const onMove = (e) => {
+      if (!drag) return;
+      const r = cover.getBoundingClientRect();
+      if (Math.abs(e.clientX - drag.sx) + Math.abs(e.clientY - drag.sy) > 4) drag.moved = true;
+      if (!drag.moved) return;
+      const st = th.stickers[drag.i];
+      st.x = Math.max(4, Math.min(96, ((e.clientX - r.left) / r.width) * 100));
+      st.y = Math.max(8, Math.min(92, ((e.clientY - r.top) / r.height) * 100));
+      drag.el.style.left = st.x + "%"; drag.el.style.top = st.y + "%";
+    };
+    const onUp = () => {
+      if (!drag) return;
+      const st = th.stickers[drag.i];
+      if (!drag.moved && st) { st.s = st.s >= 1.8 ? 1 : +(st.s + 0.4).toFixed(1); draw(); }
+      drag = null;
+    };
+    cover.addEventListener("pointerdown", onDown);
+    cover.addEventListener("pointermove", onMove);
+    cover.addEventListener("pointerup", onUp);
+    cover.addEventListener("pointercancel", onUp);
+    draw();
+    document.body.append(panel);
+  };
+
   let profLast = null;
   const drawProfBal = async (id, isMe, row) => {
     const b = $("profBal"); if (!b) return;
@@ -4837,14 +4964,14 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
       ...ev.list.filter((e) => e.status === "open" && [...e.signups, ...(e.hosts || [])].some((x) => x.user_id === id)).map((e) => ({ k: "mafia", e })),
       ...sp.events.filter((e) => e.status === "open" && e.day >= t && e.signups.some((x) => x.user_id === id)).map((e) => ({ k: e.sport, e })),
     ].sort((a, b) => (a.e.day + hm(a.e.start_time)).localeCompare(b.e.day + hm(b.e.start_time)));
-    $("profGames").innerHTML = `<div class="sec-label eyebrow">Рейтинги в играх</div>
+    $("profGames").innerHTML = `<div class="pb-rate"><div class="sec-label eyebrow">Рейтинги в играх</div>
       ${played.length ? `<div class="pg-icons">${played.map((x) => { const m = meta(x.k);
         return `<div class="pgi" style="--gc:${m.color}">
           <button class="pgi-main" type="button" data-pg="${x.k}" aria-label="${m.name}: подробнее"><span class="pgi-ic">${m.emoji}</span><small>${m.name}</small></button>
           <button class="pgi-place" type="button" data-pgrate="${x.k}" aria-label="${m.name}: ${x.place ? x.place + " место, " : ""}открыть рейтинг">${x.place ? "#" + x.place : "—"}</button></div>`; }).join("")}</div>`
-        : `<div class="empty-note">Пока не сыграл ни одной игры. Рейтинги появятся после первой.</div>`}
-      ${goes.length ? `<div class="sec-label eyebrow">Записан на игры</div><div class="pg-goes">${goes.map(({ k, e }) => { const m = meta(k);
-        return `<button class="pgo" type="button" data-pgo="${k}" style="--gc:${m.color}"><span class="pgo-ic">${m.emoji}</span><span><b>${esc(dayLabel(e.day))}</b><small>${m.name} · ${hm(e.start_time)}</small></span></button>`; }).join("")}</div>` : ""}`;
+        : `<div class="empty-note">Пока не сыграл ни одной игры. Рейтинги появятся после первой.</div>`}</div>
+      ${goes.length ? `<div class="pb-goes"><div class="sec-label eyebrow">Записан на игры</div><div class="pg-goes">${goes.map(({ k, e }) => { const m = meta(k);
+        return `<button class="pgo" type="button" data-pgo="${k}" style="--gc:${m.color}"><span class="pgo-ic">${m.emoji}</span><span><b>${esc(dayLabel(e.day))}</b><small>${m.name} · ${hm(e.start_time)}</small></span></button>`; }).join("")}</div></div>` : ""}`;
   };
   const openProfGame = (k) => {
     const L = profLast, g = L?.played.find((x) => x.k === k); if (!g) return;
