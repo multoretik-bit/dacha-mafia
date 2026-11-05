@@ -1852,22 +1852,22 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 .tbl-tally { display: flex; gap: 6px; margin-top: 6px; }
 .tbl-tally span { min-width: 26px; height: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 99px; display: grid; place-items: center; font: 700 13px/1 var(--f-code); }
 .tbl-tally .red { background: #E3263A; color: #fff; } .tbl-tally .black { background: #111; color: #fff; box-shadow: 0 0 0 1px rgba(255,255,255,.3); } .tbl-tally .gray { background: #A3ABBD; color: #111; }
-.seat { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 2px; width: calc(var(--sz) + 22px); touch-action: none; user-select: none; -webkit-user-select: none; }
-.seat { --ring: #A3ABBD; }
+.tseat { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 2px; width: calc(var(--sz) + 22px); touch-action: none; user-select: none; -webkit-user-select: none; }
+.tseat { --ring: #A3ABBD; }
 .seat-ring { position: relative; width: var(--sz); height: var(--sz); border-radius: 50%; padding: 2px; box-sizing: border-box; background: #fff; border: 5px solid var(--ring); box-shadow: 0 6px 12px -6px rgba(0,0,0,.45); transition: border-color .2s; }
 .seat-ring .ava, .seat-ring .prem { width: 100%; height: 100%; font-size: calc(var(--sz) * .36); box-shadow: none; }
 .seat-ring .prem .ava { width: 100%; height: 100%; } .seat-ring .prem .cash, .seat-ring .prem-ic { display: none; }
-.seat.c-black { --ring: #111; } .seat.c-red { --ring: #E3263A; }
+.tseat.c-black { --ring: #111; } .tseat.c-red { --ring: #E3263A; }
 .seat-n { position: absolute; top: -6px; left: 2px; min-width: 18px; height: 18px; padding: 0 4px; box-sizing: border-box; border-radius: 99px; background: #fff; color: var(--ink); font: 700 11px/18px var(--f-code); font-style: normal; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
 .seat-note { position: absolute; top: -6px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 10px; line-height: 18px; font-style: normal; }
 .seat-nm { font-weight: 800; font-size: 11.5px; color: var(--ink); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-.seat.self .seat-nm { color: var(--blue); }
-.seat.out .seat-ring > * { filter: grayscale(1); opacity: .35; } .seat.out .seat-ring { border-color: color-mix(in srgb, var(--ring) 45%, #fff); }
-.seat.out .seat-ring::after { content: "✕"; position: absolute; inset: 0; display: grid; place-items: center; color: #E3263A; font-size: calc(var(--sz) * .6); font-weight: 900; }
-.seat.out .seat-nm { text-decoration: line-through; color: var(--muted); }
-.seat.dragging { z-index: 5; transform: translate(-50%, -50%) scale(1.15); }
-.seat.dragging .seat-ring { box-shadow: 0 14px 24px -8px rgba(0,0,0,.6); }
-.tbl-box.sorting .seat:not(.dragging) { opacity: .7; }
+.tseat.self .seat-nm { color: var(--blue); }
+.tseat.out .seat-ring > * { filter: grayscale(1); opacity: .35; } .tseat.out .seat-ring { border-color: color-mix(in srgb, var(--ring) 45%, #fff); }
+.tseat.out .seat-ring::after { content: "✕"; position: absolute; inset: 0; display: grid; place-items: center; color: #E3263A; font-size: calc(var(--sz) * .6); font-weight: 900; }
+.tseat.out .seat-nm { text-decoration: line-through; color: var(--muted); }
+.tseat.dragging { z-index: 5; transform: translate(-50%, -50%) scale(1.15); }
+.tseat.dragging .seat-ring { box-shadow: 0 14px 24px -8px rgba(0,0,0,.6); }
+.tbl-box.sorting .tseat:not(.dragging) { opacity: .7; }
 .seat-sheet2 { gap: 12px; }
 .ss-h { display: flex; align-items: center; gap: 12px; padding-right: 40px; }
 .ss-h .ava, .ss-h .prem { width: 48px; height: 48px; font-size: 22px; } .ss-h .prem .ava { width: 100%; height: 100%; } .ss-h .prem .cash { display: none; }
@@ -2514,7 +2514,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105173015"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105173250"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -6652,7 +6652,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
       <div class="tbl-felt"><b>${alive.length}</b><small>в игре из ${n}</small>
         <div class="tbl-tally"><span class="red">${cnt("red")}</span><span class="black">${cnt("black")}</span><span class="gray">${cnt("gray")}</span></div></div>
       ${ps.map((p, i) => { const a = ((-90 + (i * 360) / n) * Math.PI) / 180;
-        return `<button class="seat c-${p.c || "gray"} ${p.out ? "out" : ""} ${p.self ? "self" : ""}" type="button" data-pid="${esc(p.id)}" data-i="${i}" style="left:${(50 + R * Math.cos(a)).toFixed(2)}%;top:${(50 + R * Math.sin(a)).toFixed(2)}%">
+        return `<button class="tseat c-${p.c || "gray"} ${p.out ? "out" : ""} ${p.self ? "self" : ""}" type="button" data-pid="${esc(p.id)}" data-i="${i}" style="left:${(50 + R * Math.cos(a)).toFixed(2)}%;top:${(50 + R * Math.sin(a)).toFixed(2)}%">
           <span class="seat-ring">${avaP({ nick: p.name, id: p.uid || p.name, tg_photo: p.photo })}</span><i class="seat-n">${esc(p.seat)}</i>${p.note ? `<em class="seat-note">✎</em>` : ""}
           <span class="seat-nm">${esc(shortName(p.name))}</span></button>`; }).join("")}
     </div>`;
@@ -6682,7 +6682,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     let pend = null, drag = null;
     const center = () => { const r = box.querySelector(".tbl").getBoundingClientRect(); return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, r }; };
     box.addEventListener("pointerdown", (e) => {
-      const el = e.target.closest(".seat"); if (!el) return;
+      const el = e.target.closest(".tseat"); if (!el) return;
       pend = { el, x: e.clientX, y: e.clientY, t: setTimeout(() => {
         if (!pend) return;
         drag = { el, id: el.dataset.pid };
