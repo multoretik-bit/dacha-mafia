@@ -156,7 +156,7 @@ async function broadcast(req: Request, body: any) {
   let chats: number[];
   if (body.test) chats = [me!.tg_id];
   else {
-    const { data } = await admin.from("profiles").select("tg_id").not("tg_id", "is", null);
+    const { data } = await admin.from("profiles").select("tg_id").not("tg_id", "is", null).or(`notify_all.eq.true,notify_kinds.cs.{${game}}`);
     chats = (data || []).map((r: any) => r.tg_id).filter((id: number) => !(id >= 990000000 && id <= 990000099));
   }
   let sent = 0;
@@ -327,6 +327,82 @@ async function syncBirthday(userId: string, tgId: number) {
   await admin.from("profiles").update({ birth_day: b.day, birth_month: b.month, birth_year: b.year ?? null, birth_src: "tg" }).eq("id", userId).or("birth_src.is.null,birth_src.eq.tg");
 }
 
+// ---------- community events: submitted → @tivishka approves → subscribers get it with "✋ Я буду" ----------
+const DOWS = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"], MONS = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+const ruDay = (iso: string) => { const [y, m, d] = iso.split("-").map(Number); const w = new Date(Date.UTC(y, m - 1, d)).getUTCDay(); return `${DOWS[w]}, ${d} ${MONS[m - 1]}`; };
+const bkkToday = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Bangkok" }).format(new Date());
+const nextDay = (ev: any) => { if (!ev.weekly) return ev.day; let d = ev.day; const t = bkkToday(); while (d < t) { const [y, m, dd] = d.split("-").map(Number); d = new Date(Date.UTC(y, m - 1, dd + 7)).toISOString().slice(0, 10); } return d; };
+async function ceventText(ev: any) {
+  const { data: org } = await admin.from("profiles").select("nick,tg_username").eq("id", ev.created_by).maybeSingle();
+  let place = ev.place || "";
+  if (ev.place_id) { const { data: pl } = await admin.from("places").select("name").eq("id", ev.place_id).maybeSingle(); place = pl?.name || place; }
+  return `${ev.emoji || "✨"} ${ev.title}\n${ruDay(nextDay(ev))} · ${String(ev.start_time).slice(0, 5)}${ev.weekly ? " · каждую неделю" : ""}\n${place ? "📍 " + place + "\n" : ""}${ev.price ? "Цена: " + ev.price + " ฿" : "Бесплатно"}\nОрганизатор: ${org?.nick || "дачник"}${org?.tg_username ? " (@" + org.tg_username + ")" : ""}${ev.description ? "\n\n" + ev.description : ""}`;
+}
+async function ownerTg() { const { data } = await admin.from("profiles").select("tg_id").ilike("tg_username", "tivishka").maybeSingle(); return data?.tg_id || null; }
+async function ceventSubmitted(req: Request, body: any) {
+  const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const { data: { user } } = await admin.auth.getUser(jwt);
+  if (!user) return json({ error: "Нужно войти" }, 401);
+  const { data: ev } = await admin.from("cevents").select("*").eq("id", body.id).eq("created_by", user.id).eq("status", "pending").maybeSingle();
+  if (!ev) return json({ ok: false });
+  const own = await ownerTg(); if (!own) return json({ ok: false });
+  await tgApi("sendMessage", { chat_id: own, text: "🆕 Новый ивент на проверку\n\n" + await ceventText(ev),
+    reply_markup: { inline_keyboard: [[{ text: "✅ Одобрить", callback_data: `ce:ok:${ev.id}` }, { text: "❌ Отклонить", callback_data: `ce:no:${ev.id}` }]] } });
+  return json({ ok: true });
+}
+async function decideCevent(id: string, ok: boolean) {
+  const { data: ev } = await admin.from("cevents").select("*").eq("id", id).maybeSingle();
+  if (!ev || ev.status !== "pending") return { ok: false, why: ev ? "уже решено" : "нет такого" };
+  await admin.from("cevents").update({ status: ok ? "approved" : "rejected", decided_at: new Date().toISOString() }).eq("id", id);
+  const { data: org } = await admin.from("profiles").select("tg_id").eq("id", ev.created_by).maybeSingle();
+  if (org?.tg_id) await tgApi("sendMessage", { chat_id: org.tg_id, text: ok ? `✅ Твой ивент «${ev.title}» одобрен и разослан дачникам. Кто записался — видно в приложении.` : `❌ Ивент «${ev.title}» не прошёл проверку. Поправь и создай заново.`,
+    reply_markup: { inline_keyboard: [[{ text: "Открыть DACHA", web_app: { url: APP + "?v=cevent&e=" + id } }]] } });
+  let sent = 0;
+  if (ok) {
+    const text = "✨ Новый ивент на даче\n\n" + await ceventText(ev);
+    const day = nextDay(ev);
+    const { data: people } = await admin.from("profiles").select("tg_id").not("tg_id", "is", null).or("notify_all.eq.true,notify_kinds.cs.{community}");
+    for (const r of people || []) {
+      if (r.tg_id >= 990000000 && r.tg_id <= 990000099) continue;
+      const res: any = await tgApi("sendMessage", { chat_id: r.tg_id, text, reply_markup: { inline_keyboard: [[{ text: "✋ Я буду", callback_data: `cj:${id}:${day}` }], [{ text: "Открыть в приложении", web_app: { url: APP + "?v=cevent&e=" + id } }]] } });
+      if (res.ok) sent++;
+      await new Promise((r2) => setTimeout(r2, 45));
+    }
+    await admin.from("cevents").update({ announced_at: new Date().toISOString() }).eq("id", id);
+  }
+  return { ok: true, sent };
+}
+async function ceventDecide(req: Request, body: any) {
+  const me = await adminOf(req);
+  if (!me) return json({ error: "Одобряет только @tivishka" }, 403);
+  return json(await decideCevent(String(body.id || ""), !!body.ok));
+}
+async function ceventCallback(cq: any) {
+  const answer = (text: string, alert = false) => tgApi("answerCallbackQuery", { callback_query_id: cq.id, text, show_alert: alert });
+  const [, how, id] = String(cq.data).split(":");
+  const own = await ownerTg();
+  if (!own || cq.from?.id !== own) return answer("Одобряет только @tivishka", true);
+  const r: any = await decideCevent(id, how === "ok");
+  if (!r.ok) return answer(r.why || "Не получилось", true);
+  await answer(how === "ok" ? `Одобрено, разослано ${r.sent}` : "Отклонено");
+  if (cq.message) await tgApi("editMessageReplyMarkup", { chat_id: cq.message.chat.id, message_id: cq.message.message_id, reply_markup: { inline_keyboard: [[{ text: how === "ok" ? `✅ Одобрено · разослано ${r.sent}` : "❌ Отклонено", callback_data: "noop" }]] } });
+}
+async function ceventJoin(cq: any) {
+  const answer = (text: string, alert = false) => tgApi("answerCallbackQuery", { callback_query_id: cq.id, text, show_alert: alert });
+  const [, id, day0] = String(cq.data).split(":");
+  const { data: prof } = await admin.from("profiles").select("id,nick").eq("tg_id", cq.from?.id).maybeSingle();
+  if (!prof) return answer("Сначала открой бота @dacha_gay и нажми «Дача», потом жми «Я буду» ещё раз", true);
+  const { data: ev } = await admin.from("cevents").select("*").eq("id", id).maybeSingle();
+  if (!ev || ev.status !== "approved") return answer("Этот ивент уже недоступен", true);
+  const day = day0 >= bkkToday() ? day0 : nextDay(ev);
+  const { data: ex } = await admin.from("csignups").select("user_id").eq("event_id", id).eq("day", day).eq("user_id", prof.id).maybeSingle();
+  if (ex) await answer("Ты уже записан ✓");
+  else { const { error } = await admin.from("csignups").insert({ event_id: id, day, user_id: prof.id }); if (error) return answer("Не получилось, попробуй в приложении", true); await answer(`Записал тебя, ${prof.nick} ✓`); }
+  const { count } = await admin.from("csignups").select("user_id", { count: "exact", head: true }).eq("event_id", id).eq("day", day);
+  const kb = cq.message?.reply_markup?.inline_keyboard;
+  if (kb && cq.message) await tgApi("editMessageReplyMarkup", { chat_id: cq.message.chat.id, message_id: cq.message.message_id, reply_markup: { inline_keyboard: kb.map((row: any[]) => row.map((b: any) => (b.callback_data === cq.data ? { ...b, text: `✋ Я буду · ${count ?? ""}`.trim() } : b))) } });
+}
+
 async function adminOf(req: Request) {
   const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
   const { data: { user } } = await admin.auth.getUser(jwt);
@@ -416,6 +492,9 @@ async function hook(req: Request) {
     }
     return new Response("ok");
   }
+  if (upd.callback_query?.data?.startsWith("ce:")) { await ceventCallback(upd.callback_query); return new Response("ok"); }
+  if (upd.callback_query?.data?.startsWith("cj:")) { await ceventJoin(upd.callback_query); return new Response("ok"); }
+  if (upd.callback_query?.data === "noop") { await tgApi("answerCallbackQuery", { callback_query_id: upd.callback_query.id }); return new Response("ok"); }
   if (upd.callback_query?.data?.startsWith("j:")) { await joinFromButton(upd.callback_query); return new Response("ok"); }
   const msg = upd.message;
   if (msg?.chat?.type === "private") {
@@ -437,6 +516,8 @@ Deno.serve(async (req) => {
   if (body.action === "notify") return notify(req, body.game_id);
   if (body.action === "broadcast") return broadcast(req, body);
   if (body.action === "premium_notify") return premiumNotify(req, body);
+  if (body.action === "cevent_submitted") return ceventSubmitted(req, body);
+  if (body.action === "cevent_decide") return ceventDecide(req, body);
   if (body.action === "wallet_notify") return walletNotify(req, body);
   if (body.action === "poll") return pollCreate(req, body);
   if (body.action === "poll_close") return pollClose(req, body);

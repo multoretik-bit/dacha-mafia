@@ -1689,6 +1689,36 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .bd-form { display: grid; gap: 8px; width: 100%; }
 .bd-sel { display: grid; grid-template-columns: 90px 1fr; gap: 8px; }
 
+/* community events (05.11) */
+.ce-list { display: grid; gap: 8px; margin-bottom: 10px; }
+.ce-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 18px; background: #fff; box-shadow: var(--sh); text-align: left; color: var(--ink); width: 100%; box-sizing: border-box; position: relative; overflow: hidden; }
+.ce-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 5px; background: #7B3FE4; }
+.ce-card.mine::before { background: #C9B8F0; }
+.ce-ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 25px; background: #F1EAFE; flex: none; }
+.ce-t { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.ce-t b { font: 800 15.5px/1.2 var(--f-body); }
+.ce-t small { color: var(--muted); font-weight: 700; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ce-hero { position: relative; overflow: hidden; border-radius: 26px; padding: 20px 18px 18px; color: #fff; display: grid; gap: 8px; box-shadow: var(--sh); background: radial-gradient(90% 120% at 100% 0%, rgba(255,255,255,.18), transparent 60%), linear-gradient(150deg, #8C52FF, #5B2BC9 60%, #3A1A8C); }
+.ce-hero .pm-mark { color: #E2D4FF; padding-right: 76px; }
+.ce-hero h1 { margin: 0; font: 800 26px/1.1 var(--f-display); max-width: 80%; }
+.ce-big { position: absolute; right: 12px; top: 10px; font-size: 64px; line-height: 1; filter: drop-shadow(0 8px 12px rgba(0,0,0,.25)); }
+.ce-org { display: inline-flex; align-items: center; gap: 8px; width: fit-content; padding: 4px 12px 4px 4px; border-radius: 99px; background: rgba(255,255,255,.18); color: #fff; font-weight: 700; font-size: 13px; }
+.ce-org .ava, .ce-org .prem { width: 28px; height: 28px; font-size: 14px; } .ce-org .prem .ava { width: 100%; height: 100%; } .ce-org .prem .cash { display: none; }
+.ce-state { width: fit-content; padding: 6px 10px; border-radius: 10px; background: rgba(255,255,255,.2); font-weight: 800; font-size: 12.5px; }
+.ce-state.bad { background: rgba(255,90,110,.35); }
+.ce-facts { display: flex; flex-wrap: wrap; gap: 8px; }
+.ce-facts span { padding: 7px 11px; border-radius: 12px; background: var(--soft); font-weight: 800; font-size: 13.5px; color: var(--navy-ink); }
+.ce-desc { margin: 0; font-weight: 600; color: var(--ink); white-space: pre-line; }
+.ce-sheet { max-height: 92vh; overflow-y: auto; }
+.ce-sheet form { display: grid; gap: 10px; }
+.ce-sheet textarea { min-height: 80px; resize: vertical; font-weight: 600; }
+.ce-emojis { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; }
+.ce-emojis button { height: 40px; border-radius: 12px; background: #fff; box-shadow: inset 0 0 0 1px var(--hair); font-size: 20px; }
+.ce-emojis button[aria-pressed="true"] { background: #F1EAFE; box-shadow: inset 0 0 0 2px #7B3FE4; }
+.ce-wk { text-align: center; font-weight: 800; color: var(--navy-ink); }
+.ce-wk[aria-pressed="true"] { background: #F1EAFE; border-color: #7B3FE4; color: #5B2BC9; }
+.ce-rq-d { white-space: normal !important; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1882,6 +1912,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     <div id="hubBdays" hidden></div>
     <div class="sec-title">Игры</div>
     <div class="games" id="hubGames"></div>
+    <div class="sec-title" id="ceTitle">Ивенты дачников</div>
+    <div id="hubCev"></div>
     <button class="pm-card" type="button" id="hubPrem" hidden><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ на счёт каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>
     <div data-ad-slot></div>
     <div class="row-btns">
@@ -1889,6 +1921,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       <button class="pill dark sm" id="goAnnounce" hidden>сделать анонс</button>
       <button class="pill dark sm" id="goPolls" hidden>опрос в боте</button>
     </div>
+  </section>
+
+  <!-- COMMUNITY EVENT page -->
+  <section id="vCev" class="col" hidden>
+    <div id="cevBody"></div>
   </section>
 
   <!-- REQUESTS (owner): PREMIUM purchases, withdrawals, top-ups -->
@@ -2307,7 +2344,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105114717"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105122201"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2602,7 +2639,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   });
 
   /* ---------- navigation ---------- */
-  const VIEWS = ["vReq", "vPremium", "vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
+  const VIEWS = ["vCev", "vReq", "vPremium", "vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
   let profileId = null;
   const online = () => S.hostMode === "online";
   const hostView = () => {
@@ -2619,7 +2656,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const goBack = () => { haptic("tap"); const t = navStack.pop(); navBack = true; try { go(t ? t.v : "hub", t?.a); } finally { navBack = false; } };
   const go = (view, arg) => {
     if (navReady && !navBack && S.view && (S.view !== view || (view === "profile" && arg && arg !== profileId) || (view === "sport" && arg && arg !== sportId))) {
-      navStack.push({ v: S.view, a: S.view === "profile" ? profileId : ["sport", "sportorg", "sportrate", "sportlist"].includes(S.view) ? sportId : undefined });
+      navStack.push({ v: S.view, a: S.view === "profile" ? profileId : ["sport", "sportorg", "sportrate", "sportlist"].includes(S.view) ? sportId : S.view === "cevent" ? ceId : undefined });
       if (navStack.length > 40) navStack.shift();
     }
     if (view === "hub") navStack.length = 0;
@@ -2629,17 +2666,18 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     }
     if (view === "profile") { if (S.view !== "profile") profileFrom = S.view; profileId = arg || me?.id; }
     if (["sport", "sportorg", "sportrate", "sportlist"].includes(view)) sportId = SPORTS[arg] ? arg : sportId;
+    if (view === "cevent" && arg) ceId = arg;
     if (view === "pay" && S.view !== "pay") payFrom = S.view;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { sportlist: "vSport", sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { cevent: "vCev", sportlist: "vSport", sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "hub";
     try { if (inTG && tg?.BackButton) view === "hub" ? tg.BackButton.hide() : tg.BackButton.show(); } catch {}
     renderTabs(view);
     if (id !== "vLive") stopLive();
     ({
-      vReq: renderReq, vPremium: renderPremium, vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
+      vCev: renderCev, vReq: renderReq, vPremium: renderPremium, vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
       vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople, vMonth: () => { boardMonth = null; drawMonth(); }, vDeck: renderDeck,
       vPick: renderPick, vCount: renderCount, vRoles: renderRoles, vLive: renderLive, vDeal: renderDeal, vDone: renderDone,
       vCard: renderCard, vNotes: () => renderNotes(false), vEvents: renderEvents, vPlayer: renderPlayer,
@@ -2700,7 +2738,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("goList").hidden = !me || !["home", "card", "notes", "host", "player", "deck", "people", "month", "sport", "sportorg", "sportrate"].includes(view);
     $("goPeople").setAttribute("aria-label", view === "sport" ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("topTitle").hidden = !!set.length;
-    $("topTitle").textContent = { host: "раздача", events: "запись", sportlist: "запись", sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
+    $("topTitle").textContent = { cevent: "ивент", host: "раздача", events: "запись", sportlist: "запись", sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
   };
 
   const renderHostAccess = () => {
@@ -2801,7 +2839,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!sb || !me) return;
     const [{ data: stats }, , { data: sstats }, { data: extra }] = await Promise.all([
       sb.rpc("player_stats", { p: id }), loadPeople(), sb.rpc("sport_stats", { p: id }),
-      sb.from("profiles").select("bio, created_at, pay_qr, pay_qr_label, pay_qr2, pay_qr2_label, birth_day, birth_month, birth_src").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(), ev.loaded ? null : loadEvents(),
+      sb.from("profiles").select("bio, created_at, pay_qr, pay_qr_label, pay_qr2, pay_qr2_label, birth_day, birth_month, birth_src, notify_all, notify_kinds").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(), ev.loaded ? null : loadEvents(),
     ]);
     if (S.view !== "profile" || profileId !== id) return;
     const row = people.find((p) => p.id === id) || (id === me.id ? { ...me, games: 0, wins: 0, hosted: 0 } : { nick: "Дачник", games: 0, wins: 0, hosted: 0 });
@@ -2894,7 +2932,14 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <div class="eyebrow" style="margin-top:2px">Смайлики</div>
         <div class="ic-grid">${ICONS_P.map((x) => `<button type="button" data-picon="${x}" aria-pressed="${premIcons.get(me.id) === x}">${x}</button>`).join("")}<button type="button" data-picon="" aria-pressed="${!premIcons.get(me.id)}" class="ic-none">без</button></div>
       </div></div></div>` : "";
-    $("profBtns").innerHTML = `${premCard}${iconPick}${myQr !== null ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
+    const NK = [["mafia", "🎭 Мафия"], ["volley", "🏐 Волейбол"], ["foot", "⚽ Футбол"], ["community", "✨ Ивенты дачников"]];
+    const nAll = extra?.notify_all !== false, nKinds = extra?.notify_kinds || [];
+    const notifyCard = isMe ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
+        <div class="eyebrow">Уведомления в боте</div>
+        <button class="host-row" type="button" data-nall role="switch" aria-checked="${nAll}" style="padding:4px 0;border:0"><span class="hr-ic">🔔</span><span class="hr-t"><b>Все анонсы</b><small>${nAll ? "приходит всё" : "только выбранное ниже"}</small></span><i class="switch ${nAll ? "on" : ""}"></i></button>
+        ${nAll ? "" : `<div class="an-games">${NK.map(([k, l]) => `<button type="button" data-nk="${k}" aria-pressed="${nKinds.includes(k)}">${l}</button>`).join("")}</div>`}
+      </div></div></div>` : "";
+    $("profBtns").innerHTML = `${premCard}${notifyCard}${iconPick}${myQr !== null ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
         <div class="eyebrow">Мои QR для оплат · до двух</div>
         <p class="lead">Когда ты отмечаешься ведущим на игре, дачники платят по твоим QR. Подпиши каждый, например «за игру» и «на чай».${canGrant ? " Твои QR ещё показываются, когда пополняют баланс." : ""}</p>
         <div class="qr-edit">${[1, 2].map((n) => { const url = n === 1 ? extra?.pay_qr : extra?.pay_qr2, lab = (n === 1 ? extra?.pay_qr_label : extra?.pay_qr2_label) || "";
@@ -2938,6 +2983,15 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       toast("QR сохранён"); renderProfile();
     };
     $("profBtns").onclick = async (e) => {
+      if (e.target.closest("[data-nall]") || e.target.closest("[data-nk]")) {
+        let all = extra?.notify_all !== false, kinds = [...(extra?.notify_kinds || [])];
+        const nk = e.target.closest("[data-nk]");
+        if (nk) kinds = kinds.includes(nk.dataset.nk) ? kinds.filter((x) => x !== nk.dataset.nk) : [...kinds, nk.dataset.nk];
+        else all = !all;
+        const { error } = await sb.rpc("set_notify", { all_: all, kinds });
+        if (error) return toast("Не получилось: " + humanErr(error));
+        haptic("tap"); return renderProfile();
+      }
       const qu = e.target.closest("[data-qrup]");
       if (qu) { qrUpSlot = +qu.dataset.qrup || 1; return $("myQrFile").click(); }
       const ql = e.target.closest("[data-qrlab]");
@@ -4399,6 +4453,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!people.length) need.push(loadPeople());
     if (need.length) Promise.all(need).then(() => { if (S.view === "hub") { drawCrewBtn(); drawWeek(); drawHubGames(); } }).catch(() => {});
     loadBdays().then(() => { if (S.view === "hub") drawHubBdays(); }).catch(() => {});
+    loadCevents().then(() => { if (S.view === "hub") { drawWeek(); drawHubCev(); } }).catch(() => {});
+    subscribeCevents();
+    drawHubCev();
     drawHubBdays();
   };
   const drawCrewBtn = () => {
@@ -4413,10 +4470,20 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 
   let weekSel = null;
   const weekItems = (day) => [
+    ...ce.list.filter((e) => e.status === "approved" && ceDates(e, day, day).length).map((e) => ({ kind: "community", e, time: hm(e.start_time), day })),
     ...ev.list.filter((e) => e.day === day && e.status === "open").map((e) => ({ kind: "mafia", e, time: hm(e.start_time) })),
     ...sp.events.filter((e) => e.day === day).map((e) => ({ kind: e.sport, e, time: hm(e.start_time) })),
   ].sort((a, b) => a.time.localeCompare(b.time));
   const weekCard = (x) => {
+    if (x.kind === "community") {
+      const e = x.e, g = ceGoing(e, x.day), mine = ceMine(e, x.day);
+      return `<div class="wk" data-kind="community" data-id="${e.id}" data-day="${x.day}" style="--gc:${CE_COLOR}">
+        <button class="wk-main" type="button" data-wopen><span class="wk-ic">${esc(e.emoji)}</span><span class="wk-txt"><b>${esc(e.title)}</b><small>${x.time} · ${e.price ? e.price + " ฿" : "бесплатно"}</small></span><span class="wk-go">›</span></button>
+        ${placeChip(e) ? `<div class="wk-place">${placeChip(e)}</div>` : ""}
+        <div class="wk-foot"><span class="wk-faces">${faceList(g, 5)}</span><span class="wk-n">${g.length ? `${g.length} ${plural(g.length, "идёт", "идут", "идут")}` : "пока никого"}</span>
+          <span class="wk-joins">${mine ? `<span class="tag ok mine">ты идёшь ✓</span><button class="linkish wk-leave" type="button" data-wleave>не смогу</button>` : `<button class="pill sm" type="button" data-wjoin data-role="player">я буду</button>`}</span></div>
+      </div>`;
+    }
     const e = x.e, M = meta(x.kind), maf = x.kind === "mafia";
     const going = e.signups || [];
     const mine = isMine(e);
@@ -4448,7 +4515,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("weekDays").innerHTML = days.map((d) => {
       const { d: n, w } = dayParts(d), items = weekItems(d);
       return `<button type="button" role="tab" class="wd${d === t ? " today" : ""}" data-day="${d}" aria-selected="${d === weekSel}" aria-label="${dayLabel(d)}${items.length ? `, игр: ${items.length}` : ""}">
-        <small>${d === t ? "сег" : DOW[w]}</small><b>${n}</b><span class="wd-dots">${items.slice(0, 3).map((x) => `<i style="background:${meta(x.kind).color}"></i>`).join("")}</span></button>`;
+        <small>${d === t ? "сег" : DOW[w]}</small><b>${n}</b><span class="wd-dots">${items.slice(0, 3).map((x) => `<i style="background:${x.kind === "community" ? CE_COLOR : meta(x.kind).color}"></i>`).join("")}</span></button>`;
     }).join("");
     const items = weekItems(weekSel), { d, m, w } = dayParts(weekSel);
     $("weekTitle").textContent = `${weekSel === t ? "Сегодня" : weekSel === addDays(t, 1) ? "Завтра" : DOW_FULL[w]}, ${d} ${MON_FULL[m - 1]}`;
@@ -4459,6 +4526,13 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   $("weekList").onclick = async (e) => {
     const card = e.target.closest("[data-kind]"); if (!card) return;
     const kind = card.dataset.kind, id = card.dataset.id;
+    if (kind === "community") {
+      const cev = ce.list.find((x) => x.id === id), day = card.dataset.day;
+      if (e.target.closest("[data-wopen]")) { ceDay = day; return go("cevent", id); }
+      if (e.target.closest("[data-wjoin]")) { if (await ceJoin(cev, day, true)) { drawWeek(); drawHubCev(); } return; }
+      if (e.target.closest("[data-wleave]")) return sheet({ eyebrow: "Ивент", title: "Не сможешь прийти?", ok: "не смогу", okClass: "red", onOk: async () => { if (await ceJoin(cev, day, false)) { drawWeek(); drawHubCev(); } } });
+      return;
+    }
     if (e.target.closest("[data-wleave]")) return leaveDate(kind, id, () => { if (S.view === "hub") { drawWeek(); drawHubGames(); } });
     const wj = e.target.closest("[data-wjoin]");
     if (wj) {
@@ -5453,13 +5527,28 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const sec = (title, hint, list) => `<div class="ticket" style="margin-bottom:12px"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">${title} · ${list.length}</div><p class="bio-meta" style="margin:0">${hint}</p></div>
       ${list.length ? list.map(row).join("") : `<div class="empty-note">Новых нет.</div>`}</div></div>`;
     box.innerHTML = `<div class="pm-hero" style="margin-bottom:12px"><div class="pm-mark">DACHA <b>ЗАПРОСЫ</b></div><h1>${(pend || []).length ? `${(pend || []).length} ${plural((pend || []).length, "запрос ждёт", "запроса ждут", "запросов ждут")}` : "Всё разобрано"}</h1><p>Покупки PREMIUM, вывод денег и пополнения баланса. ✓ — подтвердить, ✕ — отклонить.</p></div>
+      ${await cevReqHTML()}
       ${sec("◆ Покупки PREMIUM", "✓ — PREMIUM включится на месяц и придёт +200 ฿.", by("premium"))}
       ${sec("↓ Вывод денег", "Сначала выплати человеку, потом ✓ — сумма спишется с его баланса.", by("withdraw"))}
       ${sec("＋ Пополнения и оплаты игр", "✓ — деньги пришли, баланс человека пополнится.", by("topup"))}
       ${(done || []).length ? `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">Недавно решённые</div></div>
         ${(done || []).map((t) => `<div class="tx-row"><span class="tx-ic">${t.status === "confirmed" ? "✓" : "✕"}</span><span class="tx-t"><b>${esc(personOf(t.user_id).nick)} · ${t.purpose === "premium" ? `PREMIUM ${t.amount} ${CUR[t.currency] || "฿"}` : `вывод ${money(-t.amount)}`}</b><small>${t.status === "confirmed" ? "подтверждено" : "отклонено"} · ${t.decided_at ? when(t.decided_at) : ""}</small></span></div>`).join("")}</div></div>` : ""}`;
   };
+  const cevReqHTML = async () => {
+    try { await loadCevents(); } catch {}
+    const list = ce.list.filter((e) => e.status === "pending");
+    return `<div class="ticket" style="margin-bottom:12px"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">✨ Новые ивенты · ${list.length}</div><p class="bio-meta" style="margin:0">Бот уже отсеял мусор. ✓ — ивент попадёт в календарь и придёт подписчикам.</p></div>
+      ${list.length ? list.map((e) => { const o = personOf(e.created_by); return `<div class="tx-row host"><span class="tx-av">${avaP(o)}</span><span class="tx-t"><b>${esc(e.emoji)} ${esc(e.title)}</b><small>${esc(o.nick)} · ${esc(dayLabel(e.day))} ${hm(e.start_time)}${e.weekly ? " · каждую неделю" : ""} · ${e.price ? e.price + " ฿" : "бесплатно"}</small>${e.description ? `<small class="ce-rq-d">${esc(e.description)}</small>` : ""}</span>
+        <span class="tx-acts"><button class="round sm ok" type="button" data-cerq="${e.id}" data-ok="1" aria-label="Одобрить">✓</button><button class="round sm no" type="button" data-cerq="${e.id}" data-ok="0" aria-label="Отклонить">✕</button></span></div>`; }).join("") : `<div class="empty-note">Новых нет.</div>`}</div></div>`;
+  };
   $("vReq").addEventListener("click", async (e) => {
+    const cb = e.target.closest("[data-cerq]");
+    if (cb) {
+      cb.disabled = true;
+      const { data, error } = await sb.functions.invoke("tg", { body: { action: "cevent_decide", id: cb.dataset.cerq, ok: cb.dataset.ok === "1" } });
+      if (error || !data?.ok) { cb.disabled = false; return toast("Не получилось: " + (data?.why || data?.error || error?.message || "")); }
+      toast(cb.dataset.ok === "1" ? `Одобрено, разослано ${data.sent}` : "Отклонено"); await loadCevents(); return renderReq();
+    }
     const b = e.target.closest("[data-rq]"); if (!b) return;
     const ok = b.dataset.ok === "1";
     const run = async () => {
@@ -5473,8 +5562,142 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const refreshReqCount = async () => {
     const b = $("goReq"); if (!b) return;
     b.hidden = !canGrant; if (!canGrant || !sb) return;
-    const { count } = await sb.from("wallet_tx").select("id", { count: "exact", head: true }).eq("status", "pending");
+    const [{ count: c1 }, { count: c2 }] = await Promise.all([sb.from("wallet_tx").select("id", { count: "exact", head: true }).eq("status", "pending"), sb.from("cevents").select("id", { count: "exact", head: true }).eq("status", "pending")]);
+    const count = (c1 || 0) + (c2 || 0);
     b.innerHTML = `📥 запросы${count ? ` <i class="req-n">${count}</i>` : ""}`;
+  };
+
+  /* =================== community events: anybody organizes, @tivishka approves =================== */
+  const CE_COLOR = "#7B3FE4";
+  const CE_EMOJI = ["✨", "♟️", "🍵", "🎲", "🎤", "🎬", "🧘", "🏃", "🏓", "🎸", "🍳", "📚", "🌅", "🏖️", "🛶", "🎉"];
+  const ce = { list: [], loaded: false, loading: null, chan: null };
+  let ceId = null, ceDay = null;
+  const ceNext = (e, from = bkkToday()) => { if (!e.weekly) return e.day; let d = e.day; while (d < from) d = addDays(d, 7); return d; };
+  const ceDates = (e, from, to) => { const out = []; let d = e.weekly ? ceNext(e, from) : e.day; while (d >= from && d <= to) { out.push(d); if (!e.weekly) break; d = addDays(d, 7); } return out; };
+  const ceGoing = (e, day) => (e.csignups || []).filter((x) => x.day === day).sort((a, b) => a.created_at.localeCompare(b.created_at));
+  const ceMine = (e, day) => ceGoing(e, day).some((x) => x.user_id === me?.id);
+  const loadCevents = () => ce.loading || (ce.loading = (async () => {
+    if (!sb || !me) return;
+    const { data, error } = await sb.from("cevents").select("*, pl:places(id,name,maps_url), csignups(day,user_id,created_at)").neq("status", "removed").gte("day", addDays(bkkToday(), -400)).order("day");
+    if (error) throw error;
+    ce.list = (data || []).filter((e) => e.status === "approved" ? (e.weekly || e.day >= bkkToday()) : e.created_by === me.id || canGrant);
+    ce.loaded = true;
+  })().finally(() => { ce.loading = null; }));
+  const subscribeCevents = () => {
+    if (ce.chan || !sb || !me) return;
+    let t = 0;
+    const again = () => { clearTimeout(t); t = setTimeout(async () => { try { await loadCevents(); } catch { return; } if (S.view === "hub") { drawWeek(); drawHubCev(); } if (S.view === "cevent") drawCev(); if (S.view === "requests") renderReq(); }, 600); };
+    ce.chan = sb.channel("cevents").on("postgres_changes", { event: "*", schema: "public", table: "cevents" }, again).on("postgres_changes", { event: "*", schema: "public", table: "csignups" }, again).subscribe();
+  };
+  const ceJoin = async (e, day, on) => {
+    const { error } = on ? await sb.from("csignups").insert({ event_id: e.id, day, user_id: me.id }) : await sb.from("csignups").delete().eq("event_id", e.id).eq("day", day).eq("user_id", me.id);
+    if (error) { toast("Не получилось: " + humanErr(error)); return false; }
+    haptic("tap"); toast(on ? "Записал тебя ✓" : "Запись отменена");
+    await loadCevents(); return true;
+  };
+  // hub: upcoming community events + "create"
+  const drawHubCev = () => {
+    const box = $("hubCev"); if (!box) return;
+    if (!me) { box.innerHTML = ""; $("ceTitle").hidden = true; return; }
+    $("ceTitle").hidden = false;
+    const t = bkkToday();
+    const ok = ce.list.filter((e) => e.status === "approved").map((e) => ({ e, d: ceNext(e) })).filter((x) => x.d >= t).sort((a, b) => (a.d + a.e.start_time).localeCompare(b.d + b.e.start_time)).slice(0, 6);
+    const mine = ce.list.filter((e) => e.created_by === me.id && e.status !== "approved");
+    box.innerHTML = `<div class="ce-list">${ok.map(({ e, d }) => { const g = ceGoing(e, d), org = personOf(e.created_by);
+        return `<button class="ce-card" type="button" data-ce="${e.id}"><span class="ce-ic">${esc(e.emoji)}</span><span class="ce-t"><b>${esc(e.title)}</b><small>${esc(dayLabel(d))} · ${hm(e.start_time)}${e.weekly ? " · каждую неделю" : ""} · ${e.price ? e.price + " ฿" : "бесплатно"}</small><small>от ${esc(org.nick)}${g.length ? ` · ${g.length} ${plural(g.length, "идёт", "идут", "идут")}` : ""}</small></span><span class="wk-go">›</span></button>`; }).join("")
+      }${mine.map((e) => `<button class="ce-card mine" type="button" data-ce="${e.id}"><span class="ce-ic">${esc(e.emoji)}</span><span class="ce-t"><b>${esc(e.title)}</b><small>${e.status === "pending" ? "⏳ на проверке" : "❌ не прошёл проверку"} · ${esc(dayLabel(e.day))}</small></span><span class="wk-go">›</span></button>`).join("")}
+      ${!ok.length && !mine.length ? `<p class="bio-meta" style="margin:0 4px">Пока нет. Организуй первым: чайная церемония, шахматы, прогулка — что угодно.</p>` : ""}</div>
+      <button class="add-came-btn" type="button" data-cecreate><span>＋</span>Создать свой ивент</button>`;
+  };
+  $("hubCev").addEventListener("click", (e) => {
+    if (e.target.closest("[data-cecreate]")) return openCevCreate();
+    const b = e.target.closest("[data-ce]"); if (b) { haptic("tap"); go("cevent", b.dataset.ce); }
+  });
+  // event page
+  const renderCev = async () => {
+    const box = $("cevBody");
+    if (!sb || !me) { box.innerHTML = loginPrompt(); return; }
+    if (!ce.loaded) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>Загружаю…</div></div></div></div>`;
+    try { await Promise.all([loadCevents(), people.length ? null : loadPeople(), sp.loaded ? null : loadSports()]); } catch {}
+    if (S.view === "cevent") drawCev();
+  };
+  const drawCev = () => {
+    const box = $("cevBody"), e = ce.list.find((x) => x.id === ceId);
+    if (!e) { box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">Ивент не найден или отменён.</p></div></div></div>`; return; }
+    const t = bkkToday(), org = personOf(e.created_by), mineOrg = e.created_by === me.id, ok = e.status === "approved";
+    const dates = ceDates(e, t, addDays(t, 35)).slice(0, 5);
+    if (!dates.includes(ceDay)) ceDay = dates[0] || e.day;
+    const g = ceGoing(e, ceDay), going = ceMine(e, ceDay);
+    box.innerHTML = `<div class="ce-hero"><span class="ce-big">${esc(e.emoji)}</span><div class="pm-mark">ИВЕНТ ДАЧНИКОВ${e.weekly ? " · каждую неделю" : ""}</div><h1>${esc(e.title)}</h1>
+        <button class="ce-org" type="button" data-orgp="${e.created_by}">${avaP(org)}<span>организатор <b>${esc(org.nick)}</b></span></button>
+        ${e.status === "pending" ? `<span class="ce-state">⏳ на проверке у @tivishka</span>` : e.status === "rejected" ? `<span class="ce-state bad">❌ не прошёл проверку</span>` : ""}</div>
+      ${dates.length > 1 ? `<div class="ev-days so-days" role="group" aria-label="Дата">${dates.map((d) => `<button class="chip" type="button" data-ceday="${d}" aria-pressed="${d === ceDay}">${esc(dayLabel(d))}</button>`).join("")}</div>` : ""}
+      <div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:10px">
+        <div class="ce-facts"><span>🗓 ${esc(dayLabel(ceDay))} · ${hm(e.start_time)}</span><span>${e.price ? `💳 ${e.price} ฿` : "🆓 бесплатно"}</span></div>
+        ${placeChip(e)}
+        ${e.description ? `<p class="ce-desc">${esc(e.description)}</p>` : ""}
+        <h2 class="h2" style="margin-top:4px">${g.length ? `Идут ${g.length}` : "Пока никто не записался"}</h2>
+      </div>
+      ${g.map((x) => { const pp = personOf(x.user_id); return `<div class="sl-row"><span class="so-who">${avaP(pp)}<b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b></span>${mineOrg && x.user_id !== me.id ? `<button class="x-rm" type="button" data-cerm="${x.user_id}" aria-label="Убрать">×</button>` : ""}</div>`; }).join("")}
+      <div class="ev-act" style="padding-top:12px">${ok ? (going ? `<span class="tag ok mine">ты идёшь ✓</span><button class="linkish" type="button" data-leave>не смогу</button>` : `<button class="pill sm" type="button" data-cejoin>я буду</button>`) : ""}</div>
+      ${mineOrg || canGrant ? `<div class="t-body" style="padding-top:0"><button class="linkish" type="button" data-cecancel style="justify-self:start;color:var(--red)">отменить ивент</button></div>` : ""}
+      </div></div>`;
+  };
+  $("cevBody").addEventListener("click", async (ev2) => {
+    const e = ce.list.find((x) => x.id === ceId); if (!e) return;
+    const b = ev2.target.closest("button"); if (!b) return;
+    if (b.dataset.ceday) { ceDay = b.dataset.ceday; return drawCev(); }
+    if (b.dataset.orgp) return go("profile", b.dataset.orgp);
+    if (b.hasAttribute("data-cejoin")) { if (await ceJoin(e, ceDay, true)) drawCev(); return; }
+    if (b.hasAttribute("data-leave")) return sheet({ eyebrow: "Ивент", title: "Не сможешь прийти?", text: "Запись отменится.", ok: "не смогу", okClass: "red", onOk: async () => { if (await ceJoin(e, ceDay, false)) drawCev(); } });
+    if (b.dataset.cerm) return sheet({ eyebrow: "Ивент", title: `Убрать ${personOf(b.dataset.cerm).nick}?`, ok: "убрать", okClass: "red", onOk: async () => { const { error } = await sb.from("csignups").delete().eq("event_id", e.id).eq("day", ceDay).eq("user_id", b.dataset.cerm); if (error) return toast("Не получилось: " + humanErr(error)); await loadCevents(); drawCev(); } });
+    if (b.hasAttribute("data-cecancel")) return sheet({ eyebrow: "Ивент", title: "Отменить ивент?", text: "Он пропадёт из календаря у всех.", ok: "отменить", okClass: "red", onOk: async () => { const { error } = await sb.rpc("remove_cevent", { e: e.id }); if (error) return toast("Не получилось: " + humanErr(error)); toast("Ивент отменён"); await loadCevents(); go("hub"); } });
+  });
+  // create
+  const openCevCreate = () => {
+    if (!me) return go("auth");
+    const t = bkkToday(), days = Array.from({ length: 14 }, (_, i) => addDays(t, i));
+    let emoji = "✨", day = t, weekly = false, busy = false;
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    const draw = () => {
+      const f0 = v.querySelector("form"), keep = f0 ? Object.fromEntries(["ti", "de", "tm", "pr"].map((k) => [k, f0.elements[k].value])) : { ti: "", de: "", tm: "19:00", pr: "0" };
+      const keepPl = f0?.elements.plid?.value || "";
+      v.innerHTML = `<div class="bank ce-sheet" role="dialog" aria-modal="true" aria-label="Свой ивент"><form id="ceForm" onsubmit="return false">
+        <div class="ps-h"><div class="eyebrow">Свой ивент · пройдёт проверку</div><h2 class="h2">Организуй что-нибудь</h2></div>
+        <div class="ce-emojis">${CE_EMOJI.map((x) => `<button type="button" data-cee="${x}" aria-pressed="${x === emoji}">${x}</button>`).join("")}</div>
+        <input class="field" name="ti" maxlength="60" placeholder="Тема: например, Чайная церемония" value="${esc(keep.ti)}" required>
+        <textarea class="field" name="de" maxlength="600" placeholder="Что будет, что взять с собой…">${esc(keep.de)}</textarea>
+        <span class="eyebrow">Когда</span>
+        <div class="an-days">${days.map((d) => { const q = dayParts(d); return `<button type="button" class="wd${d === t ? " today" : ""}" data-ced="${d}" aria-selected="${d === day}"><small>${d === t ? "сег" : DOW[q.w]}</small><b>${q.d}</b><span class="wd-dots"></span></button>`; }).join("")}</div>
+        <div class="an-fields"><label>начало<input class="field" type="time" name="tm" value="${keep.tm}" required></label><label>цена, ฿<input class="field" type="number" name="pr" min="0" max="10000" step="1" value="${keep.pr}"></label>
+          <label>повтор<button class="field ce-wk" type="button" data-cewk aria-pressed="${weekly}">${weekly ? "каждую неделю" : "один раз"}</button></label>
+          <label class="wide">место${placeSelect(keepPl)}</label></div>
+        <p class="bio-meta" style="margin:0">Бот проверит, что это нормальный ивент, и отправит @tivishka. После одобрения его увидят все, кто подписан на ивенты дачников.</p>
+        <p class="err" id="ceErr" role="alert"></p>
+        <button class="pill wide" type="button" data-cesend>отправить на проверку</button></form>
+        <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
+    };
+    draw();
+    v.addEventListener("click", async (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.cee) { emoji = b.dataset.cee; return draw(); }
+      if (b.dataset.ced) { day = b.dataset.ced; return draw(); }
+      if (b.hasAttribute("data-cewk")) { weekly = !weekly; return draw(); }
+      if (b.hasAttribute("data-cesend")) {
+        if (busy) return; busy = true; const f = v.querySelector("form"), err = v.querySelector("#ceErr"); err.textContent = "";
+        try {
+          const place_id = await placeFromForm(f);
+          const { data: id, error } = await sb.rpc("create_cevent", { title: f.elements.ti.value, emoji, description: f.elements.de.value, day, start_time: f.elements.tm.value || "19:00", weekly, place_id, place: null, price: parseInt(f.elements.pr.value, 10) || 0 });
+          if (error) throw error;
+          sb.functions.invoke("tg", { body: { action: "cevent_submitted", id } }).catch(() => {});
+          haptic("card"); toast("Отправлено на проверку ✓ Бот напишет, когда одобрят"); v.remove();
+          await loadCevents(); if (S.view === "hub") drawHubCev();
+        } catch (x) { err.textContent = String(x?.message || x).replace(/^check:\s*/, "Проверка бота: "); }
+        finally { busy = false; }
+      }
+    });
+    document.body.append(v);
   };
 
   const loadEvents = async () => {
@@ -6118,6 +6341,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (deep === "events") startView = "events";
     if (deep === "mafia") startView = "home";
     if (deep === "pay" || deep === "premium" || deep === "requests") startView = deep;
+    if (deep === "cevent") { const qe = new URLSearchParams(location.search).get("e"); if (qe) { startView = "cevent"; ceId = qe; } }
     if (SPORTS[deep]) { startView = "sport"; sportId = deep; }
     if (inTG) {
       try { tg?.ready(); tg?.expand(); const hw = document.documentElement.classList.contains("hw");
