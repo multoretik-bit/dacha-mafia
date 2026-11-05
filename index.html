@@ -1746,6 +1746,22 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
 .rt-more { display: block; width: 100%; padding: 10px 14px; border-top: 1px solid var(--hair); text-align: left; font-weight: 800; font-size: 13px; color: var(--navy-ink); }
 #vRat { gap: 12px; }
 
+/* compact attendee rows (05.11) */
+.pr-row { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 14px; border-top: 1px solid var(--hair); }
+.pr-row > .ava, .pr-row > .prem { width: 38px; height: 38px; font-size: 17px; }
+.pr-row > .prem .ava { width: 100%; height: 100%; } .pr-row .prem .cash { display: none; }
+.pr-nm { display: grid; gap: 2px; min-width: 0; }
+.pr-nm b { font-weight: 800; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
+.pr-nm .st { font-weight: 800; font-size: 11.5px; }
+.st.ok { color: #138A43; } .st.wait { color: #A06A00; } .st.no { color: var(--muted); } .st.debt { color: #C0162A; }
+.pr-acts { display: flex; gap: 6px; }
+.pr-b { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 16px; line-height: 1; transition: transform .1s; }
+.pr-b:active { transform: scale(.9); }
+.pr-b.ok { background: #E7F8EE; color: #137A3E; }
+.pr-b.debt { width: auto; padding: 0 11px; border-radius: 99px; background: #FFF1F2; color: #C0162A; font-size: 12px; font-weight: 800; }
+.pr-b.debt.on { background: #C0162A; color: #fff; }
+.pr-b.rm { background: var(--soft); color: var(--muted); }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -2378,7 +2394,7 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105141106"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105141709"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4938,8 +4954,8 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
           ${host && e.price && rows.length ? `<div class="sl-sum"><span class="ok">оплатили ${paidN}</span><span class="no">не оплатили ${rows.length - paidN}</span><span>ждём ${money((rows.length - paidN) * e.price)}</span></div>` : ""}</div>
         ${e.hosts.length ? `<div class="sl-hosts"><span class="eyebrow">${e.hosts.length > 1 ? "Ведущие" : "Ведущий"}</span>${e.hosts.map((x) => esc(personOf(x.user_id).nick)).join(", ")}</div>` : ""}
         ${rows.map((x) => { const pp = personOf(x.user_id), st = pays[x.user_id]?.st;
-          const debt = pays[x.user_id]?.debt;
-          return `<div class="sl-row"><span class="so-who">${avaP(pp)}<b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b></span>${host ? `${debt ? `<span class="sl-tag debt">в долг −${e.price} ฿</span>` : tag(x.user_id)}${e.price && st !== "paid" ? `<button class="pill sm" type="button" data-slgot="${x.user_id}">получил ${e.price} ฿</button>${debt ? `<button class="pill sm ghost" type="button" data-slundebt="${x.user_id}">убрать долг</button>` : `<button class="pill sm ghost" type="button" data-sldebt="${x.user_id}">не заплатил → в долг</button>`}` : ""}<button class="x-rm" type="button" data-slrm="${x.user_id}" aria-label="Убрать: не пришёл">×</button>` : ""}</div>`; }).join("")}
+          const u = x.user_id, debt = pays[u]?.debt;
+          return payRowHTML(pp, u === me.id, { host, price: e.price, st, m: pays[u]?.m, debt, got: `data-slgot="${u}"`, debtA: `data-sldebt="${u}"`, undebt: `data-slundebt="${u}"`, rm: `data-slrm="${u}"` }); }).join("")}
         ${host ? addCameHTML(e, "data-sladd") : ""}
       </div></div>`;
     box.dataset.pays = JSON.stringify(pays);
@@ -5881,6 +5897,12 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
     });
     document.body.append(v);
   };
+  // a compact attendee row for organizers: name + coloured status, three round actions
+  const payRowHTML = (pp, isMeRow, o) => {
+    const status = o.debt ? `<small class="st debt">в долг −${o.price} ฿</small>` : !o.price ? "" : o.st === "paid" ? `<small class="st ok">оплачено ✓</small>` : o.st === "claim" ? `<small class="st wait">${o.m === "qr" ? "проверь перевод" : "отдаст наличными"}</small>` : `<small class="st no">не оплачено</small>`;
+    const acts = o.host ? `<span class="pr-acts">${o.price && o.st !== "paid" ? `<button class="pr-b ok" type="button" ${o.got} title="Получил ${o.price} ฿" aria-label="Получил ${o.price} ฿">✓</button><button class="pr-b debt ${o.debt ? "on" : ""}" type="button" ${o.debt ? o.undebt : o.debtA} title="${o.debt ? "Убрать долг" : "Не заплатил → в долг"}" aria-label="${o.debt ? "Убрать долг" : "Не заплатил, в долг"}">${o.debt ? "снять" : "долг"}</button>` : ""}<button class="pr-b rm" type="button" ${o.rm} title="Убрать: не пришёл" aria-label="Убрать: не пришёл">×</button></span>` : "";
+    return `<div class="pr-row">${avaP(pp)}<span class="pr-nm"><b>${esc(pp.nick)}${isMeRow ? " · ты" : ""}</b>${o.host ? status : ""}</span>${acts}</div>`;
+  };
   // a host adds someone who came without signing up
   const addCameHTML = (e, attr) => `<div class="add-came"><button class="add-came-btn" type="button" ${attr}="${e.id}"><span>＋</span>Добавить, кто пришёл без записи</button></div>`;
   const cameIds = (e) => [...(e.signups || []), ...(e.hosts || [])].map((x) => x.user_id);
@@ -5991,8 +6013,8 @@ html.is-blocked .app > section, html.is-blocked .app > .topbar { display: none !
           ${host && e.price && rows.length ? `<div class="sl-sum"><span class="ok">оплатили ${paidN}</span><span class="no">не оплатили ${rows.length - paidN}</span><span>ждём ${money((rows.length - paidN) * e.price)}</span></div>` : ""}</div>
         <div class="sl-hosts"><span class="eyebrow">${(e.hosts || []).length > 1 ? "Ведущие" : "Ведущий"}</span>${(e.hosts || []).length ? e.hosts.map((x) => esc((x.profiles || personOf(x.user_id)).nick)).join(", ") : `<span class="bio-meta">ещё не отметился</span>`}</div>
         ${rows.map((x) => { const pp = x.profiles ? { ...personOf(x.user_id), ...x.profiles, id: x.user_id } : personOf(x.user_id), s2 = st(x.user_id);
-          const debt = ev.debts?.has(e.id + ":" + x.user_id);
-          return `<div class="sl-row"><span class="so-who">${avaP(pp)}<b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b></span>${host ? `${debt ? `<span class="sl-tag debt">в долг −${e.price} ฿</span>` : tag(x.user_id)}${e.price && s2 !== "paid" ? `<button class="pill sm" type="button" data-st="paid" data-u="${x.user_id}" aria-pressed="false">получил ${e.price} ฿</button>${debt ? `<button class="pill sm ghost" type="button" data-undebt="${x.user_id}">убрать долг</button>` : `<button class="pill sm ghost" type="button" data-debt="${x.user_id}">не заплатил → в долг</button>`}` : ""}<button class="x-rm" type="button" data-unsign="${x.user_id}" data-nick="${esc(pp.nick)}" aria-label="Убрать: не пришёл">×</button>` : ""}</div>`; }).join("")}
+          const debt = ev.debts?.has(e.id + ":" + x.user_id), u = x.user_id;
+          return payRowHTML(pp, u === me.id, { host, price: e.price, st: s2, m: payOf(e.id, u)?.method, debt, got: `data-st="paid" data-u="${u}" aria-pressed="false"`, debtA: `data-debt="${u}"`, undebt: `data-undebt="${u}"`, rm: `data-unsign="${u}" data-nick="${esc(pp.nick)}"` }); }).join("")}
         ${host ? addCameHTML(e, "data-addsign") : ""}
         <div class="ev-act" style="padding-top:12px">${mine ? `${mineTag(e)}<button class="linkish" type="button" data-leave>не смогу</button>` : joinBtns("data-join", host, off ? "disabled" : "")}</div>
         ${myRoleOn(e) === "player" && !off ? `<div class="wk-pay" style="padding:0 16px 14px">${payBtn("mafia", e)}</div>` : ""}
