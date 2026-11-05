@@ -1617,6 +1617,16 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .sc-row em.w { background: #E7F8EE; color: #137A3E; } .sc-row em.l { background: #FFECEE; color: #C0162A; } .sc-row em.d { background: #EEF3FF; color: var(--navy); }
 .sc-row.me b { color: var(--blue); }
 
+.an-dates { display: grid; gap: 6px; }
+.an-dates .an-games button { font-size: 12.5px; padding: 8px 12px; }
+
+.an-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+.an-days .wd { padding: 7px 0 6px; }
+.an-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.an-fields label { display: grid; gap: 4px; font-weight: 800; font-size: 12px; color: var(--muted); }
+.an-fields .wide { grid-column: 1 / -1; }
+.an-fields .field { min-height: 44px; padding: 8px 10px; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -2232,7 +2242,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105101754"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105102300"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2542,7 +2552,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const goBack = () => { haptic("tap"); const t = navStack.pop(); navBack = true; try { go(t ? t.v : "hub", t?.a); } finally { navBack = false; } };
   const go = (view, arg) => {
     if (navReady && !navBack && S.view && (S.view !== view || (view === "profile" && arg && arg !== profileId) || (view === "sport" && arg && arg !== sportId))) {
-      navStack.push({ v: S.view, a: S.view === "profile" ? profileId : S.view === "sport" || S.view === "sportorg" ? sportId : undefined });
+      navStack.push({ v: S.view, a: S.view === "profile" ? profileId : S.view === "sport" || S.view === "sportorg" || S.view === "sportrate" ? sportId : undefined });
       if (navStack.length > 40) navStack.shift();
     }
     if (view === "hub") navStack.length = 0;
@@ -2551,11 +2561,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       view = "home";
     }
     if (view === "profile") { if (S.view !== "profile") profileFrom = S.view; profileId = arg || me?.id; }
-    if (view === "sport" || view === "sportorg") sportId = SPORTS[arg] ? arg : sportId;
+    if (view === "sport" || view === "sportorg" || view === "sportrate") sportId = SPORTS[arg] ? arg : sportId;
     if (view === "pay" && S.view !== "pay") payFrom = S.view;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "hub";
     try { if (inTG && tg?.BackButton) view === "hub" ? tg.BackButton.hide() : tg.BackButton.show(); } catch {}
@@ -2594,7 +2604,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   $("tabEvents").onclick = () => go("events");
   $("goPeople").onclick = () => {
     if (!me) return go("auth");
-    if (S.view === "sport") return $("spRate").scrollIntoView({ behavior: "smooth", block: "start" });
+    if (S.view === "sport" || S.view === "sportorg") return go("sportrate", sportId);
+    if (S.view === "sportrate") return;
     go("people");
   };
   $("tabHost").onclick = () => go("host");
@@ -2618,10 +2629,10 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("tabEvents").textContent = canHost() ? "запись" : "запись на игру";
     $("tabsBox").hidden = !set.length;
     // rating of the current game, next to the avatar
-    $("goPeople").hidden = !["home", "card", "notes", "host", "events", "player", "deck", "sport"].includes(view);
+    $("goPeople").hidden = !["home", "card", "notes", "host", "events", "player", "deck", "sport", "sportorg"].includes(view);
     $("goPeople").setAttribute("aria-label", view === "sport" ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("topTitle").hidden = !!set.length;
-    $("topTitle").textContent = { sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
+    $("topTitle").textContent = { sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
   };
 
   const renderHostAccess = () => {
@@ -3920,16 +3931,19 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     img.onerror = () => res(f);
     img.src = URL.createObjectURL(f);
   });
-  const openAnnounce = () => {
+  const openAnnounce = (preset) => {
     if (!isAnyHost()) return;
     const games = [canGrant || canHost() ? "mafia" : null, ...Object.keys(SPORTS).filter((k) => isSportHost(k))].filter(Boolean);
-    let file = null, uploaded = "", withBtn = true, busy = false, game = games[0];
+    let file = null, uploaded = "", withBtn = true, busy = false, game = games.includes(preset) ? preset : games[0], annEv = null, annDay = null, annKey = "";
+    const datesOf = (g) => g === "mafia" ? ev.list.filter((x) => x.status === "open") : sp.events.filter((x) => x.sport === g && x.status === "open" && x.day >= bkkToday());
     const v = document.createElement("div");
     v.className = "veil full";
     v.innerHTML = `<div class="ticket seat-sheet" role="dialog" aria-modal="true" aria-label="Сделать анонс"><div class="ticket-in"><div class="t-body">
       <div class="eyebrow">Анонс через @dacha_gay · ${people.length || "все"} дачников</div>
       <h2 class="h1">Сделать анонс</h2>
       <div class="an-games" role="group" aria-label="По какой игре">${games.map((k) => `<button type="button" data-game="${k}" aria-pressed="${k === game}">${meta(k).emoji} ${meta(k).name}</button>`).join("")}</div>
+      <div class="an-dates" id="anDates"></div>
+      ${canGrant ? `<p class="bio-meta" style="margin:0">Твой анонс уйдёт всем в бот и ещё в группу DACHA.</p>` : ""}
       <textarea class="field" id="anText" maxlength="4000" placeholder="Текст анонса: дата, время, место, ведущий…" style="min-height:190px;resize:vertical;font-weight:600"></textarea>
       <input type="file" id="anFile" accept="image/png,image/jpeg,image/webp,video/mp4,video/quicktime,video/webm" hidden>
       <button class="an-drop" type="button" data-an="pic" id="anDrop"><span>📷</span><b>Добавить картинку или видео</b><small>нажми, перетащи файл или вставь из буфера</small></button>
@@ -3937,11 +3951,38 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       <img id="anPrev" alt="Картинка анонса" hidden style="max-width:100%;border-radius:12px;box-shadow:0 0 0 2px var(--ink)">
       <video id="anVid" controls playsinline preload="metadata" hidden style="max-width:100%;max-height:340px;border-radius:12px;box-shadow:0 0 0 2px var(--ink);background:#000"></video>
       <small id="anHint" style="color:var(--muted);font-weight:700">Картинка до 8 МБ, видео до 20 МБ (mp4, mov, webm)</small>
-      <button class="toggle-row" type="button" data-an="btn" role="switch" aria-checked="true" style="border:1.5px solid var(--hair);border-radius:14px"><div><b>Кнопка «Записаться на игру»</b><span>Под постом, открывает запись в приложении</span></div><i class="switch on"></i></button>
+      <button class="toggle-row" type="button" data-an="btn" role="switch" aria-checked="true" style="border:1.5px solid var(--hair);border-radius:14px"><div><b>Кнопки «✋ Я буду» и «Открыть»</b><span>«Я буду» сразу записывает на игру, «Открыть» — приложение</span></div><i class="switch on"></i></button>
       <p class="err" id="anErr" role="alert"></p>
       <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ghost" type="button" data-an="test">отправить себе</button><button class="pill sm" type="button" data-an="all">разослать всем</button><button class="linkish" type="button" data-an="close">закрыть</button></div>
     </div></div></div>`;
     document.body.append(v);
+    void annEv; void datesOf;
+    const evOn = (g, day) => g === "mafia" ? ev.list.find((x) => x.day === day && x.status === "open") : sp.events.find((x) => x.sport === g && x.day === day && x.status !== "removed");
+    const defaultsFor = (g, day) => {
+      const ex = evOn(g, day);
+      if (ex) return { start: hm(ex.start_time), gather: hm(ex.gather_time || "19:30"), price: ex.price, place: ex.place_id || "" };
+      if (g === "mafia") return { start: "20:00", gather: "19:30", price: 100, place: sp.places.find((x) => /ali/i.test(x.name))?.id || "" };
+      const ser = sp.series.find((x) => x.sport === g && x.active);
+      return { start: ser ? hm(ser.start_time) : "19:00", gather: "", price: ser ? ser.price : 0, place: ser?.place_id || "" };
+    };
+    const drawDates = () => {
+      const t = bkkToday(), days = Array.from({ length: 14 }, (_, i) => addDays(t, i));
+      if (!annDay || !days.includes(annDay)) annDay = days.find((d) => evOn(game, d)) || t;
+      const key = game + annDay, f0 = v.querySelector("#anForm");
+      const cur = annKey === key && f0 ? { start: f0.elements.as.value, gather: f0.elements.ag?.value || "", price: f0.elements.ap.value, place: f0.elements.plid.value } : defaultsFor(game, annDay);
+      annKey = key;
+      const ex = evOn(game, annDay), { d: dn, m: dm, w: dw } = dayParts(annDay);
+      v.querySelector("#anDates").innerHTML = `<span class="eyebrow">Когда игра · ${DOW_FULL[dw]}, ${dn} ${MON_FULL[dm - 1]}</span>
+        <div class="an-days">${days.map((d) => { const q = dayParts(d); return `<button type="button" class="wd${d === t ? " today" : ""}" data-anday="${d}" aria-selected="${d === annDay}"><small>${d === t ? "сег" : DOW[q.w]}</small><b>${q.d}</b><span class="wd-dots">${evOn(game, d) ? `<i style="background:${meta(game).color}"></i>` : ""}</span></button>`; }).join("")}</div>
+        <form class="an-fields" id="anForm" onsubmit="return false">
+          ${game === "mafia" ? `<label>сбор<input class="field" type="time" name="ag" value="${cur.gather}"></label>` : ""}
+          <label>начало<input class="field" type="time" name="as" value="${cur.start}" required></label>
+          <label>цена, ฿<input class="field" type="number" name="ap" min="0" step="1" value="${cur.price}"></label>
+          <label class="wide">место${placeSelect(cur.place)}</label>
+        </form>
+        <p class="bio-meta" style="margin:0">${ex ? "В этот день игра уже есть — при рассылке обновим её время, цену и место." : "Новая игра появится в календаре, когда разошлёшь анонс."} Кнопка «✋ Я буду» сразу запишет на неё.</p>`;
+    };
+    drawDates();
     const ta = v.querySelector("#anText");
     try { ta.value = localStorage.getItem(AN_DRAFT) || ""; } catch {}
     ta.addEventListener("input", () => { try { localStorage.setItem(AN_DRAFT, ta.value); } catch {} });
@@ -3971,6 +4012,23 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       const btn = v.querySelector(`[data-an="${test ? "test" : "all"}"]`), label = btn.textContent;
       btn.disabled = true; btn.textContent = "отправляю…";
       try {
+        // the date: create it or update the one that day (real sending only)
+        let eventId = null;
+        if (!test) {
+          const f = v.querySelector("#anForm");
+          if (!f.elements.as.value) throw new Error("Укажи время начала");
+          const place_id = await placeFromForm(f);
+          const vals = { start_time: f.elements.as.value, price: Math.max(0, parseInt(f.elements.ap.value, 10) || 0), place_id };
+          if (game === "mafia") {
+            const { data: row, error: e1 } = await sb.from("events").upsert({ day: annDay, ...vals, gather_time: f.elements.ag.value || f.elements.as.value, status: "open" }, { onConflict: "day" }).select("id").single();
+            if (e1) throw e1; eventId = row.id; ev.loaded = false; loadEvents().catch(() => {});
+          } else {
+            const ex = evOn(game, annDay), place = sp.places.find((x) => x.id === place_id)?.name || null;
+            const r1 = ex ? await sb.from("sport_events").update({ ...vals, place, status: ex.status === "done" ? "done" : "open" }).eq("id", ex.id).select("id").single()
+              : await sb.from("sport_events").insert({ sport: game, day: annDay, ...vals, place, created_by: me.id }).select("id").single();
+            if (r1.error) throw r1.error; eventId = r1.data.id; loadSports().catch(() => {});
+          }
+        }
         if (file && !uploaded) {
           const ext = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "video/mp4": "mp4", "video/quicktime": "mov", "video/webm": "webm" }[file.type] || "bin";
           if (file.type.startsWith("video/")) btn.textContent = "загружаю видео…";
@@ -3981,16 +4039,18 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         }
         btn.textContent = "отправляю…";
         const isVid = !!file && file.type.startsWith("video/");
-        const { data, error } = await sb.functions.invoke("tg", { body: { action: "broadcast", game, text, photo_url: !isVid && uploaded || null, video_url: isVid && uploaded || null, button: withBtn, test } });
+        const { data, error } = await sb.functions.invoke("tg", { body: { action: "broadcast", game, event_id: eventId, text, photo_url: !isVid && uploaded || null, video_url: isVid && uploaded || null, button: withBtn, test } });
         if (error || data?.error) throw new Error(data?.error || error.message);
         if (test) toast(data.sent ? "Анонс пришёл тебе в Telegram" : "Не дошло: открой чат с ботом и нажми Start");
-        else { toast(`Отправлено ${data.sent} из ${data.total}`); try { localStorage.removeItem(AN_DRAFT); } catch {} v.remove(); }
+        else { toast(`Отправлено ${data.sent} из ${data.total}${data.group === "ok" ? " + в группу" : data.group ? ` · группа: ${data.group}` : ""}`); try { localStorage.removeItem(AN_DRAFT); } catch {} v.remove(); }
       } catch (x) { err.textContent = "Не получилось: " + humanErr(x); }
       finally { busy = false; btn.disabled = false; btn.textContent = label; }
     };
     v.addEventListener("click", (e) => {
       const gb = e.target.closest("[data-game]");
-      if (gb) { game = gb.dataset.game; v.querySelectorAll(".an-games [data-game]").forEach((x) => x.setAttribute("aria-pressed", x === gb)); return; }
+      if (gb) { game = gb.dataset.game; v.querySelectorAll(".an-games [data-game]").forEach((x) => x.setAttribute("aria-pressed", x === gb)); drawDates(); return; }
+      const dd = e.target.closest("[data-anday]");
+      if (dd) { annDay = dd.dataset.anday; haptic("tap"); drawDates(); return; }
       const b = e.target.closest("[data-an]"); if (!b) return;
       const k = b.dataset.an;
       if (k === "pic") v.querySelector("#anFile").click();
@@ -4002,7 +4062,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     });
     ta.focus();
   };
-  $("goAnnounce").onclick = openAnnounce;
+  $("goAnnounce").onclick = () => openAnnounce();
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-newann]"); if (!b) return; e.stopPropagation(); openAnnounce(b.dataset.newann || "mafia"); }, true);
 
   /* ---------- polls through the bot: «кто за мафию?» (@tivishka only) ---------- */
   const POLL_OPTS = ["✅ Я за", "🤔 Подумаю", "❌ Не смогу"];
@@ -4525,13 +4586,13 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="button" data-rate>${k === "mafia" ? "рейтинг мафии" : `рейтинг: ${M.name.toLowerCase()}`}</button><button class="pill sm ghost" type="button" data-close>закрыть</button></div>
       </div></div></div>`;
     v.addEventListener("click", (e) => {
-      if (e.target.closest("[data-rate]")) { v.remove(); return k === "mafia" ? go("people") : go("sport", k); }
+      if (e.target.closest("[data-rate]")) { v.remove(); return k === "mafia" ? go("people") : go("sportrate", k); }
       if (e.target === v || e.target.closest("[data-close]")) v.remove();
     });
     document.body.append(v); haptic("tap");
   };
   $("profGames").onclick = (e) => {
-    const r = e.target.closest("[data-pgrate]"); if (r) { haptic("tap"); return r.dataset.pgrate === "mafia" ? go("people") : go("sport", r.dataset.pgrate); }
+    const r = e.target.closest("[data-pgrate]"); if (r) { haptic("tap"); return r.dataset.pgrate === "mafia" ? go("people") : go("sportrate", r.dataset.pgrate); }
     const o = e.target.closest("[data-pgo]"); if (o) return o.dataset.pgo === "mafia" ? go("events") : go("sport", o.dataset.pgo);
     const b = e.target.closest("[data-pg]"); if (b) openProfGame(b.dataset.pg);
   };
@@ -4590,13 +4651,14 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   });
 
   const spMonthNow = () => bkkToday().slice(0, 7);
-  const isSportView = () => S.view === "sport" || S.view === "sportorg";
+  const isSportView = () => S.view === "sport" || S.view === "sportorg" || S.view === "sportrate";
   const renderSport = async (quiet) => {
     const X = SPORTS[sportId];
-    sp.mode = S.view === "sportorg" ? "org" : "player";
-    const org = sp.mode === "org";
-    $("spHero").hidden = org; $("spRate").hidden = org; $("spPast").hidden = org; $("soDay").hidden = !org;
-    $("spOrgBtn").hidden = org || !isSportHost(X.id);
+    sp.mode = S.view === "sportorg" ? "org" : S.view === "sportrate" ? "rate" : "player";
+    const org = sp.mode === "org", rate = sp.mode === "rate";
+    $("spHero").hidden = org || rate; $("spRate").hidden = !rate; $("spPast").hidden = org || rate; $("soDay").hidden = !org;
+    $("spNext").hidden = rate; $("spNew").hidden = rate;
+    $("spOrgBtn").hidden = org || rate || !isSportHost(X.id);
     const hosts = sp.hosts.filter((h) => h.sport === X.id).map((h) => personOf(h.user_id));
     $("spHero").innerHTML = `<div class="sport-hero ${X.id}"><span class="sh-emoji" aria-hidden="true">${X.emoji}</span>
       <div class="eyebrow">DACHA · ${X.code}</div><h1>${X.name}</h1><p>${X.tag}</p>
@@ -4612,7 +4674,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       if (h2.length !== hosts.length) return renderSport(true);
     }
     drawSportNext(); drawSportNew(); drawSportPast(); drawSportBoard();
-    $("spOrgBtn").hidden = sp.mode === "org" || !isSportHost(X.id);
+    $("spOrgBtn").hidden = sp.mode !== "player" || !isSportHost(X.id);
     if (sp.mode === "org") { if (!isSportHost(X.id)) return go("sport", X.id); drawOrgDay(); }
   };
   const spWho = (x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP({ ...(x.profiles || personOf(x.user_id)), id: x.user_id })}<span>${esc((x.profiles || personOf(x.user_id)).nick)}</span></span>`;
@@ -4685,7 +4747,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         ${ser.map((x) => `<div class="ser-row ${x.active ? "" : "off"}"><span class="ser-t"><b>${esc(seriesLine(x))}</b><small>${x.active ? (x.price ? x.price + " ฿" : "бесплатно") : "остановлено"}</small></span><button class="linkish" type="button" data-seredit="${x.id}">${sp.seriesEdit === x.id ? "свернуть" : "изменить"}</button></div>${sp.seriesEdit === x.id ? seriesForm(x) : ""}`).join("")}
         ${sp.seriesEdit === "new" ? seriesForm(null) : `<div class="row-btns" style="justify-content:flex-start;padding:4px 12px 14px"><button class="pill sm ghost" type="button" data-sernew>+ регулярная игра</button></div>`}
       </div></div>` : "";
-    $("spNew").innerHTML = serBox + (host ? `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:12px"><div class="eyebrow">Ты ведущий · ${X.name.toLowerCase()}</div><h2 class="h2">Поставить разовую игру</h2></div>${spForm(null)}</div></div>` : "");
+    $("spNew").innerHTML = serBox + (host ? `<button class="add-came-btn" type="button" data-newann="${X.id}"><span>📣</span>Новая игра и анонс</button>` : "");
   };
   const drawSportPast = () => {
     const X = SPORTS[sportId], t = bkkToday(), host = isSportHost(X.id) && sp.mode === "org";
@@ -5401,6 +5463,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   // only @tivishka adds game dates
   const drawNewDate = () => {
     const box = $("newDate");
+    box.innerHTML = canHost() ? `<button class="add-came-btn" type="button" data-newann style="margin:2px 0"><span>📣</span>Новая игра — через «Сделать анонс»</button>` : ""; return;
     if (!canGrant) { box.innerHTML = ""; return; }
     if (box.firstChild && box.contains(document.activeElement)) return;
     box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:10px">

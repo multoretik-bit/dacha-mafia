@@ -141,7 +141,17 @@ async function broadcast(req: Request, body: any) {
   const photo = video ? null : ours(body.photo_url);
   if (!text && !photo && !video) return json({ error: "Пустой анонс" }, 400);
   const btn = ({ mafia: ["Записаться на мафию", "?v=events"], volley: ["Записаться на волейбол", "?v=volley"], foot: ["Записаться на футбол", "?v=foot"] } as Record<string, string[]>)[game];
-  const markup = body.button ? { inline_keyboard: [[{ text: btn[0], web_app: { url: APP + btn[1] } }]] } : undefined;
+  // a date to sign up for straight from the post: "✋ Я буду" writes the sign-up into the app
+  let eventId: string | null = null;
+  if (typeof body.event_id === "string" && /^[0-9a-f-]{36}$/i.test(body.event_id)) {
+    const { data: ev } = game === "mafia"
+      ? await admin.from("events").select("id").eq("id", body.event_id).eq("status", "open").maybeSingle()
+      : await admin.from("sport_events").select("id").eq("id", body.event_id).eq("sport", game).neq("status", "removed").maybeSingle();
+    eventId = ev?.id || null;
+  }
+  const joinBtn = eventId ? [{ text: "✋ Я буду", callback_data: `j:${game}:${eventId}` }] : null;
+  const markup = body.button ? { inline_keyboard: [...(joinBtn ? [joinBtn] : []), [{ text: joinBtn ? "Открыть в приложении" : btn[0], web_app: { url: APP + btn[1] } }]] } : undefined;
+  const groupMarkup = body.button ? { inline_keyboard: [...(joinBtn ? [joinBtn] : []), [{ text: "Открыть DACHA", url: "https://t.me/dacha_gay" }]] } : undefined;
   let chats: number[];
   if (body.test) chats = [me!.tg_id];
   else {
@@ -175,7 +185,52 @@ async function broadcast(req: Request, body: any) {
     }
     await new Promise((res) => setTimeout(res, 45));
   }
-  return json({ sent, total: chats.length, failed });
+  // @tivishka's announcements also go to the DACHA group
+  let group: string | null = null;
+  if (uname === "tivishka" && !body.test) {
+    const info: any = await tgApi("getChat", { chat_id: GROUP_CHAT });
+    if (!info.ok) group = "бот не добавлен в группу";
+    else {
+      const thread = info.result?.is_forum ? { message_thread_id: GROUP_THREAD } : {};
+      const gm = video ? (cap: Record<string, unknown>) => tgApi("sendVideo", { chat_id: GROUP_CHAT, video: fileId || video, supports_streaming: true, ...thread, ...cap })
+        : photo ? (cap: Record<string, unknown>) => tgApi("sendPhoto", { chat_id: GROUP_CHAT, photo: fileId || photo, ...thread, ...cap }) : null;
+      let r: any;
+      if (gm && text.length <= 1024) r = await gm({ caption: text || undefined, reply_markup: groupMarkup });
+      else { if (gm) await gm({}); r = await tgApi("sendMessage", { chat_id: GROUP_CHAT, text, reply_markup: groupMarkup, ...thread }); }
+      group = r.ok ? "ok" : r.description || "ошибка";
+    }
+  }
+  return json({ sent, total: chats.length, failed, group });
+}
+
+const GROUP_CHAT = -1002172269288, GROUP_THREAD = 2;
+// "✋ Я буду" under an announcement: sign the person up for that date right away
+async function joinFromButton(cq: any) {
+  const answer = (text: string, alert = false) => tgApi("answerCallbackQuery", { callback_query_id: cq.id, text, show_alert: alert });
+  const [, g, e] = String(cq.data || "").split(":");
+  if (!["mafia", "volley", "foot"].includes(g) || !e) return answer("Не понял кнопку");
+  const { data: prof } = await admin.from("profiles").select("id,nick").eq("tg_id", cq.from?.id).maybeSingle();
+  if (!prof) return answer("Сначала открой бота @dacha_gay и нажми «Дача», потом жми «Я буду» ещё раз", true);
+  const table = g === "mafia" ? "signups" : "sport_signups";
+  const { data: ev } = g === "mafia"
+    ? await admin.from("events").select("id,day,status").eq("id", e).maybeSingle()
+    : await admin.from("sport_events").select("id,day,status").eq("id", e).maybeSingle();
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Bangkok" }).format(new Date());
+  if (!ev || (g === "mafia" ? ev.status !== "open" : ev.status === "removed")) return answer("Эта игра уже недоступна", true);
+  if (ev.day < today) return answer("Эта игра уже прошла", true);
+  const { data: ex } = await admin.from(table).select("user_id").eq("event_id", e).eq("user_id", prof.id).maybeSingle();
+  if (ex) await answer("Ты уже записан ✓");
+  else {
+    const { error } = await admin.from(table).insert({ event_id: e, user_id: prof.id, role: "player" });
+    if (error) return answer("Не получилось записать, попробуй в приложении", true);
+    await answer(`Записал тебя, ${prof.nick} ✓ Оплатить можно в приложении`);
+  }
+  const { count } = await admin.from(table).select("user_id", { count: "exact", head: true }).eq("event_id", e).eq("role", "player");
+  const kb = cq.message?.reply_markup?.inline_keyboard;
+  if (kb && cq.message) {
+    const next = kb.map((row: any[]) => row.map((b: any) => (b.callback_data === cq.data ? { ...b, text: `✋ Я буду · ${count ?? ""}`.trim() } : b)));
+    await tgApi("editMessageReplyMarkup", { chat_id: cq.message.chat.id, message_id: cq.message.message_id, reply_markup: { inline_keyboard: next } });
+  }
 }
 
 // ---------- polls: «кто за мафию?» with answer buttons right in the bot ----------
@@ -339,6 +394,7 @@ async function hook(req: Request) {
   if (req.headers.get("X-Telegram-Bot-Api-Secret-Token") !== HOOK_SECRET) return new Response("forbidden", { status: 401 });
   const upd = await req.json().catch(() => ({}));
   if (upd.callback_query?.data?.startsWith("pv:")) { await pollVote(upd.callback_query); return new Response("ok"); }
+  if (upd.callback_query?.data?.startsWith("j:")) { await joinFromButton(upd.callback_query); return new Response("ok"); }
   const msg = upd.message;
   if (msg?.chat?.type === "private") {
     await tgApi("sendMessage", {
