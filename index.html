@@ -2556,7 +2556,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105175427"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105175753"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2599,7 +2599,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   };
   const BASE = [
     { id: "maf", name: "Мафия", code: "MAF", team: "mafia", art: "cards/maf.webp", desc: "Ночью вместе с семьёй выбираешь, кого убрать. Днём притворяйся мирным и уводи подозрения." },
-    { id: "don", name: "Дон мафии", code: "DON", team: "mafia", art: "cards/don-2.webp", desc: "Глава семьи. Ночью стреляешь с мафией, а потом ищешь комиссара: проверяешь одного игрока." },
+    { id: "don", name: "Дон мафии", code: "DON", team: "mafia", art: "cards/don.webp", desc: "Глава семьи. Ночью стреляешь с мафией, а потом ищешь комиссара: проверяешь одного игрока." },
     { id: "kom", name: "Комиссар", code: "COM", team: "city", art: "cards/kom.webp", desc: "Ночью проверяешь одного игрока и узнаёшь, мафия он или нет. Не спались раньше времени." },
     { id: "pat", name: "Патрульный", code: "PTR", team: "city", art: "cards/pat.webp", desc: "Напарник комиссара. Ночью тоже проверяешь игрока. Если комиссара убьют, занимаешь его место." },
     { id: "kur", name: "Любовница", code: "LVR", team: "city", art: "cards/kur.webp", desc: "Ночью приходишь к игроку. Его ночной ход пропадает, а выстрел мафии по нему не проходит." },
@@ -2612,7 +2612,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   // every card variant per role; one is picked at random on each deal (the role's `art` is the thumbnail)
   const CARD_ART = {
     maf: ["cards/maf.webp", "cards/maf-2.webp", "cards/maf-4.webp"],
-    don: ["cards/don-2.webp"],
+    don: ["cards/don.webp"],
     kom: ["cards/kom.webp", "cards/kom-3.webp"],
     kur: ["cards/kur-2.webp"],
     man: ["cards/man.webp", "cards/man-2.webp"],
@@ -2623,7 +2623,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   };
 
   // retired variants: stay in the deck view, locked, and are never dealt
-  const LOCKED_ART = { don: ["cards/don.webp"] };
+  const LOCKED_ART = {};
 
   const TR = { а:"A",б:"B",в:"V",г:"G",д:"D",е:"E",ё:"E",ж:"ZH",з:"Z",и:"I",й:"Y",к:"K",л:"L",м:"M",н:"N",о:"O",п:"P",р:"R",с:"S",т:"T",у:"U",ф:"F",х:"H",ц:"C",ч:"CH",ш:"SH",щ:"SH",ы:"Y",э:"E",ю:"YU",я:"YA" };
   const codeOf = (name) => {
@@ -4809,7 +4809,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     void t;
     const next = (k) => (k === "mafia" ? ev.list.find((e) => e.status === "open" && stillOn(e)) : sp.events.find((e) => e.sport === k && e.status !== "removed" && stillOn(e)));
     const line = (k) => { const n = next(k); return n ? `ближайшая: <b>${esc(dayLabel(n.day))} · ${hm(n.start_time)}</b>${k === "mafia" && placeName(n) ? `<br>📍 ${esc(placeName(n))}` : ""}` : me ? "дату скоро поставят" : "войди, чтобы записаться"; };
-    const mafArt = ["cards/maf.webp", "cards/kom-3.webp", "cards/don-2.webp"];
+    const mafArt = ["cards/maf.webp", "cards/kom-3.webp", "cards/don.webp"];
     $("hubGames").innerHTML = ["mafia", "volley", "foot"].map((k) => {
       const M = meta(k);
       return `<button class="game-tile g-${k}" type="button" data-game="${k}">
