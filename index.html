@@ -1646,6 +1646,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .sl-sum .ok { background: #E7F8EE; color: #137A3E; } .sl-sum .no { background: #FFECEE; color: #C0162A; }
 .sl-hosts { padding: 0 16px 10px; display: flex; gap: 8px; align-items: baseline; font-weight: 800; font-size: 13.5px; color: var(--ink); }
 
+.wk-joins { align-items: center; }
+.wk-leave { padding: 6px 4px; font-size: 13px; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -2263,7 +2266,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105103222"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105104225"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4369,7 +4372,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const done = !maf && e.status === "done";
     const info = maf ? [`начало ${x.time}`, `сбор ${hm(e.gather_time)}`, e.price ? `${e.price} ฿` : ""] : [x.time, e.price ? `${e.price} ฿` : "бесплатно"];
     const act = done ? `<span class="tag">сыграно</span>`
-      : mine ? mineTag(e)
+      : mine ? `<span class="wk-joins">${mineTag(e)}<button class="linkish wk-leave" type="button" data-wleave>не смогу</button></span>`
       : me ? `<span class="wk-joins">${joinBtns("data-wjoin", maf ? canHost() : isSportHost(x.kind))}</span>` : "";
     return `<div class="wk" data-kind="${x.kind}" data-id="${e.id}" style="--gc:${M.color}">
       <button class="wk-main" type="button" data-wopen><span class="wk-ic">${M.emoji}</span>
@@ -4379,6 +4382,15 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       ${myRoleOn(e) === "player" && payBtn(x.kind, e) ? `<div class="wk-pay">${payBtn(x.kind, e)}</div>` : ""}
     </div>`;
   };
+  // "не смогу": leave a date (money paid stays on the balance, a balance reserve is freed)
+  const leaveDate = (kind, id, done) => sheet({ eyebrow: "Запись", title: "Не сможешь прийти?", text: "Запись на эту игру отменится. Если уже оплатил — деньги останутся у тебя на балансе.", ok: "не смогу", okClass: "red",
+    onOk: async () => {
+      const { error } = kind === "mafia" ? await sb.from("signups").delete().eq("event_id", id).eq("user_id", me.id) : await sb.from("sport_signups").delete().eq("event_id", id).eq("user_id", me.id);
+      if (error) return toast("Не получилось: " + humanErr(error));
+      toast("Запись отменена");
+      await Promise.all([kind === "mafia" ? loadEvents() : loadSports(), loadWallet().catch(() => {})]);
+      done?.();
+    } });
   const drawWeek = () => {
     const t = bkkToday(), days = Array.from({ length: 7 }, (_, i) => addDays(t, i));
     if (!weekSel || !days.includes(weekSel)) weekSel = days.find((d) => weekItems(d).length) || t;
@@ -4396,6 +4408,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   $("weekList").onclick = async (e) => {
     const card = e.target.closest("[data-kind]"); if (!card) return;
     const kind = card.dataset.kind, id = card.dataset.id;
+    if (e.target.closest("[data-wleave]")) return leaveDate(kind, id, () => { if (S.view === "hub") { drawWeek(); drawHubGames(); } });
     const wj = e.target.closest("[data-wjoin]");
     if (wj) {
       haptic("tap");
@@ -5424,7 +5437,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <span class="nc-t"><b>🎭 Мафия</b><small>${esc(dayLabel(e.day))} · начало ${hm(e.start_time)} · сбор ${hm(e.gather_time)}${e.price ? ` · ${e.price} ฿` : ""}</small></span><span class="wk-go">›</span></button>
       ${placeChip(e) ? `<div class="wk-place">${placeChip(e)}</div>` : ""}
       <div class="wk-foot"><span class="wk-n">${e.signups.length ? `${e.signups.length} ${plural(e.signups.length, "идёт", "идут", "идут")}` : "пока никого"}</span>
-        ${mine ? mineTag(e) : `<span class="wk-joins">${joinBtns("data-join", canHost())}</span>`}</div>
+        ${mine ? `<span class="wk-joins">${mineTag(e)}<button class="linkish wk-leave" type="button" data-wleave>не смогу</button></span>` : `<span class="wk-joins">${joinBtns("data-join", canHost())}</span>`}</div>
       ${myRoleOn(e) === "player" && payBtn("mafia", e) ? `<div class="wk-pay">${payBtn("mafia", e)}</div>` : ""}
     </article>`;
   };
@@ -5691,6 +5704,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     else if (b.hasAttribute("data-evstatus")) evAction(() => sb.from("events").update({ status: event.status === "open" ? "cancelled" : "open" }).eq("id", id), event.status === "open" ? "Игра отменена" : "Игра снова в расписании");
   });
   $("homeEvent").addEventListener("click", async (e) => {
+    const lv = e.target.closest("[data-wleave]");
+    if (lv) { const c = lv.closest("[data-ev]"); return c && leaveDate("mafia", c.dataset.ev, () => { if (S.view === "home") drawHomeEvent(); }); }
     const nc = e.target.closest("[data-goev]");
     if (nc) { const c = nc.closest("[data-ev]"); return c ? openEvent("mafia", c.dataset.ev) : go("events"); }
     const card = e.target.closest("[data-ev]");
