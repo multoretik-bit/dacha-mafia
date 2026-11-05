@@ -197,23 +197,32 @@ const pollKeys = (p: any, mine: number | null) => p.closed_at ? { inline_keyboar
   : { inline_keyboard: p.options.map((o: string, i: number) => [{ text: (mine === i ? "✔️ " : "") + o, callback_data: `pv:${p.id}:${i}` }]) };
 
 // a player says "I paid for PREMIUM": tell @tivishka in the bot, with a button to the payments screen
-async function premiumNotify(req: Request) {
+async function premiumNotify(req: Request, body: any) {
   const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
   const { data: { user } } = await admin.auth.getUser(jwt);
   if (!user) return json({ error: "Нужно войти" }, 401);
-  const { data: tx } = await admin.from("wallet_tx").select("amount,currency,method").eq("user_id", user.id).eq("purpose", "premium").eq("status", "pending").order("created_at", { ascending: false }).limit(1).maybeSingle();
+  const kind = body?.kind === "withdraw" ? "withdraw" : "premium";
+  const { data: tx } = await admin.from("wallet_tx").select("amount,currency,method,note").eq("user_id", user.id).eq("purpose", kind).eq("status", "pending").order("created_at", { ascending: false }).limit(1).maybeSingle();
   if (!tx) return json({ ok: false });
   const { data: who } = await admin.from("profiles").select("nick,tg_username").eq("id", user.id).maybeSingle();
   const { data: own } = await admin.from("profiles").select("tg_id").ilike("tg_username", "tivishka").maybeSingle();
   if (!own?.tg_id) return json({ ok: false });
   const cur = ({ THB: "฿", RUB: "₽", USD: "$" } as Record<string, string>)[tx.currency] || "฿";
   const how = tx.method === "qr" ? "перевод по QR" : tx.method === "cash" ? "наличными тебе" : "перевод";
+  if (kind === "withdraw") {
+    await tgApi("sendMessage", { chat_id: own.tg_id, text: `💸 Вывод денег
+${who?.nick || "Дачник"}${who?.tg_username ? " (@" + who.tg_username + ")" : ""} просит вывести ${-tx.amount} ฿.
+Куда: ${tx.note || "—"}
+Выплати и отметь в приложении «Запросы».`,
+      reply_markup: { inline_keyboard: [[{ text: "Открыть запросы", web_app: { url: APP + "?v=requests" } }]] } });
+    return json({ ok: true });
+  }
   await tgApi("sendMessage", {
     chat_id: own.tg_id,
     text: `◆ PREMIUM
 ${who?.nick || "Дачник"}${who?.tg_username ? " (@" + who.tg_username + ")" : ""} оплатил ${tx.amount} ${cur} · ${how}.
 Проверь оплату и подтверди в приложении: PREMIUM включится на месяц и +200 ฿ на счёт.`,
-    reply_markup: { inline_keyboard: [[{ text: "Открыть оплаты", web_app: { url: APP + "?v=pay" } }]] },
+    reply_markup: { inline_keyboard: [[{ text: "Открыть оплаты", web_app: { url: APP + "?v=requests" } }]] },
   });
   return json({ ok: true });
 }
@@ -227,12 +236,15 @@ async function walletNotify(req: Request, body: any) {
   let sent = 0;
   for (const id of ids) {
     const { data: t } = await admin.from("wallet_tx").select("id,user_id,amount,method,purpose,currency,status,peer_id,note,decided_at,notified_at").eq("id", id).maybeSingle();
-    if (!t || t.status !== "confirmed" || t.notified_at || t.amount <= 0) continue;
+    if (!t || t.status !== "confirmed" || t.notified_at) continue;
+    if (t.amount <= 0 && t.purpose !== "withdraw") continue;
     if (!t.decided_at || Date.now() - new Date(t.decided_at).getTime() > 15 * 60 * 1000) continue;
     const { data: to } = await admin.from("profiles").select("tg_id").eq("id", t.user_id).maybeSingle();
     if (!to?.tg_id) continue;
     let text = "";
-    if (t.purpose === "premium") {
+    if (t.purpose === "withdraw") {
+      text = `💸 Вывод ${-t.amount} ฿ выполнен. Деньги отправлены: ${t.note || "как ты просил"}.`;
+    } else if (t.purpose === "premium") {
       text = "◆ DACHA PREMIUM включён на месяц!\nБез рекламы, своя иконка и +200 ฿ на твой счёт.";
     } else if (t.method === "transfer") {
       const { data: from } = await admin.from("profiles").select("nick,tg_username").eq("id", t.peer_id).maybeSingle();
@@ -346,7 +358,7 @@ Deno.serve(async (req) => {
   if (body.action === "auth") return auth(body.initData);
   if (body.action === "notify") return notify(req, body.game_id);
   if (body.action === "broadcast") return broadcast(req, body);
-  if (body.action === "premium_notify") return premiumNotify(req);
+  if (body.action === "premium_notify") return premiumNotify(req, body);
   if (body.action === "wallet_notify") return walletNotify(req, body);
   if (body.action === "poll") return pollCreate(req, body);
   if (body.action === "poll_close") return pollClose(req, body);
