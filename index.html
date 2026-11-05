@@ -1583,6 +1583,40 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .role-seg button { min-height: 44px; font-size: 14px; }
 .next-more { margin: 0 4px; color: var(--muted); font-weight: 700; font-size: 13px; }
 
+/* organizer day (05.11) */
+#spOrgBtn { margin-top: -4px; }
+.org-head { border-radius: 24px; padding: 18px 18px 16px; color: #F2EBDD; display: grid; gap: 6px; margin-bottom: 12px; box-shadow: var(--sh);
+  background: radial-gradient(90% 120% at 100% 0%, rgba(205,183,138,.28), transparent 60%), repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 9px), linear-gradient(150deg, #101015, #262630); }
+.org-head h1 { margin: 0; font: 800 24px/1.1 var(--f-display); color: #fff; }
+.org-head p { margin: 0; font-weight: 600; font-size: 13.5px; opacity: .75; }
+.so-days { margin-bottom: 12px; }
+.so-legend, .so-row { display: grid; grid-template-columns: minmax(0, 1fr) 80px 80px 26px; gap: 6px; align-items: center; padding: 0 14px; }
+.so-legend.d3, .so-row.d3 { grid-template-columns: minmax(0, 1fr) 70px 70px 70px 26px; gap: 5px; }
+.so-row .x-rm { width: 26px; height: 26px; font-size: 15px; margin: 0; }
+.so-legend { padding-bottom: 6px; }
+.so-legend span { text-align: center; font: 800 10.5px/1 var(--f-body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.so-legend .w { color: #138A43; } .so-legend .l { color: var(--red); } .so-legend .d { color: var(--navy); }
+.so-row { padding-top: 8px; padding-bottom: 8px; border-top: 1px solid var(--hair); }
+.so-who { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.so-who .ava, .so-who .prem { width: 34px; height: 34px; font-size: 16px; flex: none; }
+.so-who .prem .ava { width: 100%; height: 100%; } .so-who .prem .cash { display: none; }
+.so-who b { font-weight: 800; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ctr { display: grid; grid-template-columns: 24px 1fr 24px; align-items: center; height: 38px; border-radius: 12px; background: var(--soft); overflow: hidden; }
+.ctr button { height: 100%; font-weight: 900; font-size: 18px; color: var(--muted); }
+.ctr button:active { background: rgba(0,0,0,.08); }
+.ctr b { text-align: center; font: 700 20px/1 var(--f-code); color: var(--ink); font-variant-numeric: tabular-nums; }
+.ctr.w { background: #E7F8EE; } .ctr.w b { color: #137A3E; }
+.ctr.l { background: #FFECEE; } .ctr.l b { color: #C0162A; }
+.ctr.d { background: #EEF3FF; } .ctr.d b { color: var(--navy); }
+.sp-scores { display: grid; gap: 4px; }
+.sc-row { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto auto auto; gap: 8px; align-items: center; font-size: 13.5px; }
+.sc-row .ava, .sc-row .prem { width: 24px; height: 24px; font-size: 12px; }
+.sc-row .prem .ava { width: 100%; height: 100%; } .sc-row .prem .cash { display: none; }
+.sc-row b { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-row em { font-style: normal; min-width: 26px; text-align: center; padding: 3px 6px; border-radius: 8px; font: 700 14px/1 var(--f-code); }
+.sc-row em.w { background: #E7F8EE; color: #137A3E; } .sc-row em.l { background: #FFECEE; color: #C0162A; } .sc-row em.d { background: #EEF3FF; color: var(--navy); }
+.sc-row.me b { color: var(--blue); }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1817,6 +1851,17 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   <!-- SPORT: volleyball / football -->
   <section id="vSport" class="col" hidden>
     <div id="spHero"></div>
+    <button class="mode" id="spOrgBtn" type="button" hidden>
+      <div class="ticket"><div class="ticket-in">
+        <div class="mode-main">
+          <div class="mode-code">ORG</div>
+          <div class="mode-title">Я организатор</div>
+          <div class="mode-text">Итоги дня: кто сколько выиграл и проиграл, даты и расписание</div>
+        </div>
+        <div class="mode-stub"><span>Host</span></div>
+      </div></div>
+    </button>
+    <div id="soDay" hidden></div>
     <div id="spNext"></div>
     <div id="spNew"></div>
     <div id="spPast"></div>
@@ -2187,7 +2232,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105101020"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105101754"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2497,7 +2542,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   const goBack = () => { haptic("tap"); const t = navStack.pop(); navBack = true; try { go(t ? t.v : "hub", t?.a); } finally { navBack = false; } };
   const go = (view, arg) => {
     if (navReady && !navBack && S.view && (S.view !== view || (view === "profile" && arg && arg !== profileId) || (view === "sport" && arg && arg !== sportId))) {
-      navStack.push({ v: S.view, a: S.view === "profile" ? profileId : S.view === "sport" ? sportId : undefined });
+      navStack.push({ v: S.view, a: S.view === "profile" ? profileId : S.view === "sport" || S.view === "sportorg" ? sportId : undefined });
       if (navStack.length > 40) navStack.shift();
     }
     if (view === "hub") navStack.length = 0;
@@ -2506,11 +2551,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       view = "home";
     }
     if (view === "profile") { if (S.view !== "profile") profileFrom = S.view; profileId = arg || me?.id; }
-    if (view === "sport") sportId = SPORTS[arg] ? arg : sportId;
+    if (view === "sport" || view === "sportorg") sportId = SPORTS[arg] ? arg : sportId;
     if (view === "pay" && S.view !== "pay") payFrom = S.view;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "hub";
     try { if (inTG && tg?.BackButton) view === "hub" ? tg.BackButton.hide() : tg.BackButton.show(); } catch {}
@@ -2576,7 +2621,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     $("goPeople").hidden = !["home", "card", "notes", "host", "events", "player", "deck", "sport"].includes(view);
     $("goPeople").setAttribute("aria-label", view === "sport" ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("topTitle").hidden = !!set.length;
-    $("topTitle").textContent = { requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
+    $("topTitle").textContent = { sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
   };
 
   const renderHostAccess = () => {
@@ -4160,7 +4205,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!sb || !me) return;
     await sb.rpc("ensure_sport_events");
     const [{ data: list, error }, { data: hosts }, { data: places }, { data: series }] = await Promise.all([
-      sb.from("sport_events").select("*, sport_signups(user_id, created_at, role, profiles(id,nick,tg_username,tg_photo)), sport_results(user_id, result)")
+      sb.from("sport_events").select("*, sport_signups(user_id, created_at, role, profiles(id,nick,tg_username,tg_photo)), sport_results(user_id, result, wins, losses, draws)")
         .neq("status", "removed").gte("day", addDays(bkkToday(), -120)).order("day").order("start_time"),
       sb.from("sport_hosts").select("sport, user_id"),
       sb.from("places").select("id, name, maps_url").order("name"),
@@ -4183,7 +4228,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         try { await loadSports(); } catch { return; }
         sp.board = {};
         if (S.view === "hub") { drawWeek(); drawHubGames(); }
-        if (S.view === "sport") renderSport(true);
+        if (isSportView()) renderSport(true);
       }, 600);
     };
     sp.chan = sb.channel("sports")
@@ -4492,9 +4537,66 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   };
 
   /* ---------- sport screen ---------- */
+  /* ---------- organizer: the day's results — how many each won / lost ---------- */
+  let soSel = null, soRows = null;
+  const drawOrgDay = () => {
+    const box = $("soDay"); if (!box || sp.mode !== "org") return;
+    const X = SPORTS[sportId], t = bkkToday();
+    const evs = sp.events.filter((e) => e.sport === X.id && e.status !== "removed");
+    const past = evs.filter((e) => e.day <= t), next = evs.filter((e) => e.day > t);
+    const cand = [...past.slice(-4), ...next.slice(0, 2)];
+    if (!soSel || !cand.some((e) => e.id === soSel)) soSel = (past[past.length - 1] || cand[0])?.id || null;
+    const e = cand.find((x) => x.id === soSel);
+    const head = `<div class="org-head"><div class="pm-mark">DACHA <b>${X.code}</b> · организатор</div><h1>${X.emoji} ${X.name}</h1><p>Отмечай, кто сколько выиграл и проиграл за день — это идёт в рейтинг.</p></div>`;
+    if (!e) { box.innerHTML = head + `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">Игр пока нет. Поставь дату ниже.</p></div></div></div>`; return; }
+    if (!soRows || soRows.id !== e.id) {
+      const m = new Map();
+      [...e.signups.map((x) => x.user_id), ...e.results.map((x) => x.user_id)].forEach((u) => { if (!m.has(u)) { const r = e.results.find((x) => x.user_id === u); m.set(u, { w: r?.wins || 0, l: r?.losses || 0, d: r?.draws || 0 }); } });
+      soRows = { id: e.id, m, dirty: false };
+    }
+    const rows = [...soRows.m.entries()];
+    const tot = rows.reduce((a, [, v]) => a + v.w, 0);
+    const ctr = (u, k, v) => `<span class="ctr ${k}"><button type="button" data-so="${u}" data-k="${k}" data-d="-1" aria-label="минус">−</button><b>${v}</b><button type="button" data-so="${u}" data-k="${k}" data-d="1" aria-label="плюс">+</button></span>`;
+    box.innerHTML = head + `<div class="ev-days so-days" role="group" aria-label="Какой день">${cand.map((x) => { const q = dayParts(x.day); return `<button class="chip" type="button" data-sosel="${x.id}" aria-pressed="${x.id === e.id}">${x.day === t ? "сегодня" : `${q.d} ${MON[q.m - 1]}`}${x.results.length ? " ✓" : ""}</button>`; }).join("")}</div>
+      <div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:6px"><div class="eyebrow">Итоги · ${esc(dayLabel(e.day))} · ${hm(e.start_time)}</div><h2 class="h2">${rows.length ? `Пришли ${rows.length} ${plural(rows.length, "человек", "человека", "человек")}` : "Пока никого"}</h2></div>
+        <div class="so-legend ${X.draws ? "d3" : ""}"><span></span><span class="w">выиграл</span><span class="l">проиграл</span>${X.draws ? `<span class="d">ничья</span>` : ""}<span></span></div>
+        ${rows.map(([u, v]) => { const pp = personOf(u); return `<div class="so-row ${X.draws ? "d3" : ""}"><span class="so-who">${avaP(pp)}<b>${esc(pp.nick)}</b></span>${ctr(u, "w", v.w)}${ctr(u, "l", v.l)}${X.draws ? ctr(u, "d", v.d) : ""}<button class="x-rm" type="button" data-sorm="${u}" aria-label="Убрать: не пришёл">×</button></div>`; }).join("")}
+        <div class="add-came"><button class="add-came-btn" type="button" data-soadd><span>＋</span>Добавить, кто пришёл</button></div>
+        <div class="t-body" style="padding-top:4px;gap:8px"><button class="pill wide pm-btn" type="button" data-sosave>${!soRows.dirty && e.results.length ? "итоги сохранены ✓" : "сохранить итоги"}</button>
+          <p class="bio-meta" style="margin:0">Всего побед за день: ${tot}. Кто с нулями — в рейтинг не попадёт. Пришедшим за игру спишется ${money(e.price)}.</p></div>
+      </div></div>`;
+  };
+  $("soDay").addEventListener("click", async (ev2) => {
+    const b = ev2.target.closest("button"); if (!b) return;
+    const X = SPORTS[sportId], e = sp.events.find((x) => x.id === soSel);
+    if (b.dataset.sosel) { soSel = b.dataset.sosel; soRows = null; haptic("tap"); return drawOrgDay(); }
+    if (!e) return;
+    if (b.dataset.so) { const r = soRows.m.get(b.dataset.so); r[b.dataset.k] = Math.max(0, Math.min(99, r[b.dataset.k] + +b.dataset.d)); soRows.dirty = true; haptic("tap"); return drawOrgDay(); }
+    if (b.hasAttribute("data-soadd")) return pickPerson({ title: "Кто пришёл?", sub: "Добавить в итоги дня", exclude: [...soRows.m.keys()], onPick: async (u) => {
+      if (!e.signups.some((x) => x.user_id === u)) { const { error } = await sb.rpc("host_signup", { g: X.id, e: e.id, u, on_: true }); if (error) return toast("Не получилось: " + humanErr(error)); }
+      soRows.m.set(u, { w: 0, l: 0, d: 0 }); soRows.dirty = true; drawOrgDay(); } });
+    if (b.dataset.sorm) {
+      const u = b.dataset.sorm;
+      return sheet({ eyebrow: "Итоги", title: `Убрать ${personOf(u).nick}?`, text: "Не пришёл: уберём из этой игры, за неё ничего не спишется.", ok: "убрать", okClass: "red", onOk: async () => {
+        if (e.signups.some((x) => x.user_id === u)) { const { error } = await sb.rpc("host_signup", { g: X.id, e: e.id, u, on_: false }); if (error) return toast("Не получилось: " + humanErr(error)); }
+        soRows.m.delete(u); soRows.dirty = true; drawOrgDay(); } });
+    }
+    if (b.hasAttribute("data-sosave")) {
+      const rows = [...soRows.m.entries()].map(([u, v]) => ({ u, w: v.w, l: v.l, d: v.d }));
+      const keep = soRows;
+      const ok = await spAction(() => sb.rpc("save_sport_results", { e: e.id, rows }), "Итоги сохранены, рейтинг обновлён");
+      if (ok) { soRows = null; haptic("card"); drawOrgDay(); } else soRows = keep;
+    }
+  });
+
   const spMonthNow = () => bkkToday().slice(0, 7);
+  const isSportView = () => S.view === "sport" || S.view === "sportorg";
   const renderSport = async (quiet) => {
     const X = SPORTS[sportId];
+    sp.mode = S.view === "sportorg" ? "org" : "player";
+    const org = sp.mode === "org";
+    $("spHero").hidden = org; $("spRate").hidden = org; $("spPast").hidden = org; $("soDay").hidden = !org;
+    $("spOrgBtn").hidden = org || !isSportHost(X.id);
     const hosts = sp.hosts.filter((h) => h.sport === X.id).map((h) => personOf(h.user_id));
     $("spHero").innerHTML = `<div class="sport-hero ${X.id}"><span class="sh-emoji" aria-hidden="true">${X.emoji}</span>
       <div class="eyebrow">DACHA · ${X.code}</div><h1>${X.name}</h1><p>${X.tag}</p>
@@ -4504,12 +4606,14 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!sb || !me) { $("spNext").innerHTML = loginPrompt(); $("spNew").innerHTML = $("spPast").innerHTML = $("spBoard").innerHTML = ""; return; }
     if (!quiet && !sp.loaded) $("spNext").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>Загружаю игры…</div></div></div></div>`;
     try { await Promise.all([sp.loaded && quiet !== "reload" ? null : loadSports(), people.length ? null : loadPeople()]); } catch (x) { toast("Не получилось загрузить: " + humanErr(x)); }
-    if (S.view !== "sport" || X.id !== sportId) return;
+    if (!isSportView() || X.id !== sportId) return;
     if (!quiet) {
       const h2 = sp.hosts.filter((h) => h.sport === X.id).map((h) => personOf(h.user_id));
       if (h2.length !== hosts.length) return renderSport(true);
     }
     drawSportNext(); drawSportNew(); drawSportPast(); drawSportBoard();
+    $("spOrgBtn").hidden = sp.mode === "org" || !isSportHost(X.id);
+    if (sp.mode === "org") { if (!isSportHost(X.id)) return go("sport", X.id); drawOrgDay(); }
   };
   const spWho = (x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP({ ...(x.profiles || personOf(x.user_id)), id: x.user_id })}<span>${esc((x.profiles || personOf(x.user_id)).nick)}</span></span>`;
   const spForm = (e) => `<form class="sp-form" data-spform="${e ? e.id : "new"}">
@@ -4525,8 +4629,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const X = SPORTS[sportId], t = bkkToday(), canOrg = isSportHost(X.id), host = canOrg && sp.mode === "org";
     const all = sp.events.filter((e) => e.sport === X.id && e.day >= t && e.status === "open");
     const list = host ? all : all.slice(0, 1), more = all.slice(1);
-    $("spNext").innerHTML = (canOrg ? `<div class="seg role-seg" role="group" aria-label="Режим"><button type="button" data-spmode="player" aria-pressed="${!host}">Я игрок</button><button type="button" data-spmode="org" aria-pressed="${host}">Я организатор</button></div>` : "")
-      + `<div class="sec-title" style="margin:${canOrg ? "14px" : "0"} 2px 10px">${host ? "Все ближайшие игры" : "Следующая игра"}</div>` + (list.length ? list.map((e) => {
+    void canOrg;
+    $("spNext").innerHTML = `<div class="sec-title" style="margin:0 2px 10px">${host ? "Все ближайшие даты" : "Следующая игра"}</div>` + (list.length ? list.map((e) => {
       const { d, m, w } = dayParts(e.day), mine = isMine(e);
       return `<article class="ticket ev sp-card" data-spev="${e.id}" style="margin-bottom:12px"><div class="ticket-in">
         <div class="ev-head"><div class="ev-date"><small>${DOW[w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
@@ -4587,11 +4691,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const X = SPORTS[sportId], t = bkkToday(), host = isSportHost(X.id) && sp.mode === "org";
     const list = sp.events.filter((e) => e.sport === X.id && (e.day < t || e.status === "done")).reverse().slice(0, 8);
     if (!list.length) { $("spPast").innerHTML = ""; return; }
-    const chips = (e, r) => e.results.filter((x) => x.result === r).map((x) => spWho({ user_id: x.user_id })).join("");
+    void spWho;
     $("spPast").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:12px"><div class="eyebrow">История</div><h2 class="h2">Прошедшие игры</h2></div>
       ${list.map((e) => { const { d, m } = dayParts(e.day), has = e.results.length;
         return `<div class="sp-past" data-spev="${e.id}"><div class="dd"><b>${d}</b><small>${MON[m - 1]}</small></div><div style="min-width:0;display:grid;gap:8px">
-          ${has ? `<div class="sp-res" style="padding:0">${["win", "draw", "loss"].map((r) => { const c = chips(e, r); return c ? `<span class="lbl ${r}">${{ win: "Победили", draw: "Ничья", loss: "Проиграли" }[r]}</span><div class="ev-crew" style="padding:0">${c}</div>` : ""; }).join("")}</div>`
+          ${has ? `<div class="sp-scores">${[...e.results].sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses)).map((x) => { const pp = personOf(x.user_id); return `<span class="sc-row ${x.user_id === me.id ? "me" : ""}">${avaP(pp)}<b>${esc(pp.nick)}</b><em class="w">${x.wins}</em><em class="l">${x.losses}</em>${x.draws ? `<em class="d">${x.draws}</em>` : ""}</span>`; }).join("")}</div>`
             : `<span class="bio-meta">${e.signups.length} ${plural(e.signups.length, "был записан", "были записаны", "были записаны")} · итоги ещё не отмечены</span>`}
           ${(e.signups.some((x) => x.user_id === me.id) || e.results.some((x) => x.user_id === me.id)) && payBtn(e.sport, e) ? `<div>${payBtn(e.sport, e)}</div>` : ""}
           ${host ? `<div><button class="pill sm ${has ? "ghost" : "dark"}" type="button" data-spres>${has ? "изменить итоги" : "отметить итоги"}</button></div>` : ""}</div></div>`; }).join("")}
@@ -4611,7 +4715,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!sp.board[key]) $("spBoard").innerHTML = `<div class="empty-note"><div class="wait"><span class="pulse"></span>Считаю…</div></div>`;
     let list;
     try { list = await sportBoard(X.id, month); } catch (x) { $("spBoard").innerHTML = `<div class="empty-note">Не получилось загрузить: ${esc(humanErr(x))}</div>`; return; }
-    if (S.view !== "sport" || X.id !== sportId || (sp.scope === "month" ? sp.month : null) !== month) return;
+    if (!isSportView() || X.id !== sportId || (sp.scope === "month" ? sp.month : null) !== month) return;
     $("spBoard").innerHTML = list.length ? `<div class="month-board">${list.map((p, i) => `<button class="lb-row" type="button" data-id="${p.id}">
         <span class="rank">${i + 1}</span>${avaP(p)}
         <span class="nm">${esc(p.nick)}${p.id === me.id ? " · ты" : ""}<small>${[`${p.games} ${plural(+p.games, "игра", "игры", "игр")}`, p.games >= 3 ? `${Math.round((p.wins / p.games) * 100)}% побед` : "", +p.losses ? `${p.losses} ${plural(+p.losses, "поражение", "поражения", "поражений")}` : ""].filter(Boolean).join(" · ")}</small></span>
@@ -4630,13 +4734,13 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (okMsg) toast(okMsg);
     sp.board = {};
     await loadSports().catch(() => {});
-    if (S.view === "sport") { drawSportNext(); drawSportNew(); drawSportPast(); drawSportBoard(); }
+    if (isSportView()) { drawSportNext(); drawSportNew(); drawSportPast(); drawSportBoard(); drawOrgDay(); }
     return true;
   };
   $("vSport").addEventListener("click", (e) => {
     const card = e.target.closest("[data-spev]"), b = e.target.closest("button");
     if (!b) return;
-    if (b.dataset.spmode) { sp.mode = b.dataset.spmode; haptic("tap"); drawSportNext(); drawSportNew(); drawSportPast(); return; }
+    if (b.id === "spOrgBtn") { haptic("tap"); return go("sportorg", sportId); }
     if (b.closest("#spHero")) { const w = b.closest(".ev-who"); void w; return; }
     if (!card) return;
     const id = card.dataset.spev, evn = sp.events.find((x) => x.id === id);
@@ -4647,7 +4751,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     else if (b.hasAttribute("data-spcancel")) { sp.editing = null; drawSportNext(); }
     else if (b.hasAttribute("data-spremove")) sheet({ eyebrow: "Дата", title: "Убрать эту дату?", text: "Игра пропадёт из календаря у всех.", ok: "убрать", okClass: "red",
       onOk: () => { sp.editing = null; return spAction(() => sb.from("sport_events").update({ status: "removed" }).eq("id", id), "Дата убрана"); } });
-    else if (b.hasAttribute("data-spres") && evn) openResults(evn);
+    else if (b.hasAttribute("data-spres") && evn) { soSel = evn.id; soRows = null; drawOrgDay(); $("soDay").scrollIntoView({ behavior: "smooth", block: "start" }); }
     else if (b.hasAttribute("data-spaddsign") && evn) {
       pickPerson({ title: "Кто пришёл?", sub: "Добавить без записи", exclude: cameIds(evn), onPick: (u) => spAction(() => sb.rpc("host_signup", { g: evn.sport, e: id, u, on_: true }), `Добавил: ${personOf(u).nick}`) });
     }
@@ -4752,7 +4856,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (S.view === "pay") drawPay();
     if (S.view === "hub") drawWeek();
     if (S.view === "home") drawHomeEvent();
-    if (S.view === "sport") drawSportNext();
+    if (isSportView()) drawSportNext();
   };
   const subscribeWallet = () => {
     if (wal.chan || !sb || !me) return;
