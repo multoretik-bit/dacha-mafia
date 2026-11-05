@@ -2280,7 +2280,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105113141"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105113211"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4391,7 +4391,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     const going = e.signups || [];
     const mine = isMine(e);
     const done = !maf && e.status === "done";
-    const info = maf ? [`начало ${x.time}`, `сбор ${hm(e.gather_time)}`, e.price ? `${e.price} ฿` : ""] : [x.time, e.price ? `${e.price} ฿` : "бесплатно"];
+    const info = [x.time, e.price ? `${e.price} ฿` : "бесплатно"];   // one style for every game
     const act = done ? `<span class="tag">сыграно</span>`
       : mine ? `<span class="wk-joins">${mineTag(e)}<button class="linkish wk-leave" type="button" data-wleave>не смогу</button></span>`
       : me ? `<span class="wk-joins">${joinBtns("data-wjoin", maf ? canHost() : isSportHost(x.kind))}</span>` : "";
