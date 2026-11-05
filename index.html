@@ -450,6 +450,8 @@ a.pill { text-decoration: none; box-sizing: border-box; }
 .lb-row:first-child { border-top: 0; }
 .mb-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .mb-nav { display: flex; gap: 6px; }
+.month-btn { display: inline-flex; align-items: center; gap: 6px; border: 2px solid var(--navy); border-radius: 99px; padding: 5px 12px; background: var(--paper); color: var(--navy-ink); font-weight: 800; font-size: 13px; box-shadow: 0 3px 0 0 var(--navy); }
+.month-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 0 var(--navy); }
 .mb-nav .round[disabled] { opacity: .3; pointer-events: none; }
 .month-board .lb-row:nth-child(-n+3) .rank { color: var(--ink); }
 .month-board .lb-row:nth-child(1) .rank::after { content: " 🥇"; font-size: 14px; }
@@ -1288,25 +1290,29 @@ html.hw {
 
   <!-- PEOPLE -->
   <section id="vPeople" class="col" hidden>
-    <div class="ticket month-board"><div class="ticket-in">
-      <div class="t-body" style="padding-bottom:10px">
-        <div class="mb-head"><div class="eyebrow">Рейтинг месяца</div>
-          <div class="mb-nav"><button class="round sm" type="button" id="mbPrev" aria-label="Прошлый месяц">‹</button><button class="round sm" type="button" id="mbNext" aria-label="Следующий месяц">›</button></div></div>
-        <h1 class="h1" id="mbTitle">Месяц</h1>
-        <p class="lead" id="mbLead">Игры и победы только за этот месяц.</p>
-      </div>
-      <div id="monthList"></div>
-      <div class="stub"><span id="monthStub"></span><b>MONTH</b></div>
-    </div></div>
     <div class="ticket"><div class="ticket-in">
       <div class="t-body" style="padding-bottom:10px">
-        <div class="eyebrow">Рейтинг</div>
+        <div class="mb-head"><div class="eyebrow">Рейтинг</div><button class="month-btn" type="button" id="goMonth" aria-label="Рейтинг месяца">🏆 <span id="goMonthName">месяц</span></button></div>
         <h1 class="h1">Дачники</h1>
         <p class="lead">По победам в завершённых играх. Нажми на дачника, чтобы открыть профиль.</p>
         <div class="tw" id="teamWins" hidden></div>
       </div>
       <div id="peopleList"></div>
       <div class="stub"><span id="peopleStub"></span><b>CREW</b></div>
+    </div></div>
+  </section>
+
+  <!-- MONTH RATING (opened from «Дачники») -->
+  <section id="vMonth" class="col" hidden>
+    <div class="ticket month-board"><div class="ticket-in">
+      <div class="t-body" style="padding-bottom:10px">
+        <div class="mb-head"><button class="linkish" type="button" id="mbBack">← все дачники</button>
+          <div class="mb-nav"><button class="round sm" type="button" id="mbPrev" aria-label="Прошлый месяц">‹</button><button class="round sm" type="button" id="mbNext" aria-label="Следующий месяц">›</button></div></div>
+        <h1 class="h1" id="mbTitle">Месяц</h1>
+        <p class="lead" id="mbLead">Игры и победы только за этот месяц.</p>
+      </div>
+      <div id="monthList"></div>
+      <div class="stub"><span id="monthStub"></span><b>MONTH</b></div>
     </div></div>
   </section>
 
@@ -1504,7 +1510,7 @@ html.hw {
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105062849"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105063258"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1793,7 +1799,7 @@ html.hw {
   });
 
   /* ---------- navigation ---------- */
-  const VIEWS = ["vHome", "vAuth", "vProfile", "vPeople", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
+  const VIEWS = ["vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
   let profileId = null;
   const online = () => S.hostMode === "online";
   const hostView = () => {
@@ -1812,13 +1818,13 @@ html.hw {
     if (view === "profile") profileId = arg || me?.id;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "home";
     renderTabs(view);
     if (id !== "vLive") stopLive();
     ({
-      vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople, vDeck: renderDeck,
+      vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople, vMonth: () => { boardMonth = null; drawMonth(); }, vDeck: renderDeck,
       vPick: renderPick, vCount: renderCount, vRoles: renderRoles, vLive: renderLive, vDeal: renderDeal, vDone: renderDone,
       vCard: renderCard, vNotes: () => renderNotes(false), vEvents: renderEvents, vPlayer: renderPlayer,
     })[id]();
@@ -2084,6 +2090,7 @@ html.hw {
   const shiftMonth = (ym, k) => { const [y, m] = ym.split("-").map(Number), d = new Date(Date.UTC(y, m - 1 + k, 1)); return d.toISOString().slice(0, 7); };
   let boardMonth = null;
   const drawMonth = async () => {
+    if (!sb || !me) return go("auth");
     const cur = nightMonth();
     boardMonth = boardMonth || cur;
     const ym = boardMonth, [y, m] = ym.split("-").map(Number);
@@ -2091,7 +2098,7 @@ html.hw {
     $("mbPrev").disabled = ym <= MONTH_FIRST; $("mbNext").disabled = ym >= cur;
     $("monthList").innerHTML = `<div class="empty-note"><div class="wait"><span class="pulse"></span>Считаю…</div></div>`;
     const { data, error } = await sb.rpc("month_board", { m: ym + "-01" });
-    if (boardMonth !== ym || S.view !== "people") return;
+    if (boardMonth !== ym || S.view !== "month") return;
     if (error) { $("monthList").innerHTML = `<div class="empty-note">Не получилось загрузить: ${esc(humanErr(error))}</div>`; return; }
     const list = (data || []).filter((p) => p.games > 0);
     const games = Math.max(0, ...(data || []).map((p) => +p.games)), hosts = (data || []).filter((p) => p.hosted > 0);
@@ -2104,6 +2111,9 @@ html.hw {
       : `<div class="empty-note">В этом месяце ещё не было завершённых игр.</div>`;
     $("monthStub").textContent = list.length ? `${nGames} ${plural(nGames, "игра", "игры", "игр")} · ${list.length} ${plural(list.length, "игрок", "игрока", "игроков")}` : "";
   };
+  $("goMonth").onclick = () => go("month");
+  $("mbBack").onclick = () => go("people");
+  $("goMonthName").textContent = MONTHS[+nightMonth().slice(5, 7) - 1].toLowerCase();
   $("mbPrev").onclick = () => { boardMonth = shiftMonth(boardMonth || nightMonth(), -1); drawMonth(); };
   $("mbNext").onclick = () => { boardMonth = shiftMonth(boardMonth || nightMonth(), 1); drawMonth(); };
   $("monthList").onclick = (e) => { const b = e.target.closest("[data-id]"); if (b) go("profile", b.dataset.id); };
@@ -2113,7 +2123,6 @@ html.hw {
     await loadPeople();
     if (S.view !== "people") return;
     drawTeamWins();
-    drawMonth();
     const list = [...people].sort((a, b) => b.wins - a.wins || b.games - a.games || a.nick.localeCompare(b.nick));
     $("peopleList").innerHTML = list.map((p, i) => `<button class="lb-row${!p.games && !p.hosted ? " never" : ""}" data-id="${p.id}"${!p.games && !p.hosted ? ' title="ещё не играл, только заходил в приложение"' : ""}>
         <span class="rank">${i + 1}</span>${avaP(p)}
