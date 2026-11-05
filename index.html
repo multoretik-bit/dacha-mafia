@@ -1805,6 +1805,20 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 .lk-msg { margin: 4px 0 6px; padding: 12px 14px; border-radius: 14px; background: var(--soft); color: var(--muted); font-weight: 800; font-size: 14px; line-height: 1.4; }
 .crew-row.locked { filter: grayscale(1); opacity: .55; }
 
+/* tomatoes (06.11) */
+.tm-btn { flex: 0 0 auto !important; }
+.tm-btn b { font-weight: 900; }
+.tomato-fx { position: fixed; inset: 0; z-index: 2147483000; pointer-events: none; overflow: hidden; }
+.tm-fly { position: absolute; left: 50%; top: 50%; font-size: 90px; line-height: 1; transform: translate(-50%, -50%); animation: tmFly .45s cubic-bezier(.4,0,.9,.6) both; filter: drop-shadow(0 10px 18px rgba(0,0,0,.35)); }
+@keyframes tmFly { 0% { transform: translate(-260%, 220%) scale(.25) rotate(-200deg); opacity: 1; } 92% { opacity: 1; } 100% { transform: translate(-50%, -50%) scale(2.6) rotate(0deg); opacity: 0; } }
+.tm-splat { position: absolute; inset: -6%; width: 112%; height: 112%; opacity: 0; transform: scale(.4); animation: tmSplat .28s cubic-bezier(.2,1.6,.4,1) .4s both; filter: drop-shadow(0 6px 10px rgba(80,0,0,.35)); }
+@keyframes tmSplat { to { opacity: .97; transform: scale(1); } }
+.tm-splat .drip { transform-box: fill-box; transform-origin: 50% 0; transform: scaleY(0); animation: tmDrip 3.4s ease-in forwards; }
+@keyframes tmDrip { to { transform: scaleY(1); } }
+.tm-from { position: absolute; left: 50%; bottom: calc(26px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); padding: 8px 14px; border-radius: 99px; background: rgba(0,0,0,.55); color: #fff; font-weight: 800; font-size: 14px; opacity: 0; animation: tmFrom .3s ease .7s both; white-space: nowrap; }
+@keyframes tmFrom { to { opacity: 1; } }
+.tomato-fx.out { transition: opacity 1.4s ease; opacity: 0; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -2437,7 +2451,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105165412"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105170346"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2986,6 +3000,13 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     drawProfBio(id, isMe, extra);
     applyTheme(extra?.theme || null, false);
     if (isMe) $("phActs")?.insertAdjacentHTML("beforeend", `<button class="pill sm ghost" type="button" id="themeEdit">🎨 стиль</button>`), ($("themeEdit").onclick = () => openThemeEditor(extra?.theme || null));
+    if (myTomatoes === null) await loadTomatoes().catch(() => {});
+    if (S.view === "profile" && profileId === id) {
+      if (!$("phActs")) $("profHead").insertAdjacentHTML("beforeend", `<div class="ph-acts" id="phActs"></div>`);
+      $("phActs").insertAdjacentHTML("beforeend", isMe ? `<button class="pill sm ghost tm-btn" type="button" id="tomatoBtn" title="Мои помидоры">🍅 <b>${myTomatoes ?? 0}</b> · купить</button>`
+        : `<button class="pill sm ghost tm-btn" type="button" id="tomatoBtn" title="Бросить помидор">🍅 <b>${myTomatoes ?? 0}</b></button>`);
+      $("tomatoBtn").onclick = () => (isMe ? buyTomatoes() : throwTomato(id));
+    }
     drawProfBal(id, isMe, row);
     // win rate only from 5 games: fewer games say nothing
     const rate = row.games ? Math.round((row.wins / row.games) * 100) : 0;
@@ -4418,6 +4439,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
         else toast("Пришла твоя карта", { label: "открыть", run: () => go("card") });
       })
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "promos" }, (p) => onPromo(p.new))
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "tomato_throws", filter: `to_id=eq.${me.id}` }, (p) => splatTomato(p.new.from_id))
       .subscribe();
   };
   // fallback when the phone slept and the socket dropped
@@ -5954,6 +5976,50 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
       }
     });
     document.body.append(v);
+  };
+
+  /* =================== tomatoes: throw one at a friend's screen =================== */
+  let myTomatoes = null;
+  const loadTomatoes = async () => { if (!sb || !me) return; const { data } = await sb.from("profiles").select("tomatoes").eq("id", me.id).maybeSingle(); myTomatoes = data?.tomatoes ?? 0; };
+  const splatBlob = (cx, cy, r, n, jitter) => {
+    const pts = Array.from({ length: n }, (_, i) => { const a = (i / n) * Math.PI * 2, rr = r * (1 - jitter / 2 + Math.random() * jitter); return [cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]; });
+    let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+    for (let i = 0; i < n; i++) { const p0 = pts[i], p1 = pts[(i + 1) % n], mx = (p0[0] + p1[0]) / 2, my = (p0[1] + p1[1]) / 2; d += ` Q${p0[0].toFixed(1)},${p0[1].toFixed(1)} ${mx.toFixed(1)},${my.toFixed(1)}`; }
+    return d + "Z";
+  };
+  const splatTomato = (fromId) => {
+    if (document.hidden) return;
+    const from = personOf(fromId);
+    const fx = document.createElement("div"); fx.className = "tomato-fx";
+    const drops = Array.from({ length: 14 }, () => { const a = Math.random() * Math.PI * 2, d = 120 + Math.random() * 120; return `<circle cx="${(200 + Math.cos(a) * d).toFixed(0)}" cy="${(260 + Math.sin(a) * d).toFixed(0)}" r="${(6 + Math.random() * 18).toFixed(0)}" fill="url(#tg)"/>`; }).join("");
+    const drips = Array.from({ length: 7 }, (_, i) => { const x = 110 + i * 30 + Math.random() * 14, w = 10 + Math.random() * 12, h = 120 + Math.random() * 260; return `<rect class="drip" x="${x.toFixed(0)}" y="300" width="${w.toFixed(0)}" height="${h.toFixed(0)}" rx="${(w / 2).toFixed(0)}" fill="url(#tg)" style="animation-delay:${(0.6 + Math.random() * 1.2).toFixed(2)}s"/>`; }).join("");
+    const seeds = Array.from({ length: 16 }, () => `<ellipse cx="${(150 + Math.random() * 100).toFixed(0)}" cy="${(210 + Math.random() * 100).toFixed(0)}" rx="4" ry="7" fill="#F7E08A" opacity=".85" transform="rotate(${(Math.random() * 180).toFixed(0)})" style="transform-box:fill-box;transform-origin:center"/>`).join("");
+    fx.innerHTML = `<div class="tm-fly">🍅</div>
+      <svg class="tm-splat" viewBox="0 0 400 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs><radialGradient id="tg" cx="45%" cy="40%" r="70%"><stop offset="0" stop-color="#FF5A3C"/><stop offset=".6" stop-color="#E0221A"/><stop offset="1" stop-color="#A50F0A"/></radialGradient></defs>
+        ${drips}<path d="${splatBlob(200, 260, 150, 22, 0.55)}" fill="url(#tg)"/><path d="${splatBlob(200, 260, 95, 14, 0.4)}" fill="#C8170F" opacity=".55"/>${drops}${seeds}
+        <ellipse cx="170" cy="215" rx="40" ry="18" fill="#fff" opacity=".22" transform="rotate(-25 170 215)"/></svg>
+      <div class="tm-from">🍅 от ${esc(from.nick || "дачника")}</div>`;
+    document.body.append(fx);
+    try { navigator.vibrate?.([30, 40, 120]); } catch {}
+    setTimeout(() => haptic("card"), 420);
+    setTimeout(() => fx.classList.add("out"), 6000);
+    setTimeout(() => fx.remove(), 7600);
+  };
+  const buyTomatoes = () => choose({ eyebrow: "🍅 Помидоры", title: "Купить помидоры", text: `Каждый стоит 1 ฿ с баланса — это деньги на развитие DACHA. Сейчас у тебя ${myTomatoes ?? 0} 🍅.`,
+    options: [5, 10, 30].map((n) => ({ label: `${n} 🍅 за ${n} ฿`, run: async () => {
+      const { data, error } = await sb.rpc("buy_tomatoes", { n });
+      if (error) return toast(/not enough/.test(error.message) ? "На балансе не хватает денег — пополни" : "Не получилось: " + humanErr(error));
+      myTomatoes = data; haptic("card"); toast(`Теперь у тебя ${data} 🍅`); walletChanged(); if (S.view === "profile") renderProfile();
+    } })) });
+  const throwTomato = async (toId) => {
+    if (myTomatoes === null) await loadTomatoes();
+    if (!myTomatoes) return buyTomatoes();
+    const { data, error } = await sb.rpc("throw_tomato", { to_: toId });
+    if (error) return toast(/too fast/.test(error.message) ? "Не так быстро — подожди пару секунд" : /no tomatoes/.test(error.message) ? "Помидоры кончились" : "Не получилось: " + humanErr(error));
+    myTomatoes = data; haptic("tap");
+    toast(`🍅 полетел в ${personOf(toId).nick}! Осталось ${data}`);
+    const b = $("tomatoBtn"); if (b) b.innerHTML = `🍅 <b>${data}</b>`;
   };
 
   const loadEvents = async () => {
