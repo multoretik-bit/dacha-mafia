@@ -1843,28 +1843,30 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 .pm-menu button:active { background: var(--soft); }
 
 /* notes: round table (06.11) */
-.tbl-box { padding: 6px 0 4px; }
+.tbl-box { padding: 10px 0 4px; }
 .tbl { position: relative; width: min(100%, 440px); aspect-ratio: 1; margin: 0 auto; touch-action: none; }
-.tbl-felt { position: absolute; inset: 20%; border-radius: 50%; display: grid; place-content: center; justify-items: center; gap: 2px; color: #F2EBDD;
-  background: radial-gradient(circle at 40% 35%, #2E6B4A, #1A4630 60%, #0F2E1F); box-shadow: 0 0 0 8px #6B4226, 0 0 0 11px #4A2C18, 0 18px 30px -12px rgba(0,0,0,.55), inset 0 6px 24px rgba(0,0,0,.35); }
-.tbl-felt b { font: 700 40px/1 var(--f-code); color: #fff; }
-.tbl-felt small { font-weight: 800; font-size: 12px; opacity: .8; }
-.tbl-tally { display: flex; gap: 6px; margin-top: 6px; }
-.tbl-tally span { min-width: 26px; height: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 99px; display: grid; place-items: center; font: 700 13px/1 var(--f-code); }
-.tbl-tally .red { background: #E3263A; color: #fff; } .tbl-tally .black { background: #111; color: #fff; box-shadow: 0 0 0 1px rgba(255,255,255,.3); } .tbl-tally .gray { background: #A3ABBD; color: #111; }
+.tbl-felt { position: absolute; inset: 22%; border-radius: 50%; display: grid; place-content: center; justify-items: center; gap: 2px; background: var(--card, #fff); box-shadow: var(--sh); }
+.tbl-felt::before { content: ""; position: absolute; inset: 9px; border-radius: 50%; border: 1.5px dashed var(--hair); pointer-events: none; }
+.tbl-felt b { font: 700 46px/1 var(--f-code); color: var(--navy-ink); font-variant-numeric: tabular-nums; }
+.tbl-felt small { font-weight: 800; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.tbl-tally { display: flex; gap: 10px; margin-top: 8px; }
+.tbl-tally span { display: inline-flex; align-items: center; gap: 4px; font: 700 14px/1 var(--f-code); color: var(--navy-ink); }
+.tbl-tally span::before { content: ""; width: 10px; height: 10px; border-radius: 50%; }
+#vNotes .notes-status { width: fit-content; max-width: 100%; box-sizing: border-box; margin: 0 auto; padding: 7px 14px; font-size: 12.5px; background: var(--card, #fff); box-shadow: 0 0 0 1px var(--hair); color: var(--muted); }
+.tbl-tally .red::before { background: #E3263A; } .tbl-tally .black::before { background: #111; } .tbl-tally .gray::before { background: #A3ABBD; }
 .tseat { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 2px; width: calc(var(--sz) + 22px); touch-action: none; user-select: none; -webkit-user-select: none; }
 .tseat { --ring: #A3ABBD; }
-.seat-ring { position: relative; width: var(--sz); height: var(--sz); border-radius: 50%; padding: 2px; box-sizing: border-box; background: #fff; border: 5px solid var(--ring); box-shadow: 0 6px 12px -6px rgba(0,0,0,.45); transition: border-color .2s; }
+.seat-ring { position: relative; width: var(--sz); height: var(--sz); border-radius: 50%; padding: 2px; box-sizing: border-box; background: #fff; border: 5px solid var(--ring); box-shadow: 0 6px 14px -8px rgba(15,23,42,.45); transition: border-color .2s; }
 .seat-ring .ava, .seat-ring .prem { width: 100%; height: 100%; font-size: calc(var(--sz) * .36); box-shadow: none; }
 .seat-ring .prem .ava { width: 100%; height: 100%; } .seat-ring .prem .cash, .seat-ring .prem-ic { display: none; }
 .tseat.c-black { --ring: #111; } .tseat.c-red { --ring: #E3263A; }
-.seat-n { position: absolute; top: -6px; left: 2px; min-width: 18px; height: 18px; padding: 0 4px; box-sizing: border-box; border-radius: 99px; background: #fff; color: var(--ink); font: 700 11px/18px var(--f-code); font-style: normal; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+.seat-n { position: absolute; top: -5px; left: 0; min-width: 19px; height: 19px; padding: 0 5px; box-sizing: border-box; border-radius: 99px; background: var(--navy-ink); color: #fff; font: 700 11px/19px var(--f-code); font-style: normal; box-shadow: 0 0 0 2px var(--bg, #F4F5F9); }
 .seat-note { position: absolute; top: -6px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 10px; line-height: 18px; font-style: normal; }
-.seat-nm { font-weight: 800; font-size: 11.5px; color: var(--ink); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-.tseat.self .seat-nm { color: var(--blue); }
+.seat-nm { margin-top: 1px; padding: 3px 8px; border-radius: 99px; background: var(--card, #fff); box-shadow: 0 0 0 1px var(--hair), 0 2px 6px -3px rgba(15,23,42,.25); font-weight: 800; font-size: 11px; line-height: 1.1; color: var(--navy-ink); white-space: nowrap; max-width: 100%; box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; }
+.tseat.self .seat-nm { background: var(--navy-ink); color: #fff; box-shadow: none; }
 .tseat.out .seat-ring > * { filter: grayscale(1); opacity: .35; } .tseat.out .seat-ring { border-color: color-mix(in srgb, var(--ring) 45%, #fff); }
 .tseat.out .seat-ring::after { content: "✕"; position: absolute; inset: 0; display: grid; place-items: center; color: #E3263A; font-size: calc(var(--sz) * .6); font-weight: 900; }
-.tseat.out .seat-nm { text-decoration: line-through; color: var(--muted); }
+.tseat.out .seat-nm { text-decoration: line-through; color: var(--muted); background: var(--soft, #EEF0F5); box-shadow: none; }
 .tseat.dragging { z-index: 5; transform: translate(-50%, -50%) scale(1.15); }
 .tseat.dragging .seat-ring { box-shadow: 0 14px 24px -8px rgba(0,0,0,.6); }
 .tbl-box.sorting .tseat:not(.dragging) { opacity: .7; }
@@ -2514,7 +2516,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105173250"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105173331"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -6646,7 +6648,7 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
     const box = $("tableBox"); if (!box) return;
     const ps = S.notes.players || [];
     if (!ps.length) { box.innerHTML = ""; return; }
-    const n = ps.length, R = n > 14 ? 44 : 42, sz = n > 16 ? 38 : n > 12 ? 44 : n > 8 ? 50 : 56;
+    const n = ps.length, R = n > 14 ? 43 : 41, sz = n > 16 ? 38 : n > 12 ? 44 : n > 8 ? 50 : 56;
     const alive = ps.filter((p) => !p.out), cnt = (c) => alive.filter((p) => (p.c || "gray") === c).length;
     box.innerHTML = `<div class="tbl" style="--sz:${sz}px">
       <div class="tbl-felt"><b>${alive.length}</b><small>в игре из ${n}</small>
