@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#FFDD86">
+<meta name="theme-color" content="#FFF1C9">
 <script>
   try {
     const d = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Bangkok" }).format(new Date());
@@ -18,9 +18,9 @@
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="DACHA MAFIA">
+<meta name="apple-mobile-web-app-title" content="DACHA">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>DACHA MAFIA</title>
+<title>DACHA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Oswald:wght@500;600;700&family=Unbounded:wght@700;800;900&display=swap">
@@ -1133,39 +1133,231 @@ html.hw {
 @keyframes pkBob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
 @keyframes ghostBob { 0%, 100% { translate: 0 0; rotate: -4deg; } 50% { translate: 0 -8px; rotate: 4deg; } }
 @keyframes pkGlow { 0%, 100% { filter: drop-shadow(0 0 12px rgba(255, 190, 60, .55)); } 50% { filter: drop-shadow(0 0 26px rgba(255, 170, 40, .95)); } }
-/* MAINTENANCE: remove this block, #maint and its script when the new DACHA is live */
-html.maint, html.maint body { overflow: hidden; }
-html.maint .app, html.maint .ground ~ *:not(#maint) { visibility: hidden; }
-#maint { position: fixed; inset: 0; z-index: 2147483647; display: none; place-items: center; padding: 24px; background: #FEC948; text-align: center; }
-html.maint #maint { display: grid; }
-#maint .m-box { display: grid; gap: 18px; justify-items: center; max-width: 340px; }
-#maint img { width: 150px; height: auto; animation: mFloat 3s ease-in-out infinite; }
-#maint h1 { margin: 0; font: 900 24px/1.2 Unbounded, system-ui, sans-serif; color: #092F80; }
-#maint p { margin: 0; font: 700 16px/1.45 Manrope, system-ui, sans-serif; color: #2B3A5C; }
-#maint .m-dots { display: flex; gap: 8px; }
-#maint .m-dots i { width: 10px; height: 10px; border-radius: 50%; background: #092F80; animation: mDot 1.2s ease-in-out infinite; }
-#maint .m-dots i:nth-child(2) { animation-delay: .2s; } #maint .m-dots i:nth-child(3) { animation-delay: .4s; }
-@keyframes mFloat { 50% { transform: translateY(-8px) rotate(-3deg); } }
-@keyframes mDot { 50% { opacity: .25; transform: scale(.7); } }
+/* ================= DACHA: social look (05.11) ================= */
+:root { --bg: #F4F5F9; --card: #fff; --soft: #EEF0F5; --hair: #ECEEF3; --sh: 0 1px 2px rgba(15,23,42,.05), 0 10px 28px -14px rgba(15,23,42,.22); }
+html:not(.hw) body { background: var(--bg); }
+html:not(.hw) body::before { background: #FFF1C9; }
+html:not(.hw) .ground { background: radial-gradient(140% 52% at 50% -12%, #FFE6A0 0%, #FFF1C9 38%, rgba(244,245,249,0) 72%), var(--bg); }
+.ticket { background: var(--card); padding: 0; border-radius: 22px; box-shadow: var(--sh); }
+.ticket-in { border: 0; border-radius: 22px; }
+.stub { background: #F7F8FB; color: var(--muted); border-top: 1px solid var(--hair); letter-spacing: .12em; }
+.stub b { color: var(--navy); }
+.ev-go { color: var(--navy); }
+.sec-label { border-top: 1px solid var(--hair); padding-top: 16px; }
+.lb-row, .deck-role, .lg-row, .po-card, .po-empty { border-top: 1px solid var(--hair); }
+.stats { border-top: 1px solid var(--hair); }
+.stats div + div { border-left: 1px solid var(--hair); }
+.h1 { font-style: normal; letter-spacing: -.01em; }
+.h2 { font-style: normal; }
+.pill {
+  border-radius: 999px; min-height: 50px; margin: 4px; text-transform: none; text-shadow: none;
+  font: 800 15px/1 var(--f-body); letter-spacing: 0;
+  box-shadow: 0 8px 18px -10px rgba(0,51,255,.75), inset 0 -2px 0 rgba(0,0,0,.12);
+}
+.pill:active { transform: scale(.97); box-shadow: 0 4px 10px -8px rgba(0,51,255,.75); }
+.pill.sm { min-height: 40px; font-size: 13.5px; }
+.pill.ghost { background: #E9EEFF; color: var(--blue); box-shadow: none; }
+.pill.dark { background: var(--ink); box-shadow: 0 8px 18px -10px rgba(0,0,0,.6); }
+.pill.red { box-shadow: 0 8px 18px -10px rgba(227,38,58,.8); }
+.pill:disabled { box-shadow: none; }
+.round { box-shadow: 0 6px 14px -8px rgba(0,51,255,.8); font-family: var(--f-body); }
+.round.sm { box-shadow: 0 4px 10px -6px rgba(0,51,255,.8); }
+.round:disabled { box-shadow: none; }
+.icon-btn { background: #fff; box-shadow: 0 0 0 1px var(--hair), 0 4px 12px -6px rgba(15,23,42,.25); }
+.topbar { background: color-mix(in srgb, var(--bg) 82%, transparent); border-radius: 0 0 18px 18px; }
+html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent); }
+.tabs { background: var(--soft); box-shadow: none; }
+.tabs button { color: var(--muted); font: 800 13px/1 var(--f-body); text-transform: none; }
+.tabs button[aria-selected="true"] { background: #fff; color: var(--navy-ink); box-shadow: 0 1px 4px rgba(15,23,42,.14); }
+.tabs .new-dot { box-shadow: 0 0 0 2px #fff; }
+.top-title { font: 800 16px/1 var(--f-body); text-transform: none; }
+.top-title::first-letter { text-transform: uppercase; }
+.seg { border: 0; background: var(--soft); padding: 3px; gap: 3px; }
+.seg button { border-radius: 999px; color: var(--muted); }
+.seg button + button { border-left: 0; }
+.seg button[aria-pressed="true"] { background: #fff; color: var(--navy-ink); box-shadow: 0 1px 4px rgba(15,23,42,.14); }
+.tag { border: 0; background: var(--soft); color: var(--navy-ink); }
+.tag.ok { background: var(--navy-ink); color: #fff; }
+.field { border: 1.5px solid #DCE0E8; background: #fff; }
+.field:focus { border-color: var(--blue); outline: none; box-shadow: 0 0 0 4px rgba(0,51,255,.12); }
+.ava { box-shadow: 0 0 0 2px #fff; }
+.game-on { box-shadow: var(--sh); border-radius: 20px; }
+.mode-stub { background: #F1F4FF; color: var(--navy); }
+.mode.hot .mode-stub { background: var(--red); color: #fff; }
+.mode-code { color: var(--navy-ink); }
+.ev-date { background: var(--navy-ink); }
+.empty-note { padding-top: 6px; }
+
+.chip, .pick { border-width: 1.5px; border-color: #DCE0E8; }
+.chip[aria-pressed="true"], .pick[aria-pressed="true"], .pick.on { border-color: transparent; }
+.ev-pay, .add-role, .guest-box, .toggle-row, .layout-list { border-top: 1px solid var(--hair); background: #F7F8FB; }
+.tw-bar { border: 0; }
+.dtimer, .night-sum { border-width: 1.5px; }
+
+.mode-seg { border: 0 !important; box-shadow: none !important; }
+
+/* topbar back button */
+.back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
+.back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
+.back-ic { font: 600 30px/1 var(--f-code); color: var(--navy); margin-top: -3px; }
+
+/* mafia home: smaller logo */
+#vHome .home-hero .logo { width: min(46%, 210px); }
+#vHome .wordmark { width: 50%; margin-top: 0; }
+#vHome .home-hero { padding-top: 0; }
+#vHome .deck-home { display: none; }
+
+/* ---------- hub ---------- */
+.hub-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-top: 4px; }
+.crew-btn { display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px 5px 6px; border-radius: 999px; background: #fff; box-shadow: 0 0 0 1px var(--hair), 0 4px 12px -6px rgba(15,23,42,.25); font-weight: 800; font-size: 13.5px; color: var(--navy-ink); min-height: 44px; box-sizing: border-box; }
+.crew-faces { display: flex; }
+.crew-faces .ava, .crew-faces .prem { width: 30px; height: 30px; font-size: 15px; }
+.crew-faces > * + * { margin-left: -10px; }
+.crew-faces .prem .cash { display: none; }
+.crew-faces .ava.premium { animation: none; }
+.crew-faces .ic { width: 30px; height: 30px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; color: var(--navy); }
+.crew-faces .ic svg { width: 18px; height: 18px; }
+.hub-hero { display: grid; justify-items: center; gap: 6px; margin-top: -6px; }
+.hub-logo { width: min(64%, 270px); height: auto; filter: drop-shadow(0 12px 18px rgba(9,47,128,.22)); animation: hubFloat 6s ease-in-out infinite; user-select: none; -webkit-user-drag: none; }
+@keyframes hubFloat { 50% { transform: translateY(-5px) rotate(-1.5deg); } }
+.hub-tag { margin: 0; font: 800 15px/1.3 var(--f-body); color: var(--navy-ink); text-align: center; }
+.sec-title { font: 800 20px/1.1 var(--f-display); color: var(--navy-ink); margin: 4px 2px -6px; }
+
+.week-h { padding: 16px 16px 4px; display: grid; gap: 6px; }
+.week-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; padding: 10px 12px 12px; }
+.wd { display: grid; justify-items: center; gap: 3px; padding: 8px 0 7px; border-radius: 14px; background: var(--soft); color: var(--navy-ink); transition: transform .12s; }
+.wd small { font: 800 10.5px/1 var(--f-body); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.wd b { font: 700 19px/1 var(--f-code); font-variant-numeric: tabular-nums; }
+.wd-dots { display: flex; gap: 3px; height: 6px; }
+.wd-dots i { width: 6px; height: 6px; border-radius: 50%; }
+.wd.today small { color: var(--blue); }
+.wd[aria-selected="true"] { background: var(--navy-ink); color: #fff; box-shadow: 0 8px 16px -10px rgba(7,27,77,.9); }
+.wd[aria-selected="true"] small { color: #AFC0FF; }
+.wd[aria-selected="true"] .wd-dots i { box-shadow: 0 0 0 1.5px var(--navy-ink); }
+.wd:active { transform: scale(.94); }
+.week-list { display: grid; gap: 10px; padding: 0 12px 14px; }
+.week-empty { padding: 14px; border-radius: 16px; background: var(--soft); color: var(--muted); font-weight: 700; font-size: 14px; text-align: center; }
+.wk { border-radius: 18px; background: #fff; box-shadow: inset 0 0 0 1.5px var(--hair); overflow: hidden; position: relative; }
+.wk::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 5px; background: var(--gc); }
+.wk-main { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px 8px 17px; text-align: left; }
+.wk-ic { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; background: color-mix(in srgb, var(--gc) 14%, #fff); flex: none; }
+.wk-txt { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.wk-txt b { font: 800 16px/1.2 var(--f-body); color: var(--ink); }
+.wk-txt small { font-weight: 700; color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wk-go { color: var(--muted); font: 600 22px/1 var(--f-code); }
+.wk-foot { display: flex; align-items: center; gap: 8px; padding: 0 12px 10px 17px; min-height: 40px; }
+.wk-faces { display: flex; }
+.wk-faces > * { width: 26px; height: 26px; font-size: 13px; }
+.wk-faces > * + * { margin-left: -8px; }
+.wk-faces .prem .cash { display: none; }
+.wk-faces .ava.premium { animation: none; }
+.wk-n { font-weight: 700; color: var(--muted); font-size: 13px; flex: 1; min-width: 0; }
+.wk-foot .pill { margin: 0; min-height: 36px; padding: 0 16px; }
+
+.games { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.game-tile { position: relative; display: grid; align-content: end; gap: 3px; min-height: 150px; padding: 14px; border-radius: 22px; text-align: left; overflow: hidden; color: #fff; box-shadow: var(--sh); isolation: isolate; transition: transform .12s; }
+.game-tile:active { transform: scale(.97); }
+.game-tile.g-mafia { grid-column: span 2; min-height: 170px; background: linear-gradient(135deg, #0F1430 0%, #23104A 55%, #6B0F1E 100%); }
+.game-tile.g-volley { background: linear-gradient(150deg, #FFB547 0%, #FF7A1A 60%, #E8590C 100%); }
+.game-tile.g-foot { background: linear-gradient(150deg, #43D17A 0%, #16A34A 60%, #0E7A37 100%); }
+.gt-emoji { position: absolute; right: -8px; top: -10px; font-size: 92px; line-height: 1; transform: rotate(-12deg); filter: drop-shadow(0 10px 14px rgba(0,0,0,.25)); z-index: -1; }
+.g-mafia .gt-emoji { display: none; }
+.gt-cards { position: absolute; right: 10px; top: 12px; width: 150px; height: 140px; z-index: -1; }
+.gt-cards img { position: absolute; top: 0; width: 76px; border-radius: 8px; box-shadow: 0 10px 18px -8px rgba(0,0,0,.7); }
+.gt-cards img:nth-child(1) { right: 64px; transform: rotate(-14deg); top: 14px; }
+.gt-cards img:nth-child(2) { right: 32px; transform: rotate(-2deg); }
+.gt-cards img:nth-child(3) { right: 0; transform: rotate(12deg); top: 12px; }
+.gt-code { font: 600 12px/1 var(--f-code); letter-spacing: .14em; opacity: .75; }
+.gt-name { font: 800 22px/1.05 var(--f-display); }
+.gt-next { font-weight: 700; font-size: 13px; opacity: .9; }
+.gt-next b { font-weight: 800; }
+
+/* ---------- crew ---------- */
+.crew-list { display: grid; }
+.crew-row { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 11px 16px; border-top: 1px solid var(--hair); text-align: left; width: 100%; box-sizing: border-box; color: var(--ink); }
+.crew-row > .ava, .crew-row > .prem { width: 52px; height: 52px; font-size: 24px; }
+.crew-row .nm { min-width: 0; display: grid; gap: 2px; }
+.crew-row .nm b { font-weight: 800; font-size: 15.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.crew-row .nm small { color: var(--muted); font-weight: 700; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.crew-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
+.cb { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px; border-radius: 99px; background: var(--soft); font-weight: 800; font-size: 11.5px; color: var(--navy-ink); }
+.cb.host { background: #FFF1C9; color: #8A5A00; }
+.crew-row .go { color: #B4BAC8; font: 600 22px/1 var(--f-code); }
+.crew-row.never { opacity: .55; }
+.crew-row.never .ava { filter: grayscale(1); }
+
+/* ---------- profile ---------- */
+.prof-card .ticket-in { position: relative; }
+.prof-cover { height: 96px; background: radial-gradient(120% 140% at 15% 0%, #FFE08A 0%, #FFC83D 38%, rgba(255,200,61,0) 70%), linear-gradient(120deg, #0033FF, #092F80); }
+.prof-card .prof-head { padding-top: 0; margin-top: -48px; }
+.prof-card .ava.lg { width: 96px; height: 96px; box-shadow: 0 0 0 4px #fff, 0 10px 20px -10px rgba(7,27,77,.6); }
+.prof-badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+#profBio { padding: 0 18px 16px; display: grid; gap: 8px; justify-items: center; text-align: center; }
+.bio-text { margin: 0; font-weight: 600; color: var(--ink); font-size: 15px; white-space: pre-line; overflow-wrap: anywhere; max-width: 36ch; }
+.bio-meta { color: var(--muted); font-weight: 700; font-size: 12.5px; }
+.bio-form { display: grid; gap: 8px; width: 100%; }
+.bio-form textarea { min-height: 76px; resize: vertical; font-weight: 600; }
+.pg-grid { display: grid; gap: 8px; padding: 2px 14px 16px; }
+.pg { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 18px; background: color-mix(in srgb, var(--gc) 9%, #fff); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--gc) 22%, #fff); text-align: left; color: var(--ink); width: 100%; box-sizing: border-box; }
+.pg-ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 25px; background: #fff; }
+.pg-t { display: grid; gap: 2px; min-width: 0; }
+.pg-t b { font: 800 16px/1.2 var(--f-body); }
+.pg-t small { color: var(--muted); font-weight: 700; font-size: 12.5px; }
+.pg-place { text-align: right; font: 700 26px/1 var(--f-code); color: var(--gc); font-variant-numeric: tabular-nums; }
+.pg-place small { display: block; font: 800 10px/1.3 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.pg.none .pg-place { color: #B4BAC8; }
+
+/* ---------- sport ---------- */
+.sport-hero { position: relative; overflow: hidden; isolation: isolate; border-radius: 26px; padding: 22px 18px 18px; color: #fff; box-shadow: var(--sh); display: grid; gap: 8px; }
+.sport-hero.volley { background: linear-gradient(150deg, #FFB547 0%, #FF7A1A 55%, #E8590C 100%); }
+.sport-hero.foot { background: linear-gradient(150deg, #43D17A 0%, #16A34A 55%, #0E7A37 100%); }
+.sport-hero .sh-emoji { position: absolute; right: -14px; top: -16px; font-size: 130px; line-height: 1; transform: rotate(-14deg); z-index: -1; filter: drop-shadow(0 12px 16px rgba(0,0,0,.25)); }
+.sport-hero .eyebrow { color: rgba(255,255,255,.8); }
+.sport-hero h1 { margin: 0; font: 800 30px/1.05 var(--f-display); }
+.sport-hero p { margin: 0; font-weight: 700; opacity: .92; max-width: 26ch; }
+.sh-hosts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; font-weight: 800; font-size: 12.5px; }
+.sh-hosts .ev-who { background: rgba(255,255,255,.95); }
+.sp-card .ev-head { grid-template-columns: 74px minmax(0, 1fr); }
+.sp-meta { display: grid; gap: 4px; min-width: 0; }
+.sp-meta b { font: 800 17px/1.2 var(--f-body); color: var(--ink); }
+.sp-meta small { color: var(--muted); font-weight: 700; font-size: 13px; }
+.sp-host { display: flex; flex-wrap: wrap; gap: 4px 6px; padding: 0 12px 12px; }
+.sp-res { display: grid; gap: 6px; padding: 0 16px 14px; }
+.sp-res .lbl { font: 800 11px/1 var(--f-body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.sp-res .lbl.win { color: #138A43; }
+.sp-res .lbl.loss { color: var(--red); }
+.sp-past { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 12px; padding: 12px 16px; border-top: 1px solid var(--hair); }
+.sp-past .dd { text-align: center; border-radius: 12px; background: var(--soft); padding: 6px 0; }
+.sp-past .dd b { display: block; font: 700 22px/1 var(--f-code); color: var(--ink); }
+.sp-past .dd small { font: 800 10px/1 var(--f-body); text-transform: uppercase; color: var(--muted); }
+.sp-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 16px; }
+.sp-form label { display: grid; gap: 4px; font-weight: 800; font-size: 12px; color: var(--muted); }
+.sp-form .wide { grid-column: span 2; }
+.res-list { display: grid; gap: 6px; max-height: 52vh; overflow-y: auto; padding: 2px; }
+.res-row { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 6px 8px; border-radius: 14px; background: #F7F8FB; }
+.res-row > .ava, .res-row > .prem { width: 36px; height: 36px; font-size: 17px; }
+.res-row .prem .cash { display: none; }
+.res-row b { font-weight: 800; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.res-seg { display: flex; gap: 4px; }
+.res-seg button { min-width: 38px; height: 36px; border-radius: 10px; background: #fff; box-shadow: inset 0 0 0 1.5px #DCE0E8; font-weight: 900; font-size: 13px; color: var(--muted); padding: 0 8px; }
+.res-seg button[aria-pressed="true"][data-r="win"] { background: #1F9D55; color: #fff; box-shadow: none; }
+.res-seg button[aria-pressed="true"][data-r="loss"] { background: var(--red); color: #fff; box-shadow: none; }
+.res-seg button[aria-pressed="true"][data-r="draw"] { background: var(--navy); color: #fff; box-shadow: none; }
+.res-add { display: flex; gap: 8px; }
+.wk-faces > .prem .ava, .crew-faces > .prem .ava, .crew-row > .prem .ava, .res-row > .prem .ava { width: 100%; height: 100%; font-size: inherit; }
+.wk-faces .ava, .crew-faces .ava { box-shadow: 0 0 0 2px #fff; }
+.wk-faces .ava.premium, .crew-faces .ava.premium { box-shadow: 0 0 0 2px #FFD54A; }
+.res-add select { flex: 1; min-width: 0; }
+
 </style>
 </head>
 <body>
-<div id="maint" role="alert"><div class="m-box"><img src="logo-dacha.png" alt="DACHA"><h1>Ведутся технические работы</h1><p>Скоро дача заработает</p><div class="m-dots"><i></i><i></i><i></i></div></div></div>
-<script>
-  (function () {
-    var u = null; try { u = window.Telegram.WebApp.initDataUnsafe.user; } catch (e) {}
-    var dev = /[?&]dev=1/.test(location.search) || (u && String(u.username || "").toLowerCase() === "tivishka");
-    if (dev) { var m = document.getElementById("maint"); m && m.remove(); return; }
-    document.documentElement.classList.add("maint");
-    try { window.Telegram.WebApp.ready(); window.Telegram.WebApp.expand(); } catch (e) {}
-  })();
-</script>
 <div class="ground"></div>
 <div class="hw-only hw-sky" aria-hidden="true"><i class="moon"></i><img class="pk pk1" src="hw/pumpkin.svg" alt=""><img class="pk pk2" src="hw/pumpkin.svg" alt=""></div>
 <div class="hw-only hw-fly" aria-hidden="true"><img class="bat b1" src="hw/bat.svg" alt=""><img class="bat b2" src="hw/bat.svg" alt=""><img class="bat b3" src="hw/bat.svg" alt=""><img class="ghost" src="hw/ghost.svg" alt=""></div>
 <main class="app" id="app">
   <header class="topbar" id="topbar" hidden>
-    <button class="mini" id="goHome" aria-label="На главную"><div class="logo" data-logo></div></button>
+    <button class="mini back-btn" id="goHome" aria-label="Назад"><span class="back-ic" aria-hidden="true">‹</span><img src="logo-dacha-mini.webp" alt="" draggable="false"></button>
     <div class="tabs" role="tablist" id="tabsBox">
       <button role="tab" id="tabHost" aria-selected="false" hidden>раздача</button>
       <button role="tab" id="tabEvents" aria-selected="false" hidden>запись</button>
@@ -1177,7 +1369,63 @@ html.maint #maint { display: grid; }
     <button class="icon-btn" id="meBtn" aria-label="Профиль"></button>
   </header>
 
-  <!-- HOME -->
+  <!-- HUB: DACHA main page -->
+  <section id="vHub" class="col" hidden>
+    <div class="game-on" id="gameOnHub" hidden></div>
+    <div class="hub-top">
+      <button class="crew-btn" id="goCrew" type="button" aria-label="Дачники"><span class="crew-faces" id="crewFaces"></span><span class="crew-n" id="crewN">дачники</span></button>
+      <button class="icon-btn" id="hubMe" type="button" aria-label="Профиль"></button>
+    </div>
+    <div class="hub-hero">
+      <img class="hub-logo" src="logo-dacha-hub.webp" alt="DACHA" draggable="false">
+      <p class="hub-tag">Игры, которые нас сближают</p>
+    </div>
+    <div id="hubHello"></div>
+    <div class="ticket week"><div class="ticket-in">
+      <div class="week-h"><div class="eyebrow">Неделя на даче</div><h2 class="h2" id="weekTitle">Ближайшие 7 дней</h2></div>
+      <div class="week-days" id="weekDays" role="tablist" aria-label="Дни недели"></div>
+      <div class="week-list" id="weekList"></div>
+    </div></div>
+    <div class="sec-title">Игры</div>
+    <div class="games" id="hubGames"></div>
+    <div data-ad-slot></div>
+    <div class="row-btns">
+      <button class="pill dark sm" id="goAnnounce" hidden>сделать анонс</button>
+      <button class="pill dark sm" id="goPolls" hidden>опрос в боте</button>
+    </div>
+  </section>
+
+  <!-- CREW: all people, social list -->
+  <section id="vCrew" class="col" hidden>
+    <div class="ticket"><div class="ticket-in">
+      <div class="t-body" style="padding-bottom:12px">
+        <div class="eyebrow" id="crewEb">Дачники</div>
+        <h1 class="h1">Все дачники</h1>
+        <input class="field" id="crewQ" type="search" placeholder="Найти по нику или @username" autocomplete="off" enterkeyhint="search">
+      </div>
+      <div class="crew-list" id="crewList"></div>
+    </div></div>
+  </section>
+
+  <!-- SPORT: volleyball / football -->
+  <section id="vSport" class="col" hidden>
+    <div id="spHero"></div>
+    <div id="spNext"></div>
+    <div id="spNew"></div>
+    <div id="spPast"></div>
+    <div class="ticket" id="spRate"><div class="ticket-in">
+      <div class="t-body" style="padding-bottom:10px">
+        <div class="mb-head"><div class="eyebrow" id="spRateEb">Рейтинг</div>
+          <div class="mb-nav" id="spNav"><button class="round sm" type="button" id="spPrev" aria-label="Прошлый месяц">‹</button><button class="round sm" type="button" id="spFwd" aria-label="Следующий месяц">›</button></div></div>
+        <h2 class="h1" id="spRateTitle">Лучшие игроки</h2>
+        <div class="seg" id="spScope" role="group" aria-label="За какое время"><button type="button" data-scope="all">за всё время</button><button type="button" data-scope="month" id="spScopeMonth">месяц</button></div>
+      </div>
+      <div id="spBoard"></div>
+      <div class="stub"><span id="spStub"></span><b id="spCode">VLB</b></div>
+    </div></div>
+  </section>
+
+  <!-- MAFIA HOME -->
   <section id="vHome" class="col" hidden>
     <div class="game-on" id="gameOnHome" hidden></div>
     <div class="home-hero">
@@ -1188,7 +1436,7 @@ html.maint #maint { display: grid; }
         <text x="200" y="66" text-anchor="middle" font-size="64" fill="none" stroke="#F3F8F8" stroke-width="11" stroke-linejoin="round">MAFIA</text>
         <text x="200" y="66" text-anchor="middle" font-size="64" fill="#0033FF">MAFIA</text>
       </svg>
-      <p class="tagline hw-off">Роли приходят прямо на телефон каждого дачника, а статистика копится в профиле</p>
+      <p class="tagline hw-off">Роли приходят на телефон, заметки — под рукой, победы — в рейтинг</p>
       <p class="tagline hw-only">Сегодня на даче Хэллоуин: тыквы, летучие мыши и мафия, которая прячется в темноте</p>
     </div>
     <div class="ticket hw-only hw-banner"><div class="ticket-in">
@@ -1225,9 +1473,8 @@ html.maint #maint { display: grid; }
     </div>
     <div data-ad-slot></div>
     <div class="row-btns" style="margin-top:6px">
-      <button class="pill ghost" id="goPeople">дачники</button>
-      <button class="pill dark" id="goAnnounce" hidden>сделать анонс</button>
-      <button class="pill dark" id="goPolls" hidden>опрос в боте</button>
+      <button class="pill ghost sm" id="goPeople">🏆 рейтинг мафии</button>
+      <button class="pill ghost sm" id="goDeck2">🃏 колода</button>
     </div>
   </section>
 
@@ -1291,14 +1538,18 @@ html.maint #maint { display: grid; }
 
   <!-- PROFILE -->
   <section id="vProfile" class="col" hidden>
-    <div class="ticket"><div class="ticket-in">
+    <div class="ticket prof-card"><div class="ticket-in">
+      <div class="prof-cover" aria-hidden="true"></div>
       <div class="prof-head" id="profHead"></div>
-      <div class="stats" id="profStats"></div>
+      <div id="profBio"></div>
+      <div class="sec-label eyebrow">Рейтинги в играх</div>
+      <div class="pg-grid" id="profGames"></div>
       <div id="profAch"></div>
-      <div class="sec-label eyebrow">Сыграно за роли</div>
+      <div class="sec-label eyebrow">Мафия · сыграно за роли</div>
       <div class="roles" id="profRoles"></div>
       <div class="stub"><span id="profStub"></span><b>PROFILE</b></div>
     </div></div>
+    <div class="stats" id="profStats" hidden></div>
     <div class="row-btns" id="profBtns"></div>
   </section>
 
@@ -1316,8 +1567,8 @@ html.maint #maint { display: grid; }
   <section id="vPeople" class="col" hidden>
     <div class="ticket"><div class="ticket-in">
       <div class="t-body" style="padding-bottom:10px">
-        <div class="mb-head"><div class="eyebrow">Рейтинг</div><button class="month-btn" type="button" id="goMonth" aria-label="Рейтинг месяца">🏆 <span id="goMonthName">месяц</span></button></div>
-        <h1 class="h1">Дачники</h1>
+        <div class="mb-head"><div class="eyebrow">Мафия · рейтинг</div><button class="month-btn" type="button" id="goMonth" aria-label="Рейтинг месяца">🏆 <span id="goMonthName">месяц</span></button></div>
+        <h1 class="h1">Рейтинг мафии</h1>
         <p class="lead">По победам в завершённых играх. Нажми на дачника, чтобы открыть профиль.</p>
         <div class="tw" id="teamWins" hidden></div>
       </div>
@@ -1330,7 +1581,7 @@ html.maint #maint { display: grid; }
   <section id="vMonth" class="col" hidden>
     <div class="ticket month-board"><div class="ticket-in">
       <div class="t-body" style="padding-bottom:10px">
-        <div class="mb-head"><button class="linkish" type="button" id="mbBack">← все дачники</button>
+        <div class="mb-head"><button class="linkish" type="button" id="mbBack">← весь рейтинг</button>
           <div class="mb-nav"><button class="round sm" type="button" id="mbPrev" aria-label="Прошлый месяц">‹</button><button class="round sm" type="button" id="mbNext" aria-label="Следующий месяц">›</button></div></div>
         <h1 class="h1" id="mbTitle">Месяц</h1>
         <p class="lead" id="mbLead">Игры и победы только за этот месяц.</p>
@@ -1528,13 +1779,13 @@ html.maint #maint { display: grid; }
 </main>
 
 <template id="logoTpl">
-  <img src="logo-dacha.png" alt="DACHA MAFIA" draggable="false">
+  <img src="logo-dacha.png" alt="DACHA · мафия" draggable="false">
 </template>
 
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105074659"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105080320"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -1823,7 +2074,7 @@ html.maint #maint { display: grid; }
   });
 
   /* ---------- navigation ---------- */
-  const VIEWS = ["vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
+  const VIEWS = ["vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
   let profileId = null;
   const online = () => S.hostMode === "online";
   const hostView = () => {
@@ -1839,15 +2090,18 @@ html.maint #maint { display: grid; }
       if (me) toast("Раздавать карты может только ведущий");
       view = "home";
     }
-    if (view === "profile") profileId = arg || me?.id;
+    if (view === "profile") { if (S.view !== "profile") profileFrom = S.view; profileId = arg || me?.id; }
+    if (view === "sport") sportId = SPORTS[arg] ? arg : sportId;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
-    $("topbar").hidden = view === "home";
+    $("topbar").hidden = view === "hub";
+    try { if (inTG && tg?.BackButton) view === "hub" ? tg.BackButton.hide() : tg.BackButton.show(); } catch {}
     renderTabs(view);
     if (id !== "vLive") stopLive();
     ({
+      vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
       vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople, vMonth: () => { boardMonth = null; drawMonth(); }, vDeck: renderDeck,
       vPick: renderPick, vCount: renderCount, vRoles: renderRoles, vLive: renderLive, vDeal: renderDeal, vDone: renderDone,
       vCard: renderCard, vNotes: () => renderNotes(false), vEvents: renderEvents, vPlayer: renderPlayer,
@@ -1858,7 +2112,19 @@ html.maint #maint { display: grid; }
   };
   const setPhase = (p) => { if (online()) S.on.phase = p; else S.host.phase = p; go("host"); };
 
-  $("goHome").onclick = () => go("home");
+  // "up": mafia screens go back to the mafia home, everything else to DACHA
+  let profileFrom = null;
+  const upOf = (v) => {
+    if (v === "profile") return profileFrom && profileFrom !== "profile" && profileFrom !== "auth" ? profileFrom : "hub";
+    if (v === "month") return "people";
+    if (["card", "notes", "host", "events", "player", "people", "deck"].includes(v)) return "home";
+    return "hub";
+  };
+  $("goHome").onclick = () => go(upOf(S.view));
+  try { if (inTG) tg?.BackButton?.onClick(() => go(upOf(S.view))); } catch {}
+  $("goCrew").onclick = () => (me ? go("crew") : go("auth"));
+  $("hubMe").onclick = () => (me ? go("profile", me.id) : go("auth"));
+  $("goDeck2").onclick = () => go("deck");
   $("goHost").onclick = () => go("host");
   $("goCard").onclick = () => go("card");
   $("goNotes").onclick = () => go("notes");
@@ -1885,7 +2151,7 @@ html.maint #maint { display: grid; }
     $("tabEvents").textContent = canHost() ? "запись" : "запись на игру";
     $("tabsBox").hidden = !set.length;
     $("topTitle").hidden = !!set.length;
-    $("topTitle").textContent = { profile: "профиль", people: "дачники", auth: "вход", deck: "колода" }[view] || "";
+    $("topTitle").textContent = { home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
   };
 
   const renderHostAccess = () => {
@@ -1896,6 +2162,7 @@ html.maint #maint { display: grid; }
     if ((noAds() ? "none" : adPool().map((a) => a.id).join()) !== adPoolKey) fillAdSlots();
     renderHostAccess();
     $("meBtn").innerHTML = me ? avaP(me) : icon("user");
+    $("hubMe").innerHTML = me ? avaP(me) : icon("user");
     $("meBtn").setAttribute("aria-label", me ? `Профиль: ${me.nick}` : "Войти");
   };
 
@@ -1927,8 +2194,6 @@ html.maint #maint { display: grid; }
 
   /* ---------- home ---------- */
   const renderHome = () => {
-    $("goAnnounce").hidden = !canGrant;
-    $("goPolls").hidden = !canGrant;
     drawGameOn();
     drawHomeEvent();
     const box = $("homeMe");
@@ -1942,11 +2207,8 @@ html.maint #maint { display: grid; }
     else {
       const row = people.find((p) => p.id === me.id);
       const line = [tgLine(me), row ? `${row.games} ${plural(row.games, "игра", "игры", "игр")} · ${row.wins} ${plural(row.wins, "победа", "победы", "побед")}` : ""].filter(Boolean).join(" · ");
-      box.innerHTML = `<button class="ticket" style="display:block;width:100%" id="homeProfile"><div class="ticket-in"><div class="me-card">
-        ${avaP(me)}<div class="who"><b>${esc(me.nick)}</b><span>${esc(line || "Профиль и статистика")}</span></div><span class="go">→</span>
-      </div></div></button>`;
-      $("homeProfile").onclick = () => go("profile", me.id);
-      if (!row) loadPeople().then(() => { if (S.view === "home" && people.some((p) => p.id === me.id)) renderHome(); });
+      box.innerHTML = "";
+      void line;
     }
     const h = S.host, rh = $("resumeHost"), rp = $("resumePlayer");
     rh.hidden = true;
@@ -1961,7 +2223,7 @@ html.maint #maint { display: grid; }
   const drawGameOn = () => {
     const g = canHost() && S.on.gameId && live.game?.id === S.on.gameId ? live.game : my.seat?.games;
     const ph = g?.phase || "setup", html = g ? `<span class="gi">${ph === "night" ? "🌙" : ph === "day" ? "☀️" : "🎲"}</span><div><b>Игра идёт</b><small>${esc(phaseText(ph, g.round || 0))}</small></div>` : "";
-    ["gameOnHome", "gameOnPlayer"].forEach((id) => { const el = $(id); el.hidden = !g; el.className = "game-on " + ph; el.innerHTML = html; });
+    ["gameOnHub", "gameOnHome", "gameOnPlayer"].forEach((id) => { const el = $(id); el.hidden = !g; el.className = "game-on " + ph; el.innerHTML = html; });
   };
   const renderPlayer = () => {
     drawGameOn();
@@ -1988,13 +2250,19 @@ html.maint #maint { display: grid; }
     $("profHead").innerHTML = `<div class="wait"><span class="pulse"></span>Загружаю профиль…</div>`;
     $("profStats").innerHTML = ""; $("profRoles").innerHTML = ""; $("profBtns").innerHTML = "";
     if (!sb || !me) return;
-    const [{ data: stats }] = await Promise.all([sb.rpc("player_stats", { p: id }), loadPeople()]);
+    const [{ data: stats }, , { data: sstats }, { data: extra }] = await Promise.all([
+      sb.rpc("player_stats", { p: id }), loadPeople(), sb.rpc("sport_stats", { p: id }),
+      sb.from("profiles").select("bio, created_at").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(),
+    ]);
     if (S.view !== "profile" || profileId !== id) return;
     const row = people.find((p) => p.id === id) || (id === me.id ? { ...me, games: 0, wins: 0, hosted: 0 } : { nick: "Дачник", games: 0, wins: 0, hosted: 0 });
     const isMe = id === me.id;
     const handle = tgLine(row);
-    $("profHead").innerHTML = `${avaP({ ...row, id }, "lg")}<div><div class="eyebrow">${[isMe ? "Это ты" : "Дачник", row.is_host || (isMe && canHost()) ? "ведущий" : ""].filter(Boolean).join(" · ")}</div><h1 class="h1" style="margin-top:6px">${esc(row.nick)}</h1>
+    const mafHost = row.is_host || (isMe && canHost());
+    const badges = [mafHost ? "🎭 ведущий мафии" : "", ...Object.values(SPORTS).filter((x) => sp.hosts.some((h) => h.sport === x.id && h.user_id === id)).map((x) => `${x.emoji} ведущий: ${x.name.toLowerCase()}`)].filter(Boolean);
+    $("profHead").innerHTML = `${avaP({ ...row, id }, "lg")}<div><h1 class="h1">${esc(row.nick)}</h1>
       ${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}</div>
+      ${badges.length ? `<div class="prof-badges">${badges.map((b) => `<span class="cb host">${esc(b)}</span>`).join("")}</div>` : ""}
       ${isMe || canGrant ? `<button class="linkish" id="editNick">${isMe ? "изменить ник" : "изменить ник дачнику"}</button>` : ""}`;
     if (isMe || canGrant) $("editNick").onclick = () => {
       $("editNick").outerHTML = `<form class="nick-edit" id="nickForm"><input class="field" id="nickInput" maxlength="24" value="${esc(row.nick)}" aria-label="Новый ник"><button class="round sm" type="submit" aria-label="Сохранить ник">✓</button></form>`;
@@ -2011,6 +2279,8 @@ html.maint #maint { display: grid; }
         people = []; toast(isMe ? "Ник сохранён" : `Ник изменён: ${nick}`); renderProfile();
       };
     };
+    drawProfBio(id, isMe, extra);
+    drawProfGames(id, row, sstats || []);
     // win rate only from 5 games: fewer games say nothing
     const rate = row.games ? Math.round((row.wins / row.games) * 100) : 0;
     $("profStats").innerHTML = `<div><b>${row.games}</b><small>${plural(row.games, "игра", "игры", "игр")}</small></div><div><b>${row.wins}</b><small>${plural(row.wins, "победа", "победы", "побед")}</small></div>${row.games >= 5 ? `<div><b>${rate}%</b><small>побед</small></div>` : `<div><b>—</b><small>% побед с 5 игр</small></div>`}`;
@@ -2060,8 +2330,23 @@ html.maint #maint { display: grid; }
           ? (isMe ? `<span class="r-meta" style="text-transform:none;letter-spacing:0">Себя убрать нельзя</span>` : `<button class="pill sm ghost" data-host="off">убрать из ведущих</button>`)
           : `<button class="pill sm" data-host="on">сделать ведущим</button>`}</div>
       </div></div></div>` : ""}
+      ${canGrant ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
+        <div class="eyebrow">Ведущие спорта · назначаешь только ты</div>
+        <p class="lead">Ведущий ставит даты игр и отмечает, кто победил, а кто проиграл. От этого считается рейтинг.</p>
+        <div class="row-btns" style="justify-content:flex-start">${Object.values(SPORTS).map((x) => { const on = sp.hosts.some((h) => h.sport === x.id && h.user_id === id);
+          return `<button class="pill sm ${on ? "ghost" : ""}" data-shost="${x.id}" data-on="${on ? "off" : "on"}">${x.emoji} ${on ? `убрать: ${x.name.toLowerCase()}` : `ведущий: ${x.name.toLowerCase()}`}</button>`; }).join("")}</div>
+      </div></div></div>` : ""}
       <button class="pill ghost sm" data-p="people">все дачники</button>${isMe && !inTG ? `<button class="pill dark sm" data-p="out">выйти</button>` : ""}`;
     $("profBtns").onclick = async (e) => {
+      const sh = e.target.closest("[data-shost]");
+      if (sh && canGrant) {
+        const on = sh.dataset.on === "on", x = SPORTS[sh.dataset.shost];
+        const { error } = await sb.rpc("set_sport_host", { u: id, s: x.id, on_: on });
+        if (error) return toast("Не получилось: " + humanErr(error));
+        await loadSports();
+        toast(on ? `${row.nick} теперь ведущий: ${x.name.toLowerCase()}` : `${row.nick} больше не ведёт ${x.name.toLowerCase()}`);
+        return renderProfile();
+      }
       const hb = e.target.closest("[data-host]");
       if (hb && canGrant) {
         const on = hb.dataset.host === "on";
@@ -2086,7 +2371,7 @@ html.maint #maint { display: grid; }
         renderMeBtn(); return renderProfile();
       }
       const b = e.target.closest("[data-p]"); if (!b) return;
-      if (b.dataset.p === "people") go("people");
+      if (b.dataset.p === "people") go("crew");
       else sheet({ eyebrow: "Аккаунт", title: "Выйти из аккаунта?", text: "Карты перестанут приходить на этот телефон, пока не войдёшь снова.", ok: "выйти", onOk: async () => { await sb.auth.signOut(); me = null; afterLogout(); go("home"); toast("Ты вышел из аккаунта"); } });
     };
   };
@@ -3271,14 +3556,14 @@ html.maint #maint { display: grid; }
         syncNotesGame();
         try { navigator.vibrate?.([120, 60, 120]); } catch {}
         haptic("card");
-        if (["home", "card", "profile", "people", "player", "events"].includes(S.view)) go("card");
+        if (["hub", "crew", "sport", "home", "card", "profile", "people", "player", "events"].includes(S.view)) go("card");
         else toast("Пришла твоя карта", { label: "открыть", run: () => go("card") });
       })
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "promos" }, (p) => onPromo(p.new))
       .subscribe();
   };
   // fallback when the phone slept and the socket dropped
-  setInterval(() => { if (me && document.visibilityState === "visible" && (S.view === "card" || S.view === "home")) loadMyCard(); }, 12000);
+  setInterval(() => { if (me && document.visibilityState === "visible" && (S.view === "card" || S.view === "home" || S.view === "hub")) loadMyCard(); }, 12000);
   document.addEventListener("visibilitychange", () => { if (me && document.visibilityState === "visible") loadMyCard(); });
 
   // Telegram keeps the mini app alive in the background; reload quietly when a new version is out
@@ -3317,6 +3602,385 @@ html.maint #maint { display: grid; }
   const whoChip = (e, x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""} ${paidOf(e, x.user_id)}" title="${paidOf(e, x.user_id) === "paid" ? "оплатил" : paidOf(e, x.user_id) === "claimed" ? "перевёл, ждёт подтверждения" : ""}">${avaP(x.profiles || {})}<span>${esc(x.profiles?.nick || "Дачник")}</span></span>`;
   const paidCount = (e) => e.signups.filter((x) => paidOf(e, x.user_id)).length;
   const payOf = (eid, uid) => ev.pays[eid + ":" + uid];
+  /* =================== DACHA: hub, week, sports, crew =================== */
+  const SPORTS = {
+    volley: { id: "volley", name: "Волейбол", emoji: "🏐", code: "VLB", color: "#FF7A1A", tag: "Сетка, мяч и командная игра. Записывайся и попади в рейтинг", draws: false },
+    foot: { id: "foot", name: "Футбол", emoji: "⚽", code: "FTB", color: "#16A34A", tag: "Мини-футбол дачников. Победы считаются в рейтинг месяца", draws: true },
+  };
+  const MAFIA_META = { id: "mafia", name: "Мафия", emoji: "🎭", code: "MAF", color: "#E3263A" };
+  const meta = (k) => SPORTS[k] || MAFIA_META;
+  let sportId = "volley";
+  const sp = { events: [], hosts: [], loaded: false, loading: null, chan: null, board: {}, scope: "all", month: null, editing: null };
+  const addDays = (iso, k) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d + k)).toISOString().slice(0, 10); };
+  const dayLabel = (iso) => { const t = bkkToday(); if (iso === t) return "сегодня"; if (iso === addDays(t, 1)) return "завтра"; const { d, m, w } = dayParts(iso); return `${DOW[w]}, ${d} ${MON[m - 1]}`; };
+  const isSportHost = (k) => !!me && (canGrant || sp.hosts.some((h) => h.sport === k && h.user_id === me.id));
+  const personOf = (uid) => people.find((p) => p.id === uid) || { id: uid, nick: "Дачник" };
+  const loadSports = () => sp.loading || (sp.loading = (async () => {
+    if (!sb || !me) return;
+    const [{ data: list, error }, { data: hosts }] = await Promise.all([
+      sb.from("sport_events").select("*, sport_signups(user_id, created_at, profiles(id,nick,tg_username,tg_photo)), sport_results(user_id, result)")
+        .neq("status", "removed").gte("day", addDays(bkkToday(), -120)).order("day").order("start_time"),
+      sb.from("sport_hosts").select("sport, user_id"),
+    ]);
+    if (error) throw error;
+    sp.events = (list || []).map((e) => ({ ...e, signups: (e.sport_signups || []).sort((a, b) => a.created_at.localeCompare(b.created_at)), results: e.sport_results || [] }));
+    sp.hosts = hosts || [];
+    sp.loaded = true;
+  })().finally(() => { sp.loading = null; }));
+  const subscribeSports = () => {
+    if (sp.chan || !sb || !me) return;
+    let t = 0;
+    const again = () => {
+      clearTimeout(t);
+      t = setTimeout(async () => {
+        try { await loadSports(); } catch { return; }
+        sp.board = {};
+        if (S.view === "hub") { drawWeek(); drawHubGames(); }
+        if (S.view === "sport") renderSport(true);
+      }, 600);
+    };
+    sp.chan = sb.channel("sports")
+      .on("postgres_changes", { event: "*", schema: "public", table: "sport_events" }, again)
+      .on("postgres_changes", { event: "*", schema: "public", table: "sport_signups" }, again)
+      .on("postgres_changes", { event: "*", schema: "public", table: "sport_results" }, again)
+      .subscribe();
+  };
+  const faceList = (list, n) => list.slice(0, n).map((x) => avaP({ ...(x.profiles || personOf(x.user_id)), id: x.user_id })).join("");
+  const loginPrompt = () => {
+    if (!sb) return `<div class="ticket"><div class="ticket-in"><div class="t-body"><h2 class="h2">Нет связи с сервером</h2><p class="lead">Проверь интернет и обнови страницу.</p></div></div></div>`;
+    if (inTG) return `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>${authError ? esc(authError) : "Входим через Telegram…"}</div></div></div></div>`;
+    return `<div class="ticket"><div class="ticket-in"><div class="t-body">
+        <h2 class="h2">Заходи через Telegram</h2>
+        <p class="lead">Открой бота @dacha_gay и нажми «Играть»: появишься среди дачников, сможешь записываться на мафию, волейбол и футбол и копить победы в рейтингах.</p>
+        <div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>
+      </div></div></div>`;
+  };
+
+  /* ---------- hub ---------- */
+  const renderHub = () => {
+    $("goAnnounce").hidden = !canGrant;
+    $("goPolls").hidden = !canGrant;
+    drawGameOn();
+    $("hubHello").innerHTML = me ? "" : loginPrompt();
+    drawCrewBtn(); drawWeek(); drawHubGames();
+    if (!me) return;
+    const need = [];
+    if (!sp.loaded) need.push(loadSports());
+    if (!ev.loaded) need.push(loadEvents());
+    if (!people.length) need.push(loadPeople());
+    if (need.length) Promise.all(need).then(() => { if (S.view === "hub") { drawCrewBtn(); drawWeek(); drawHubGames(); } }).catch(() => {});
+  };
+  const drawCrewBtn = () => {
+    const withPhoto = people.filter((p) => p.tg_photo).sort((a, b) => b.games - a.games);
+    $("crewFaces").innerHTML = withPhoto.length ? withPhoto.slice(0, 3).map((p) => avaP(p)).join("") : `<span class="ic">${icon("user")}</span>`;
+    $("crewN").textContent = people.length ? `${people.length} ${plural(people.length, "дачник", "дачника", "дачников")}` : "дачники";
+  };
+  $("gameOnHub").onclick = () => go(canHost() && S.on.gameId ? "host" : "player");
+
+  let weekSel = null;
+  const weekItems = (day) => [
+    ...ev.list.filter((e) => e.day === day && e.status === "open").map((e) => ({ kind: "mafia", e, time: hm(e.start_time) })),
+    ...sp.events.filter((e) => e.day === day).map((e) => ({ kind: e.sport, e, time: hm(e.start_time) })),
+  ].sort((a, b) => a.time.localeCompare(b.time));
+  const weekCard = (x) => {
+    const e = x.e, M = meta(x.kind), maf = x.kind === "mafia";
+    const going = e.signups || [];
+    const mine = maf ? isMine(e) : going.some((g) => g.user_id === me?.id);
+    const done = !maf && e.status === "done";
+    const info = maf ? [`сбор ${hm(e.gather_time)}`, `начало ${x.time}`, e.price ? `${e.price} ฿` : ""] : [x.time, e.place, e.price ? `${e.price} ฿` : ""];
+    const act = done ? `<span class="tag">сыграно</span>`
+      : mine ? `<span class="tag ok">${maf && canHost() ? "ты ведёшь" : "ты идёшь"}</span>`
+      : me ? `<button class="pill sm" type="button" data-wjoin>${maf && canHost() ? "я веду" : "я буду"}</button>` : "";
+    return `<div class="wk" data-kind="${x.kind}" data-id="${e.id}" style="--gc:${M.color}">
+      <button class="wk-main" type="button" data-wopen><span class="wk-ic">${M.emoji}</span>
+        <span class="wk-txt"><b>${M.name}</b><small>${info.filter(Boolean).map(esc).join(" · ")}</small></span><span class="wk-go">›</span></button>
+      <div class="wk-foot"><span class="wk-faces">${faceList(going, 5)}</span><span class="wk-n">${going.length ? `${going.length} ${plural(going.length, "идёт", "идут", "идут")}` : "пока никого"}</span>${act}</div>
+    </div>`;
+  };
+  const drawWeek = () => {
+    const t = bkkToday(), days = Array.from({ length: 7 }, (_, i) => addDays(t, i));
+    if (!weekSel || !days.includes(weekSel)) weekSel = days.find((d) => weekItems(d).length) || t;
+    $("weekDays").innerHTML = days.map((d) => {
+      const { d: n, w } = dayParts(d), items = weekItems(d);
+      return `<button type="button" role="tab" class="wd${d === t ? " today" : ""}" data-day="${d}" aria-selected="${d === weekSel}" aria-label="${dayLabel(d)}${items.length ? `, игр: ${items.length}` : ""}">
+        <small>${d === t ? "сег" : DOW[w]}</small><b>${n}</b><span class="wd-dots">${items.slice(0, 3).map((x) => `<i style="background:${meta(x.kind).color}"></i>`).join("")}</span></button>`;
+    }).join("");
+    const items = weekItems(weekSel), { d, m, w } = dayParts(weekSel);
+    $("weekTitle").textContent = `${weekSel === t ? "Сегодня" : weekSel === addDays(t, 1) ? "Завтра" : DOW_FULL[w]}, ${d} ${MON_FULL[m - 1]}`;
+    $("weekList").innerHTML = items.length ? items.map(weekCard).join("")
+      : `<div class="week-empty">${me ? "В этот день игр нет. Загляни в другие дни" : "Войди через Telegram, чтобы видеть расписание"}</div>`;
+  };
+  $("weekDays").onclick = (e) => { const b = e.target.closest("[data-day]"); if (!b) return; weekSel = b.dataset.day; haptic("tap"); drawWeek(); };
+  $("weekList").onclick = async (e) => {
+    const card = e.target.closest("[data-kind]"); if (!card) return;
+    const kind = card.dataset.kind, id = card.dataset.id;
+    if (e.target.closest("[data-wjoin]")) {
+      haptic("tap");
+      const { error } = kind === "mafia"
+        ? await sb.from("signups").insert({ event_id: id, user_id: me.id })
+        : await sb.from("sport_signups").insert({ event_id: id, user_id: me.id });
+      if (error) return toast("Не получилось: " + humanErr(error));
+      if (kind === "mafia") { await loadEvents(); toast("Записал тебя на мафию", { label: "оплатить", run: () => go("events") }); }
+      else { await loadSports(); toast(`Записал тебя: ${meta(kind).name.toLowerCase()}`); }
+      if (S.view === "hub") { drawWeek(); drawHubGames(); }
+      return;
+    }
+    if (e.target.closest("[data-wopen]")) return kind === "mafia" ? go("events") : go("sport", kind);
+  };
+  const drawHubGames = () => {
+    const t = bkkToday();
+    const next = (k) => (k === "mafia" ? ev.list.find((e) => e.status === "open") : sp.events.find((e) => e.sport === k && e.status === "open" && e.day >= t));
+    const line = (k) => { const n = next(k); return n ? `ближайшая: <b>${esc(dayLabel(n.day))} · ${hm(n.start_time)}</b>` : me ? "дату скоро поставят" : "войди, чтобы записаться"; };
+    const mafArt = ["cards/maf.webp", "cards/kom-3.webp", "cards/don-2.webp"];
+    $("hubGames").innerHTML = ["mafia", "volley", "foot"].map((k) => {
+      const M = meta(k);
+      return `<button class="game-tile g-${k}" type="button" data-game="${k}">
+        ${k === "mafia" ? `<span class="gt-cards" aria-hidden="true">${mafArt.map((src) => `<img src="${src}" alt="">`).join("")}</span>` : ""}
+        <span class="gt-emoji" aria-hidden="true">${M.emoji}</span>
+        <span class="gt-code">${M.code}</span><b class="gt-name">${M.name}</b><small class="gt-next">${line(k)}</small></button>`;
+    }).join("");
+  };
+  $("hubGames").onclick = (e) => { const b = e.target.closest("[data-game]"); if (!b) return; haptic("tap"); b.dataset.game === "mafia" ? go("home") : go("sport", b.dataset.game); };
+
+  /* ---------- crew: social list of everybody ---------- */
+  const sportBoard = async (k, month) => {
+    const key = k + ":" + (month || "all");
+    if (sp.board[key]) return sp.board[key];
+    const { data, error } = await sb.rpc("sport_board", { s: k, m: month ? month + "-01" : null });
+    if (error) throw error;
+    return (sp.board[key] = data || []);
+  };
+  let crewData = null;
+  const renderCrew = async () => {
+    const box = $("crewList");
+    if (!sb || !me) { box.innerHTML = `<div class="empty-note">${loginPrompt()}</div>`; return; }
+    if (!people.length) box.innerHTML = `<div class="empty-note"><div class="wait"><span class="pulse"></span>Загружаю дачников…</div></div>`;
+    const [, v, f] = await Promise.all([loadPeople(), sportBoard("volley").catch(() => []), sportBoard("foot").catch(() => []), sp.loaded ? null : loadSports().catch(() => {})]);
+    if (S.view !== "crew") return;
+    const by = (list) => Object.fromEntries(list.map((x) => [x.id, x]));
+    crewData = { v: by(v), f: by(f) };
+    $("crewEb").textContent = `Дачники · ${people.length}`;
+    drawCrew();
+  };
+  const drawCrew = () => {
+    if (!crewData) return;
+    const q = $("crewQ").value.trim().toLowerCase().replace(/^@/, "");
+    const total = (p) => (+p.games || 0) + (+crewData.v[p.id]?.games || 0) + (+crewData.f[p.id]?.games || 0) + (+p.hosted || 0);
+    const list = people.filter((p) => !q || p.nick.toLowerCase().includes(q) || String(p.tg_username || "").toLowerCase().includes(q))
+      .sort((a, b) => total(b) - total(a) || a.nick.localeCompare(b.nick));
+    $("crewList").innerHTML = list.length ? list.map((p) => {
+      const v = crewData.v[p.id], f = crewData.f[p.id];
+      const hostOf = Object.values(SPORTS).filter((x) => sp.hosts.some((h) => h.sport === x.id && h.user_id === p.id));
+      const chips = [
+        p.games ? `<span class="cb">🎭 ${p.wins} ${plural(+p.wins, "победа", "победы", "побед")}</span>` : "",
+        v ? `<span class="cb">🏐 ${v.wins} ${plural(+v.wins, "победа", "победы", "побед")}</span>` : "",
+        f ? `<span class="cb">⚽ ${f.wins} ${plural(+f.wins, "победа", "победы", "побед")}</span>` : "",
+        p.is_host ? `<span class="cb host">🎭 ведущий</span>` : "",
+        ...hostOf.map((x) => `<span class="cb host">${x.emoji} ведущий</span>`),
+      ].filter(Boolean).join("");
+      return `<button class="crew-row${total(p) ? "" : " never"}" type="button" data-id="${p.id}">${avaP(p)}
+        <span class="nm"><b>${esc(p.nick)}${p.id === me.id ? " · ты" : ""}</b><small>${esc(tgLine(p) || "дачник")}</small>${chips ? `<span class="crew-badges">${chips}</span>` : ""}</span><span class="go">›</span></button>`;
+    }).join("") : `<div class="empty-note">Никого не нашли по «${esc(q)}».</div>`;
+  };
+  $("crewQ").addEventListener("input", drawCrew);
+  $("crewList").onclick = (e) => { const b = e.target.closest("[data-id]"); if (b) go("profile", b.dataset.id); };
+
+  /* ---------- profile: about + ratings in every game ---------- */
+  const drawProfBio = (id, isMe, extra) => {
+    const bio = extra?.bio || "", since = extra?.created_at ? new Date(extra.created_at) : null;
+    const sinceTxt = since && !isNaN(since) ? `на даче с ${MON_FULL[since.getMonth()]} ${since.getFullYear()}` : "";
+    $("profBio").innerHTML = `${bio ? `<p class="bio-text">${esc(bio)}</p>` : isMe ? `<p class="bio-meta">Расскажи о себе: пара слов увидят все дачники</p>` : ""}
+      ${sinceTxt ? `<span class="bio-meta">${sinceTxt}</span>` : ""}
+      ${isMe ? `<button class="linkish" type="button" id="bioEdit">${bio ? "изменить «о себе»" : "добавить «о себе»"}</button>` : ""}`;
+    if (!isMe) return;
+    $("bioEdit").onclick = () => {
+      $("bioEdit").outerHTML = `<form class="bio-form" id="bioForm"><textarea class="field" id="bioInput" maxlength="160" placeholder="Например: люблю играть за мафию, по субботам волейбол">${esc(bio)}</textarea>
+        <div class="row-btns"><button class="pill sm" type="submit">сохранить</button></div></form>`;
+      const inp = $("bioInput"); inp.focus();
+      $("bioForm").onsubmit = async (ev2) => {
+        ev2.preventDefault();
+        const text = inp.value.replace(/\s+\n/g, "\n").trim().slice(0, 160);
+        const { error } = await sb.from("profiles").update({ bio: text || null }).eq("id", me.id);
+        if (error) return toast("Не получилось: " + humanErr(error));
+        toast("Сохранено"); renderProfile();
+      };
+    };
+  };
+  const drawProfGames = (id, row, sstats) => {
+    const ranked = [...people].filter((p) => p.games > 0).sort((a, b) => b.wins - a.wins || b.games - a.games || a.nick.localeCompare(b.nick));
+    const mafPlace = row.games ? ranked.findIndex((p) => p.id === id) + 1 : 0;
+    const pct = (w, g) => (g >= 3 ? ` · ${Math.round((w / g) * 100)}%` : "");
+    const card = (k, place, line) => { const M = meta(k);
+      return `<button class="pg${place ? "" : " none"}" type="button" data-pg="${k}" style="--gc:${M.color}"><span class="pg-ic">${M.emoji}</span>
+        <span class="pg-t"><b>${M.name}</b><small>${line}</small></span>
+        <span class="pg-place">${place ? "#" + place : "—"}<small>место</small></span></button>`; };
+    const sOf = (k) => sstats.find((x) => x.sport === k);
+    $("profGames").innerHTML = card("mafia", mafPlace, row.games ? `${row.games} ${plural(+row.games, "игра", "игры", "игр")} · ${row.wins} ${plural(+row.wins, "победа", "победы", "побед")}${pct(row.wins, row.games)}` : "ещё не играл")
+      + Object.values(SPORTS).map((x) => { const st = sOf(x.id);
+        return card(x.id, st ? +st.place : 0, st ? `${st.games} ${plural(+st.games, "игра", "игры", "игр")} · ${st.wins} ${plural(+st.wins, "победа", "победы", "побед")} · ${st.losses} ${plural(+st.losses, "поражение", "поражения", "поражений")}` : "ещё не играл"); }).join("");
+  };
+  $("profGames").onclick = (e) => { const b = e.target.closest("[data-pg]"); if (!b) return; b.dataset.pg === "mafia" ? go("people") : go("sport", b.dataset.pg); };
+
+  /* ---------- sport screen ---------- */
+  const spMonthNow = () => bkkToday().slice(0, 7);
+  const renderSport = async (quiet) => {
+    const X = SPORTS[sportId];
+    const hosts = sp.hosts.filter((h) => h.sport === X.id).map((h) => personOf(h.user_id));
+    $("spHero").innerHTML = `<div class="sport-hero ${X.id}"><span class="sh-emoji" aria-hidden="true">${X.emoji}</span>
+      <div class="eyebrow">DACHA · ${X.code}</div><h1>${X.name}</h1><p>${X.tag}</p>
+      <div class="sh-hosts">${hosts.length ? `<span>${hosts.length > 1 ? "Ведущие:" : "Ведущий:"}</span>${hosts.map((p) => `<span class="ev-who">${avaP(p)}<span>${esc(p.nick)}</span></span>`).join("")}` : `<span>Ведущего пока нет: его назначает @tivishka</span>`}</div></div>`;
+    $("spCode").textContent = X.code;
+    if (!sb || !me) { $("spNext").innerHTML = loginPrompt(); $("spNew").innerHTML = $("spPast").innerHTML = $("spBoard").innerHTML = ""; return; }
+    if (!quiet && !sp.loaded) $("spNext").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>Загружаю игры…</div></div></div></div>`;
+    try { await Promise.all([sp.loaded && quiet !== "reload" ? null : loadSports(), people.length ? null : loadPeople()]); } catch (x) { toast("Не получилось загрузить: " + humanErr(x)); }
+    if (S.view !== "sport" || X.id !== sportId) return;
+    if (!quiet) {
+      const h2 = sp.hosts.filter((h) => h.sport === X.id).map((h) => personOf(h.user_id));
+      if (h2.length !== hosts.length) return renderSport(true);
+    }
+    drawSportNext(); drawSportNew(); drawSportPast(); drawSportBoard();
+  };
+  const spWho = (x) => `<span class="ev-who ${x.user_id === me.id ? "me" : ""}">${avaP({ ...(x.profiles || personOf(x.user_id)), id: x.user_id })}<span>${esc((x.profiles || personOf(x.user_id)).nick)}</span></span>`;
+  const spForm = (e) => `<form class="sp-form" data-spform="${e ? e.id : "new"}">
+      <label>дата<input class="field" type="date" name="d" min="${bkkToday()}" value="${e ? e.day : ""}" required></label>
+      <label>начало<input class="field" type="time" name="t" value="${e ? hm(e.start_time) : "18:00"}" required></label>
+      <label class="wide">место<input class="field" name="pl" maxlength="80" value="${esc(e?.place || "")}" placeholder="Например: пляж Карон, сетка у кафе"></label>
+      <label>цена, бат<input class="field" type="number" name="p" min="0" step="10" value="${e ? e.price : 0}"></label>
+      <label>заметка<input class="field" name="n" maxlength="200" value="${esc(e?.note || "")}" placeholder="что взять"></label>
+      <div class="row-btns wide" style="justify-content:flex-start"><button class="pill sm" type="submit">${e ? "сохранить" : "поставить игру"}</button>
+        ${e ? `<button class="pill sm ghost" type="button" data-spcancel>отмена</button><button class="pill sm red" type="button" data-spremove>убрать дату</button>` : ""}</div>
+    </form>`;
+  const drawSportNext = () => {
+    const X = SPORTS[sportId], t = bkkToday(), host = isSportHost(X.id);
+    const list = sp.events.filter((e) => e.sport === X.id && e.day >= t && e.status === "open");
+    $("spNext").innerHTML = `<div class="sec-title" style="margin-bottom:10px">Ближайшие игры</div>` + (list.length ? list.map((e) => {
+      const { d, m, w } = dayParts(e.day), mine = e.signups.some((x) => x.user_id === me.id);
+      return `<article class="ticket ev sp-card" data-spev="${e.id}" style="margin-bottom:12px"><div class="ticket-in">
+        <div class="ev-head"><div class="ev-date"><small>${DOW[w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
+          <div class="sp-meta"><div class="eyebrow">${esc(dayLabel(e.day))}</div><b>${hm(e.start_time)}${e.place ? " · " + esc(e.place) : ""}</b>
+            <small>${e.price ? `${e.price} ฿ с человека` : "бесплатно"}</small>${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
+        <div class="ev-crew">${e.signups.map(spWho).join("") || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
+        <div class="ev-act">${mine ? `<span class="tag ok">ты идёшь</span><button class="linkish" type="button" data-spleave>не смогу</button>` : `<button class="pill sm" type="button" data-spjoin>я буду</button>`}
+          <span class="ev-count">${e.signups.length} ${plural(e.signups.length, "идёт", "идут", "идут")}</span></div>
+        ${host ? `<div class="sp-host"><button class="linkish" type="button" data-spedit>${sp.editing === e.id ? "свернуть" : "изменить"}</button>${e.day <= t ? `<button class="pill sm dark" type="button" data-spres>отметить итоги</button>` : ""}</div>${sp.editing === e.id ? spForm(e) : ""}` : ""}
+      </div></article>`;
+    }).join("") : `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">${host ? "Ближайших игр нет. Поставь дату ниже — она появится в календаре на главной." : "Ближайших игр пока нет. Как только ведущий поставит дату, она появится здесь и в календаре на главной."}</p></div></div></div>`);
+  };
+  const drawSportNew = () => {
+    const X = SPORTS[sportId];
+    $("spNew").innerHTML = isSportHost(X.id) ? `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:12px"><div class="eyebrow">Ты ведущий · ${X.name.toLowerCase()}</div><h2 class="h2">Поставить игру</h2></div>${spForm(null)}</div></div>` : "";
+  };
+  const drawSportPast = () => {
+    const X = SPORTS[sportId], t = bkkToday(), host = isSportHost(X.id);
+    const list = sp.events.filter((e) => e.sport === X.id && (e.day < t || e.status === "done")).reverse().slice(0, 8);
+    if (!list.length) { $("spPast").innerHTML = ""; return; }
+    const chips = (e, r) => e.results.filter((x) => x.result === r).map((x) => spWho({ user_id: x.user_id })).join("");
+    $("spPast").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:12px"><div class="eyebrow">История</div><h2 class="h2">Прошедшие игры</h2></div>
+      ${list.map((e) => { const { d, m } = dayParts(e.day), has = e.results.length;
+        return `<div class="sp-past" data-spev="${e.id}"><div class="dd"><b>${d}</b><small>${MON[m - 1]}</small></div><div style="min-width:0;display:grid;gap:8px">
+          ${has ? `<div class="sp-res" style="padding:0">${["win", "draw", "loss"].map((r) => { const c = chips(e, r); return c ? `<span class="lbl ${r}">${{ win: "Победили", draw: "Ничья", loss: "Проиграли" }[r]}</span><div class="ev-crew" style="padding:0">${c}</div>` : ""; }).join("")}</div>`
+            : `<span class="bio-meta">${e.signups.length} ${plural(e.signups.length, "был записан", "были записаны", "были записаны")} · итоги ещё не отмечены</span>`}
+          ${host ? `<div><button class="pill sm ${has ? "ghost" : "dark"}" type="button" data-spres>${has ? "изменить итоги" : "отметить итоги"}</button></div>` : ""}</div></div>`; }).join("")}
+    </div></div>`;
+  };
+  const drawSportBoard = async () => {
+    const X = SPORTS[sportId], cur = spMonthNow();
+    sp.month = sp.month || cur;
+    const month = sp.scope === "month" ? sp.month : null, [y, m] = sp.month.split("-").map(Number);
+    $("spScopeMonth").textContent = MONTHS[m - 1].toLowerCase() + (y !== +cur.slice(0, 4) ? " " + y : "");
+    $("spScope").querySelectorAll("[data-scope]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.scope === sp.scope));
+    $("spNav").hidden = sp.scope !== "month";
+    $("spPrev").disabled = sp.month <= "2026-11"; $("spFwd").disabled = sp.month >= cur;
+    $("spRateEb").textContent = `${X.name} · рейтинг`;
+    $("spRateTitle").textContent = month ? `Лучшие за ${MONTHS[m - 1].toLowerCase()}` : "Лучшие игроки";
+    const key = X.id + ":" + (month || "all");
+    if (!sp.board[key]) $("spBoard").innerHTML = `<div class="empty-note"><div class="wait"><span class="pulse"></span>Считаю…</div></div>`;
+    let list;
+    try { list = await sportBoard(X.id, month); } catch (x) { $("spBoard").innerHTML = `<div class="empty-note">Не получилось загрузить: ${esc(humanErr(x))}</div>`; return; }
+    if (S.view !== "sport" || X.id !== sportId || (sp.scope === "month" ? sp.month : null) !== month) return;
+    $("spBoard").innerHTML = list.length ? `<div class="month-board">${list.map((p, i) => `<button class="lb-row" type="button" data-id="${p.id}">
+        <span class="rank">${i + 1}</span>${avaP(p)}
+        <span class="nm">${esc(p.nick)}${p.id === me.id ? " · ты" : ""}<small>${[`${p.games} ${plural(+p.games, "игра", "игры", "игр")}`, p.games >= 3 ? `${Math.round((p.wins / p.games) * 100)}% побед` : "", +p.losses ? `${p.losses} ${plural(+p.losses, "поражение", "поражения", "поражений")}` : ""].filter(Boolean).join(" · ")}</small></span>
+        <span class="rs-num">${p.wins}<small>${plural(+p.wins, "победа", "победы", "побед")}</small></span></button>`).join("")}</div>`
+      : `<div class="empty-note">${month ? "В этом месяце ещё нет игр с итогами." : "Рейтинг появится, когда ведущий отметит, кто победил в первой игре."}</div>`;
+    const games = sp.events.filter((e) => e.sport === X.id && e.results.length && (!month || e.day.startsWith(month))).length;
+    $("spStub").textContent = list.length ? `${games} ${plural(games, "игра", "игры", "игр")} · ${list.length} ${plural(list.length, "игрок", "игрока", "игроков")}` : "";
+  };
+  $("spScope").onclick = (e) => { const b = e.target.closest("[data-scope]"); if (!b) return; sp.scope = b.dataset.scope; drawSportBoard(); };
+  $("spPrev").onclick = () => { sp.month = shiftMonth(sp.month || spMonthNow(), -1); drawSportBoard(); };
+  $("spFwd").onclick = () => { sp.month = shiftMonth(sp.month || spMonthNow(), 1); drawSportBoard(); };
+  $("spBoard").onclick = (e) => { const b = e.target.closest("[data-id]"); if (b) go("profile", b.dataset.id); };
+  const spAction = async (fn, okMsg) => {
+    const { error } = await fn();
+    if (error) { toast("Не получилось: " + humanErr(error)); return false; }
+    if (okMsg) toast(okMsg);
+    sp.board = {};
+    await loadSports().catch(() => {});
+    if (S.view === "sport") { drawSportNext(); drawSportNew(); drawSportPast(); drawSportBoard(); }
+    return true;
+  };
+  $("vSport").addEventListener("click", (e) => {
+    const card = e.target.closest("[data-spev]"), b = e.target.closest("button");
+    if (!b) return;
+    if (b.closest("#spHero")) { const w = b.closest(".ev-who"); void w; return; }
+    if (!card) return;
+    const id = card.dataset.spev, evn = sp.events.find((x) => x.id === id);
+    if (b.hasAttribute("data-spjoin")) { haptic("tap"); spAction(() => sb.from("sport_signups").insert({ event_id: id, user_id: me.id }), "Записал тебя на игру"); }
+    else if (b.hasAttribute("data-spleave")) sheet({ eyebrow: "Запись", title: "Не сможешь прийти?", text: "Запись на эту игру отменится.", ok: "отменить запись", okClass: "red",
+      onOk: () => spAction(() => sb.from("sport_signups").delete().eq("event_id", id).eq("user_id", me.id), "Запись отменена") });
+    else if (b.hasAttribute("data-spedit")) { sp.editing = sp.editing === id ? null : id; drawSportNext(); }
+    else if (b.hasAttribute("data-spcancel")) { sp.editing = null; drawSportNext(); }
+    else if (b.hasAttribute("data-spremove")) sheet({ eyebrow: "Дата", title: "Убрать эту дату?", text: "Игра пропадёт из календаря у всех.", ok: "убрать", okClass: "red",
+      onOk: () => { sp.editing = null; return spAction(() => sb.from("sport_events").update({ status: "removed" }).eq("id", id), "Дата убрана"); } });
+    else if (b.hasAttribute("data-spres") && evn) openResults(evn);
+  });
+  $("vSport").addEventListener("submit", (e) => {
+    const f = e.target.closest("[data-spform]"); if (!f) return;
+    e.preventDefault();
+    const v = (k) => f.elements[k].value, id = f.dataset.spform;
+    const row = { day: v("d"), start_time: v("t"), place: v("pl").trim() || null, price: Math.max(0, parseInt(v("p"), 10) || 0), note: v("n").trim() || null };
+    if (!row.day) return toast("Выбери дату");
+    if (id === "new") spAction(() => sb.from("sport_events").insert({ ...row, sport: sportId, created_by: me.id }), "Игра в календаре").then((ok) => ok && haptic("card"));
+    else { sp.editing = null; spAction(() => sb.from("sport_events").update(row).eq("id", id), "Сохранено"); }
+  });
+  // results: the host marks every player as won / lost (draw for football)
+  const openResults = (evn) => {
+    const X = SPORTS[evn.sport];
+    const res = new Map(evn.results.map((r) => [r.user_id, r.result]));
+    const ids = [...new Set([...evn.signups.map((x) => x.user_id), ...evn.results.map((x) => x.user_id)])];
+    const v = document.createElement("div"); v.className = "veil";
+    const opts = X.draws ? [["win", "W", "победа"], ["draw", "=", "ничья"], ["loss", "L", "поражение"]] : [["win", "W", "победа"], ["loss", "L", "поражение"]];
+    const draw = () => {
+      const rest = people.filter((p) => !ids.includes(p.id)).sort((a, b) => a.nick.localeCompare(b.nick));
+      const n = (r) => ids.filter((u) => res.get(u) === r).length;
+      v.innerHTML = `<div class="ticket" role="dialog" aria-modal="true"><div class="ticket-in"><div class="t-body" style="gap:12px">
+        <div class="eyebrow">${X.emoji} ${X.name} · ${esc(dayLabel(evn.day))}</div>
+        <h2 class="h2">Кто победил, а кто проиграл?</h2>
+        <p class="lead" style="font-size:13.5px">Отметь каждого: <b style="color:#1F9D55">W</b> — победа, <b style="color:var(--red)">L</b> — поражение${X.draws ? ", = — ничья" : ""}. Без отметки игрок в рейтинг не попадёт.</p>
+        <div class="res-list">${ids.length ? ids.map((u) => { const p = personOf(u);
+          return `<div class="res-row">${avaP(p)}<b>${esc(p.nick)}</b><span class="res-seg">${opts.map(([r, l, t]) => `<button type="button" data-u="${u}" data-r="${r}" aria-pressed="${res.get(u) === r}" aria-label="${esc(p.nick)}: ${t}">${l}</button>`).join("")}</span></div>`; }).join("")
+          : `<div class="week-empty">На эту игру никто не записывался. Добавь игроков ниже.</div>`}</div>
+        <div class="res-add"><select class="field" id="resAdd" aria-label="Добавить дачника"><option value="">+ добавить дачника</option>${rest.map((p) => `<option value="${p.id}">${esc(p.nick)}${p.tg_username ? " · @" + esc(p.tg_username) : ""}</option>`).join("")}</select></div>
+        <p class="bio-meta" style="margin:0">Победа: ${n("win")} · ${X.draws ? `ничья: ${n("draw")} · ` : ""}поражение: ${n("loss")} · без отметки: ${ids.length - n("win") - n("loss") - n("draw")}</p>
+        <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="button" data-save>сохранить итоги</button><button class="pill sm ghost" type="button" data-close>закрыть</button></div>
+      </div></div></div>`;
+    };
+    draw();
+    v.addEventListener("change", (e) => { if (e.target.id === "resAdd" && e.target.value) { ids.push(e.target.value); draw(); } });
+    v.addEventListener("click", async (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      const b = e.target.closest("[data-r]");
+      if (b) { const u = b.dataset.u; res.get(u) === b.dataset.r ? res.delete(u) : res.set(u, b.dataset.r); haptic("tap"); const st = v.querySelector(".res-list").scrollTop; draw(); v.querySelector(".res-list").scrollTop = st; return; }
+      if (e.target.closest("[data-save]")) {
+        const rows = ids.filter((u) => res.has(u)).map((u) => ({ u, r: res.get(u) }));
+        if (!rows.length) return toast("Отметь хотя бы одного игрока");
+        const ok = await spAction(() => sb.rpc("save_sport_results", { e: evn.id, rows }), "Итоги сохранены, рейтинг обновлён");
+        if (ok) v.remove();
+      }
+    });
+    document.body.append(v);
+  };
+
   const loadEvents = async () => {
     if (!sb || !me) return;
     await sb.rpc("ensure_events");
@@ -3364,7 +4028,7 @@ html.maint #maint { display: grid; }
       ${hostsLine(e)}
       <div class="ev-crew">${crew || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
       <div class="ev-act">${mine ? `<span class="tag ok">${canHost() ? "ты ведёшь" : "ты идёшь"}</span><button class="linkish" data-goev>${canHost() ? "подробнее" : "оплата"}</button>` : `<button class="pill sm" data-join>${canHost() ? "я веду" : "я буду"}</button>`}<span class="ev-count">идут: ${e.signups.length}${paidCount(e) ? ` · <b>оплатили: ${paidCount(e)}</b>` : ""}</span></div>
-      <button class="stub ev-go" data-goev><span>Все субботы и оплата</span><b>→</b></button>
+      <button class="stub ev-go" data-goev><span>Все даты мафии и оплата</span><b>→</b></button>
     </div></article>`;
   };
   const payState = (e, pay) => {
@@ -3854,9 +4518,11 @@ html.maint #maint { display: grid; }
     if (!S.hostMode) S.hostMode = "online";
     subscribeMine();
     loadMyCard();
-    loadPeople().then(() => { if (S.view === "home") renderHome(); });
+    loadPeople().then(() => { if (S.view === "home") renderHome(); if (S.view === "hub") drawCrewBtn(); });
+    loadSports().then(() => { if (S.view === "hub") { drawWeek(); drawHubGames(); } }).catch(() => {});
+    subscribeSports();
     loadPremium().then(() => { renderMeBtn(); if (!["auth"].includes(S.view)) go(S.view); }).catch(() => {});
-    loadEvents().then(drawHomeEvent).catch(() => {});
+    loadEvents().then(() => { drawHomeEvent(); if (S.view === "hub") { drawWeek(); drawHubGames(); } }).catch(() => {});
     ["ads/ruslan.webp", "ads/boss.webp", "ads/beach.jpg"].forEach((src) => (new Image().src = src));
     subscribeEvents();
     if (!S.on.gameId) {
@@ -3869,6 +4535,8 @@ html.maint #maint { display: grid; }
     if (my.gameChan) { sb.removeChannel(my.gameChan); my.gameChan = null; }
     if (ev.chan) { sb.removeChannel(ev.chan); ev.chan = null; }
     ev.list = []; ev.loaded = false;
+    if (sp.chan) { sb.removeChannel(sp.chan); sp.chan = null; }
+    sp.events = []; sp.hosts = []; sp.loaded = false; sp.board = {};
     my.seat = null; people = []; S.on.gameId = null; stopLive(); renderMeBtn(); $("cardDot").hidden = true; save();
   };
 
@@ -3883,13 +4551,16 @@ html.maint #maint { display: grid; }
     if (S.host.phase !== "count" && !S.host.counts) S.host.counts = suggest(S.host.n);
     if (S.on.phase === "roles" && !S.on.counts) S.on.phase = "pick";
     renderMeBtn();
-    let startView = S.view === "auth" || S.view === "profile" || S.view === "people" ? "home" : S.view || "home";
+    // DACHA opens on the hub; a running mafia game keeps its screen
+    let startView = ["card", "notes", "host", "player"].includes(S.view) ? S.view : "hub";
     const deep = new URLSearchParams(location.search).get("v") || tg?.initDataUnsafe?.start_param || "";
     if (deep === "card") startView = "card";
     if (deep === "events") startView = "events";
+    if (deep === "mafia") startView = "home";
+    if (SPORTS[deep]) { startView = "sport"; sportId = deep; }
     if (inTG) {
       try { tg?.ready(); tg?.expand(); const hw = document.documentElement.classList.contains("hw");
-        tg?.setHeaderColor?.(hw ? "#FFA24C" : "#FFDD86"); tg?.setBackgroundColor?.(hw ? "#F07A1A" : "#FEC948"); tg?.setBottomBarColor?.(hw ? "#3B1150" : "#E2A612"); tg?.disableVerticalSwipes?.(); } catch {}
+        tg?.setHeaderColor?.(hw ? "#FFA24C" : "#FFF1C9"); tg?.setBackgroundColor?.(hw ? "#F07A1A" : "#F4F5F9"); tg?.setBottomBarColor?.(hw ? "#3B1150" : "#F4F5F9"); tg?.disableVerticalSwipes?.(); } catch {}
     }
     if (sb) {
       if (inTG) {
@@ -3902,14 +4573,14 @@ html.maint #maint { display: grid; }
           // refresh avatar and @username in the background
           tgAuth().then(async () => {
             const { data: { session: s2 } } = await sb.auth.getSession();
-            if (s2) { await sb.realtime.setAuth(s2.access_token); await loadMe(s2); renderMeBtn(); if (S.view === "home") renderHome(); }
+            if (s2) { await sb.realtime.setAuth(s2.access_token); await loadMe(s2); renderMeBtn(); if (S.view === "home") renderHome(); if (S.view === "hub") renderHub(); }
           }).catch(() => {});
         }
       }
       try { await afterLogin(); } catch {}
       sb.auth.onAuthStateChange((ev, session) => {
         if (ev === "TOKEN_REFRESHED" && session) sb.realtime.setAuth(session.access_token);
-        if (ev === "SIGNED_OUT" && me) { me = null; afterLogout(); if (S.view !== "home") go("home"); }
+        if (ev === "SIGNED_OUT" && me) { me = null; afterLogout(); go("hub"); }
       });
     }
     if (!S.hostMode) S.hostMode = me ? "online" : "offline";
