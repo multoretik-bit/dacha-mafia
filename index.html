@@ -2271,7 +2271,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105110148"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105110942"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -5585,31 +5585,32 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     ev.sel = id; await loadEvents(); if (S.view === "events") drawEvents();
     toast(`Игра создана: ${DOW_FULL[w].toLowerCase()}, ${d} ${MON_FULL[m - 1]}`);
   });
+  // «запись» for mafia — the same screen as for volleyball / football
   const drawEvents = () => {
     drawNewDate();
-    const box = $("eventsList");
-    $("evTitle").textContent = canHost() ? "Запись и оплата" : "Записаться на мафию";
-    $("evLead").textContent = canHost() ? "Выбери субботу: кто придёт, как платит и от кого ты получил деньги." : "Выбери дату и нажми «Я буду». Все увидят, кто идёт.";
-    if (ev.list.length && canHost()) return drawHostEvents();
+    $("evTitle").closest(".ticket").hidden = true;
+    $("paySettings").innerHTML = "";
+    const box = $("eventsList"), t = bkkToday(), host = canHost();
     if (!ev.list.length) { box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><p class="lead">Ближайших игр пока нет.</p></div></div></div>`; return; }
-    const nextId = ev.list.find((x) => x.status === "open")?.id;
-    box.innerHTML = ev.list.map((e) => {
-      const { d, m } = dayParts(e.day), off = e.status !== "open", mine = isMine(e);
-      const crew = e.signups.map((x) => whoChip(e, x)).join("");
-      return `<article class="ticket ev ${off ? "is-cancelled" : ""} ${e.id === nextId ? "is-next" : ""}" data-ev="${e.id}"><div class="ticket-in">
-        <div class="ev-head"><div class="ev-date"><small>${DOW[dayParts(e.day).w]}</small><b>${d}</b><small>${MON[m - 1]}</small></div>
-          <div style="min-width:0"><div class="eyebrow">${off ? "Игра отменена" : e.id === nextId ? "Ближайшая игра" : DOW_FULL[dayParts(e.day).w]}</div>
-            <div class="ev-times"><div><small>сбор</small><b>${hm(e.gather_time)}</b></div><div><small>начало</small><b>${hm(e.start_time)}</b></div><div><small>цена</small><b>${e.price} ฿</b></div></div>
-            ${placeChip(e)}${e.note ? `<p class="ev-note">${esc(e.note)}</p>` : ""}</div></div>
-        ${hostsLine(e)}
-        <div class="ev-crew">${crew || `<span class="ev-empty">Пока никто не записался. Будь первым.</span>`}</div>
-        <div class="ev-act">${mine ? `${mineTag(e)}<button class="linkish" data-leave>не смогу</button>` : joinBtns("data-join", canHost(), off ? "disabled" : "")}
-          <span class="ev-count">идут: ${e.signups.length}${paidCount(e) ? ` · <b>оплатили: ${paidCount(e)}</b>` : ""}</span></div>
+    if (!ev.list.some((x) => x.id === ev.sel)) ev.sel = (ev.list.find((x) => x.status === "open") || ev.list[0]).id;
+    const e = ev.list.find((x) => x.id === ev.sel), off = e.status !== "open", mine = isMine(e);
+    const st = (u) => { const p = payOf(e.id, u); return p?._st === "confirmed" ? "paid" : p?._st === "pending" ? "claim" : null; };
+    const rows = e.signups, paidN = rows.filter((x) => st(x.user_id) === "paid").length;
+    const tag = (u) => { const s2 = st(u), p = payOf(e.id, u); return !e.price ? "" : s2 === "paid" ? `<span class="sl-tag ok">оплачено ✓</span>` : s2 === "claim" ? `<span class="sl-tag wait">${p?.method === "qr" ? "проверь перевод" : "отдаст наличными"}</span>` : `<span class="sl-tag no">не оплачено</span>`; };
+    box.innerHTML = `<div class="ev-days so-days" role="group" aria-label="Дата">${ev.list.map((x) => { const q = dayParts(x.day); return `<button class="chip" type="button" data-sel="${x.id}" aria-pressed="${x.id === e.id}">${x.day === t ? "сегодня" : `${q.d} ${MON[q.m - 1]}`}${x.status !== "open" ? " ✕" : ""}</button>`; }).join("")}</div>
+      <article class="ticket ${off ? "is-cancelled" : ""}" data-ev="${e.id}"><div class="ticket-in">
+        <div class="t-body" style="padding-bottom:8px;gap:8px"><div class="eyebrow">🎭 Мафия · ${esc(dayLabel(e.day))} · начало ${hm(e.start_time)} · сбор ${hm(e.gather_time)}${e.price ? ` · ${e.price} ฿` : ""}</div>
+          ${placeChip(e)}
+          <h2 class="h2">${off ? "Игра отменена" : rows.length ? `Записались ${rows.length}` : "Пока никто не записался"}</h2>
+          ${host && e.price && rows.length ? `<div class="sl-sum"><span class="ok">оплатили ${paidN}</span><span class="no">не оплатили ${rows.length - paidN}</span><span>ждём ${money((rows.length - paidN) * e.price)}</span></div>` : ""}</div>
+        <div class="sl-hosts"><span class="eyebrow">${(e.hosts || []).length > 1 ? "Ведущие" : "Ведущий"}</span>${(e.hosts || []).length ? e.hosts.map((x) => esc((x.profiles || personOf(x.user_id)).nick)).join(", ") : `<span class="bio-meta">ещё не отметился</span>`}</div>
+        ${rows.map((x) => { const pp = x.profiles ? { ...personOf(x.user_id), ...x.profiles, id: x.user_id } : personOf(x.user_id), s2 = st(x.user_id);
+          return `<div class="sl-row"><span class="so-who">${avaP(pp)}<b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b></span>${host ? `${tag(x.user_id)}${e.price && s2 !== "paid" ? `<button class="pill sm" type="button" data-st="paid" data-u="${x.user_id}" aria-pressed="false">получил ${e.price} ฿</button>` : ""}<button class="x-rm" type="button" data-unsign="${x.user_id}" data-nick="${esc(pp.nick)}" aria-label="Убрать: не пришёл">×</button>` : ""}</div>`; }).join("")}
+        ${host ? addCameHTML(e, "data-addsign") : ""}
+        <div class="ev-act" style="padding-top:12px">${mine ? `${mineTag(e)}<button class="linkish" type="button" data-leave>не смогу</button>` : joinBtns("data-join", host, off ? "disabled" : "")}</div>
         ${myRoleOn(e) === "player" && !off ? `<div class="wk-pay" style="padding:0 16px 14px">${payBtn("mafia", e)}</div>` : ""}
-        <div class="stub"><span>${DOW_FULL[dayParts(e.day).w]}, ${d} ${MON_FULL[m - 1]}</span><b>${DOW_CODE[dayParts(e.day).w]} ${pad(d)}.${pad(m)}</b></div>
+        ${host ? editHTML(e) : ""}
       </div></article>`;
-    }).join("");
-    drawPaySettings();
   };
   const drawPaySettings = () => {
     const box = $("paySettings");
