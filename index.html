@@ -2095,7 +2095,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105093647"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105095055"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4628,7 +4628,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       v.innerHTML = `<div class="bank" role="dialog" aria-modal="true" aria-label="Баланс">
         <div class="bank-card ${bal < 0 ? "neg" : ""}"><div class="bank-top"><span class="pm-mark">DACHA <b>WALLET</b></span>${isPremium(me) ? `<span class="bank-prem">◆ PREMIUM</span>` : ""}</div>
           <small>Баланс</small><b>${money(bal)}</b>
-          <div class="bank-who">${esc(me.nick)}${wal.pending ? ` · ⏳ +${money(wal.pending)} ждёт подтверждения` : ""}</div></div>
+          <div class="bank-who">${esc(me.nick)}${wal.pending ? ` · ⏳ +${money(wal.pending)} ждёт подтверждения` : ""}${+wal.reserved ? ` · 🔒 ${money(wal.reserved)} за оплаченные игры` : ""}</div></div>
         ${tab === "main" ? `<div class="bank-acts">
             <button type="button" data-b="topup"><i>＋</i><span>Пополнить</span></button>
             <button type="button" data-b="send"><i>↗</i><span>Перевести</span></button>
@@ -4638,10 +4638,10 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         : `<form class="bank-send" data-sendform>
             <div class="eyebrow">Перевод дачнику</div>
             <select class="field" name="to" required><option value="">Кому перевести?</option>${list.map((p) => `<option value="${p.id}" ${p.id === to ? "selected" : ""}>${esc(p.nick)}${p.tg_username ? " · @" + esc(p.tg_username) : ""}</option>`).join("")}</select>
-            <label class="amt-row"><input class="amt" name="a" type="number" inputmode="numeric" min="1" max="${Math.max(bal, 0)}" step="1" value="${amt}" placeholder="0" required aria-label="Сумма"><span>฿</span></label>
+            <label class="amt-row"><input class="amt" name="a" type="number" inputmode="numeric" min="1" max="${Math.max(avail(), 0)}" step="1" value="${amt}" placeholder="0" required aria-label="Сумма"><span>฿</span></label>
             <input class="field" name="n" maxlength="80" placeholder="Сообщение (можно пусто)">
-            <p class="bio-meta" style="margin:0">${bal > 0 ? `Можно перевести до ${money(bal)}. Деньги придут сразу, бот напишет получателю.` : "На балансе пока нет денег для перевода — сначала пополни."}</p>
-            <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="submit" ${bal > 0 ? "" : "disabled"}>перевести</button><button class="pill sm ghost" type="button" data-b="main">назад</button></div>
+            <p class="bio-meta" style="margin:0">${avail() > 0 ? `Можно перевести до ${money(avail())}. Деньги придут сразу, бот напишет получателю.` : "На балансе пока нет свободных денег для перевода — сначала пополни."}</p>
+            <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="submit" ${avail() > 0 ? "" : "disabled"}>перевести</button><button class="pill sm ghost" type="button" data-b="main">назад</button></div>
           </form>`}
         <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button>
       </div>`;
@@ -4666,7 +4666,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       const amount = parseInt(amt, 10), who = personOf(to);
       if (!to) return toast("Выбери, кому перевести");
       if (!(amount >= 1)) return toast("Укажи сумму");
-      if (amount > (+wal.balance || 0)) return toast("На балансе не хватает денег");
+      if (amount > avail()) return toast("На балансе не хватает свободных денег");
       sheet({ eyebrow: "Перевод", title: `Перевести ${money(amount)} → ${who.nick}?`, text: "Деньги уйдут сразу, отменить перевод нельзя.", ok: "перевести", onOk: async () => {
         const { data: rid, error } = await sb.rpc("wallet_transfer", { to_: to, amount, note: f.elements.n.value.trim() || null });
         if (error) return toast("Не получилось: " + humanErr(error));
@@ -4676,11 +4676,13 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     });
     document.body.append(v);
   };
-  const evPayState = (id) => { const l = wal.txs.filter((t) => t.event_id === id); return l.some((t) => t.status === "confirmed") ? "paid" : l.some((t) => t.status === "pending") ? "pending" : null; };
+  const evPayState = (id) => { const l = wal.txs.filter((t) => t.event_id === id); return l.some((t) => t.status === "confirmed" && t.purpose === "evpay") ? "bal" : l.some((t) => t.status === "confirmed") ? "paid" : l.some((t) => t.status === "pending") ? "pending" : null; };
+  const avail = () => +(wal.available ?? wal.balance) || 0;
   const payBtn = (kind, e) => {
     if (!me || !e?.price) return "";
     const st = evPayState(e.id);
     if (st === "paid") return `<span class="pay-ok">оплачено ✓</span>`;
+    if (st === "bal") return `<span class="pay-ok">оплачено с баланса ✓</span>`;
     if (st === "pending") return `<button class="pay-btn wait" type="button" data-pay="${kind}:${e.id}">⏳ ждём подтверждения</button>`;
     return `<button class="pay-btn" type="button" data-pay="${kind}:${e.id}">💳 Оплатить ${e.price} ฿</button>`;
   };
@@ -4716,13 +4718,19 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <small>Твой баланс</small><b>${money(bal)}</b>
         <span>${bal < 0 ? "Это долг за игры, где ты был. Пополни, чтобы выйти в ноль" : bal > 0 ? "Предоплата: спишется за следующие игры" : "Всё оплачено, долгов нет"}</span>
         ${wal.pending ? `<em>⏳ ждёт подтверждения ведущего: +${money(wal.pending)}</em>` : ""}</div>
-      ${e ? `<div class="pay-ctx" style="--gc:${meta(payCtx.kind).color}"><span class="wk-ic">${meta(payCtx.kind).emoji}</span><span class="wk-txt"><b>${meta(payCtx.kind).name} · ${e.price} ฿</b><small>${esc(dayLabel(e.day))} · ${hm(e.start_time)}${placeName(e) ? " · " + esc(placeName(e)) : ""}</small></span>${st === "paid" ? `<span class="pay-ok">оплачено ✓</span>` : st === "pending" ? `<span class="tag">проверяем</span>` : ""}</div>` : ""}`;
+      ${e ? `<div class="pay-ctx" style="--gc:${meta(payCtx.kind).color}"><span class="wk-ic">${meta(payCtx.kind).emoji}</span><span class="wk-txt"><b>${meta(payCtx.kind).name} · ${e.price} ฿</b><small>${esc(dayLabel(e.day))} · ${hm(e.start_time)}${placeName(e) ? " · " + esc(placeName(e)) : ""}</small></span>${st === "paid" || st === "bal" ? `<span class="pay-ok">оплачено ✓</span>` : st === "pending" ? `<span class="tag">проверяем</span>` : ""}</div>` : ""}`;
     const q = qrFor(e), qr = q?.url;
     const chips = [...new Set([e?.price, bal < 0 ? -bal : null, 100, 250, 500].filter((x) => x > 0))].slice(0, 4);
     const pend = wal.txs.filter((t) => t.status === "pending");
     void pend;
-    $("payBody").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:12px">
-        <div class="eyebrow">${e ? "Оплатить игру" : "Пополнить баланс"}</div>
+    const canBal = e && !st && avail() >= e.price && myRoleOn(e) === "player";
+    $("payBody").innerHTML = `${canBal ? `<div class="ticket" style="margin-bottom:12px"><div class="ticket-in"><div class="t-body" style="gap:10px">
+        <div class="eyebrow">Быстрее всего</div>
+        <button class="pill wide pm-btn" type="button" data-frombal>оплатить с баланса · ${money(e.price)}</button>
+        <p class="bio-meta" style="margin:0">На балансе доступно ${money(avail())}. Игра сразу станет оплаченной, сумма спишется, когда игра начнётся. Отменишь запись — деньги останутся.</p>
+      </div></div></div>` : e && !st && avail() > 0 && avail() < e.price ? `<p class="bio-meta" style="margin:0 4px 12px">На балансе доступно ${money(avail())} — для оплаты с баланса не хватает ${money(e.price - avail())}.</p>` : ""}
+      <div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:12px">
+        <div class="eyebrow">${e ? (canBal ? "Или оплатить переводом / наличными" : "Оплатить игру") : "Пополнить баланс"}</div>
         <label class="amt-row"><input class="amt" id="payAmt" type="number" inputmode="numeric" min="1" max="100000" step="1" value="${amt}" aria-label="Сумма в батах"><span>฿</span></label>
         <div class="amt-chips">${chips.map((c) => `<button type="button" class="chip" data-amt="${c}" aria-pressed="${c === +amt}">${c === -bal && bal < 0 ? `долг ${c}` : c} ฿</button>`).join("")}</div>
         <div class="pm-tiles" role="group" aria-label="Способ оплаты">
@@ -4744,7 +4752,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       ...wal.charges.map((c) => ({ at: c.day + "T" + c.start_time, amt: -c.price, ic: meta(c.game).emoji, t: `${meta(c.game).name} · ${dayLabel(c.day)}`, s: c.place || "игра" })),
       ...wal.txs.filter((t) => t.status !== "pending" && t.purpose === "premium").map((t) => ({ at: t.created_at, amt: 0, ic: t.status === "rejected" ? "✕" : "◆",
         t: `PREMIUM · ${t.amount} ${CUR[t.currency] || "฿"}${t.status === "rejected" ? " · не подтверждено" : ""}`, s: "покупка на месяц" })),
-      ...wal.txs.filter((t) => t.status !== "pending" && t.purpose !== "premium").map((t) => ({ at: t.created_at, amt: t.status === "confirmed" ? t.amount : 0, ic: t.status === "rejected" ? "✕" : t.method === "transfer" ? (t.amount < 0 ? "↗" : "↙") : t.method === "adjust" ? (t.amount > 0 ? "＋" : "−") : t.method === "qr" ? "📱" : "💵",
+      ...wal.txs.filter((t) => t.purpose === "evpay").map((t) => ({ at: t.created_at, amt: 0, ic: "🔒", t: "Оплачено с баланса", s: evTitle(t.game, t.event_id) })),
+      ...wal.txs.filter((t) => t.status !== "pending" && t.purpose !== "premium" && t.purpose !== "evpay").map((t) => ({ at: t.created_at, amt: t.status === "confirmed" ? t.amount : 0, ic: t.status === "rejected" ? "✕" : t.method === "transfer" ? (t.amount < 0 ? "↗" : "↙") : t.method === "adjust" ? (t.amount > 0 ? "＋" : "−") : t.method === "qr" ? "📱" : "💵",
         t: t.status === "rejected" ? `Не подтверждено · ${money(t.amount)}` : t.method === "transfer" || t.method === "adjust" ? (t.note || "Корректировка") : `Пополнение · ${t.method === "qr" ? "QR" : "наличные"}`, s: t.game ? evTitle(t.game, t.event_id) : new Date(t.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) })),
     ].sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 40);
     $("payHist").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">История</div></div>
@@ -4781,6 +4790,12 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (b.dataset.amt) { payAmt = +b.dataset.amt; return drawPay(); }
     if (b.dataset.pm) { payMethod = b.dataset.pm; haptic("tap"); return drawPay(); }
     if (b.hasAttribute("data-qrsave")) return downloadQR(qrFor(ctxEvent())?.url);
+    if (b.hasAttribute("data-frombal")) {
+      const ce = ctxEvent(); if (!ce) return;
+      const { error } = await sb.rpc("pay_from_balance", { e: ce.id, g: payCtx.kind });
+      if (error) return toast("Не получилось: " + (/not enough/.test(error.message) ? "на балансе не хватает денег" : /already/.test(error.message) ? "игра уже оплачена" : humanErr(error)));
+      haptic("card"); toast("Оплачено с баланса ✓"); return walletChanged();
+    }
     if (b.dataset.send) {
       const amount = +($("payAmt").value || 0); if (!(amount >= 1)) return toast("Укажи сумму");
       const ctx = ctxEvent();
@@ -4851,7 +4866,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
         <div class="eyebrow">${on ? "Продлить на месяц" : "Купить на месяц"}</div>
         <div class="pm-cur" role="group" aria-label="Валюта">${Object.keys(PREM_PRICE).map((c) => `<button type="button" data-pmcur="${c}" aria-pressed="${c === pmCur}"><b>${PREM_PRICE[c]} ${CUR[c]}</b><small>${c === "THB" ? "бат" : c === "RUB" ? "рубли" : "доллары"}</small></button>`).join("")}</div>
         ${pmCur === "THB" ? `
-          ${bal >= PREM_PRICE.THB ? `<button class="pill wide pm-btn" type="button" data-pmbal>оплатить с баланса · ${money(PREM_PRICE.THB)}</button><p class="bio-meta" style="margin:0;text-align:center">или переводом / наличными:</p>` : ""}
+          ${avail() >= PREM_PRICE.THB ? `<button class="pill wide pm-btn" type="button" data-pmbal>оплатить с баланса · ${money(PREM_PRICE.THB)}</button><p class="bio-meta" style="margin:0;text-align:center">или переводом / наличными:</p>` : ""}
           <div class="pm-tiles" role="group" aria-label="Способ оплаты">
             <button type="button" data-pmm="qr" aria-pressed="${pmMethod === "qr"}"><span>📱</span><b>QR-перевод</b><small>из приложения банка</small></button>
             <button type="button" data-pmm="cash" aria-pressed="${pmMethod === "cash"}"><span>💵</span><b>Наличными</b><small>лично @tivishka</small></button>
