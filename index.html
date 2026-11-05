@@ -1230,6 +1230,31 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 .ml-t b { font-weight: 800; font-size: 15px; }
 .ml-t small { color: var(--muted); font-weight: 700; font-size: 12px; line-height: 1.25; }
 
+.pgi { display: grid; justify-items: center; border-radius: 22px; background: var(--gc); color: #fff; box-shadow: 0 12px 22px -14px var(--gc); overflow: hidden; }
+.pgi-main { display: grid; justify-items: center; gap: 4px; width: 100%; padding: 14px 6px 2px; color: inherit; order: 1; }
+.pgi-main small { font-weight: 800; font-size: 12.5px; opacity: .9; order: 3; }
+.pgi-ic { width: 46px; height: 46px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 25px; }
+.pgi-place { order: 2; font: 700 30px/1 var(--f-code); color: #fff; padding: 4px 14px 2px; border-radius: 12px; font-variant-numeric: tabular-nums; }
+.pgi-place:active, .pgi-main:active { transform: scale(.95); }
+.pgi { grid-template-areas: "main" "place"; }
+.pgi .pgi-main { grid-area: main; }
+.pgi .pgi-place { grid-area: place; margin: -2px 0 12px; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; text-decoration-color: rgba(255,255,255,.45); }
+.pg-goes { display: flex; gap: 8px; overflow-x: auto; padding: 2px 14px 16px; scrollbar-width: none; }
+.pgo { display: flex; align-items: center; gap: 8px; padding: 8px 12px 8px 8px; border-radius: 16px; background: color-mix(in srgb, var(--gc) 9%, #fff); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--gc) 22%, #fff); flex: none; text-align: left; color: var(--ink); }
+.pgo-ic { width: 34px; height: 34px; border-radius: 10px; background: #fff; display: grid; place-items: center; font-size: 19px; }
+.pgo b { display: block; font-weight: 800; font-size: 13.5px; }
+.pgo small { color: var(--muted); font-weight: 700; font-size: 12px; }
+.pg-detail { padding: 0 16px 16px; }
+.pg-roles { max-height: 42vh; overflow-y: auto; }
+
+.rate-btn { color: #B07A00; background: #FFF6DA; box-shadow: 0 0 0 1px #F5DFA0, 0 4px 12px -6px rgba(176,122,0,.45); }
+.rate-btn svg { width: 22px; height: 22px; }
+.deck-link { display: flex; align-items: center; gap: 10px; margin: 6px auto 0; padding: 6px 14px 6px 6px; border-radius: 999px; color: var(--muted); font-weight: 800; font-size: 13.5px; }
+.deck-link .ml-ic { width: 32px; height: 32px; border-radius: 10px; }
+.deck-link .ml-ic svg { width: 17px; height: 17px; }
+.deck-link .dl-go { font: 600 18px/1 var(--f-code); }
+.deck-link:active { background: var(--soft); }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -1399,6 +1424,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       <button role="tab" id="tabNotes" aria-selected="false" hidden>заметки</button>
     </div>
     <div class="top-title" id="topTitle" hidden></div>
+    <button class="icon-btn rate-btn" id="goPeople" type="button" aria-label="Рейтинг" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/></svg></button>
     <button class="icon-btn" id="meBtn" aria-label="Профиль"></button>
   </header>
 
@@ -1505,10 +1531,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       </button>
     </div>
     <div data-ad-slot></div>
-    <div class="maf-links">
-      <button class="maf-link" type="button" id="goPeople"><span class="ml-ic ml-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/></svg></span><span class="ml-t"><b>Рейтинг</b><small>кто чаще побеждает</small></span></button>
-      <button class="maf-link" type="button" id="goDeck2"><span class="ml-ic ml-deck" id="deckIc2"></span><span class="ml-t"><b>Колода</b><small>все карточки ролей</small></span></button>
-    </div>
+    <button class="deck-link" type="button" id="goDeck2"><span class="ml-ic ml-deck" id="deckIc2"></span>колода карточек<span class="dl-go">›</span></button>
   </section>
 
   <!-- PLAYER HUB -->
@@ -1816,7 +1839,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261105081328"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261105081711"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2121,7 +2144,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       if (me) toast("Раздавать карты может только ведущий");
       view = "home";
     }
-    if (view === "profile") { if (S.view !== "profile") profileFrom = S.view; if ((arg || me?.id) !== profileId) profGame = null; profileId = arg || me?.id; }
+    if (view === "profile") { if (S.view !== "profile") profileFrom = S.view; profileId = arg || me?.id; }
     if (view === "sport") sportId = SPORTS[arg] ? arg : sportId;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
@@ -2161,7 +2184,11 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
   $("goNotes").onclick = () => go("notes");
   $("goPlayer").onclick = () => go("player");
   $("tabEvents").onclick = () => go("events");
-  $("goPeople").onclick = () => (me ? go("people") : go("auth"));
+  $("goPeople").onclick = () => {
+    if (!me) return go("auth");
+    if (S.view === "sport") return $("spRate").scrollIntoView({ behavior: "smooth", block: "start" });
+    go("people");
+  };
   $("tabHost").onclick = () => go("host");
   $("tabCard").onclick = () => go("card");
   $("tabNotes").onclick = () => go("notes");
@@ -2182,6 +2209,9 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     });
     $("tabEvents").textContent = canHost() ? "запись" : "запись на игру";
     $("tabsBox").hidden = !set.length;
+    // rating of the current game, next to the avatar
+    $("goPeople").hidden = !["home", "card", "notes", "host", "events", "player", "deck", "sport"].includes(view);
+    $("goPeople").setAttribute("aria-label", view === "sport" ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("topTitle").hidden = !!set.length;
     $("topTitle").textContent = { home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
   };
@@ -2284,7 +2314,7 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
     if (!sb || !me) return;
     const [{ data: stats }, , { data: sstats }, { data: extra }] = await Promise.all([
       sb.rpc("player_stats", { p: id }), loadPeople(), sb.rpc("sport_stats", { p: id }),
-      sb.from("profiles").select("bio, created_at").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(),
+      sb.from("profiles").select("bio, created_at").eq("id", id).maybeSingle(), sp.loaded ? null : loadSports(), ev.loaded ? null : loadEvents(),
     ]);
     if (S.view !== "profile" || profileId !== id) return;
     const row = people.find((p) => p.id === id) || (id === me.id ? { ...me, games: 0, wins: 0, hosted: 0 } : { nick: "Дачник", games: 0, wins: 0, hosted: 0 });
@@ -3838,37 +3868,52 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
       };
     };
   };
-  let profGame = null;
   let profLast = null;
+  // profile: one tile per played game (tap = details sheet, tap on #N = rating), upcoming dates, achievements
   const drawProfGames = (id, row, sstats, rolesHTML, nRoles) => {
-    profLast = [id, row, sstats, rolesHTML, nRoles];
     const ranked = [...people].filter((p) => p.games > 0).sort((a, b) => b.wins - a.wins || b.games - a.games || a.nick.localeCompare(b.nick));
     const played = [];
     if (+row.games) played.push({ k: "mafia", place: ranked.findIndex((p) => p.id === id) + 1, games: +row.games, wins: +row.wins });
     Object.values(SPORTS).forEach((x) => { const st = sstats.find((y) => y.sport === x.id); if (st && +st.games) played.push({ k: x.id, place: +st.place, games: +st.games, wins: +st.wins, losses: +st.losses, draws: +st.draws }); });
-    const box = $("profGames");
-    if (!played.length) { box.innerHTML = `<div class="sec-label eyebrow">Игры</div><div class="empty-note">Пока не сыграл ни одной игры. Рейтинги появятся после первой.</div>`; return; }
-    if (!played.some((g) => g.k === profGame)) profGame = played[0].k;
-    const g = played.find((x) => x.k === profGame), M = meta(g.k);
-    const pct = g.games >= 3 ? Math.round((g.wins / g.games) * 100) + "%" : "—";
-    const cells = g.k === "mafia"
+    profLast = { id, row, played, rolesHTML, nRoles };
+    const t = bkkToday();
+    const goes = [
+      ...ev.list.filter((e) => e.status === "open" && [...e.signups, ...(e.hosts || [])].some((x) => x.user_id === id)).map((e) => ({ k: "mafia", e })),
+      ...sp.events.filter((e) => e.status === "open" && e.day >= t && e.signups.some((x) => x.user_id === id)).map((e) => ({ k: e.sport, e })),
+    ].sort((a, b) => (a.e.day + hm(a.e.start_time)).localeCompare(b.e.day + hm(b.e.start_time)));
+    $("profGames").innerHTML = `<div class="sec-label eyebrow">Рейтинги в играх</div>
+      ${played.length ? `<div class="pg-icons">${played.map((x) => { const m = meta(x.k);
+        return `<div class="pgi" style="--gc:${m.color}">
+          <button class="pgi-main" type="button" data-pg="${x.k}" aria-label="${m.name}: подробнее"><span class="pgi-ic">${m.emoji}</span><small>${m.name}</small></button>
+          <button class="pgi-place" type="button" data-pgrate="${x.k}" aria-label="${m.name}: ${x.place ? x.place + " место, " : ""}открыть рейтинг">${x.place ? "#" + x.place : "—"}</button></div>`; }).join("")}</div>`
+        : `<div class="empty-note">Пока не сыграл ни одной игры. Рейтинги появятся после первой.</div>`}
+      ${goes.length ? `<div class="sec-label eyebrow">Записан на игры</div><div class="pg-goes">${goes.map(({ k, e }) => { const m = meta(k);
+        return `<button class="pgo" type="button" data-pgo="${k}" style="--gc:${m.color}"><span class="pgo-ic">${m.emoji}</span><span><b>${esc(dayLabel(e.day))}</b><small>${m.name} · ${hm(e.start_time)}</small></span></button>`; }).join("")}</div>` : ""}`;
+  };
+  const openProfGame = (k) => {
+    const L = profLast, g = L?.played.find((x) => x.k === k); if (!g) return;
+    const M = meta(k), pct = g.games >= 3 ? Math.round((g.wins / g.games) * 100) + "%" : "—";
+    const cells = k === "mafia"
       ? [[g.games, plural(g.games, "игра", "игры", "игр")], [g.wins, plural(g.wins, "победа", "победы", "побед")], [pct, "побед"]]
       : [[g.games, plural(g.games, "игра", "игры", "игр")], [g.wins, plural(g.wins, "победа", "победы", "побед")], [g.losses, plural(g.losses, "поражение", "поражения", "поражений")], ...(g.draws ? [[g.draws, plural(g.draws, "ничья", "ничьи", "ничьих")]] : []), [pct, "побед"]];
-    box.innerHTML = `<div class="sec-label eyebrow">Рейтинги в играх</div>
-      <div class="pg-icons">${played.map((x) => { const m = meta(x.k);
-        return `<button class="pgi" type="button" data-pg="${x.k}" aria-pressed="${x.k === profGame}" style="--gc:${m.color}" aria-label="${m.name}: ${x.place ? x.place + " место" : "без места"}">
-          <span class="pgi-ic">${m.emoji}</span><b>${x.place ? "#" + x.place : "—"}</b><small>${m.name}</small></button>`; }).join("")}</div>
-      <div class="sec-label eyebrow">Подробнее в игре · ${M.name.toLowerCase()}</div>
-      <div class="pg-detail" style="--gc:${M.color}">
-        <div class="pg-cells" style="grid-template-columns:repeat(${cells.length},minmax(0,1fr))">${cells.map(([v, l]) => `<div><b>${v}</b><small>${l}</small></div>`).join("")}</div>
-        ${g.k === "mafia" ? (nRoles ? `<div class="pg-sub">За кого играл</div><div class="roles">${rolesHTML}</div>` : "") : ""}
-        <button class="linkish pg-link" type="button" data-pgrate="${g.k}">${g.k === "mafia" ? "рейтинг мафии" : `рейтинг: ${M.name.toLowerCase()}`} ›</button>
-      </div>`;
+    const v = document.createElement("div"); v.className = "veil";
+    v.innerHTML = `<div class="ticket" role="dialog" aria-modal="true" style="--gc:${M.color}"><div class="ticket-in">
+      <div class="t-body" style="gap:4px;padding-bottom:12px"><div class="eyebrow">${M.emoji} ${M.name} · ${esc(L.row.nick)}</div><h2 class="h2">${g.place ? `${g.place} место в рейтинге` : "Без места в рейтинге"}</h2></div>
+      <div class="pg-detail">
+        <div class="pg-cells" style="grid-template-columns:repeat(${cells.length},minmax(0,1fr))">${cells.map(([v2, l]) => `<div><b>${v2}</b><small>${l}</small></div>`).join("")}</div>
+        ${k === "mafia" && L.nRoles ? `<div class="pg-sub">За кого играл</div><div class="roles pg-roles">${L.rolesHTML}</div>` : ""}
+        <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="button" data-rate>${k === "mafia" ? "рейтинг мафии" : `рейтинг: ${M.name.toLowerCase()}`}</button><button class="pill sm ghost" type="button" data-close>закрыть</button></div>
+      </div></div></div>`;
+    v.addEventListener("click", (e) => {
+      if (e.target.closest("[data-rate]")) { v.remove(); return k === "mafia" ? go("people") : go("sport", k); }
+      if (e.target === v || e.target.closest("[data-close]")) v.remove();
+    });
+    document.body.append(v); haptic("tap");
   };
   $("profGames").onclick = (e) => {
-    const r = e.target.closest("[data-pgrate]"); if (r) return r.dataset.pgrate === "mafia" ? go("people") : go("sport", r.dataset.pgrate);
-    const b = e.target.closest("[data-pg]"); if (!b || b.dataset.pg === profGame) return;
-    profGame = b.dataset.pg; haptic("tap"); if (profLast) drawProfGames(...profLast);
+    const r = e.target.closest("[data-pgrate]"); if (r) { haptic("tap"); return r.dataset.pgrate === "mafia" ? go("people") : go("sport", r.dataset.pgrate); }
+    const o = e.target.closest("[data-pgo]"); if (o) return o.dataset.pgo === "mafia" ? go("events") : go("sport", o.dataset.pgo);
+    const b = e.target.closest("[data-pg]"); if (b) openProfGame(b.dataset.pg);
   };
 
   /* ---------- sport screen ---------- */
