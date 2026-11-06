@@ -1983,6 +1983,32 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .qr-cap { font-weight: 900; color: var(--navy-ink); }
 .qr-one .t-body { gap: 12px; }
 
+/* wallet sheet v2 (06.11) */
+.bank-main { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; border-radius: 22px; background: var(--blue, #0033FF); color: #fff; text-align: left; box-shadow: 0 14px 26px -14px rgba(0,51,255,.75); }
+.bank-main i { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.18); flex: none; }
+.bank-main span { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.bank-main b { font: 900 18px/1.1 var(--f-body); }
+.bank-main small { font-weight: 700; font-size: 12.5px; opacity: .8; }
+.bank-main em { font-style: normal; font-size: 26px; opacity: .8; }
+.bank-main:active, .bank-acts3 button:active, .bank-hist:active, .shop-item:active, .shop-tm button:active { transform: scale(.97); }
+.bank-acts3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.bank-acts3 button { display: grid; justify-items: center; gap: 4px; padding: 14px 6px 12px; border-radius: 20px; background: #fff; box-shadow: var(--sh); color: var(--navy-ink); text-align: center; }
+.bank-acts3 i { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--soft, #EEF0F5); color: var(--navy-ink); margin-bottom: 2px; }
+.bank-acts3 b { font: 900 14px/1.1 var(--f-body); }
+.bank-acts3 small { font-weight: 700; font-size: 11px; line-height: 1.25; color: var(--muted); }
+.bank-hist { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 16px; border-radius: 18px; background: #fff; box-shadow: var(--sh); color: var(--navy-ink); font: 800 14px/1 var(--f-body); }
+.bank-hist svg { width: 20px; height: 20px; color: var(--muted); }
+.bank-hist span { flex: 1; text-align: left; } .bank-hist em { font-style: normal; color: var(--muted); font-size: 20px; }
+.bank-shop { display: grid; gap: 10px; }
+.shop-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px; border-radius: 20px; background: linear-gradient(135deg, #1A1A22, #0E0E12); color: #fff; text-align: left; box-shadow: var(--sh); }
+.shop-item i { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 18px; background: rgba(205,183,138,.18); color: var(--pm-champ, #CDB78A); flex: none; }
+.shop-item span { display: grid; gap: 3px; flex: 1; min-width: 0; } .shop-item b { font: 900 16px/1.1 var(--f-body); } .shop-item small { font-weight: 700; font-size: 12px; opacity: .7; line-height: 1.3; }
+.shop-item em { font: 800 15px/1 var(--f-body); font-style: normal; padding: 8px 12px; border-radius: 99px; background: var(--pm-champ, #CDB78A); color: #111; white-space: nowrap; }
+.shop-sub { margin-top: 4px; font-weight: 800; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.shop-tm { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.shop-tm button { display: grid; gap: 6px; justify-items: center; padding: 14px 6px; border-radius: 18px; background: #fff; box-shadow: var(--sh); color: var(--navy-ink); }
+.shop-tm b { font: 900 17px/1 var(--f-body); } .shop-tm em { font-style: normal; font-weight: 800; font-size: 12.5px; padding: 5px 10px; border-radius: 99px; background: #FFE9E6; color: #C8170F; }
+
 /* who threw the tomato */
 .tm-who { position: absolute; left: 50%; top: calc(18px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); display: flex; align-items: center; gap: 10px; max-width: calc(100% - 32px); box-sizing: border-box; padding: 8px 16px 8px 8px; border-radius: 99px; background: #fff; box-shadow: 0 14px 30px -12px rgba(0,0,0,.55); opacity: 0; animation: tmWho .35s cubic-bezier(.2,1.4,.4,1) .75s both; z-index: 2; }
 .tm-who .ava { width: 44px; height: 44px; font-size: 19px; flex: none; }
@@ -2634,7 +2660,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106074110"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106080358"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -5737,7 +5763,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     b.innerHTML = `<svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>${money(wal.balance)}`;
     b.setAttribute("aria-label", "Баланс " + money(wal.balance));
   };
-  $("hubBal").onclick = () => openPay();
+  $("hubBal").onclick = () => openBank();
   const openBank = async (mode, toId) => {
     if (!me) return go("auth");
     haptic("tap");
@@ -5749,12 +5775,20 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         <div class="bank-card ${bal < 0 ? "neg" : ""}"><div class="bank-top"><span class="pm-mark">DACHA <b>WALLET</b></span>${isPremium(me) ? `<span class="bank-prem">◆ PREMIUM</span>` : ""}</div>
           <small>Баланс</small><b>${money(bal)}</b>
           <div class="bank-who">${esc(me.nick)}${wal.pending ? ` · ⏳ +${money(wal.pending)} ждёт подтверждения` : ""}${+wal.reserved ? ` · 🔒 ${money(wal.reserved)} за оплаченные игры` : ""}${+wal.withdrawing ? ` · ↓ вывод ${money(wal.withdrawing)}` : ""}</div></div>
-        ${tab === "main" ? `<div class="bank-acts">
-            <button type="button" data-b="topup"><i>＋</i><span>Пополнить</span></button>
-            <button type="button" data-b="send"><i>↗</i><span>Перевести</span></button>
-            <button type="button" data-b="withdraw"><i>↓</i><span>Вывести</span></button>
-            <button type="button" data-b="premium"><i>◆</i><span>PREMIUM</span></button>
-            <button type="button" data-b="history"><i>≡</i><span>История</span></button>
+        ${tab === "main" ? `<button class="bank-main" type="button" data-b="topup"><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></i><span><b>Пополнить баланс</b><small>баты · рубли · USDT</small></span><em>›</em></button>
+          <div class="bank-acts3">
+            <button type="button" data-b="withdraw"><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg></i><b>Вывести</b><small>на карту или наличными</small></button>
+            <button type="button" data-b="send"><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg></i><b>Перевести</b><small>дачнику</small></button>
+            <button type="button" data-b="shop"><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></i><b>Магазин</b><small>PREMIUM, помидоры</small></button>
+          </div>
+          <button class="bank-hist" type="button" data-b="history"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg><span>История операций</span><em>›</em></button>`
+        : tab === "shop" ? `<div class="bank-shop">
+            <div class="eyebrow">Магазин DACHA</div>
+            <button class="shop-item prem" type="button" data-b="premium"><i>◆</i><span><b>PREMIUM на месяц</b><small>без рекламы, +200 ฿ и 50 🍅, своя иконка, тёмный профиль</small></span><em>${PREM_PRICE.THB} ฿</em></button>
+            <div class="shop-sub">🍅 Помидоры · у тебя ${myTomatoes ?? 0}</div>
+            <div class="shop-tm">${[5, 10, 30].map((n) => `<button type="button" data-tm="${n}"><b>${n} 🍅</b><em>${n} ฿</em></button>`).join("")}</div>
+            <p class="bio-meta" style="margin:0">Оплата с баланса. Деньги идут на развитие DACHA.</p>
+            <div class="row-btns" style="justify-content:flex-start"><button class="pill sm ghost" type="button" data-b="main">назад</button></div>
           </div>`
         : tab === "withdraw" ? `<form class="bank-send" data-wdform>
             <div class="eyebrow">Вывести деньги</div>
@@ -5780,6 +5814,13 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     draw();
     v.addEventListener("click", (e) => {
       if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      const tmb = e.target.closest("[data-tm]");
+      if (tmb) { const n = +tmb.dataset.tm;
+        return sheet({ eyebrow: "Магазин", title: `Купить ${n} 🍅 за ${n} ฿?`, text: "Спишется с баланса.", ok: "купить", onOk: async () => {
+          const { data, error } = await sb.rpc("buy_tomatoes", { n });
+          if (error) return toast(/not enough/.test(error.message) ? "На балансе не хватает — пополни" : "Не получилось: " + humanErr(error));
+          myTomatoes = data; haptic("card"); toast(`Теперь у тебя ${data} 🍅`); await walletChanged(); draw();
+        } }); }
       const b = e.target.closest("[data-b]"); if (!b) return;
       const k = b.dataset.b;
       if (k === "topup") { v.remove(); return openPay(); }
@@ -5788,6 +5829,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       if (k === "send") { tab = "send"; return draw(); }
       if (k === "pickto") { amt = v.querySelector("[name=a]")?.value || amt; return pickPerson({ title: "Кому перевести?", exclude: [me.id], onPick: (u) => { to = u; draw(); } }); }
       if (k === "withdraw") { tab = "withdraw"; return draw(); }
+      if (k === "shop") { tab = "shop"; draw(); if (myTomatoes === null) loadTomatoes().then(() => tab === "shop" && draw()); return; }
       if (k === "main") { tab = "main"; return draw(); }
     });
     v.addEventListener("submit", async (e) => {
@@ -6395,8 +6437,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     cv.addEventListener("pointermove", (e) => { if (e.buttons || e.pointerType === "touch") rub(e.clientX, e.clientY); });
     cv.addEventListener("pointerup", () => { last = null; if (ready && left() < 0.12) finish(true); });
     cv.addEventListener("pointercancel", () => { last = null; });
-    let touched = false;
-    setTimeout(() => finish(touched), 30000);   // nobody touched it — it waits for the next visit
+    let touched = false; void touched;   // stays on the screen until wiped off
     return true;
   };
   const openProfMenu = () => {
