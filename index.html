@@ -1983,6 +1983,17 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .qr-cap { font-weight: 900; color: var(--navy-ink); }
 .qr-one .t-body { gap: 12px; }
 
+/* scan cards (06.11 v2) */
+.qr-card { background: #fff; box-shadow: 0 0 0 1px var(--hair), 0 12px 26px -18px rgba(15,23,42,.35); border-radius: 22px; padding: 16px 14px 14px; gap: 12px; }
+.qr-card img { width: min(64vw, 240px); padding: 12px; border-radius: 18px; background: #fff; box-shadow: 0 0 0 1px var(--hair); }
+.scan-req { display: grid; gap: 2px; justify-items: center; padding: 10px 12px; width: 100%; box-sizing: border-box; border-radius: 14px; background: var(--soft, #EEF0F5); }
+.scan-req code { font: 700 14px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--navy-ink); overflow-wrap: anywhere; text-align: center; }
+.scan-req small { font-weight: 800; font-size: 12px; color: var(--muted); }
+.scan-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+.scan-acts.one { grid-template-columns: 1fr; }
+.scan-acts button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 42px; border-radius: 14px; background: var(--soft, #EEF0F5); color: var(--navy-ink); font: 800 13.5px/1 var(--f-body); }
+.scan-acts button:active { transform: scale(.97); background: #E2E6EF; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -2616,7 +2627,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106072946"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106073638"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -5840,16 +5851,17 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (!fx) return "";
     if (payCur === "rub") {
       const url = rubQrs.get(ownerId());
-      return url ? `<div class="qr-card usdt-card"><span class="usdt-net sbp">СБП · Т-Банк или Сбербанк</span><img src="${esc(url)}" alt="Скан для оплаты в рублях">
-          <button class="usdt-addr" type="button" data-copyphone title="Скопировать номер"><code>${RUB_PHONE} · ${RUB_NAME}</code><span>копировать номер</span></button>
+      return url ? `<div class="qr-card"><span class="usdt-net sbp">СБП · Т-Банк или Сбербанк</span><img src="${esc(url)}" alt="Скан для оплаты в рублях">
+          <div class="scan-req"><code>${RUB_PHONE}</code><small>${RUB_NAME}</small></div>
           <p>Отсканируй в приложении банка или переведи по номеру <b>${fmtRub(rubFor(b))}</b>.</p>
-          <button class="pill sm ghost" type="button" data-rubsave>⬇ скачать скан</button></div>
+          <div class="scan-acts"><button type="button" data-rubsave><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>скачать скан</button><button type="button" data-copyphone><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>номер</button></div></div>
         <button class="pill wide" type="button" data-sendcur="rub">я перевёл ${fmtRub(rubFor(b))}</button>`
         : `<p class="lead">Скан для рублей ещё не загружен. Напиши @tivishka, он пришлёт реквизиты.</p>`;
     }
-    return `<div class="qr-card usdt-card"><span class="usdt-net">USDT · сеть TRC20 (Tron)</span><img src="usdt-trc20.png" alt="QR-код адреса USDT TRC20">
-        <button class="usdt-addr" type="button" data-copyaddr title="Скопировать адрес"><code>${USDT_ADDR}</code><span>копировать</span></button>
-        <p>Отправь <b>${fmtUsdt(usdtFor(b))}</b> на этот адрес. Только USDT и только в сети TRC20 — другие монеты и сети потеряются.</p></div>
+    return `<div class="qr-card"><span class="usdt-net">USDT · сеть TRC20 (Tron)</span><img src="usdt-trc20.png" alt="QR-код адреса USDT TRC20">
+        <div class="scan-req"><code>${USDT_ADDR}</code></div>
+        <p>Отправь <b>${fmtUsdt(usdtFor(b))}</b> на этот адрес. Только USDT и только в сети TRC20 — другие монеты и сети потеряются.</p>
+        <div class="scan-acts"><button type="button" data-usdtsave><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>скачать скан</button><button type="button" data-copyaddr><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>адрес</button></div></div>
       <button class="pill wide" type="button" data-sendcur="usdt">я отправил ${fmtUsdt(usdtFor(b))}</button>`;
   };
   // every host has his own QR; paying for a date shows the QR of the person hosting it, top-ups show the owner's
@@ -5927,7 +5939,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         : payMethod === "qr" || pm === "qr" ? (qr ? `<div class="qr-card">${q.who ? `<span class="qr-who">${avaP(q.who)}QR${e && (e.hosts || []).some((h) => h.user_id === q.who.id) ? " ведущего" : ""}: <b>${esc(q.who.nick)}</b></span>` : ""}
               ${q.list.length > 1 ? `<div class="qr-slots" role="group" aria-label="Какой QR">${q.list.map((x, i) => `<button type="button" data-qrslot="${i}" aria-pressed="${i === q.i}">${esc(x.label || "QR " + (i + 1))}</button>`).join("")}</div>` : q.label ? `<b class="qr-label">${esc(q.label)}</b>` : ""}
               <img src="${esc(qr)}" alt="QR-код для перевода"><p>Отсканируй в приложении банка и переведи <b>${money(+amt || 0)}</b>.${ev.set?.qr_note ? " " + esc(ev.set.qr_note) : ""}</p>
-              <button class="pill sm ghost" type="button" data-qrsave>⬇ скачать QR</button></div>
+              <div class="scan-acts one"><button type="button" data-qrsave><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>скачать скан</button></div></div>
             <button class="pill wide" type="button" data-send="qr">я перевёл ${money(+amt || 0)}</button>`
           : `<p class="lead">${e ? "Ведущий этой игры ещё не добавил свой QR. Можно отдать наличными." : "QR-код ещё не загружен. Пока можно отдать наличными."}</p>`)
           : `<p class="lead">Отдай <b>${money(+amt || 0)}</b> ${e ? "ведущему на месте. Как только он подтвердит, игра будет оплачена." : "при встрече. Как только получение подтвердят, баланс пополнится."}</p>
@@ -5983,9 +5995,10 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (b.dataset.pm) { payMethod = b.dataset.pm; haptic("tap"); return drawPay(); }
     if (b.hasAttribute("data-qrsave")) return downloadQR(qrFor(ctxEvent())?.url);
     if (b.dataset.cur) { payCur = b.dataset.cur; haptic("tap"); return drawPay(); }
-    if (b.hasAttribute("data-rubsave")) return downloadQR(rubQrs.get(ownerId()));
-    if (b.hasAttribute("data-copyphone")) { try { await navigator.clipboard.writeText(RUB_PHONE.replace(/[\s-]/g, "")); toast("Номер скопирован"); } catch { toast(RUB_PHONE); } haptic("tap"); return; }
-    if (b.hasAttribute("data-copyaddr")) { try { await navigator.clipboard.writeText(USDT_ADDR); toast("Адрес скопирован"); } catch { toast(USDT_ADDR); } haptic("tap"); return; }
+    if (b.hasAttribute("data-rubsave")) return downloadQR(rubQrs.get(ownerId()), "dacha-sbp-rub");
+    if (b.hasAttribute("data-copyphone")) { copyText(RUB_PHONE.replace(/[\s-]/g, ""), "Номер скопирован"); return; }
+    if (b.hasAttribute("data-usdtsave")) return downloadQR("usdt-trc20.png", "dacha-usdt-trc20");
+    if (b.hasAttribute("data-copyaddr")) { copyText(USDT_ADDR, "Адрес скопирован"); return; }
     if (b.dataset.sendcur) {
       const baht = parseInt($("payAmt")?.value, 10);
       if (!(baht >= 1)) return toast("Укажи сумму");
@@ -6675,10 +6688,23 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       .subscribe();
   };
   // Telegram shows its own save dialog; a browser gets the file through a blob link
-  const downloadQR = async (u) => {
-    const url = (typeof u === "string" && u) || ev.set?.qr_url; if (!url) return;
+  // copying inside Telegram: the clipboard API is not always allowed, so fall back to a hidden field
+  const copyText = async (text, okMsg) => {
+    haptic("tap");
+    try { await navigator.clipboard.writeText(text); return toast(okMsg); } catch {}
+    try {
+      const t = document.createElement("textarea"); t.value = text; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;top:-100px;opacity:0";
+      document.body.append(t); t.select(); t.setSelectionRange(0, text.length);
+      const ok = document.execCommand("copy"); t.remove();
+      if (ok) return toast(okMsg);
+    } catch {}
+    sheet({ eyebrow: "Скопируй вручную", title: text, text: "Зажми и выбери «Скопировать».", ok: "готово", onOk: () => {} });
+  };
+  const downloadQR = async (u, base = "dacha-qr") => {
+    const raw = (typeof u === "string" && u) || ev.set?.qr_url; if (!raw) return;
+    const url = new URL(raw, location.href).href;   // Telegram needs a full address
     const ext = (url.split("?")[0].match(/\.(png|jpe?g|webp)$/i)?.[1] || "png").toLowerCase();
-    const name = `dacha-mafia-qr.${ext}`;
+    const name = `${base}.${ext}`;
     const dl = url + (url.includes("?") ? "&" : "?") + "download=" + encodeURIComponent(name);
     if (tg?.downloadFile && tg.isVersionAtLeast?.("8.0")) {
       try { tg.downloadFile({ url: dl, file_name: name }, (ok) => { if (ok) toast("QR сохраняется на телефон"); }); return; } catch {}
