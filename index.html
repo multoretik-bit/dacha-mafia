@@ -2066,13 +2066,17 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   background: radial-gradient(120% 140% at 15% 0%, #FFF3C4 0%, #FFD45E 45%, #FFC83D 75%); box-shadow: 0 16px 30px -18px rgba(176,122,0,.75), inset 0 0 0 2.5px #071B4D; }
 .world-tile::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: .5; background: repeating-linear-gradient(135deg, rgba(255,255,255,.35) 0 10px, transparent 10px 22px); }
 .wt-logo { grid-row: span 2; width: 100%; filter: drop-shadow(0 8px 12px rgba(7,27,77,.3)); }
-.wt-word { align-self: end; justify-self: start; max-width: 100%; font: 900 italic clamp(24px, 8.4vw, 40px)/1 var(--f-display); letter-spacing: .02em; color: #0033FF; -webkit-text-stroke: 7px #fff; paint-order: stroke fill;
+.wt-word { align-self: end; justify-self: start; width: 100%; max-width: 250px; height: auto; overflow: visible; }
+.wt-word text { font: italic 900 54px var(--f-display); }
+.wt-word .o3 { fill: #071B4D; stroke: #071B4D; stroke-width: 15px; stroke-linejoin: round; }
+.wt-word .o2 { fill: #fff; stroke: #fff; stroke-width: 9px; stroke-linejoin: round; }
+.wt-word .o1 { fill: #0033FF; }
   text-shadow: 2px 0 0 #071B4D, -2px 0 0 #071B4D, 0 2px 0 #071B4D, 0 -2px 0 #071B4D, 2px 2px 0 #071B4D, -2px -2px 0 #071B4D, 2px -2px 0 #071B4D, -2px 2px 0 #071B4D, 0 6px 0 #071B4D; }
-.wt-sub { align-self: start; margin-top: 8px; font: 800 12px/1.25 var(--f-body); color: #071B4D; overflow-wrap: anywhere; }
+.wt-sub { align-self: start; min-width: 0; margin-top: 4px; font: 800 12px/1.25 var(--f-body); color: #071B4D; overflow-wrap: anywhere; }
 .world-tile:active { transform: scale(.97); }
 .world-tile .gw-lock { display: none; }
 .world-tile.locked { background: linear-gradient(150deg, #E6E8EE, #C9CED9); box-shadow: inset 0 0 0 2.5px #9AA2B3; }
-.world-tile.locked .wt-logo { filter: grayscale(1) opacity(.6); } .world-tile.locked .wt-word { color: #9AA2B3; text-shadow: none; -webkit-text-stroke: 5px #fff; }
+.world-tile.locked .wt-logo { filter: grayscale(1) opacity(.6); } .world-tile.locked .wt-word .o1 { fill: #9AA2B3; } .world-tile.locked .wt-word .o3 { fill: #9AA2B3; stroke: #9AA2B3; }
 .world-tile.locked .wt-sub { display: none; }
 .world-tile.locked .gw-lock { display: inline-flex; align-self: start; width: fit-content; margin-top: 8px; padding: 5px 10px; border-radius: 99px; background: #fff; color: #5B647A; font: 800 12px/1 var(--f-body); }
 /* level chip: always navy, never white on white */
@@ -2461,7 +2465,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     <div class="hub-hero">
       <img class="hub-logo" src="logo-dacha-hub.webp?v=2" alt="DACHA" draggable="false">
       <p class="hub-tag">Дом, вдали от дома</p>
-      <button class="world-tile" id="goWorld" type="button"><img class="wt-logo" src="logo-dacha-hub.webp?v=2" alt="" draggable="false"><span class="wt-word">WORLD</span><span class="wt-sub">Пхукет · карта и игры онлайн</span><span class="gw-lock">Пока недоступно</span></button>
+      <button class="world-tile" id="goWorld" type="button"><img class="wt-logo" src="logo-dacha-hub.webp?v=2" alt="" draggable="false"><svg class="wt-word" viewBox="0 0 236 68" role="img" aria-label="WORLD"><text class="o3" x="10" y="54" textLength="214" lengthAdjust="spacingAndGlyphs">WORLD</text><text class="o2" x="10" y="50" textLength="214" lengthAdjust="spacingAndGlyphs">WORLD</text><text class="o1" x="10" y="50" textLength="214" lengthAdjust="spacingAndGlyphs">WORLD</text></svg><span class="wt-sub">Пхукет · карта и игры онлайн</span><span class="gw-lock">Пока недоступно</span></button>
     </div>
     <div id="hubHello"></div>
     <div class="ticket week"><div class="ticket-in">
@@ -2910,7 +2914,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106104258"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106104831"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
