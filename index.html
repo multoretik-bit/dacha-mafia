@@ -2051,6 +2051,13 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .cb.lvl { background: var(--navy-ink); color: #fff; } .cb.lvl b { color: #FFC83D; font-weight: 900; }
 .crew-rank { font: 700 13px/1 var(--f-code); color: var(--muted); margin-left: auto; padding-right: 2px; }
 
+/* clusters (06.11) */
+.w-clu-el { cursor: pointer; }
+.w-clu { display: flex; align-items: center; gap: 8px; padding: 5px 12px 5px 5px; border-radius: 99px; background: #071B4D; color: #fff; box-shadow: 0 0 0 3px #fff, 0 10px 20px -8px rgba(7,27,77,.6); transform: scale(max(var(--pz, 1), .82)); white-space: nowrap; }
+.w-clu.me { box-shadow: 0 0 0 3px #FFC83D, 0 10px 20px -8px rgba(7,27,77,.6); }
+.wc-faces { display: flex; } .wc-faces > * { margin-left: -10px; box-shadow: 0 0 0 2px #071B4D; border-radius: 50%; } .wc-faces > *:first-child { margin-left: 0; }
+.wc-faces .ava, .wc-faces .prem { width: 32px; height: 32px; font-size: 14px; } .wc-faces .prem .ava { width: 100%; height: 100%; } .wc-faces .prem-ic { display: none; }
+.w-clu b { font: 900 18px/1 var(--f-code); color: #FFC83D; } .w-clu small { font: 800 11.5px/1 var(--f-body); opacity: .9; }
 /* online row (06.11) */
 .online-row { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 4px; padding: 12px 14px; border-radius: 20px; background: #fff; box-shadow: var(--sh); text-align: left; color: #071B4D; }
 .online-row:active { transform: scale(.98); }
@@ -2505,9 +2512,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     <div id="hubBdays" hidden></div>
     <div class="sec-title">Ивенты</div>
     <div class="games" id="hubGames"></div>
+    <button class="online-row" id="goOnline" type="button"><span class="or-ic"><i>♚︎</i><i class="ck"></i><i class="cd">A</i></span><span class="or-t"><b>Онлайн-игры</b><small>шахматы · шашки · дурак</small></span><em class="or-n" id="onlineN" hidden></em><span class="or-go">›</span></button>
     <div class="sec-title" id="ceTitle">Ивенты дачников</div>
     <div id="hubCev"></div>
-    <button class="online-row" id="goOnline" type="button"><span class="or-ic"><i>♚︎</i><i class="ck"></i><i class="cd">A</i></span><span class="or-t"><b>Онлайн-игры</b><small>шахматы · шашки · дурак</small></span><em class="or-n" id="onlineN" hidden></em><span class="or-go">›</span></button>
     <button class="pm-card" type="button" id="hubPrem" hidden><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ и 50 🍅 каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>
     <div data-ad-slot></div>
     <div class="row-btns">
@@ -2946,7 +2953,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106114049"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106114639"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -6830,6 +6837,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       // people get bigger as you zoom in, smaller far away
       const zoomStyle = () => { const z = W.map.getZoom(), box = $("wMap"); if (box) box.style.setProperty("--pz", Math.max(.5, Math.min(1.15, .5 + (z - 10) * .14)).toFixed(3)); };
       W.map.on("zoom", zoomStyle); zoomStyle();
+      W.map.on("zoomend", () => applyClusters()); W.map.on("moveend", () => applyClusters());
     }
     const shown = W.pres.filter((x) => x.visible && x.lat != null), ids = new Set(shown.map((x) => x.user_id));
     $("wOnline").textContent = shown.length;
@@ -6846,7 +6854,41 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       nm._dHtml = html; W.markers.set(x.user_id, nm);
     });
     drawMyAccuracy();
+    applyClusters();
     setTimeout(() => W.map?.resize(), 60);
+  };
+  // people whose pins overlap on the screen (≈ the same place) become one "скопление дачников"
+  const applyClusters = () => {
+    if (!W.map) return;
+    W.clusters?.forEach((c) => c.remove()); W.clusters = [];
+    const R = 54, pts = [];
+    W.markers.forEach((m, uid) => { const ll = m.getLngLat(), p0 = W.map.project(ll); pts.push({ uid, m, ll, x: p0.x, y: p0.y }); });
+    const used = new Set();
+    pts.sort((a0, b0) => a0.uid.localeCompare(b0.uid)).forEach((p0) => {
+      if (used.has(p0.uid)) return;
+      const grp = pts.filter((q) => !used.has(q.uid) && Math.hypot(q.x - p0.x, q.y - p0.y) < R);
+      if (grp.length < 2) { p0.m.getElement().style.display = ""; return; }
+      grp.forEach((q) => { used.add(q.uid); q.m.getElement().style.display = "none"; });
+      const lng = grp.reduce((t, q) => t + q.ll.lng, 0) / grp.length, lat = grp.reduce((t, q) => t + q.ll.lat, 0) / grp.length;
+      const faces = grp.slice(0, 3).map((q) => avaP({ ...personOf(q.uid), id: q.uid })).join("");
+      const el = document.createElement("div"); el.className = "w-clu-el";
+      el.innerHTML = `<div class="w-clu ${grp.some((q) => q.uid === me.id) ? "me" : ""}"><span class="wc-faces">${faces}</span><b>${grp.length}</b><small>${plural(grp.length, "дачник", "дачника", "дачников")} тут</small></div>`;
+      el.addEventListener("click", (e) => { e.stopPropagation(); openCluster(grp.map((q) => q.uid)); });
+      W.clusters.push(new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([lng, lat]).addTo(W.map));
+    });
+  };
+  const openCluster = (uids) => {
+    const list = uids.map((u) => W.pres.find((x) => x.user_id === u)).filter(Boolean);
+    const lats = list.map((x) => x.lat), lngs = list.map((x) => x.lng);
+    const span = geoDist({ lat: Math.min(...lats), lng: Math.min(...lngs) }, { lat: Math.max(...lats), lng: Math.max(...lngs) });
+    // spread out a little — zoom in; really one spot — show who is there
+    if (span > 25 && W.map.getZoom() < 18) return W.map.fitBounds([[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]], { padding: 90, maxZoom: 18.5, duration: 800 });
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    v.innerHTML = `<div class="bank pick-sheet" role="dialog" aria-modal="true"><div class="ps-h"><div class="eyebrow">Скопление дачников</div><h2 class="h2">${uids.length} ${plural(uids.length, "дачник", "дачника", "дачников")} в одном месте</h2></div>
+      <div class="ps-list">${list.map((x) => { const pp = personOf(x.user_id); return `<button class="ps-row" type="button" data-cu="${x.user_id}">${avaP({ ...pp, id: x.user_id })}<span class="nm"><b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b><small>${x.status ? `${esc(x.emoji || "")} ${esc(x.status)}` : `уровень ${wLevel(lvlXP(x.user_id)).lvl}`}</small></span></button>`; }).join("")}</div>
+      <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
+    v.addEventListener("click", (e) => { if (e.target === v || e.target.closest("[data-close]")) return v.remove(); const r = e.target.closest("[data-cu]"); if (r) { v.remove(); openWorldPerson(r.dataset.cu); } });
+    document.body.append(v);
   };
   const flyWorld = (lat, lng, zoom = 16.5) => W.map?.flyTo({ center: [lng, lat], zoom, speed: 1.4, essential: true });
   // glide a pin to its new place in ~0.9 s (only when the person really moved)
@@ -6856,7 +6898,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (d > 3000) return m.setLngLat([to.lng, to.lat]);
     cancelAnimationFrame(m._raf); const t0 = performance.now();
     const step = (t) => { const k = Math.min(1, (t - t0) / 900), e = 1 - Math.pow(1 - k, 3);
-      m.setLngLat([from.lng + (to.lng - from.lng) * e, from.lat + (to.lat - from.lat) * e]); if (k < 1) m._raf = requestAnimationFrame(step); };
+      m.setLngLat([from.lng + (to.lng - from.lng) * e, from.lat + (to.lat - from.lat) * e]); if (k < 1) m._raf = requestAnimationFrame(step); else applyClusters(); };
     m._raf = requestAnimationFrame(step);
   };
   // my own accuracy circle (what the phone says)
