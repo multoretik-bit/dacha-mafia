@@ -1983,6 +1983,67 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .qr-cap { font-weight: 900; color: var(--navy-ink); }
 .qr-one .t-body { gap: 12px; }
 
+/* DACHA WORLD (06.11) */
+.world-entry { display: flex; align-items: center; gap: 12px; width: min(100%, 340px); margin-top: 14px; padding: 10px 14px 10px 10px; border-radius: 22px; color: #fff; text-align: left;
+  background: radial-gradient(120% 160% at 0% 0%, #2D5BFF 0%, #0033FF 45%, #071B4D 100%); box-shadow: 0 16px 30px -16px rgba(0,51,255,.8), inset 0 0 0 1px rgba(255,255,255,.14); }
+.world-entry .we-ic { width: 46px; height: 46px; border-radius: 16px; display: grid; place-items: center; background: rgba(255,255,255,.14); flex: none; }
+.world-entry .we-t { display: grid; gap: 2px; flex: 1; }
+.world-entry b { font: 900 18px/1 var(--f-display, var(--f-body)); letter-spacing: .04em; } .world-entry b em { font-style: normal; color: #FFC83D; }
+.world-entry small { font-weight: 700; font-size: 12.5px; opacity: .8; } .world-entry .we-go { font-size: 26px; opacity: .8; }
+.world-entry:active { transform: scale(.97); }
+.world-entry.locked { background: #E4E7EE; color: #8C93A3; box-shadow: inset 0 0 0 1px #D6DAE3; } .world-entry.locked b em { color: #8C93A3; } .world-entry.locked .we-ic { background: #fff; }
+.w-head { display: flex; align-items: center; gap: 12px; padding: 4px 2px 10px; } .w-head .we-ic { width: 52px; height: 52px; border-radius: 18px; display: grid; place-items: center; background: var(--navy-ink); color: #FFC83D; }
+.w-dachas { display: grid; gap: 10px; }
+.w-dacha { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 22px; background: #fff; box-shadow: var(--sh); text-align: left; color: var(--navy-ink); }
+.w-dacha .wd-fl { font-size: 34px; width: 54px; height: 54px; display: grid; place-items: center; border-radius: 18px; background: var(--soft); }
+.w-dacha .wd-t { display: grid; gap: 3px; flex: 1; } .w-dacha b { font: 900 18px/1.1 var(--f-body); } .w-dacha small { color: var(--muted); font-weight: 700; font-size: 12.5px; }
+.w-dacha .wd-go { font-size: 26px; color: var(--muted); } .w-dacha .wd-soon { font-weight: 800; font-size: 12px; padding: 5px 10px; border-radius: 99px; background: var(--soft); color: var(--muted); }
+.w-dacha.soon { opacity: .55; filter: grayscale(.6); } .w-dacha:not(.soon):active { transform: scale(.98); }
+.w-mapwrap { isolation: isolate; z-index: 0; position: relative; border-radius: 26px; overflow: hidden; box-shadow: var(--sh); background: #DDE7F0; }
+.w-map { height: min(62vh, 520px); width: 100%; }
+.w-mapbar { position: absolute; left: 10px; right: 10px; top: 10px; z-index: 500; display: flex; justify-content: space-between; gap: 8px; pointer-events: none; }
+.w-chip { pointer-events: auto; padding: 8px 12px; border-radius: 99px; background: rgba(255,255,255,.92); backdrop-filter: blur(6px); box-shadow: 0 6px 16px -8px rgba(0,0,0,.35); font: 800 12.5px/1 var(--f-body); color: var(--navy-ink); }
+.w-locate { position: absolute; left: 12px; bottom: 14px; z-index: 500; width: 48px; height: 48px; border-radius: 50%; background: #fff; box-shadow: 0 8px 20px -8px rgba(0,0,0,.45); font-size: 22px; }
+.w-pin-wrap { background: none; border: 0; }
+.w-pin { position: relative; display: grid; justify-items: center; gap: 2px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.35)); }
+.w-pin-av { width: 52px; height: 52px; border-radius: 50%; } .w-pin-av svg, .w-pin-av .ava { width: 52px; height: 52px; display: block; }
+.w-pin.me .w-pin-av { box-shadow: 0 0 0 3px #FFC83D; border-radius: 50%; }
+.w-pin-nm { max-width: 90px; padding: 2px 7px; border-radius: 99px; background: var(--navy-ink); color: #fff; font: 800 10.5px/1.4 var(--f-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.w-pin-st { position: absolute; right: -6px; top: -6px; width: 24px; height: 24px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-style: normal; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.wchar { display: block; width: 100%; height: 100%; }
+.w-new-av { width: 120px; height: 120px; }
+.w-me { display: flex; align-items: center; gap: 14px; }
+.w-me-av { position: relative; width: 92px; height: 92px; flex: none; }
+.w-me-av .ava { width: 92px; height: 92px; }
+.w-lvl { position: absolute; right: -2px; bottom: -2px; min-width: 30px; height: 30px; padding: 0 6px; box-sizing: border-box; border-radius: 99px; background: #FFC83D; color: var(--navy-ink); font: 900 15px/30px var(--f-code); text-align: center; box-shadow: 0 0 0 3px #fff; }
+.w-me-t { display: grid; gap: 4px; flex: 1; min-width: 0; } .w-me-t > b { font: 900 20px/1.1 var(--f-body); color: var(--navy-ink); } .w-me-t small { color: var(--muted); font-weight: 700; font-size: 12.5px; }
+.w-xp { display: grid; gap: 4px; } .w-xp i { height: 8px; border-radius: 99px; background: var(--soft); overflow: hidden; } .w-xp i b { display: block; height: 100%; background: linear-gradient(90deg, #FFC83D, #FF7A1A); border-radius: 99px; }
+.w-stats { display: grid; gap: 8px; }
+.w-stat { display: grid; grid-template-columns: 80px 1fr 28px; align-items: center; gap: 8px; font-weight: 800; font-size: 12.5px; color: var(--navy-ink); }
+.w-stat i { height: 10px; border-radius: 99px; background: var(--soft); overflow: hidden; } .w-stat i b { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #16A34A, #4ADE80); transition: width .4s; }
+.w-stat.low i b { background: linear-gradient(90deg, #E3263A, #FF7A1A); } .w-stat em { font-style: normal; text-align: right; color: var(--muted); font-family: var(--f-code); }
+.w-care { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.w-care button { display: grid; justify-items: center; gap: 3px; padding: 10px 2px; border-radius: 18px; background: var(--soft); color: var(--navy-ink); }
+.w-care button span { font-size: 24px; } .w-care button b { font: 800 12px/1.1 var(--f-body); } .w-care button small { font-weight: 800; font-size: 10.5px; color: #16A34A; }
+.w-care button:disabled { opacity: .55; } .w-care button:disabled small { color: var(--muted); } .w-care button:not(:disabled):active { transform: scale(.95); }
+.w-sts { display: flex; flex-wrap: wrap; gap: 6px; }
+.w-sts button { padding: 8px 12px; border-radius: 99px; background: var(--soft); font: 800 13px/1 var(--f-body); color: var(--navy-ink); }
+.w-sts button[aria-pressed="true"] { background: var(--navy-ink); color: #fff; }
+.w-rrow { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 16px; border-top: 1px solid var(--hair); text-align: left; color: var(--navy-ink); }
+.w-rn { width: 22px; font: 700 18px/1 var(--f-code); color: var(--muted); } .w-rav { width: 44px; height: 44px; flex: none; }
+.w-rt { display: grid; gap: 2px; flex: 1; min-width: 0; } .w-rt b { font-weight: 800; font-size: 14.5px; } .w-rt small { color: var(--muted); font-weight: 700; font-size: 12px; }
+.w-rl { font: 700 22px/1 var(--f-code); color: var(--navy-ink); text-align: right; } .w-rl small { display: block; font: 800 10px/1.2 var(--f-body); color: var(--muted); }
+.w-games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.w-game { display: grid; gap: 2px; padding: 12px; border-radius: 18px; background: var(--soft); color: var(--navy-ink); } .w-game span { font-size: 26px; } .w-game b { font-weight: 800; font-size: 14px; } .w-game small { color: var(--muted); font-weight: 800; font-size: 11.5px; }
+.w-editor { gap: 12px; max-height: 88vh; overflow-y: auto; } .ce-prev { width: 140px; height: 140px; margin: 0 auto; }
+.ce-row { display: grid; gap: 6px; } .ce-l { font-weight: 800; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.ce-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.ce-opts.sw button { width: 34px; height: 34px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+.ce-opts.sw button[aria-pressed="true"] { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--navy-ink); }
+.ce-opts.txt button { padding: 8px 12px; border-radius: 99px; background: var(--soft); font: 800 13px/1 var(--f-body); color: var(--navy-ink); }
+.ce-opts.txt button[aria-pressed="true"] { background: var(--navy-ink); color: #fff; }
+.w-person { gap: 12px; }
+
 /* wallet sheet v2 (06.11) */
 .bank-main { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; border-radius: 22px; background: var(--blue, #0033FF); color: #fff; text-align: left; box-shadow: 0 14px 26px -14px rgba(0,51,255,.75); }
 .bank-main i { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.18); flex: none; }
@@ -2202,6 +2263,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   <div class="block-screen" id="blockScreen" hidden></div>
 
   <!-- HUB: DACHA main page -->
+  <section id="vWorld" class="col" hidden><div id="worldBox"></div></section>
   <section id="vHub" class="col" hidden>
     <div class="game-on" id="gameOnHub" hidden></div>
     <div class="hub-top">
@@ -2212,6 +2274,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     <div class="hub-hero">
       <img class="hub-logo" src="logo-dacha-hub.webp?v=2" alt="DACHA" draggable="false">
       <p class="hub-tag">Дом, вдали от дома</p>
+      <button class="world-entry" id="goWorld" type="button"><span class="we-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19"/><path d="M12 2.5a14.5 14.5 0 0 1 0 19a14.5 14.5 0 0 1 0-19z"/></svg></span><span class="we-t"><b>DACHA <em>WORLD</em></b><small id="worldSub">карта, персонажи, игры</small></span><span class="we-go">›</span></button>
     </div>
     <div id="hubHello"></div>
     <div class="ticket week"><div class="ticket-in">
@@ -2660,7 +2723,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106081115"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106085904"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2974,7 +3037,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   });
 
   /* ---------- navigation ---------- */
-  const VIEWS = ["vRat", "vCev", "vReq", "vPremium", "vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
+  const VIEWS = ["vWorld", "vRat", "vCev", "vReq", "vPremium", "vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
   let profileId = null;
   const online = () => S.hostMode === "online";
   const hostView = () => {
@@ -3006,7 +3069,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (view === "pay" && S.view !== "pay") payFrom = S.view;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { ratings: "vRat", cevent: "vCev", sportlist: "vSport", sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { world: "vWorld", ratings: "vRat", cevent: "vCev", sportlist: "vSport", sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "hub";
     if (typeof checkBlock === "function") try { checkBlock(); } catch {}
@@ -3014,7 +3077,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     renderTabs(view);
     if (id !== "vLive") stopLive();
     ({
-      vRat: renderRat, vCev: renderCev, vReq: renderReq, vPremium: renderPremium, vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
+      vWorld: () => renderWorld(), vRat: renderRat, vCev: renderCev, vReq: renderReq, vPremium: renderPremium, vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
       vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople, vMonth: () => { boardMonth = null; drawMonth(); }, vDeck: renderDeck,
       vPick: renderPick, vCount: renderCount, vRoles: renderRoles, vLive: renderLive, vDeal: renderDeal, vDone: renderDone,
       vCard: renderCard, vNotes: () => renderNotes(false), vEvents: renderEvents, vPlayer: renderPlayer,
@@ -3077,7 +3140,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     $("goPeople").setAttribute("aria-label", ["sport", "sportorg", "sportlist", "sportrate"].includes(view) ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("goPeople").setAttribute("aria-label", view === "sport" ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("topTitle").hidden = !!set.length;
-    $("topTitle").textContent = { ratings: "рейтинги", cevent: "ивент", host: "раздача", events: "запись", sportlist: "запись", sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
+    $("topTitle").textContent = { world: "dacha world", ratings: "рейтинги", cevent: "ивент", host: "раздача", events: "запись", sportlist: "запись", sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
   };
 
   const renderHostAccess = () => {
@@ -3328,10 +3391,15 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
           ${Object.values(SPORTS).map((x) => { const on = sp.hosts.some((h) => h.sport === x.id && h.user_id === id);
             return `<button class="host-row" type="button" data-shost="${x.id}" data-on="${on ? "off" : "on"}" role="switch" aria-checked="${on}">
             <span class="hr-ic">${x.emoji}</span><span class="hr-t"><b>${x.name}</b><small>${on ? "ведёт" : "не ведёт"}</small></span><i class="switch ${on ? "on" : ""}"></i></button>`; }).join("")}
+          ${isMe ? "" : `<button class="host-row" type="button" data-worldsw="${id}" role="switch" aria-checked="false"><span class="hr-ic">🌍</span><span class="hr-t"><b>DACHA WORLD</b><small>закрыт</small></span><i class="switch"></i></button>`}
         </div>
       </div></div>` : ""}
       ${canGrant && !isMe ? `<button class="pill sm red" type="button" data-lock>🔒 заблокировать профиль</button>` : ""}
       <button class="pill ghost sm" data-p="people">все дачники</button>${isMe && !inTG ? `<button class="pill dark sm" data-p="out">выйти</button>` : ""}`;
+    if (canGrant && !isMe) sb.from("world_members").select("user_id").eq("user_id", id).maybeSingle().then(({ data }) => {
+      const b = document.querySelector(`[data-worldsw="${id}"]`); if (!b || !data) return;
+      b.setAttribute("aria-checked", "true"); b.querySelector(".switch").classList.add("on"); b.querySelector("small").textContent = "открыт";
+    });
     $("profBtns").onchange = async (e) => {
       if (e.target.id !== "myQrFile" || !e.target.files[0]) return;
       const f = e.target.files[0];
@@ -4848,7 +4916,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     $("goPolls").hidden = true;
     drawGameOn();
     $("hubHello").innerHTML = me ? "" : loginPrompt();
-    drawCrewBtn(); drawWeek(); drawHubGames(); drawBalPill();
+    drawCrewBtn(); drawWeek(); drawHubGames(); drawBalPill(); drawWorldEntry();
     $("hubPrem").hidden = !me || isPremium(me);
     if (!me) return;
     const need = [];
@@ -6372,6 +6440,272 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     });
     document.body.append(v);
   };
+
+
+  /* =================== DACHA WORLD: the dacha on a real map, your mini character, care, rating =================== */
+  let worldMember = null;
+  const worldOK = () => !!me && (canGrant || worldMember === true);
+  const drawWorldEntry = async () => {
+    const b = $("goWorld"); if (!b) return;
+    if (me && worldMember === null && sb) { const { data } = await sb.from("world_members").select("user_id").eq("user_id", me.id).maybeSingle(); worldMember = !!data; }
+    const ok = worldOK();
+    b.classList.toggle("locked", !ok);
+    $("worldSub").textContent = ok ? "карта, персонажи, игры" : "Пока недоступно";
+  };
+  const W = { dacha: null, chars: [], pres: [], map: null, layer: null, chan: null, sharing: false, timer: 0 };
+  const W_SKIN = { light: ["#FFE3C8", "#F2B98C", "#D9946A"], fair: ["#FFE9D6", "#F6C7A0", "#E0A27A"], tan: ["#F7CDA2", "#DFA06F", "#B87849"], olive: ["#E9BC8E", "#CF9563", "#A86F42"], brown: ["#C98B5E", "#A86B42", "#7E4C2C"], dark: ["#8D5A3B", "#6E4329", "#4E2E1B"] };
+  const W_HAIR = { black: ["#2A2228", "#141016"], dark: ["#4A3426", "#24170F"], brown: ["#8A5A3A", "#4E3020"], blonde: ["#F2D38A", "#C99A45"], red: ["#B8323A", "#5E1220"], pink: ["#F27BB1", "#B9407A"], blue: ["#4C7DFF", "#1D3FB0"], white: ["#E9E9EF", "#A9AAB8"] };
+  const W_STYLES = [["short", "Короткая"], ["buzz", "Ёжик"], ["slick", "Зачёс"], ["curly", "Кудри"], ["long", "Длинные"], ["wavy", "Волны"], ["bun", "Пучок"], ["bald", "Лысый"]];
+  const W_OUTFITS = ["#0033FF", "#071B4D", "#E3263A", "#FF7A1A", "#16A34A", "#7B3FE4", "#E0218A", "#F4F4F6", "#2B2B33"];
+  const W_BGS = ["#FFC83D", "#0033FF", "#E3263A", "#16A34A", "#7B3FE4", "#0EA5B7", "#FF7A1A", "#E0218A"];
+  let wN = 0;
+  // a flat badge in the app style; the face follows the mood (happy / ok / sad) and gets dirty when not washed
+  const charSVG = (lk = {}, st = null) => {
+    const id = "wc" + (++wN), sk = W_SKIN[lk.skin] || W_SKIN.fair, hc = W_HAIR[lk.hairc] || W_HAIR.dark, hs = lk.hair || "short", out = lk.outfit || "#0033FF", bg = lk.bg || "#FFC83D";
+    const mood = st ? st.mood : 80, g = [];
+    if (hs === "long") g.push(`<path d="M28,58 C26,22 102,22 100,58 L104,114 C96,120 86,118 84,112 L44,112 C42,118 32,120 24,114Z" fill="${hc[0]}"/>`);
+    if (hs === "wavy") g.push(`<path d="M26,58 C22,24 106,24 102,58 C104,78 112,92 106,108 C110,118 98,124 92,116 L36,116 C30,124 18,118 22,108 C16,92 24,78 26,58Z" fill="${hc[0]}"/>`);
+    g.push(`<path d="M10,128 C12,108 30,98 50,96 L78,96 C98,98 116,108 118,128Z" fill="${out}"/><path d="M50,96 C56,104 72,104 78,96Z" fill="${out === "#F4F4F6" ? "#D9DCE4" : "rgba(255,255,255,.28)"}"/>`);
+    g.push(`<path d="M52,84 L52,98 C58,104 70,104 76,98 L76,84Z" fill="${sk[1]}"/><ellipse cx="33" cy="64" rx="5" ry="7" fill="${sk[1]}"/><ellipse cx="95" cy="64" rx="5" ry="7" fill="${sk[1]}"/>`);
+    g.push(`<ellipse cx="64" cy="60" rx="31" ry="35" fill="${sk[0]}"/>`);
+    if (lk.beard === "full" || lk.beard === "stubble") { const op = lk.beard === "stubble" ? ".45" : "1"; g.push(`<path d="M35,62 C34,92 50,98 64,98 C78,98 94,92 93,62 C90,80 82,84 64,84 C46,84 38,80 35,62Z" fill="${hc[0]}" opacity="${op}"/><path d="M50,78 C56,74 72,74 78,78 C72,80 56,80 50,78Z" fill="${hc[0]}" opacity="${op}"/>`); }
+    g.push(`<circle cx="44" cy="72" r="6.5" fill="#FF8A8A" opacity=".35"/><circle cx="84" cy="72" r="6.5" fill="#FF8A8A" opacity=".35"/>`);
+    if (st && st.energy < 25) g.push(`<path d="M46,61 C49,64 54,64 57,61" stroke="#2A1E1A" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M71,61 C74,64 79,64 82,61" stroke="#2A1E1A" stroke-width="2.6" fill="none" stroke-linecap="round"/>`);
+    else if (lk.glasses === "sun") g.push(`<rect x="38" y="53" width="22" height="13" rx="6" fill="#111118"/><rect x="68" y="53" width="22" height="13" rx="6" fill="#111118"/><path d="M60,57 L68,57" stroke="#111118" stroke-width="3"/>`);
+    else { g.push(`<ellipse cx="51" cy="60" rx="4.2" ry="5.4" fill="#2A1E1A"/><ellipse cx="77" cy="60" rx="4.2" ry="5.4" fill="#2A1E1A"/><circle cx="52.4" cy="58" r="1.5" fill="#fff"/><circle cx="78.4" cy="58" r="1.5" fill="#fff"/>`);
+      if (lk.glasses === "glasses") g.push(`<rect x="40" y="52" width="21" height="15" rx="6" fill="none" stroke="#1A1A22" stroke-width="2.4"/><rect x="67" y="52" width="21" height="15" rx="6" fill="none" stroke="#1A1A22" stroke-width="2.4"/><path d="M61,58 L67,58" stroke="#1A1A22" stroke-width="2.4"/>`); }
+    g.push(`<path d="M44,50 C48,47 54,47 57,49" stroke="${hc[1]}" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M71,49 C74,47 80,47 84,50" stroke="${hc[1]}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`);
+    g.push(`<path d="M62,64 C60,71 61,73 64,73 C66,73 68,72 67,70" stroke="${sk[2]}" stroke-width="2" fill="none" stroke-linecap="round" opacity=".8"/>`);
+    g.push(mood >= 60 ? `<path d="M52,77 C56,88 72,88 76,77 C70,80 58,80 52,77Z" fill="#7A2E2E"/><path d="M55,78 C60,80 68,80 73,78 L72,80 C66,81 62,81 56,80Z" fill="#fff"/>`
+      : mood >= 30 ? `<path d="M55,79 C60,81 68,81 73,79" stroke="#7A3A30" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
+      : `<path d="M55,82 C60,77 68,77 73,82" stroke="#7A3A30" stroke-width="2.6" fill="none" stroke-linecap="round"/>`);
+    const H = { short: `<path d="M30,62 C23,8 105,8 98,62 C96,48 90,42 82,40 C70,46 54,44 44,38 C38,44 33,52 30,62Z" fill="${hc[0]}"/>`,
+      buzz: `<path d="M32,58 C27,12 101,12 96,58 C92,42 80,34 64,34 C48,34 36,42 32,58Z" fill="${hc[0]}" opacity=".85"/>`,
+      slick: `<path d="M30,58 C23,9 105,9 98,58 C95,42 86,34 64,34 C42,34 33,42 30,58Z" fill="${hc[0]}"/>`,
+      curly: [[38, 44, 9], [46, 32, 10], [58, 26, 10], [71, 26, 10], [83, 32, 10], [91, 44, 9], [52, 38, 9], [66, 36, 9], [78, 40, 8], [64, 30, 9]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${hc[0]}"/>`).join(""),
+      long: `<path d="M29,72 C19,6 109,6 99,72 C96,50 86,38 64,36 C42,38 32,50 29,72Z" fill="${hc[0]}"/>`,
+      wavy: `<path d="M29,74 C17,6 111,6 99,68 C95,50 86,40 74,36 C60,40 44,46 29,74Z" fill="${hc[0]}"/>`,
+      bun: `<circle cx="64" cy="20" r="13" fill="${hc[0]}"/><path d="M30,60 C23,10 105,10 98,60 C95,44 86,36 64,36 C42,36 33,44 30,60Z" fill="${hc[0]}"/>`, bald: "" };
+    g.push(H[hs] ?? H.short);
+    if (st && st.clean < 30) g.push(`<circle cx="46" cy="44" r="4" fill="#7A5A3A" opacity=".55"/><circle cx="84" cy="80" r="3" fill="#7A5A3A" opacity=".55"/><circle cx="40" cy="110" r="5" fill="#7A5A3A" opacity=".5"/><circle cx="90" cy="112" r="4" fill="#7A5A3A" opacity=".5"/>`);
+    return `<svg viewBox="0 0 128 128" class="wchar" aria-hidden="true"><defs><clipPath id="${id}d"><circle cx="64" cy="64" r="58"/></clipPath><filter id="${id}o" x="-10%" y="-10%" width="120%" height="120%"><feMorphology in="SourceAlpha" operator="dilate" radius="2.6" result="d"/><feFlood flood-color="#071B4D"/><feComposite in2="d" operator="in" result="o"/><feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      <circle cx="64" cy="64" r="58" fill="${bg}"/><circle cx="50" cy="46" r="58" fill="#fff" opacity=".14" clip-path="url(#${id}d)"/>
+      <g clip-path="url(#${id}d)"><g filter="url(#${id}o)" transform="translate(64 70) scale(.9) translate(-64 -64)">${g.join("")}</g></g><circle cx="64" cy="64" r="58" fill="none" stroke="#071B4D" stroke-width="5"/></svg>`;
+  };
+  const wHours = (t) => (Date.now() - new Date(t).getTime()) / 3600e3;
+  const wClamp = (n) => Math.max(0, Math.min(100, Math.round(n)));
+  const wStats = (c) => { const food = wClamp(100 - wHours(c.fed_at) * 6), clean = wClamp(100 - wHours(c.washed_at) * 4), fun = wClamp(100 - wHours(c.played_at) * 8), energy = wClamp(100 - wHours(c.slept_at) * 5);
+    return { food, clean, fun, energy, mood: wClamp((food + clean + fun + energy) / 4) }; };
+  const wLevel = (xp) => ({ lvl: 1 + Math.floor((+xp || 0) / 100), pct: (+xp || 0) % 100 });
+  const W_CARE = [["feed", "🍔", "Покормить", "fed_at", 45], ["wash", "🫧", "Помыть", "washed_at", 90], ["play", "🎾", "Поиграть", "played_at", 30], ["sleep", "😴", "Уложить", "slept_at", 240]];
+  const W_STATUS = [["🏖", "на пляже"], ["🍹", "отдыхаю"], ["💻", "работаю"], ["🏋️", "в зале"], ["🍜", "ем"], ["🛵", "в пути"], ["🎉", "тусуюсь"], ["😴", "сплю"]];
+  const W_INVITE = [["🏖", "на пляж"], ["🍜", "поесть"], ["🏋️", "в зал"], ["🎭", "на мафию"], ["♟️", "в шахматы"], ["⚪", "в шашки"], ["☕", "на кофе"], ["🤝", "просто встретиться"]];
+  const myChar = () => W.chars.find((c) => c.user_id === me?.id) || null;
+  const myPres = () => W.pres.find((x) => x.user_id === me?.id) || null;
+  const loadWorld = async () => {
+    const since = new Date(Date.now() - 12 * 3600e3).toISOString();
+    const [{ data: chars }, { data: pres }] = await Promise.all([
+      sb.from("world_chars").select("*").order("xp", { ascending: false }).limit(200),
+      sb.from("world_presence").select("*").gte("updated_at", since),
+    ]);
+    W.chars = chars || []; W.pres = pres || [];
+    if (!people.length) await loadPeople();
+  };
+  const loadLeaflet = () => window.L ? Promise.resolve() : new Promise((res, rej) => {
+    const l = document.createElement("link"); l.rel = "stylesheet"; l.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"; document.head.append(l);
+    const sc = document.createElement("script"); sc.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"; sc.onload = res; sc.onerror = rej; document.head.append(sc);
+  });
+  const W_DACHAS = [["phuket", "Dacha Phuket", "🇹🇭", "Пхукет, Таиланд", true], ["bali", "Dacha Bali", "🇮🇩", "Бали", false], ["dubai", "Dacha Dubai", "🇦🇪", "Дубай", false], ["moscow", "Dacha Moscow", "🇷🇺", "Москва", false]];
+  const renderWorld = async () => {
+    const box = $("worldBox");
+    if (!me) return go("auth");
+    if (worldMember === null) await drawWorldEntry();
+    if (!worldOK()) { box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">DACHA WORLD</div><h2 class="h2">Пока недоступно</h2><p class="lead">Мир дачи скоро откроется для всех.</p></div></div></div>`; return; }
+    if (!W.dacha) {
+      box.innerHTML = `<div class="w-head"><span class="we-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19"/><path d="M12 2.5a14.5 14.5 0 0 1 0 19a14.5 14.5 0 0 1 0-19z"/></svg></span><div><div class="eyebrow">DACHA WORLD</div><h1 class="h1">Выбери дачу</h1></div></div>
+        <div class="w-dachas">${W_DACHAS.map(([k, n, fl, sub, open]) => `<button class="w-dacha ${open ? "" : "soon"}" type="button" data-wdacha="${k}" ${open ? "" : "disabled"}>
+          <span class="wd-fl">${fl}</span><span class="wd-t"><b>${n}</b><small>${open ? sub + " · открыта" : "скоро"}</small></span>${open ? `<span class="wd-go">›</span>` : `<span class="wd-soon">скоро</span>`}</button>`).join("")}</div>`;
+      return;
+    }
+    box.innerHTML = `<div class="w-mapwrap"><div id="wMap" class="w-map"></div>
+        <div class="w-mapbar"><span class="w-chip">🇹🇭 Dacha Phuket · <b id="wOnline">0</b> на карте</span><button class="w-chip btn" type="button" data-wback>сменить дачу</button></div>
+        <button class="w-locate" type="button" data-wlocate aria-label="Показать меня">📍</button></div>
+      <div id="wMe"></div><div id="wStatus"></div><div id="wRate"></div>
+      <div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:10px"><div class="eyebrow">Игры в мире</div>
+        <div class="w-games">${[["♟️", "Шахматы"], ["⚪", "Шашки"], ["🏃", "Забег по пляжу"], ["🎯", "Дартс"]].map(([e2, n]) => `<div class="w-game"><span>${e2}</span><b>${n}</b><small>скоро</small></div>`).join("")}</div>
+        <p class="bio-meta" style="margin:0">Скоро можно будет звать дачников играть прямо здесь.</p></div></div></div>`;
+    try { await Promise.all([loadWorld(), loadLeaflet()]); } catch { toast("Карта не загрузилась — проверь интернет"); }
+    if (S.view !== "world" || !W.dacha) return;
+    drawWorldMap(); drawWorldMe(); drawWorldStatus(); drawWorldRate();
+    if (!W.chan) W.chan = sb.channel("world").on("postgres_changes", { event: "*", schema: "public", table: "world_presence" }, worldAgain).on("postgres_changes", { event: "*", schema: "public", table: "world_chars" }, worldAgain).subscribe();
+    clearInterval(W.timer); W.timer = setInterval(() => { if (S.view !== "world") return clearInterval(W.timer); if (W.sharing) shareLocation(true); drawWorldMe(); }, 120000);
+  };
+  let worldT = 0;
+  const worldAgain = () => { clearTimeout(worldT); worldT = setTimeout(async () => { if (S.view !== "world" || !W.dacha) return; await loadWorld(); drawWorldMap(); drawWorldMe(); drawWorldRate(); }, 500); };
+  const drawWorldMap = () => {
+    if (!window.L || !$("wMap")) return;
+    if (!W.map || W.map.getContainer() !== $("wMap")) {
+      W.map?.remove();
+      W.map = L.map("wMap", { zoomControl: false, attributionControl: true, minZoom: 9, maxBounds: [[7.3, 97.9], [8.5, 98.9]] }).setView([7.93, 98.34], 11);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap" }).addTo(W.map);
+      L.control.zoom({ position: "bottomright" }).addTo(W.map);
+      W.layer = L.layerGroup().addTo(W.map);
+    }
+    W.layer.clearLayers();
+    const shown = W.pres.filter((x) => x.visible && x.lat != null);
+    $("wOnline").textContent = shown.length;
+    shown.forEach((x) => {
+      const c = W.chars.find((y) => y.user_id === x.user_id), pp = personOf(x.user_id), st = c ? wStats(c) : null;
+      const html = `<div class="w-pin ${x.user_id === me.id ? "me" : ""}">${x.emoji ? `<i class="w-pin-st">${esc(x.emoji)}</i>` : ""}<div class="w-pin-av">${c ? charSVG(c.look, st) : avaP({ ...pp, id: x.user_id })}</div><span class="w-pin-nm">${esc(c?.name || pp.nick)}</span></div>`;
+      L.marker([x.lat, x.lng], { icon: L.divIcon({ className: "w-pin-wrap", html, iconSize: [64, 80], iconAnchor: [32, 72] }) }).addTo(W.layer).on("click", () => openWorldPerson(x.user_id));
+    });
+    setTimeout(() => W.map?.invalidateSize(), 60);
+  };
+  const statBar = (k, label, v) => `<div class="w-stat ${v < 30 ? "low" : ""}"><span>${label}</span><i><b style="width:${v}%"></b></i><em>${v}</em></div>`;
+  const drawWorldMe = () => {
+    const box = $("wMe"); if (!box) return;
+    const c = myChar();
+    if (!c) { box.innerHTML = `<div class="ticket w-new"><div class="ticket-in"><div class="t-body" style="gap:10px;align-items:center;text-align:center">
+        <div class="w-new-av">${charSVG({ skin: "fair", hair: "short", hairc: "dark", bg: "#FFC83D" })}</div>
+        <h2 class="h2">Создай своего персонажа</h2><p class="lead">Он будет жить на карте дачи: корми, мой, играй с ним и прокачивай.</p>
+        <button class="pill wide" type="button" data-wcreate>создать персонажа</button></div></div></div>`; return; }
+    const st = wStats(c), L2 = wLevel(c.xp);
+    box.innerHTML = `<div class="ticket w-card"><div class="ticket-in"><div class="t-body" style="gap:12px">
+      <div class="w-me"><div class="w-me-av">${charSVG(c.look, st)}<span class="w-lvl">${L2.lvl}</span></div>
+        <div class="w-me-t"><div class="eyebrow">Мой персонаж</div><b>${esc(c.name || me.nick)}</b><div class="w-xp"><i><b style="width:${L2.pct}%"></b></i><small>${c.xp} XP · до ${L2.lvl + 1} ур. ${100 - L2.pct}</small></div></div>
+        <button class="edit-pill" type="button" data-wcreate>✎</button></div>
+      <div class="w-stats">${statBar("food", "Сытость", st.food)}${statBar("clean", "Чистота", st.clean)}${statBar("fun", "Веселье", st.fun)}${statBar("energy", "Энергия", st.energy)}</div>
+      <div class="w-care">${W_CARE.map(([k, e2, l, f, cd]) => { const left = Math.ceil(cd - wHours(c[f]) * 60);
+        return `<button type="button" data-wcare="${k}" ${left > 0 ? "disabled" : ""}><span>${e2}</span><b>${l}</b><small>${left > 0 ? (left >= 60 ? `через ${Math.ceil(left / 60)} ч` : `через ${left} мин`) : "+XP"}</small></button>`; }).join("")}</div>
+    </div></div></div>`;
+  };
+  const drawWorldStatus = () => {
+    const box = $("wStatus"); if (!box) return;
+    const pr = myPres(); W.sharing = !!(pr?.visible && pr?.lat != null);
+    box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:10px">
+      <div class="eyebrow">Чем сейчас занят</div>
+      <div class="w-sts">${W_STATUS.map(([e2, l]) => `<button type="button" data-wst="${e2}|${l}" aria-pressed="${pr?.status === l}">${e2} ${l}</button>`).join("")}</div>
+      <button class="host-row" type="button" data-wshare role="switch" aria-checked="${W.sharing}" style="border:0;padding:4px 0"><span class="hr-ic">📍</span><span class="hr-t"><b>Показывать меня на карте</b><small>${W.sharing ? "дачники видят, где ты" : "сейчас тебя не видно"}</small></span><i class="switch ${W.sharing ? "on" : ""}"></i></button>
+      <button class="pill wide" type="button" data-winvite>🤝 Позвать дачника</button>
+    </div></div></div>`;
+  };
+  const drawWorldRate = () => {
+    const box = $("wRate"); if (!box) return;
+    const top = [...W.chars].sort((a, b) => b.xp - a.xp).slice(0, 10);
+    box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:6px"><div class="eyebrow">Рейтинг персонажей</div></div>
+      ${top.length ? top.map((c, i) => `<button class="w-rrow" type="button" data-wperson="${c.user_id}"><span class="w-rn">${i + 1}</span><span class="w-rav">${charSVG(c.look, wStats(c))}</span><span class="w-rt"><b>${esc(c.name || personOf(c.user_id).nick)}</b><small>${esc(personOf(c.user_id).nick)} · ${c.xp} XP</small></span><span class="w-rl">${wLevel(c.xp).lvl}<small>ур.</small></span></button>`).join("")
+        : `<div class="empty-note">Пока никого — создай первого персонажа.</div>`}</div></div>`;
+  };
+  const openWorldPerson = (uid) => {
+    const c = W.chars.find((y) => y.user_id === uid), pr = W.pres.find((x) => x.user_id === uid), pp = personOf(uid), st = c ? wStats(c) : null;
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    v.innerHTML = `<div class="bank w-person" role="dialog" aria-modal="true">
+      <div class="w-me"><div class="w-me-av">${c ? charSVG(c.look, st) : avaP({ ...pp, id: uid })}${c ? `<span class="w-lvl">${wLevel(c.xp).lvl}</span>` : ""}</div>
+        <div class="w-me-t"><b>${esc(c?.name || pp.nick)}</b><small>${esc(pp.nick)}${pr?.status ? ` · ${esc(pr.emoji || "")} ${esc(pr.status)}` : ""}</small>${pr?.updated_at ? `<small>на карте ${new Date(pr.updated_at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}</small>` : ""}</div></div>
+      ${st ? `<div class="w-stats">${statBar("food", "Сытость", st.food)}${statBar("clean", "Чистота", st.clean)}${statBar("fun", "Веселье", st.fun)}${statBar("energy", "Энергия", st.energy)}</div>` : ""}
+      <div class="row-btns" style="justify-content:flex-start">${uid !== me.id ? `<button class="pill sm" type="button" data-wcall="${uid}">🤝 позвать</button>` : ""}<button class="pill sm ghost" type="button" data-wprof="${uid}">профиль</button></div>
+      <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
+    v.addEventListener("click", (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      const cb = e.target.closest("[data-wcall]"); if (cb) { v.remove(); return worldInvite(cb.dataset.wcall); }
+      const pb = e.target.closest("[data-wprof]"); if (pb) { v.remove(); return go("profile", pb.dataset.wprof); }
+    });
+    document.body.append(v);
+  };
+  const worldInvite = (to) => {
+    const ask = (uid) => choose({ eyebrow: "DACHA WORLD", title: `Куда позвать ${personOf(uid).nick}?`, text: "Бот сразу напишет ему в Telegram.",
+      options: W_INVITE.map(([e2, l]) => ({ label: `${e2} ${l}`, run: async () => {
+        const { data, error } = await sb.functions.invoke("tg", { body: { action: "world_invite", to: uid, what: `${e2} ${l}` } });
+        if (error || !data?.ok) return toast("Не получилось отправить: " + (data?.error || error?.message || ""));
+        haptic("card"); toast(`Позвал ${personOf(uid).nick} ${l}`);
+      } })) });
+    if (to) return ask(to);
+    pickPerson({ title: "Кого позвать?", exclude: [me.id], onPick: ask });
+  };
+  const shareLocation = (quiet) => new Promise((res) => {
+    const done = async (lat, lng) => {
+      const pr = myPres();
+      const { error } = await sb.rpc("world_here", { la: lat, ln: lng, st: pr?.status || null, em: pr?.emoji || null, vis: true });
+      if (error) { toast("Не получилось: " + humanErr(error)); return res(false); }
+      W.sharing = true; await loadWorld(); drawWorldMap(); drawWorldStatus();
+      if (!quiet) W.map?.flyTo([lat, lng], 14, { duration: .8 });
+      res(true);
+    };
+    if (!navigator.geolocation) { toast("Телефон не даёт геолокацию"); return res(false); }
+    navigator.geolocation.getCurrentPosition((p0) => done(p0.coords.latitude, p0.coords.longitude),
+      () => { if (!quiet) toast("Разреши доступ к геолокации для Telegram"); res(false); }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  });
+  const openCharEditor = () => {
+    const c = myChar();
+    let lk = { skin: "fair", hair: "short", hairc: "dark", beard: "none", glasses: "none", outfit: "#0033FF", bg: "#FFC83D", ...(c?.look || {}) }, nm = c?.name || me.nick;
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    const row = (title, key, items, kind) => `<div class="ce-row"><span class="ce-l">${title}</span><div class="ce-opts ${kind}">${items.map(([val, lab]) => kind === "sw"
+      ? `<button type="button" data-ck="${key}" data-cv="${val}" aria-pressed="${lk[key] === val}" style="background:${lab}" aria-label="${val}"></button>`
+      : `<button type="button" data-ck="${key}" data-cv="${val}" aria-pressed="${lk[key] === val}">${lab}</button>`).join("")}</div></div>`;
+    const draw = () => {
+      v.innerHTML = `<div class="bank w-editor" role="dialog" aria-modal="true" aria-label="Персонаж">
+        <div class="ce-prev">${charSVG(lk)}</div>
+        <input class="field" data-cname maxlength="24" value="${esc(nm)}" placeholder="Имя персонажа">
+        ${row("Кожа", "skin", Object.entries(W_SKIN).map(([k, c2]) => [k, c2[0]]), "sw")}
+        ${row("Причёска", "hair", W_STYLES, "txt")}
+        ${row("Цвет волос", "hairc", Object.entries(W_HAIR).map(([k, c2]) => [k, c2[0]]), "sw")}
+        ${row("Борода", "beard", [["none", "нет"], ["stubble", "щетина"], ["full", "борода"]], "txt")}
+        ${row("Очки", "glasses", [["none", "нет"], ["glasses", "очки"], ["sun", "солнечные"]], "txt")}
+        ${row("Одежда", "outfit", W_OUTFITS.map((c2) => [c2, c2]), "sw")}
+        ${row("Фон", "bg", W_BGS.map((c2) => [c2, c2]), "sw")}
+        <button class="pill wide" type="button" data-csave>${c ? "сохранить" : "создать персонажа"}</button>
+        <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
+    };
+    draw();
+    v.addEventListener("input", (e) => { if (e.target.matches("[data-cname]")) nm = e.target.value; });
+    v.addEventListener("click", async (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      const o = e.target.closest("[data-ck]"); if (o) { lk[o.dataset.ck] = o.dataset.cv; haptic("tap"); const sc = v.querySelector(".bank").scrollTop; draw(); v.querySelector(".bank").scrollTop = sc; return; }
+      if (e.target.closest("[data-csave]")) {
+        const { error } = await sb.rpc("world_save_char", { nm, lk });
+        if (error) return toast("Не получилось: " + humanErr(error));
+        haptic("card"); toast(c ? "Персонаж обновлён" : "Персонаж родился! Позаботься о нём"); v.remove();
+        await loadWorld(); drawWorldMe(); drawWorldMap(); drawWorldRate();
+      }
+    });
+    document.body.append(v);
+  };
+  $("goWorld").onclick = () => { haptic("tap"); if (!worldOK()) return toast("DACHA WORLD пока недоступна"); go("world"); };
+  $("worldBox").addEventListener("click", async (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.wdacha) { W.dacha = b.dataset.wdacha; haptic("tap"); return renderWorld(); }
+    if (b.hasAttribute("data-wback")) { W.dacha = null; W.map?.remove(); W.map = null; return renderWorld(); }
+    if (b.hasAttribute("data-wcreate")) return openCharEditor();
+    if (b.hasAttribute("data-wlocate")) return shareLocation(false);
+    if (b.dataset.wcare) {
+      const { error } = await sb.rpc("world_care", { a: b.dataset.wcare });
+      if (error) return toast(/cooldown/.test(error.message) ? "Пока рано — загляни чуть позже" : "Не получилось: " + humanErr(error));
+      haptic("card"); toast({ feed: "Ням! +10 XP", wash: "Чистенький! +10 XP", play: "Весело! +15 XP", sleep: "Выспался! +8 XP" }[b.dataset.wcare]);
+      await loadWorld(); drawWorldMe(); drawWorldRate(); drawWorldMap(); return;
+    }
+    if (b.dataset.wst) {
+      const [em, st] = b.dataset.wst.split("|"), pr = myPres(), same = pr?.status === st;
+      const { error } = await sb.rpc("world_here", { la: null, ln: null, st: same ? null : st, em: same ? null : em, vis: pr ? pr.visible : false });
+      if (error) return toast("Не получилось: " + humanErr(error));
+      haptic("tap"); await loadWorld(); drawWorldStatus(); drawWorldMap(); return;
+    }
+    if (b.hasAttribute("data-wshare")) {
+      if (W.sharing) { const pr = myPres(); await sb.rpc("world_here", { la: null, ln: null, st: pr?.status || null, em: pr?.emoji || null, vis: false }); W.sharing = false; await loadWorld(); drawWorldMap(); drawWorldStatus(); return toast("Тебя больше не видно на карте"); }
+      return shareLocation(false);
+    }
+    if (b.hasAttribute("data-winvite")) return worldInvite();
+    if (b.dataset.wperson) return openWorldPerson(b.dataset.wperson);
+  });
+  // @tivishka opens the world to someone from his profile
+  document.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-worldsw]"); if (!b) return;
+    e.preventDefault(); e.stopPropagation();
+    const on = b.getAttribute("aria-checked") !== "true";
+    const { error } = await sb.rpc("world_grant", { u: b.dataset.worldsw, on_: on });
+    if (error) return toast("Не получилось: " + humanErr(error));
+    b.setAttribute("aria-checked", on); b.querySelector(".switch").classList.toggle("on", on); b.querySelector("small").textContent = on ? "открыт" : "закрыт";
+    haptic("tap"); toast(on ? "DACHA WORLD открыт" : "DACHA WORLD закрыт");
+  }, true);
 
   /* =================== tomatoes: throw one at a friend's screen =================== */
   let myTomatoes = null;

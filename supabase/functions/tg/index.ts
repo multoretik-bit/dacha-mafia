@@ -310,6 +310,27 @@ ${who?.nick || "Дачник"}${who?.tg_username ? " (@" + who.tg_username + ")"
 }
 
 // money came in: tell the person in the bot (once per wallet row, only fresh confirmed incoming rows)
+// DACHA WORLD: "Дениска зовёт тебя на пляж"
+async function worldInvite(req: Request, body: any) {
+  const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const { data: { user } } = await admin.auth.getUser(jwt);
+  if (!user || typeof body.to !== "string") return json({ error: "Нужно войти" }, 401);
+  const what = String(body.what || "").slice(0, 60).trim();
+  if (!what || body.to === user.id) return json({ error: "Некого звать" }, 400);
+  const [{ data: me }, { data: mem }] = await Promise.all([
+    admin.from("profiles").select("nick, tg_username").eq("id", user.id).maybeSingle(),
+    admin.from("world_members").select("user_id").eq("user_id", user.id).maybeSingle(),
+  ]);
+  if (!mem && String(me?.tg_username || "").toLowerCase() !== "tivishka") return json({ error: "DACHA WORLD пока закрыт" }, 403);
+  const { data: to } = await admin.from("profiles").select("tg_id").eq("id", body.to).maybeSingle();
+  if (!to?.tg_id) return json({ error: "У человека не подключён бот" }, 400);
+  const { data: pr } = await admin.from("world_presence").select("lat, lng, visible").eq("user_id", user.id).maybeSingle();
+  const where = pr?.visible && pr.lat != null ? `\n📍 Где он сейчас: https://maps.google.com/?q=${pr.lat.toFixed(5)},${pr.lng.toFixed(5)}` : "";
+  const r: any = await tgApi("sendMessage", { chat_id: to.tg_id, text: `🌍 DACHA WORLD\n${me?.nick || "Дачник"}${me?.tg_username ? " (@" + me.tg_username + ")" : ""} зовёт тебя ${what}!${where}`,
+    reply_markup: { inline_keyboard: [[{ text: "Открыть DACHA", web_app: { url: APP } }], ...(me?.tg_username ? [[{ text: "Ответить в Telegram", url: "https://t.me/" + me.tg_username }]] : [])] } });
+  return json({ ok: !!r?.ok, error: r?.ok ? undefined : "Telegram не доставил" });
+}
+
 // a tomato that didn't land on a screen (app closed): the bot tells the target
 async function tomatoNotify(req: Request, body: any) {
   const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
@@ -576,6 +597,7 @@ Deno.serve(async (req) => {
   if (body.action === "cevent_decide") return ceventDecide(req, body);
   if (body.action === "wallet_notify") return walletNotify(req, body);
   if (body.action === "tomato_notify") return tomatoNotify(req, body);
+  if (body.action === "world_invite") return worldInvite(req, body);
   if (body.action === "poll") return pollCreate(req, body);
   if (body.action === "poll_close") return pollClose(req, body);
   return json({ error: "unknown action" }, 400);
