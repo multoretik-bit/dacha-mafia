@@ -353,10 +353,12 @@ async function dmDeliver(m: any) {
     admin.from("profiles").select("nick, tg_username").eq("id", m.from_id).maybeSingle(),
     admin.from("profiles").select("tg_id").eq("id", m.to_id).maybeSingle(),
   ]);
-  if (!to?.tg_id) return;
+  if (!to?.tg_id || !m.game_id) return;
+  const { data: g } = await admin.from("world_games").select("kind").eq("id", m.game_id).maybeSingle();
+  const GN: Record<string, string> = { chess: "шахматы", checkers: "шашки", durak: "дурак" };
   const r: any = await tgApi("sendMessage", { chat_id: to.tg_id, parse_mode: "HTML",
-    text: `💬 <b>${esc2(from?.nick || "Дачник")}</b>:\n${esc2(m.body)}\n\n<i>Ответь на это сообщение (свайп влево) — ответ придёт в чат DACHA</i>`,
-    reply_markup: { inline_keyboard: [[{ text: "Открыть чат", web_app: { url: APP + "?v=chat&u=" + m.from_id } }]] } });
+    text: `💬 <b>${esc2(from?.nick || "Дачник")}</b> · ${GN[g?.kind] || "игра"}:\n${esc2(m.body)}\n\n<i>Ответь на это сообщение (свайп влево) — ответ придёт в игру</i>`,
+    reply_markup: { inline_keyboard: [[{ text: "Открыть игру", web_app: { url: APP + "?v=game&g=" + m.game_id } }]] } });
   if (r?.ok) await admin.from("dm_messages").update({ tg_msg_id: r.result.message_id }).eq("id", m.id);
 }
 async function dmNotify(req: Request, body: any) {
@@ -375,8 +377,8 @@ async function dmNotify(req: Request, body: any) {
 async function dmFromTelegram(msg: any): Promise<boolean> {
   const rid = msg.reply_to_message?.message_id; if (!rid || !msg.text) return false;
   const { data: me } = await admin.from("profiles").select("id").eq("tg_id", msg.from?.id).maybeSingle(); if (!me) return false;
-  const { data: orig } = await admin.from("dm_messages").select("from_id, to_id").eq("tg_msg_id", rid).eq("to_id", me.id).maybeSingle(); if (!orig) return false;
-  const { data: nm } = await admin.from("dm_messages").insert({ from_id: me.id, to_id: orig.from_id, body: String(msg.text).slice(0, 1000), via_tg: true }).select("*").maybeSingle();
+  const { data: orig } = await admin.from("dm_messages").select("from_id, to_id, game_id").eq("tg_msg_id", rid).eq("to_id", me.id).maybeSingle(); if (!orig?.game_id) return false;
+  const { data: nm } = await admin.from("dm_messages").insert({ from_id: me.id, to_id: orig.from_id, body: String(msg.text).slice(0, 1000), via_tg: true, game_id: orig.game_id }).select("*").maybeSingle();
   await tgApi("setMessageReaction", { chat_id: msg.chat.id, message_id: msg.message_id, reaction: [{ type: "emoji", emoji: "👍" }] }).catch(() => {});
   if (nm) {
     await new Promise((r) => setTimeout(r, 5000));

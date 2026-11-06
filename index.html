@@ -2051,6 +2051,28 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .cb.lvl { background: var(--navy-ink); color: #fff; } .cb.lvl b { color: #FFC83D; font-weight: 900; }
 .crew-rank { font: 700 13px/1 var(--f-code); color: var(--muted); margin-left: auto; padding-right: 2px; }
 
+/* top bar v3 (06.11) */
+.hub-top { display: flex !important; justify-content: space-between; align-items: center; gap: 8px !important; }
+.hub-top .crew-combo { flex: 0 1 auto; min-width: 0; }
+.top-cap { display: flex; align-items: center; gap: 2px; padding: 3px; flex: none; border-radius: 999px; background: #fff; box-shadow: 0 0 0 1px var(--hair), 0 4px 12px -6px rgba(15,23,42,.25); }
+.top-cap .bal-pill { box-shadow: none !important; background: none !important; min-height: 36px !important; padding: 0 8px 0 10px !important; gap: 5px; font-size: 13.5px; color: #071B4D !important; }
+.top-cap .bal-pill.neg { color: #C0162A !important; }
+.top-cap .bell-btn { width: 36px; height: 36px; box-shadow: none; background: #F1F3F8; border-radius: 50%; display: grid; place-items: center; }
+.top-cap .bell-btn svg { width: 19px; height: 19px; }
+.top-cap #hubMe { width: 36px; height: 36px; box-shadow: none; margin-left: 2px; }
+.top-cap #hubMe .ava, .top-cap #hubMe .prem { width: 36px; height: 36px; } .top-cap #hubMe .prem .ava { width: 100%; height: 100%; } .top-cap #hubMe .prem-ic { display: none; }
+.crew-combo .crew-faces > *:nth-child(2) { display: none; }
+@media (min-width: 380px) { .crew-combo .crew-faces > *:nth-child(2) { display: inline-grid; } }
+/* game chat */
+.g-chat { display: grid; gap: 8px; padding: 12px; border-radius: 20px; background: #fff; box-shadow: var(--sh); }
+.gc-h { font: 800 13px/1 var(--f-body); color: var(--muted); letter-spacing: .02em; }
+.gc-list { display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow-y: auto; padding: 2px; }
+.gc-list .ch-msg { font-size: 14px; background: #F1F3F8; box-shadow: none; } .gc-list .ch-msg.me { background: #0033FF; }
+.gc-empty { padding: 6px 2px; color: var(--muted); font-weight: 700; font-size: 12.5px; }
+.gc-bar { display: flex; gap: 8px; } .gc-bar input { flex: 1; min-width: 0; height: 42px; padding: 0 14px; border: 0; border-radius: 21px; background: #F1F3F8; font: 600 14.5px/1 var(--f-body); color: #071B4D; outline: none; }
+.gc-bar input:focus { box-shadow: inset 0 0 0 2px #0033FF; background: #fff; }
+.gc-bar button { width: 42px; height: 42px; flex: none; border-radius: 50%; background: #0033FF; color: #fff; display: grid; place-items: center; }
+
 /* fresh / stale pins (06.11) */
 .w-nm small { display: block; font: 700 9.5px/1.2 var(--f-body); opacity: .75; }
 .w-pin2.stale .w-bub, .w-pin2.stale .w-tail { filter: grayscale(1); opacity: .6; }
@@ -2326,7 +2348,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .w-grow .ava, .w-grow .prem { width: 40px; height: 40px; } .w-grow .prem .ava { width: 100%; height: 100%; }
 .w-grow .wg-t { display: grid; gap: 2px; flex: 1; min-width: 0; } .w-grow > .ava, .w-grow > .prem { flex: none; } .w-grow b { font-weight: 800; font-size: 14px; } .w-grow small { color: var(--muted); font-weight: 700; font-size: 12px; } .w-grow em { font-style: normal; color: var(--muted); font-size: 20px; }
 .w-grow.hot small { color: #16A34A; font-weight: 900; }
-.w-pacts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; } .w-pacts button { min-height: 40px; border-radius: 14px; background: var(--soft); color: var(--navy-ink); font: 800 12.5px/1 var(--f-body); } .w-pacts button:first-child { background: var(--navy-ink); color: #fff; }
+.w-pacts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; } .w-pacts button { min-height: 40px; border-radius: 14px; background: var(--soft); color: var(--navy-ink); font: 800 12.5px/1 var(--f-body); } .w-pacts button:first-child { background: var(--navy-ink); color: #fff; }
 /* the board */
 .g-wrap { display: grid; gap: 10px; }
 .g-title { display: grid; gap: 2px; padding: 0 2px; } .g-title b { font: 800 26px/1 var(--f-display); color: var(--navy-ink); }
@@ -2591,9 +2613,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     <div class="game-on" id="gameOnHub" hidden></div>
     <div class="hub-top">
       <div class="crew-combo"><button class="crew-btn" id="goCrew" type="button" aria-label="Дачники"><span class="crew-faces" id="crewFaces"></span><span class="crew-n" id="crewN">дачники</span></button><button class="map-btn" id="goMap" type="button" aria-label="Карта дачников"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6Z"/><path d="M9 4v14M15 6v14"/></svg></button></div>
-      <button class="bal-pill" id="hubBal" type="button" hidden></button>
+      <div class="top-cap"><button class="bal-pill" id="hubBal" type="button" hidden></button>
       <button class="icon-btn bell-btn" id="goInbox" type="button" aria-label="Уведомления"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i class="bell-n" id="bellN" hidden></i></button>
-      <button class="icon-btn" id="hubMe" type="button" aria-label="Профиль"></button>
+      <button class="icon-btn" id="hubMe" type="button" aria-label="Профиль"></button></div>
     </div>
     <div class="hub-hero">
       <img class="hub-logo" src="logo-dacha-hub.webp?v=2" alt="DACHA" draggable="false">
@@ -3050,7 +3072,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106120506"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106121230"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3625,9 +3647,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (S.view === "profile" && profileId === id) {
       // own page: everything behind one gear; someone else's: a small tomato to throw
       $("phAch")?.insertAdjacentHTML("afterend", isMe ? `<button class="ph-mini" type="button" id="phGear" aria-label="Настройки профиля" title="Настройки"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>`
-        : `<button class="ph-mini chat" type="button" id="phChat" aria-label="Написать" title="Написать"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button><button class="ph-mini tm" type="button" id="phTomato" aria-label="Бросить помидор" title="Бросить помидор">🍅<i id="tomatoN">${myTomatoes ?? 0}</i></button>`);
+        : `<button class="ph-mini chat" type="button" id="phChat" hidden aria-label="Написать" title="Написать"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button><button class="ph-mini tm" type="button" id="phTomato" aria-label="Бросить помидор" title="Бросить помидор">🍅<i id="tomatoN">${myTomatoes ?? 0}</i></button>`);
       if (isMe) { $("phActs")?.classList.add("own"); $("phGear").onclick = () => openProfMenu(); }
-      else { $("phTomato").onclick = () => throwTomato(id); $("phChat").onclick = () => go("chat", id); }
+      else $("phTomato").onclick = () => throwTomato(id);
     }
     drawProfBal(id, isMe, row);
     // win rate only from 5 games: fewer games say nothing
@@ -7097,7 +7119,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     v.innerHTML = `<div class="bank w-person" role="dialog" aria-modal="true">
       <div class="w-me"><div class="w-me-av">${avaP({ ...pp, id: uid })}<span class="w-lvl">${wLevel(lvlXP(uid)).lvl}</span></div>
         <div class="w-me-t"><b>${esc(pp.nick)}</b><small>уровень дачника ${wLevel(lvlXP(uid)).lvl}</small><small>${pr?.status ? `${esc(pr.emoji || "")} ${esc(pr.status)}` : "без статуса"}</small>${pr?.updated_at ? `<small>на карте с ${new Date(pr.updated_at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}</small>` : ""}</div></div>
-      ${uid !== me.id ? `<div class="w-pacts"><button type="button" data-wchat="${uid}">💬 написать</button><button type="button" data-wcall="${uid}">позвать</button><button type="button" data-wplay="chess:${uid}">♚\uFE0E шахматы</button><button type="button" data-wplay="checkers:${uid}">⛀ шашки</button></div>` : ""}
+      ${uid !== me.id ? `<div class="w-pacts"><button type="button" data-wcall="${uid}">позвать</button><button type="button" data-wplay="chess:${uid}">♚\uFE0E шахматы</button><button type="button" data-wplay="checkers:${uid}">⛀ шашки</button></div>` : ""}
       <div class="row-btns" style="justify-content:flex-start">${pr?.visible && pr.lat != null ? `<button class="pill sm" type="button" data-wfly="${uid}">📍 показать на карте</button>` : ""}<button class="pill sm ghost" type="button" data-wprof="${uid}">профиль</button></div>
       <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
     v.addEventListener("click", (e) => {
@@ -7311,7 +7333,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   };
   const drawGame = () => {
     const box = $("gameBox"); if (!box || S.view !== "game") return;
-    if (G.row?.kind === "durak") { drawDurak(); return dkAfter(); }
+    if (G.row?.kind === "durak") { drawDurak(); mountGameChat(); return dkAfter(); }
     const k = gKind(), st = gState(), flip = !G.local && myColor() === "b";
     let squares = [], status = "", over = null, targets = [], last = st.last || [];
     if (k === "chess") {
@@ -7356,7 +7378,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         : G.local ? `<button class="pill sm ghost" type="button" data-grestart>заново</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
     </div>`;
     if (over && !done && !G.busy) finishGame(over);
-    animateMove(st.last, k); moveClock();
+    animateMove(st.last, k); moveClock(); mountGameChat();
   };
   // a piece slides from its square; taken pieces fade away
   const animateMove = (last, k) => {
@@ -7508,7 +7530,6 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         ${mine ? `<p class="lead" style="margin:0">${x.status === "pending" ? "Ждём ответа…" : x.status === "accepted" ? "Придёт ✅" : x.status === "declined" ? "Не сможет ❌" : "Хочет договориться"}</p>`
           : talk ? `<textarea class="field" data-invmsg maxlength="200" rows="3" placeholder="Например: давай через час, я у Ката"></textarea><div class="inv-acts"><button class="pill" type="button" data-invsend>отправить</button><button class="pill ghost" type="button" data-invback>назад</button></div>`
           : `<div class="inv-acts"><button class="pill green" type="button" data-inva="accepted">✅ Иду</button><button class="pill ghost" type="button" data-invtalk>💬 Договориться</button><button class="pill ghost red-t" type="button" data-inva="declined">Не могу</button></div>`}
-        <button class="pill sm ghost" type="button" data-invchat style="justify-self:start">💬 написать ${esc(pp.nick)}</button>
         <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
     };
     const answer = async (st, msg) => {
@@ -7517,7 +7538,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       sb.functions.invoke("tg", { body: { action: "invite_answered", invite: x.id } }).catch(() => {});
       haptic("card"); toast(st === "accepted" ? "Отлично! Он узнает, что ты придёшь" : st === "declined" ? "Ок, передадим" : "Ответ отправлен");
       v.remove(); await loadInvites(); drawHubInvites();
-      if (st === "talk" && msg) { await sendDM(x.from_id, `${invWhat(x.what)}: ${msg}`); go("chat", x.from_id); }
+
     };
     draw(false);
     v.addEventListener("click", (e) => {
@@ -7557,7 +7578,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   /* =================== the bell: invitations, games, messages · and the chat =================== */
   let chatPeer = null;
   const DM = { threads: [], chan: null, msgs: [] };
-  const loadThreads = async () => { if (!sb || !me) return; const { data } = await sb.rpc("dm_threads"); DM.threads = (data || []).sort((a, b) => String(b.last_at).localeCompare(String(a.last_at))); };
+  const loadThreads = async () => { if (!sb || !me) return; const { data } = await sb.from("dm_messages").select("id, from_id, game_id, body, created_at").eq("to_id", me.id).is("read_at", null).not("game_id", "is", null).order("created_at", { ascending: false }).limit(60);
+    const by = new Map(); (data || []).forEach((m) => { const t = by.get(m.game_id) || { game: m.game_id, peer: m.from_id, last_body: m.body, last_at: m.created_at, unread: 0 }; t.unread++; by.set(m.game_id, t); }); DM.threads = [...by.values()]; };
   const bellCount = () => {
     if (!me) return 0;
     const inv = INV.list.filter((x) => x.to_id === me.id && x.status === "pending").length + INV.list.filter((x) => x.from_id === me.id && x.status !== "pending" && x.answered_at && !INV.seen?.has(x.id + x.status)).length;
@@ -7578,8 +7600,35 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     try { navigator.vibrate?.([40, 60, 40]); } catch {} haptic("card");
     setTimeout(() => b.classList.add("out"), 8000); setTimeout(() => b.remove(), 8600);
   };
-  const sendDM = async (to, text) => {
-    const { data: id, error } = await sb.rpc("dm_send", { to_: to, body_: text });
+  const GC = { gid: null, msgs: [] };
+  const mountGameChat = () => {
+    const r = G.row, wrap = document.querySelector("#gameBox .g-wrap"); if (!r || !wrap || G.local || r.status === "declined") return;
+    const opp = r.a === me.id ? r.b : r.a;
+    wrap.insertAdjacentHTML("beforeend", `<div class="g-chat"><div class="gc-h">💬 Чат с ${esc(personOf(opp).nick)}</div><div class="gc-list" id="gcList"></div>
+      <form class="gc-bar" id="gcForm"><input id="gcIn" maxlength="500" placeholder="Сообщение сопернику…" autocomplete="off" enterkeyhint="send"><button type="submit" aria-label="Отправить"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg></button></form></div>`);
+    if (GC.gid !== r.id) { GC.gid = r.id; GC.msgs = []; loadGameChat(); } else drawGameChat();
+  };
+  const loadGameChat = async () => {
+    const gid = GC.gid; const { data } = await sb.from("dm_messages").select("*").eq("game_id", gid).order("created_at", { ascending: true }).limit(150);
+    if (GC.gid !== gid) return; GC.msgs = data || []; drawGameChat();
+    sb.rpc("dm_read_game", { g: gid }).then(() => refreshBell());
+  };
+  const drawGameChat = () => {
+    const box = document.getElementById("gcList"); if (!box) return;
+    box.innerHTML = GC.msgs.length ? GC.msgs.map((m) => `<div class="ch-msg ${m.from_id === me.id ? "me" : ""} ${m._new ? "new" : ""}">${esc(m.body)}<i>${new Date(m.created_at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}${m.via_tg ? " · из Telegram" : ""}</i></div>`).join("")
+      : `<div class="gc-empty">Напиши сопернику — если он не в приложении, сообщение придёт ему в Telegram</div>`;
+    GC.msgs.forEach((m) => delete m._new); box.scrollTop = box.scrollHeight;
+  };
+  $("gameBox").addEventListener("submit", async (e) => {
+    if (e.target.id !== "gcForm") return; e.preventDefault();
+    const inp = document.getElementById("gcIn"), t = inp.value.trim(), r = G.row; if (!t || !r) return;
+    inp.value = ""; const opp = r.a === me.id ? r.b : r.a;
+    const temp = { id: "t" + Date.now(), from_id: me.id, to_id: opp, body: t, created_at: new Date().toISOString(), game_id: r.id, _new: true };
+    GC.msgs.push(temp); drawGameChat(); haptic("tap");
+    const id = await sendDM(opp, t, r.id); if (!id) { GC.msgs = GC.msgs.filter((m) => m !== temp); drawGameChat(); inp.value = t; } else temp.id = id;
+  });
+  const sendDM = async (to, text, g) => {
+    const { data: id, error } = await sb.rpc("dm_send", { to_: to, body_: text, g });
     if (error) { toast(/too fast/.test(error.message) ? "Слишком быстро — подожди немного" : "Не получилось: " + humanErr(error)); return null; }
     sb.functions.invoke("tg", { body: { action: "dm_notify", id } }).catch(() => {});
     return id;
@@ -7587,10 +7636,10 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const startDM = () => {
     if (!sb || !me || DM.chan) return;
     DM.chan = sb.channel("dm-" + me.id).on("postgres_changes", { event: "INSERT", schema: "public", table: "dm_messages", filter: `to_id=eq.${me.id}` }, async (p0) => {
-      const m = p0.new;
-      if (S.view === "chat" && chatPeer === m.from_id && !document.hidden) { DM.msgs.push(m); drawChatMsgs(true); sb.rpc("dm_read", { peer: m.from_id }).then(() => {}); return; }
+      const m = p0.new; if (!m.game_id) return;
+      if (S.view === "game" && GC.gid === m.game_id && !document.hidden) { m._new = true; GC.msgs.push(m); drawGameChat(); sb.rpc("dm_read_game", { g: m.game_id }).then(() => {}); return; }
       await loadThreads(); drawBell(); if (S.view === "inbox") drawInbox();
-      popBanner({ uid: m.from_id, title: personOf(m.from_id).nick, sub: m.body, cta: "ответить", onClick: () => go("chat", m.from_id) });
+      popBanner({ uid: m.from_id, title: `${personOf(m.from_id).nick} · в игре`, sub: m.body, cta: "ответить", onClick: () => go("game", m.game_id) });
     }).subscribe();
     if (!W.gchan) W.gchan = sb.channel("mygames").on("postgres_changes", { event: "*", schema: "public", table: "world_games" }, worldAgain).subscribe();
     refreshBell();
@@ -7611,13 +7660,12 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const news = [
       ...inc.map((x) => ({ at: x.created_at, html: `<button class="nf-row hot" type="button" data-nfinv="${x.id}">${avaP({ ...personOf(x.from_id), id: x.from_id })}<span><b>${esc(personOf(x.from_id).nick)} зовёт тебя</b><small>${esc(invWhat(x.what))}</small></span><em>ответить</em></button>` })),
       ...ans.map((x) => ({ at: x.answered_at, html: `<button class="nf-row" type="button" data-nfinv="${x.id}">${avaP({ ...personOf(x.to_id), id: x.to_id })}<span><b>${esc(personOf(x.to_id).nick)} ${x.status === "accepted" ? "придёт ✅" : x.status === "declined" ? "не сможет" : "ответил 💬"}</b><small>${esc(invWhat(x.what))}${x.reply ? ` · «${esc(x.reply)}»` : ""}</small></span><i>${timeAgo(x.answered_at)}</i></button>` })),
+      ...DM.threads.map((t) => ({ at: t.last_at, html: `<button class="nf-row hot" type="button" data-nfgame="${t.game}">${avaP({ ...personOf(t.peer), id: t.peer })}<span><b>${esc(personOf(t.peer).nick)} написал в игре</b><small>${esc(t.last_body)}</small></span><i>${timeAgo(t.last_at)}<b class="nf-n">${t.unread}</b></i></button>` })),
       ...games.map((g) => { const opp = g.a === me.id ? g.b : g.a; return { at: g.updated_at, html: `<button class="nf-row hot" type="button" data-nfgame="${g.id}">${avaP({ ...personOf(opp), id: opp })}<span><b>${GAMES_W[g.kind].name} · ${esc(personOf(opp).nick)}</b><small>${g.status === "invite" ? "зовёт тебя сыграть" : "твой ход"}</small></span><em>${g.status === "invite" ? "играть" : "ходить"}</em></button>` }; }),
     ].sort((a, b) => String(b.at).localeCompare(String(a.at)));
     box.innerHTML = `<div class="sec-title" style="margin:2px 2px 10px">Уведомления</div>
-      ${news.length ? `<div class="nf-card">${news.map((x) => x.html).join("")}</div>` : `<div class="nf-empty">Новых уведомлений нет</div>`}
-      <div class="nf-h"><div class="sec-title" style="margin:0">Сообщения</div><button class="pill sm" type="button" data-nfnew>${'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'} написать</button></div>
-      ${DM.threads.length ? `<div class="nf-card">${DM.threads.map((t) => { const pp = personOf(t.peer); return `<button class="nf-row th ${t.unread ? "unread" : ""}" type="button" data-nfchat="${t.peer}">${avaP({ ...pp, id: t.peer })}<span><b>${esc(pp.nick)}</b><small>${t.last_from === me.id ? "ты: " : ""}${esc(t.last_body)}</small></span><i>${timeAgo(t.last_at)}${t.unread ? `<b class="nf-n">${t.unread}</b>` : ""}</i></button>`; }).join("")}</div>`
-        : `<div class="nf-empty">Пока нет переписок. Напиши любому дачнику — если он не в приложении, сообщение придёт ему в Telegram.</div>`}`;
+      ${news.length ? `<div class="nf-card">${news.map((x) => x.html).join("")}</div>` : `<div class="nf-empty">Новых уведомлений нет 🎉</div>`}
+`;
   };
   const renderChat = async () => {
     const box = $("chatBox"); if (!me) return go("auth"); if (!chatPeer) return go("inbox");
@@ -8520,7 +8568,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (SPORTS[deep]) { startView = "sport"; sportId = deep; }
     if (deep === "game") { const qg = new URLSearchParams(location.search).get("g"); if (qg) { startView = "game"; gameId = qg; } }
     if (deep === "world" || deep === "map") { startView = "crew"; crewTab = "map"; }
-    if (deep === "chat") { const qu = new URLSearchParams(location.search).get("u"); if (qu) { startView = "chat"; chatPeer = qu; } }
+    if (deep === "chat") startView = "inbox";
     if (deep === "inbox") startView = "inbox";
     const deepInv = deep === "invite" ? new URLSearchParams(location.search).get("i") : null;
     if (deepInv) setTimeout(async () => { await startInvites(); if (!INV.list.some((y) => y.id === deepInv)) await loadInvites(); openInvite(deepInv); }, 2500);
