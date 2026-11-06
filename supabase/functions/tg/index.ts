@@ -321,7 +321,7 @@ async function worldInvite(req: Request, body: any) {
     admin.from("profiles").select("nick, tg_username").eq("id", user.id).maybeSingle(),
     admin.from("world_members").select("user_id").eq("user_id", user.id).maybeSingle(),
   ]);
-  if (!mem && String(me?.tg_username || "").toLowerCase() !== "tivishka") return json({ error: "DACHA WORLD пока закрыт" }, 403);
+  void mem;   // 06.11: DACHA WORLD is open for everybody
   const { data: to } = await admin.from("profiles").select("tg_id").eq("id", body.to).maybeSingle();
   if (!to?.tg_id) return json({ error: "У человека не подключён бот" }, 400);
   let gameUrl = "";

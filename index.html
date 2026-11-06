@@ -2910,7 +2910,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106103751"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106104258"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3579,15 +3579,10 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
           ${Object.values(SPORTS).map((x) => { const on = sp.hosts.some((h) => h.sport === x.id && h.user_id === id);
             return `<button class="host-row" type="button" data-shost="${x.id}" data-on="${on ? "off" : "on"}" role="switch" aria-checked="${on}">
             <span class="hr-ic">${x.emoji}</span><span class="hr-t"><b>${x.name}</b><small>${on ? "ведёт" : "не ведёт"}</small></span><i class="switch ${on ? "on" : ""}"></i></button>`; }).join("")}
-          ${isMe ? "" : `<button class="host-row" type="button" data-worldsw="${id}" role="switch" aria-checked="false"><span class="hr-ic">🌍</span><span class="hr-t"><b>DACHA WORLD</b><small>закрыт</small></span><i class="switch"></i></button>`}
         </div>
       </div></div>` : ""}
       ${canGrant && !isMe ? `<button class="pill sm red" type="button" data-lock>🔒 заблокировать профиль</button>` : ""}
       <button class="pill ghost sm" data-p="people">все дачники</button>${isMe && !inTG ? `<button class="pill dark sm" data-p="out">выйти</button>` : ""}`;
-    if (canGrant && !isMe) sb.from("world_members").select("user_id").eq("user_id", id).maybeSingle().then(({ data }) => {
-      const b = document.querySelector(`[data-worldsw="${id}"]`); if (!b || !data) return;
-      b.setAttribute("aria-checked", "true"); b.querySelector(".switch").classList.add("on"); b.querySelector("small").textContent = "открыт";
-    });
     $("profBtns").onchange = async (e) => {
       if (e.target.id !== "myQrFile" || !e.target.files[0]) return;
       const f = e.target.files[0];
@@ -6643,10 +6638,10 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 
   /* =================== DACHA WORLD: the dacha on a real map, your mini character, care, rating =================== */
   let worldMember = null;
-  const worldOK = () => !!me && (canGrant || worldMember === true);
+  const worldOK = () => !!me && !lockedIds.has(me.id);   // 06.11: open for every dachnik
   const drawWorldEntry = async () => {
     const b = $("goWorld"); if (!b) return;
-    if (me && worldMember === null && sb) { const { data } = await sb.from("world_members").select("user_id").eq("user_id", me.id).maybeSingle(); worldMember = !!data; }
+    worldMember = true;
     const ok = worldOK();
     b.classList.toggle("locked", !ok);
   };
