@@ -2173,6 +2173,11 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .wc-faces { display: flex; } .wc-faces > * { margin-left: -10px; box-shadow: 0 0 0 2px #071B4D; border-radius: 50%; } .wc-faces > *:first-child { margin-left: 0; }
 .wc-faces .ava, .wc-faces .prem { width: 32px; height: 32px; font-size: 14px; } .wc-faces .prem .ava { width: 100%; height: 100%; } .wc-faces .prem-ic { display: none; }
 .w-clu b { font: 900 18px/1 var(--f-code); color: #FFC83D; } .w-clu small { font: 800 11.5px/1 var(--f-body); opacity: .9; }
+.w-clu small { display: grid; gap: 1px; } .w-clu small em { font-style: normal; font-size: 10px; opacity: .7; }
+.w-clu.stale { background: #7B8396; } .w-clu.stale .wc-faces { filter: grayscale(1); opacity: .75; }
+.cl-age { flex: none; font-style: normal; padding: 5px 9px; border-radius: 99px; background: #E7F8EE; color: #137A3E; font: 800 11.5px/1 var(--f-body); }
+.cl-age.old { background: #EEF0F5; color: #7B8396; }
+.pick-sheet .ps-row .cl-age { margin-left: auto; }
 /* online row (06.11) */
 .online-row { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 4px; padding: 12px 14px; border-radius: 20px; background: #fff; box-shadow: var(--sh); text-align: left; color: #071B4D; }
 .online-row:active { transform: scale(.98); }
@@ -3072,7 +3077,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106122719"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106122924"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -6995,16 +7000,20 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       const lng = grp.reduce((t, q) => t + q.ll.lng, 0) / grp.length, lat = grp.reduce((t, q) => t + q.ll.lat, 0) / grp.length;
       const faces = grp.slice(0, 3).map((q) => avaP({ ...personOf(q.uid), id: q.uid })).join("");
       const el = document.createElement("div"); el.className = "w-clu-el";
-      el.innerHTML = `<div class="w-clu ${grp.some((q) => q.uid === me.id) ? "me" : ""}"><span class="wc-faces">${faces}</span><b>${grp.length}</b><small>${plural(grp.length, "дачник", "дачника", "дачников")} тут</small></div>`;
+      const pres = grp.map((q) => W.pres.find((x) => x.user_id === q.uid)).filter(Boolean), newest = pres.reduce((t, x) => (String(x.updated_at) > t ? String(x.updated_at) : t), "");
+      const allOld = newest && Date.now() - new Date(newest).getTime() > 3600e3;
+      el.innerHTML = `<div class="w-clu ${grp.some((q) => q.uid === me.id) ? "me" : ""} ${allOld ? "stale" : ""}"><span class="wc-faces">${faces}</span><b>${grp.length}</b><small>${plural(grp.length, "дачник", "дачника", "дачников")} тут${newest ? `<em>${agoShort(newest)}</em>` : ""}</small></div>`;
       el.addEventListener("click", (e) => { e.stopPropagation(); openCluster(grp.map((q) => q.uid)); });
       W.clusters.push(new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([lng, lat]).addTo(W.map));
     });
   };
+  const agoShort = (t) => { const d = (Date.now() - new Date(t).getTime()) / 60000; return d < 3 ? "сейчас" : d < 60 ? Math.round(d) + " мин" : Math.round(d / 60) + " ч"; };
+  const agoTxt = (t) => { const d = (Date.now() - new Date(t).getTime()) / 60000; return d < 3 ? "на месте сейчас" : `был тут ${agoShort(t)} назад`; };
   const openCluster = (uids) => {
-    const list = uids.map((u) => W.pres.find((x) => x.user_id === u)).filter(Boolean);
+    const list = uids.map((u) => W.pres.find((x) => x.user_id === u)).filter(Boolean).sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)));
     const v = document.createElement("div"); v.className = "veil bank-veil";
     v.innerHTML = `<div class="bank pick-sheet" role="dialog" aria-modal="true"><div class="ps-h"><div class="eyebrow">Скопление дачников</div><h2 class="h2">${uids.length} ${plural(uids.length, "дачник", "дачника", "дачников")} в одном месте</h2></div>
-      <div class="ps-list">${list.map((x) => { const pp = personOf(x.user_id); return `<button class="ps-row" type="button" data-cu="${x.user_id}">${avaP({ ...pp, id: x.user_id })}<span class="nm"><b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b><small>${x.status ? `${esc(x.emoji || "")} ${esc(x.status)}` : `уровень ${wLevel(lvlXP(x.user_id)).lvl}`}</small></span></button>`; }).join("")}</div>
+      <div class="ps-list">${list.map((x) => { const pp = personOf(x.user_id); return `<button class="ps-row" type="button" data-cu="${x.user_id}">${avaP({ ...pp, id: x.user_id })}<span class="nm"><b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b><small>${x.status ? `${esc(x.emoji || "")} ${esc(x.status)} · ` : ""}${agoTxt(x.updated_at)}</small></span><i class="cl-age ${Date.now() - new Date(x.updated_at).getTime() > 3600e3 ? "old" : ""}">${agoShort(x.updated_at)}</i></button>`; }).join("")}</div>
       <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
     v.addEventListener("click", (e) => { if (e.target === v || e.target.closest("[data-close]")) return v.remove(); const r = e.target.closest("[data-cu]"); if (r) { v.remove(); openWorldPerson(r.dataset.cu); } });
     document.body.append(v);
