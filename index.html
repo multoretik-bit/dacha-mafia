@@ -1926,6 +1926,13 @@ html:has(body.pdark) { background: #0A0D16; }
 body.pdark .topbar { background: linear-gradient(#0A0D16, rgba(10,13,22,.85)); }
 body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color: #EEF1F8; }
 
+/* one scan (06.11) */
+.qr-one .t-body { padding: 14px; }
+.qr-one-row { display: flex; align-items: center; gap: 14px; }
+.qr-one-img { width: 112px; height: 112px; object-fit: contain; border-radius: 14px; background: #fff; box-shadow: 0 0 0 1px var(--hair); flex: none; }
+.qr-one-acts { display: grid; gap: 8px; justify-items: start; }
+.qr-add { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.qr-add span { font-size: 20px; line-height: 1; }
 /* +1, pay, edit, requests (06.11) */
 .plus-chip { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 99px; background: var(--soft, #EEF0F5); color: var(--navy-ink); font: 800 12.5px/1 var(--f-body); white-space: nowrap; }
 .plus-chip.on { background: var(--navy-ink); color: #fff; }
@@ -2573,7 +2580,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106060538"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106061012"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3184,7 +3191,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const premLine = !active ? "нет" : forever ? "навсегда" : `до ${until.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}`;
     const hostOf = [mafHost ? "мафию" : "", ...Object.values(SPORTS).filter((x) => sp.hosts.some((h) => h.sport === x.id && h.user_id === id)).map((x) => x.name.toLowerCase())].filter(Boolean);
     const hostLine = hostOf.length ? `Ведёт: ${hostOf.join(", ")}` : "Пока не ведущий";
-    const myQr = isMe && isAnyHost() ? extra?.pay_qr || extra?.pay_qr2 || "" : null;
+    const myQr = isMe && isAnyHost() ? extra?.pay_qr || "" : null;
     let qrUpSlot = 1;
     const qrLab = (n) => v2q(`[data-qlabel="${n}"]`)?.value.trim() || null;
     const v2q = (sel) => $("profBtns").querySelector(sel);
@@ -3206,13 +3213,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         <button class="host-row" type="button" data-nall role="switch" aria-checked="${nAll}" style="padding:4px 0;border:0"><span class="hr-ic">🔔</span><span class="hr-t"><b>Все анонсы</b><small>${nAll ? "приходит всё" : "только выбранное ниже"}</small></span><i class="switch ${nAll ? "on" : ""}"></i></button>
         ${nAll ? "" : `<div class="an-games">${NK.map(([k, l]) => `<button type="button" data-nk="${k}" aria-pressed="${nKinds.includes(k)}">${l}</button>`).join("")}</div>`}
       </div></div></div>` : "";
-    $("profBtns").innerHTML = `${premCard}${notifyCard}${iconPick}${myQr !== null ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
-        <div class="eyebrow">Мои QR для оплат · до двух</div>
-        <p class="lead">Когда ты отмечаешься ведущим на игре, дачники платят по твоим QR. Подпиши каждый, например «за игру» и «на чай».${canGrant ? " Твои QR ещё показываются, когда пополняют баланс." : ""}</p>
-        <div class="qr-edit">${[1, 2].map((n) => { const url = n === 1 ? extra?.pay_qr : extra?.pay_qr2, lab = (n === 1 ? extra?.pay_qr_label : extra?.pay_qr2_label) || "";
-          return `<div class="qr-slot-ed">${url ? `<img class="qr-mini" src="${esc(url)}" alt="QR ${n}">` : `<button class="qr-empty" type="button" data-qrup="${n}">＋<small>QR ${n}</small></button>`}
-            <input class="field" data-qlabel="${n}" maxlength="40" value="${esc(lab)}" placeholder="${n === 1 ? "Подпись: за игру" : "Подпись: на чай"}">
-            <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="button" data-qrup="${n}">${url ? "заменить" : "загрузить"}</button>${url ? `<button class="pill sm ghost" type="button" data-qrlab="${n}">сохранить подпись</button><button class="linkish" type="button" data-qrdel="${n}">убрать</button>` : ""}</div></div>`; }).join("")}</div>
+    $("profBtns").innerHTML = `${premCard}${notifyCard}${iconPick}${myQr !== null ? `<div class="ticket qr-one" style="width:100%"><div class="ticket-in"><div class="t-body">
+        ${extra?.pay_qr ? `<div class="qr-one-row"><img class="qr-one-img" src="${esc(extra.pay_qr)}" alt="Мой скан"><div class="qr-one-acts"><button class="pill sm" type="button" data-qrup="1">заменить скан</button><button class="pill sm ghost" type="button" data-qrdel="1">убрать</button></div></div>`
+          : `<button class="pill wide qr-add" type="button" data-qrup="1"><span>＋</span>Добавить скан</button>`}
         <input type="file" accept="image/*" id="myQrFile" hidden>
       </div></div></div>` : ""}${canGrant ? `<div class="pm-grant">
         <div class="pm-mark">DACHA <b>PREMIUM</b> · выдаёшь только ты</div>
@@ -3246,7 +3249,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       const path = `qr-${me.id}-${Date.now()}.${(f.type.split("/")[1] || "png").replace("jpeg", "jpg")}`;
       const up = await sb.storage.from("pay").upload(path, f, { contentType: f.type, cacheControl: "31536000" });
       if (up.error) return toast("Не получилось загрузить: " + humanErr(up.error));
-      const { error } = await sb.rpc("set_pay_qr_slot", { slot: qrUpSlot, url: sb.storage.from("pay").getPublicUrl(path).data.publicUrl, label: qrLab(qrUpSlot) });
+      const { error } = await sb.rpc("set_pay_qr_slot", { slot: qrUpSlot, url: sb.storage.from("pay").getPublicUrl(path).data.publicUrl, label: null });
       if (error) return toast("Не получилось: " + humanErr(error));
       toast("QR сохранён"); renderProfile();
     };
@@ -5753,7 +5756,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const loadQRs = async () => {
     const { data } = await sb.from("profiles").select("id, pay_qr, pay_qr_label, pay_qr2, pay_qr2_label").or("pay_qr.not.is.null,pay_qr2.not.is.null");
     qrs.clear();
-    (data || []).forEach((r) => { const l = [r.pay_qr && { url: r.pay_qr, label: r.pay_qr_label }, r.pay_qr2 && { url: r.pay_qr2, label: r.pay_qr2_label }].filter(Boolean); if (l.length) qrs.set(r.id, l); });
+    (data || []).forEach((r) => { if (r.pay_qr) qrs.set(r.id, [{ url: r.pay_qr, label: null }]); });
   };
   const ownerId = () => people.find((p) => String(p.tg_username || "").toLowerCase() === "tivishka")?.id;
   const qrPack = (uid) => { const list = qrs.get(uid); if (!list) return null; const i = Math.min(qrSlot, list.length - 1); return { list, i, url: list[i].url, label: list[i].label, who: personOf(uid) }; };
