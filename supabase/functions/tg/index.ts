@@ -324,10 +324,16 @@ async function worldInvite(req: Request, body: any) {
   if (!mem && String(me?.tg_username || "").toLowerCase() !== "tivishka") return json({ error: "DACHA WORLD пока закрыт" }, 403);
   const { data: to } = await admin.from("profiles").select("tg_id").eq("id", body.to).maybeSingle();
   if (!to?.tg_id) return json({ error: "У человека не подключён бот" }, 400);
+  let gameUrl = "";
+  if (typeof body.game === "string") {
+    const { data: g } = await admin.from("world_games").select("id, a, b, kind").eq("id", body.game).maybeSingle();
+    if (!g || g.a !== user.id || g.b !== body.to) return json({ error: "Нет такой партии" }, 400);
+    gameUrl = APP + "?v=game&g=" + g.id;
+  }
   const { data: pr } = await admin.from("world_presence").select("lat, lng, visible").eq("user_id", user.id).maybeSingle();
   const where = pr?.visible && pr.lat != null ? `\n📍 Где он сейчас: https://maps.google.com/?q=${pr.lat.toFixed(5)},${pr.lng.toFixed(5)}` : "";
-  const r: any = await tgApi("sendMessage", { chat_id: to.tg_id, text: `🌍 DACHA WORLD\n${me?.nick || "Дачник"}${me?.tg_username ? " (@" + me.tg_username + ")" : ""} зовёт тебя ${what}!${where}`,
-    reply_markup: { inline_keyboard: [[{ text: "Открыть DACHA", web_app: { url: APP } }], ...(me?.tg_username ? [[{ text: "Ответить в Telegram", url: "https://t.me/" + me.tg_username }]] : [])] } });
+  const r: any = await tgApi("sendMessage", { chat_id: to.tg_id, text: `🌍 DACHA WORLD\n${me?.nick || "Дачник"}${me?.tg_username ? " (@" + me.tg_username + ")" : ""} зовёт тебя ${what}${gameUrl ? " ♟" : "!"}${gameUrl ? "" : where}`,
+    reply_markup: { inline_keyboard: [[{ text: gameUrl ? "Принять и играть" : "Открыть DACHA", web_app: { url: gameUrl || APP } }], ...(me?.tg_username ? [[{ text: "Ответить в Telegram", url: "https://t.me/" + me.tg_username }]] : [])] } });
   return json({ ok: !!r?.ok, error: r?.ok ? undefined : "Telegram не доставил" });
 }
 
