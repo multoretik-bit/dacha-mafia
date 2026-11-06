@@ -2596,7 +2596,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106070424"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106070904"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4598,9 +4598,23 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         else toast("Пришла твоя карта", { label: "открыть", run: () => go("card") });
       })
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "promos" }, (p) => onPromo(p.new))
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "tomato_throws", filter: `to_id=eq.${me.id}` }, (p) => splatTomato(p.new.from_id))
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "tomato_throws", filter: `to_id=eq.${me.id}` }, (p) => { if (splatTomato(p.new.from_id)) sb.rpc("tomato_seen", { ids: [p.new.id] }).then(() => {}); })
       .subscribe();
+    setTimeout(checkTomatoes, 2500);
   };
+  // tomatoes thrown while I was away: the screen is already splattered when I come back
+  let tmChecking = false;
+  const checkTomatoes = async () => {
+    if (!sb || !me || tmChecking || document.hidden) return;
+    tmChecking = true;
+    try {
+      const { data } = await sb.from("tomato_throws").select("id, from_id, created_at, from:profiles!tomato_throws_from_id_fkey(nick)").eq("to_id", me.id).is("seen_at", null).order("created_at");
+      if (!data?.length || document.hidden) return;
+      const last = data[data.length - 1];
+      if (splatTomato(last.from_id, data.length - 1, last.from?.nick)) await sb.rpc("tomato_seen", { ids: data.map((x) => x.id) });
+    } finally { tmChecking = false; }
+  };
+  document.addEventListener("visibilitychange", () => { if (me && document.visibilityState === "visible") setTimeout(checkTomatoes, 600); });
   // fallback when the phone slept and the socket dropped
   setInterval(() => { if (me && document.visibilityState === "visible" && (S.view === "card" || S.view === "home" || S.view === "hub")) loadMyCard(); }, 12000);
   document.addEventListener("visibilitychange", () => { if (me && document.visibilityState === "visible") loadMyCard(); });
@@ -6215,12 +6229,12 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     return d + "Z";
   };
   // the splat is painted on a canvas: it drips, stays until wiped off with a finger (or 30 s pass)
-  const splatTomato = (fromId) => {
-    if (document.hidden) return;
+  const splatTomato = (fromId, more = 0, nick = "") => {
+    if (document.hidden) return false;
     document.querySelector(".tomato-fx")?.remove();
-    const from = personOf(fromId);
+    const from = nick ? { nick } : personOf(fromId);
     const fx = document.createElement("div"); fx.className = "tomato-fx";
-    fx.innerHTML = `<div class="tm-fly">🍅</div><canvas class="tm-cv"></canvas><div class="tm-from">🍅 от ${esc(from.nick || "дачника")} · сотри пальцем</div>`;
+    fx.innerHTML = `<div class="tm-fly">🍅</div><canvas class="tm-cv"></canvas><div class="tm-from">🍅 от ${esc(from.nick || "дачника")}${more ? ` и ещё ${more}` : ""} · сотри пальцем</div>`;
     document.body.append(fx);
     const cv = fx.querySelector("canvas"), dpr = Math.min(2, window.devicePixelRatio || 1);
     const W = innerWidth, H = innerHeight;
@@ -6268,6 +6282,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     cv.addEventListener("pointerup", () => { last = null; if (ready && left() < 0.12) finish(); });
     cv.addEventListener("pointercancel", () => { last = null; });
     setTimeout(finish, 30000);
+    return true;
   };
   const openProfMenu = () => {
     const v = document.createElement("div"); v.className = "veil bank-veil";
@@ -6302,6 +6317,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (error) return toast(/too fast/.test(error.message) ? "Не так быстро — подожди пару секунд" : /no tomatoes/.test(error.message) ? "Помидоры кончились" : "Не получилось: " + humanErr(error));
     myTomatoes = data; haptic("tap");
     toast(`🍅 полетел в ${personOf(toId).nick}! Осталось ${data}`);
+    sb.functions.invoke("tg", { body: { action: "tomato_notify", to: toId } }).catch(() => {});
     if ($("tomatoN")) $("tomatoN").textContent = data;
   };
 

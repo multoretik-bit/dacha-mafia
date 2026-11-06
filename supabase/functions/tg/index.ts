@@ -310,6 +310,29 @@ ${who?.nick || "Дачник"}${who?.tg_username ? " (@" + who.tg_username + ")"
 }
 
 // money came in: tell the person in the bot (once per wallet row, only fresh confirmed incoming rows)
+// a tomato that didn't land on a screen (app closed): the bot tells the target
+async function tomatoNotify(req: Request, body: any) {
+  const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const { data: { user } } = await admin.auth.getUser(jwt);
+  if (!user || typeof body.to !== "string") return json({ error: "Нужно войти" }, 401);
+  const { data: t } = await admin.from("tomato_throws").select("id, to_id, created_at").eq("from_id", user.id).eq("to_id", body.to)
+    .is("notified_at", null).gte("created_at", new Date(Date.now() - 2 * 60 * 1000).toISOString()).order("created_at", { ascending: false }).limit(1).maybeSingle();
+  if (!t) return json({ ok: true, sent: 0 });
+  await new Promise((r) => setTimeout(r, 8000));   // give the open app time to catch it
+  const { data: again } = await admin.from("tomato_throws").select("seen_at, notified_at").eq("id", t.id).maybeSingle();
+  if (!again || again.seen_at || again.notified_at) return json({ ok: true, sent: 0 });
+  await admin.from("tomato_throws").update({ notified_at: new Date().toISOString() }).eq("id", t.id);
+  const [{ data: to }, { data: from }] = await Promise.all([
+    admin.from("profiles").select("tg_id").eq("id", t.to_id).maybeSingle(),
+    admin.from("profiles").select("nick").eq("id", user.id).maybeSingle(),
+  ]);
+  if (!to?.tg_id) return json({ ok: true, sent: 0 });
+  await tgApi("sendMessage", { chat_id: to.tg_id, text: `🍅 В тебя прилетел помидор от ${from?.nick || "дачника"}!
+Открой DACHA — экран уже испачкан, придётся оттирать 😄`,
+    reply_markup: { inline_keyboard: [[{ text: "Открыть DACHA", web_app: { url: APP } }]] } });
+  return json({ ok: true, sent: 1 });
+}
+
 async function walletNotify(req: Request, body: any) {
   const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
   const { data: { user } } = await admin.auth.getUser(jwt);
@@ -552,6 +575,7 @@ Deno.serve(async (req) => {
   if (body.action === "cevent_submitted") return ceventSubmitted(req, body);
   if (body.action === "cevent_decide") return ceventDecide(req, body);
   if (body.action === "wallet_notify") return walletNotify(req, body);
+  if (body.action === "tomato_notify") return tomatoNotify(req, body);
   if (body.action === "poll") return pollCreate(req, body);
   if (body.action === "poll_close") return pollClose(req, body);
   return json({ error: "unknown action" }, 400);
