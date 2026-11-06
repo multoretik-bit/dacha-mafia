@@ -2051,6 +2051,16 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .cb.lvl { background: var(--navy-ink); color: #fff; } .cb.lvl b { color: #FFC83D; font-weight: 900; }
 .crew-rank { font: 700 13px/1 var(--f-code); color: var(--muted); margin-left: auto; padding-right: 2px; }
 
+/* дачники + карта (06.11) */
+.crew-combo { display: inline-flex; align-items: center; border-radius: 999px; background: #fff; box-shadow: 0 0 0 1px var(--hair), 0 4px 12px -6px rgba(15,23,42,.25); }
+.crew-combo .crew-btn { box-shadow: none; background: none; padding-right: 10px; } .crew-combo .crew-n { white-space: nowrap; }
+.map-btn { display: grid; place-items: center; width: 40px; height: 40px; margin-right: 3px; border-radius: 50%; background: #071B4D; color: #FFC83D; }
+.map-btn:active { transform: scale(.94); }
+.crew-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-bottom: 12px; border-radius: 18px; background: #E9ECF3; }
+.crew-tabs button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 42px; border-radius: 14px; font: 800 14.5px/1 var(--f-body); color: var(--muted); }
+.crew-tabs button[aria-selected="true"] { background: #fff; color: #071B4D; box-shadow: 0 2px 8px -3px rgba(15,23,42,.3); }
+#hubOnline .w-gtiles { margin-bottom: 4px; }
+
 /* MapLibre map (06.11) */
 .w-pin-el { width: 120px; height: 100px; pointer-events: none; }
 .w-pin-el .w-pin2 > * { pointer-events: auto; cursor: pointer; }
@@ -2453,19 +2463,18 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   <div class="block-screen" id="blockScreen" hidden></div>
 
   <!-- HUB: DACHA main page -->
-  <section id="vWorld" class="col" hidden><div id="worldBox"></div></section>
+  <section id="vWorld" class="col" hidden></section>
   <section id="vGame" class="col" hidden><div id="gameBox"></div></section>
   <section id="vHub" class="col" hidden>
     <div class="game-on" id="gameOnHub" hidden></div>
     <div class="hub-top">
-      <button class="crew-btn" id="goCrew" type="button" aria-label="Дачники"><span class="crew-faces" id="crewFaces"></span><span class="crew-n" id="crewN">дачники</span></button>
+      <div class="crew-combo"><button class="crew-btn" id="goCrew" type="button" aria-label="Дачники"><span class="crew-faces" id="crewFaces"></span><span class="crew-n" id="crewN">дачники</span></button><button class="map-btn" id="goMap" type="button" aria-label="Карта дачников"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6Z"/><path d="M9 4v14M15 6v14"/></svg></button></div>
       <button class="bal-pill" id="hubBal" type="button" hidden></button>
       <button class="icon-btn" id="hubMe" type="button" aria-label="Профиль"></button>
     </div>
     <div class="hub-hero">
       <img class="hub-logo" src="logo-dacha-hub.webp?v=2" alt="DACHA" draggable="false">
       <p class="hub-tag">Дом, вдали от дома</p>
-      <button class="world-tile" id="goWorld" type="button"><img class="wt-logo" src="logo-dacha-hub.webp?v=2" alt="" draggable="false"><svg class="wt-word" viewBox="0 0 236 68" role="img" aria-label="WORLD"><text class="o3" x="10" y="54" textLength="214" lengthAdjust="spacingAndGlyphs">WORLD</text><text class="o2" x="10" y="50" textLength="214" lengthAdjust="spacingAndGlyphs">WORLD</text><text class="o1" x="10" y="50" textLength="214" lengthAdjust="spacingAndGlyphs">WORLD</text></svg><span class="wt-sub">Пхукет · карта и игры онлайн</span><span class="gw-lock">Пока недоступно</span></button>
     </div>
     <div id="hubHello"></div>
     <div class="ticket week"><div class="ticket-in">
@@ -2474,8 +2483,10 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       <div class="week-list" id="weekList"></div>
     </div></div>
     <div id="hubBdays" hidden></div>
-    <div class="sec-title">Игры</div>
+    <div class="sec-title">Ивенты</div>
     <div class="games" id="hubGames"></div>
+    <div class="sec-title">Онлайн</div>
+    <div id="hubOnline"></div>
     <div class="sec-title" id="ceTitle">Ивенты дачников</div>
     <div id="hubCev"></div>
     <button class="pm-card" type="button" id="hubPrem" hidden><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ и 50 🍅 каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>
@@ -2518,7 +2529,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 
   <!-- CREW: all people, social list -->
   <section id="vCrew" class="col" hidden>
-    <div class="ticket"><div class="ticket-in">
+    <div class="crew-tabs" role="tablist"><button type="button" role="tab" data-ctab="list" aria-selected="true">Дачники</button><button type="button" role="tab" data-ctab="map" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6Z"/><path d="M9 4v14M15 6v14"/></svg>Карта</button></div>
+    <div id="worldBox" hidden></div>
+    <div class="ticket" id="crewListBox"><div class="ticket-in">
       <div class="t-body" style="padding-bottom:12px">
         <div class="eyebrow" id="crewEb">Дачники</div>
         <h1 class="h1">Все дачники</h1>
@@ -2914,7 +2927,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106104831"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106113041"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3258,6 +3271,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (["sport", "sportorg", "sportrate", "sportlist"].includes(view)) sportId = SPORTS[arg] ? arg : sportId;
     if (view === "cevent" && arg) ceId = arg;
     if (view === "game" && arg) gameId = arg;
+    if (view === "world") { view = "crew"; crewTab = "map"; }
     if (view === "pay" && S.view !== "pay") payFrom = S.view;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
@@ -3291,7 +3305,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   };
   $("goHome").onclick = goBack;
   try { if (inTG) tg?.BackButton?.onClick(goBack); } catch {}
-  $("goCrew").onclick = () => (me ? go("crew") : go("auth"));
+  $("goCrew").onclick = () => { crewTab = "list"; me ? go("crew") : go("auth"); };
+  $("goMap").onclick = () => { haptic("tap"); crewTab = "map"; me ? go("crew") : go("auth"); };
   $("hubMe").onclick = () => (me ? go("profile", me.id) : go("auth"));
   $("goDeck2").onclick = () => go("deck");
   $("goHost").onclick = () => go("host");
@@ -5103,7 +5118,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     $("goPolls").hidden = true;
     drawGameOn();
     $("hubHello").innerHTML = me ? "" : loginPrompt();
-    drawCrewBtn(); drawWeek(); drawHubGames(); drawBalPill(); drawWorldEntry();
+    drawCrewBtn(); drawWeek(); drawHubGames(); drawBalPill(); drawHubOnline();
     $("hubPrem").hidden = !me || isPremium(me);
     if (!me) return;
     const need = [];
@@ -5278,7 +5293,19 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     return (sp.board[key] = data || []);
   };
   let crewData = null;
+  let crewTab = "list";
+  const inMap = () => S.view === "crew" && crewTab === "map";
+  const drawCrewTabs = () => {
+    document.querySelectorAll("[data-ctab]").forEach((b) => b.setAttribute("aria-selected", b.dataset.ctab === crewTab));
+    $("worldBox").hidden = crewTab !== "map"; $("crewListBox").hidden = crewTab === "map";
+  };
+  document.querySelector(".crew-tabs").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-ctab]"); if (!b || b.dataset.ctab === crewTab) return;
+    haptic("tap"); crewTab = b.dataset.ctab; renderCrew();
+  });
   const renderCrew = async () => {
+    drawCrewTabs();
+    if (crewTab === "map") return renderWorld();
     const box = $("crewList");
     if (!sb || !me) { box.innerHTML = `<div class="empty-note">${loginPrompt()}</div>`; return; }
     if (!people.length) box.innerHTML = `<div class="empty-note"><div class="wait"><span class="pulse"></span>Загружаю дачников…</div></div>`;
@@ -6719,7 +6746,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     v.addEventListener("click", (e) => {
       if (e.target === v || e.target.closest("[data-close]")) return v.remove();
       const b = e.target.closest("[data-wdacha]"); if (!b || b.disabled) return;
-      chooseDacha(b.dataset.wdacha, () => { v.remove(); toast("Дача выбрана"); if (S.view === "world") { W.map?.remove(); W.map = null; renderWorld(); } });
+      chooseDacha(b.dataset.wdacha, () => { v.remove(); toast("Дача выбрана"); if (inMap()) { W.map?.remove(); W.map = null; renderWorld(); } });
     });
     document.body.append(v);
   };
@@ -6729,9 +6756,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const box = $("worldBox");
     if (!me) return go("auth");
     if (worldMember === null) await drawWorldEntry();
-    if (!worldOK()) { box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">DACHA WORLD</div><h2 class="h2">Пока недоступно</h2><p class="lead">Мир дачи скоро откроется для всех.</p></div></div></div>`; return; }
+    if (!worldOK()) { box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Карта</div><h2 class="h2">Недоступно</h2><p class="lead">Карта дачников закрыта для заблокированных аккаунтов.</p></div></div></div>`; return; }
     await loadWorldDacha();
-    if (S.view !== "world") return;
+    if (!inMap()) return;
     if (!W.dacha) {
       box.innerHTML = `<div class="sec-title" style="margin:2px 2px 4px">Выбери свою дачу</div><p class="bio-meta" style="margin:0 2px 12px">Выбирается один раз — сменить можно в настройках профиля.</p>${dachaPickerHTML(null)}`;
       return;
@@ -6739,19 +6766,19 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     box.innerHTML = `<div id="wHead"></div><div class="w-mapwrap"><div id="wMap" class="w-map"></div>
         <div class="w-mapbar"><span class="w-chip">Dacha Phuket · <b id="wOnline">0</b> на карте</span></div>
         <button class="w-locate" type="button" data-wlocate aria-label="Показать меня"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12Z"/><circle cx="12" cy="9" r="2.6"/></svg></button></div>
-      <div id="wGames"></div>`;
+      `;
     try { await Promise.all([loadWorld(), loadLeaflet(), null]); } catch { toast("Карта не загрузилась — проверь интернет"); }
-    if (S.view !== "world" || !W.dacha) return;
-    drawWorldHead(); drawWorldMap(); drawWorldGames();
+    if (!inMap() || !W.dacha) return;
+    drawWorldHead(); drawWorldMap();
     if (!W.chan) W.chan = sb.channel("world").on("postgres_changes", { event: "*", schema: "public", table: "world_presence" }, (pl) => {
         const n = pl.new; if (!n?.user_id) return worldAgain();
         const i = W.pres.findIndex((x) => x.user_id === n.user_id); if (i >= 0) W.pres[i] = n; else W.pres.push(n);
-        if (S.view === "world" && W.dacha) drawWorldMap();
+        if (inMap() && W.dacha) drawWorldMap();
       }).on("postgres_changes", { event: "*", schema: "public", table: "world_chars" }, worldAgain).on("postgres_changes", { event: "*", schema: "public", table: "world_games" }, worldAgain).subscribe();
-    clearInterval(W.timer); W.timer = setInterval(() => { if (S.view !== "world") return clearInterval(W.timer); if (W.sharing && W.watch == null) shareLocation(true); }, 120000);
+    clearInterval(W.timer); W.timer = setInterval(() => { if (!inMap()) return clearInterval(W.timer); if (W.sharing && W.watch == null) shareLocation(true); }, 120000);
   };
   let worldT = 0;
-  const worldAgain = () => { clearTimeout(worldT); worldT = setTimeout(async () => { if (S.view === "game") return refreshGame(); if (S.view !== "world" || !W.dacha) return; await loadWorld(); drawWorldMap(); drawWorldGames(); }, 400); };
+  const worldAgain = () => { clearTimeout(worldT); worldT = setTimeout(async () => { if (S.view === "game") return refreshGame(); if (S.view === "hub") return drawHubOnline(); if (!inMap() || !W.dacha) return; await loadWorld(); drawWorldMap(); }, 400); };
   const drawWorldMap = () => {
     if (!window.maplibregl || !$("wMap")) return;
     if (!W.map || W.map.getContainer() !== $("wMap")) {
@@ -6838,10 +6865,22 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const gameArt = (k) => k === "chess" ? `<span class="gg-art chess"><i>♚\uFE0E</i><i>♞\uFE0E</i></span>`
     : k === "checkers" ? `<span class="gg-art checkers"><i></i><i></i><i class="k"></i></span>`
     : `<span class="gg-art durak"><i>A<small>♠\uFE0E</small></i><i>K<small>♥\uFE0E</small></i><i>Q<small>♦\uFE0E</small></i></span>`;
+  const loadMyGames = async () => {
+    if (!sb || !me) return;
+    const { data } = await sb.from("world_games").select("*").in("status", ["invite", "active"]).or(`a.eq.${me.id},b.eq.${me.id}`).order("updated_at", { ascending: false }).limit(20);
+    W.games = data || [];
+  };
+  const drawHubOnline = async () => {
+    if (!$("hubOnline")) return;
+    drawWorldGames();
+    if (!me || !sb) return;
+    await loadMyGames(); if (S.view !== "hub") return; drawWorldGames();
+    if (!W.gchan) W.gchan = sb.channel("mygames").on("postgres_changes", { event: "*", schema: "public", table: "world_games" }, worldAgain).subscribe();
+  };
   const drawWorldGames = () => {
-    const box = $("wGames"); if (!box) return;
-    const mine = W.games.filter((g) => g.a === me.id || g.b === me.id);
-    box.innerHTML = `<div class="sec-title" style="margin:6px 2px 10px">Игры</div>
+    const box = $("hubOnline"); if (!box) return;
+    const mine = me ? W.games.filter((g) => g.a === me.id || g.b === me.id) : [];
+    box.innerHTML = `
       <div class="w-gtiles">${["chess", "checkers", "durak"].map((k) => `<div class="w-gtile g-${k}">${gameArt(k)}<span class="gt-code">${GAMES_W[k].code}</span><b class="gt-name">${GAMES_W[k].name}</b>
         ${k === "durak" ? `<small class="gt-next">подкидной · на двоих</small><div class="w-gacts"><button type="button" data-gnew="${k}">позвать</button></div>` : `<div class="w-gacts"><button type="button" data-gnew="${k}">позвать</button><button type="button" data-glocal="${k}">вдвоём</button></div>`}</div>`).join("")}</div>
       ${mine.length ? `<div class="ticket" style="margin-top:12px"><div class="ticket-in"><div class="t-body" style="padding-bottom:6px"><div class="eyebrow">Мои партии</div></div>
@@ -6925,7 +6964,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       if (W.here && geoDist(W.here, here) < Math.max(8, Math.min(acc, W.here.acc) * 0.6) && here.at - W.here.at < 30000) return;
       W.here = here;
       const mine = W.pres.find((x) => x.user_id === me.id); if (mine) { mine.lat = here.lat; mine.lng = here.lng; }
-      if (S.view === "world") drawWorldMap();
+      if (inMap()) drawWorldMap();
       if (W.sent && geoDist(W.sent, here) < 12 && here.at - W.sent.at < 30000) return;
       W.sent = here; const pr = myPres();
       sb.rpc("world_here", { la: here.lat, ln: here.lng, st: pr?.status || null, em: pr?.emoji || null, vis: true }).then(() => {});
@@ -7050,7 +7089,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       <div class="g-acts">${r.status === "invite" && r.b === me.id ? `<button class="pill" type="button" data-gaccept>принять</button><button class="pill ghost" type="button" data-gdecline>отказаться</button>`
         : myTurn && iAtt && tbl.length && !open ? `<button class="pill" type="button" data-dkact="done">бито</button>`
         : myTurn && !iAtt && open ? `<button class="pill red" type="button" data-dkact="take">беру</button>` : ""}
-        ${r && ["active", "invite"].includes(r.status) ? `<button class="pill sm ghost" type="button" data-gresign>${r.status === "invite" ? "отменить" : "сдаться"}</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
+        ${r && ["active", "invite"].includes(r.status) ? `<button class="pill sm ghost" type="button" data-gresign>${r.status === "invite" ? "отменить" : "сдаться"}</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>на главную</button></div>
     </div>`;
   };
   const dkPlay = async (act, card = null, i = null) => {
@@ -7112,7 +7151,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       <div class="g-line ${gMyTurn() && !done ? "mine" : ""}">${status ? `<em>${status}</em> ` : ""}${line}</div>
       <div class="g-acts">${row?.status === "invite" && row.b === me.id ? `<button class="pill" type="button" data-gaccept>принять</button><button class="pill ghost" type="button" data-gdecline>отказаться</button>`
         : row && ["active", "invite"].includes(row.status) ? `<button class="pill sm ghost" type="button" data-gresign>${row.status === "invite" ? "отменить" : "сдаться"}</button>`
-        : G.local ? `<button class="pill sm ghost" type="button" data-grestart>заново</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
+        : G.local ? `<button class="pill sm ghost" type="button" data-grestart>заново</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>на главную</button></div>
     </div>`;
     if (over && !done && !G.busy) finishGame(over);
   };
@@ -7163,7 +7202,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const dp = e.target.closest("[data-dkpair]"); if (dp && G.sel) return dkPlay("defend", G.sel, +dp.dataset.dkpair);
     const da = e.target.closest("[data-dkact]"); if (da) return dkPlay(da.dataset.dkact);
     const b = e.target.closest("button"); if (!b) return;
-    if (b.hasAttribute("data-gworld")) return go("world");
+    if (b.hasAttribute("data-gworld")) return go("hub");
     if (b.hasAttribute("data-grestart")) { G.local = null; return renderGame(); }
     if (b.hasAttribute("data-gaccept") || b.hasAttribute("data-gdecline")) {
       const { error } = await sb.rpc("game_answer", { g: G.row.id, ok: b.hasAttribute("data-gaccept") });
@@ -7173,7 +7212,14 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       onOk: async () => { const { error } = await sb.rpc("game_resign", { g: G.row.id }); if (error) return toast("Не получилось: " + humanErr(error)); refreshGame(); } });
   });
 
-  $("goWorld").onclick = () => { haptic("tap"); if (!worldOK()) return toast("DACHA WORLD пока недоступна"); go("world"); };
+
+  $("hubOnline").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (!me) return go("auth");
+    if (b.dataset.gnew) return newGame(b.dataset.gnew);
+    if (b.dataset.glocal) { haptic("tap"); return go("game", "local:" + b.dataset.glocal); }
+    if (b.dataset.gopen) return go("game", b.dataset.gopen);
+  });
   $("worldBox").addEventListener("click", async (e) => {
     const b = e.target.closest("button"); if (!b) return;
     if (b.dataset.wdacha) return chooseDacha(b.dataset.wdacha, () => renderWorld());
@@ -8063,7 +8109,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (deep === "cevent") { const qe = new URLSearchParams(location.search).get("e"); if (qe) { startView = "cevent"; ceId = qe; } }
     if (SPORTS[deep]) { startView = "sport"; sportId = deep; }
     if (deep === "game") { const qg = new URLSearchParams(location.search).get("g"); if (qg) { startView = "game"; gameId = qg; } }
-    if (deep === "world") startView = "world";
+    if (deep === "world" || deep === "map") { startView = "crew"; crewTab = "map"; }
     if (inTG) {
       try { tg?.ready(); tg?.expand(); const hw = document.documentElement.classList.contains("hw");
         tg?.setHeaderColor?.(hw ? "#FFA24C" : "#FFF1C9"); tg?.setBackgroundColor?.(hw ? "#F07A1A" : "#F4F5F9"); tg?.setBottomBarColor?.(hw ? "#3B1150" : "#F4F5F9"); tg?.disableVerticalSwipes?.(); } catch {}
