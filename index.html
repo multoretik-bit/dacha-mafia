@@ -1656,7 +1656,8 @@ html:not(.hw) .topbar { background: color-mix(in srgb, #FFF4D6 80%, transparent)
 
 /* week card footer: faces + count on one line, actions wrap neatly */
 .wk-foot { flex-wrap: wrap; row-gap: 8px; }
-.wk-foot .wk-faces { flex: none; }
+.wk-foot .wk-faces { flex: none; cursor: pointer; }
+.wk-foot .wk-n { cursor: pointer; }
 .wk-foot .wk-faces > *:nth-child(n+5) { display: none; }
 .wk-foot .wk-faces > *:nth-child(4) { -webkit-mask-image: linear-gradient(90deg, #000 30%, transparent); mask-image: linear-gradient(90deg, #000 30%, transparent); }
 .wk-foot .wk-n { flex: 1 0 auto; white-space: nowrap; }
@@ -2595,7 +2596,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106065353"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106065837"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4707,7 +4708,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const openEvent = (kind, id) => {
     haptic("tap");
     if (kind === "mafia") { ev.sel = id; go("events"); focusCard(`#eventsList [data-ev="${id}"]`); }
-    else { sp.focus = id; go("sport", kind); focusCard(`#spNext [data-spev="${id}"]`); }
+    else { sp.focus = id; slSel = id; go("sportlist", kind); }   // same as mafia: straight to who signed up for that date
   };
   const personOf = (uid) => people.find((p) => p.id === uid) || { id: uid, nick: "Дачник" };
   const loadSports = () => sp.loading || (sp.loading = (async () => {
@@ -4848,7 +4849,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const kind = card.dataset.kind, id = card.dataset.id;
     if (kind === "community") {
       const cev = ce.list.find((x) => x.id === id), day = card.dataset.day;
-      if (e.target.closest("[data-wopen]")) { ceDay = day; return go("cevent", id); }
+      if (e.target.closest("[data-wopen], .wk-faces, .wk-n")) { ceDay = day; return go("cevent", id); }
       if (e.target.closest("[data-wjoin]")) { if (await ceJoin(cev, day, true)) { drawWeek(); drawHubCev(); } return; }
       if (e.target.closest("[data-wleave]")) return sheet({ eyebrow: "Ивент", title: "Не сможешь прийти?", ok: "не смогу", okClass: "red", onOk: async () => { if (await ceJoin(cev, day, false)) { drawWeek(); drawHubCev(); } } });
       return;
@@ -4867,7 +4868,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       if (S.view === "hub") { drawWeek(); drawHubGames(); }
       return;
     }
-    if (e.target.closest("[data-wopen]")) return openEvent(kind, id);
+    if (e.target.closest("[data-wopen], .wk-faces, .wk-n")) return openEvent(kind, id);
   };
   const drawHubGames = () => {
     const t = bkkToday();
