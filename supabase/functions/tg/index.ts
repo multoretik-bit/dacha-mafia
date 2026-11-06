@@ -229,12 +229,35 @@ async function joinFromButton(cq: any) {
     if (error) return answer(/blocked/.test(error.message) ? "Долг 1000 ฿ и больше — сначала пополни баланс в приложении" : "Не получилось записать, попробуй в приложении", true);
     await answer(`Записал тебя, ${prof.nick} ✓ Оплатить можно в приложении`);
   }
-  const { count } = await admin.from(table).select("user_id", { count: "exact", head: true }).eq("event_id", e).eq("role", "player");
+  // in private: "coming with someone?" — +1/+2/+3 shows next to the name in the list
+  if (cq.from?.id) {
+    const GN: Record<string, string> = { mafia: "мафию", volley: "волейбол", foot: "футбол" };
+    await tgApi("sendMessage", { chat_id: cq.from.id, text: `Ты записан на ${GN[g]} ✓
+Придёшь не один? Отметь, сколько человек будет с тобой — это увидят в списке.`,
+      reply_markup: { inline_keyboard: [[1, 2, 3].map((n) => ({ text: `+${n}`, callback_data: `p:${g}:${e}:${n}` })), [{ text: "Иду один", callback_data: `p:${g}:${e}:0` }]] } });
+  }
+  const { data: rowsP } = await admin.from(table).select("plus").eq("event_id", e).eq("role", "player");
+  const count = (rowsP || []).reduce((a: number, r: any) => a + 1 + (r.plus || 0), 0);
   const kb = cq.message?.reply_markup?.inline_keyboard;
   if (kb && cq.message) {
     const next = kb.map((row: any[]) => row.map((b: any) => (b.callback_data === cq.data ? { ...b, text: `✋ Я буду · ${count ?? ""}`.trim() } : b)));
     await tgApi("editMessageReplyMarkup", { chat_id: cq.message.chat.id, message_id: cq.message.message_id, reply_markup: { inline_keyboard: next } });
   }
+}
+
+// "+1": the player tells how many friends come with him
+async function plusFromButton(cq: any) {
+  const answer = (text: string, alert = false) => tgApi("answerCallbackQuery", { callback_query_id: cq.id, text, show_alert: alert });
+  const [, g, e, nS] = String(cq.data || "").split(":"), n = Number(nS);
+  if (!["mafia", "volley", "foot"].includes(g) || !e || !(n >= 0 && n <= 3)) return answer("Не понял кнопку");
+  const { data: prof } = await admin.from("profiles").select("id").eq("tg_id", cq.from?.id).maybeSingle();
+  if (!prof) return answer("Сначала открой приложение кнопкой «Дача»", true);
+  const table = g === "mafia" ? "signups" : "sport_signups";
+  const { data: upd } = await admin.from(table).update({ plus: n }).eq("event_id", e).eq("user_id", prof.id).eq("role", "player").select("user_id");
+  if (!upd?.length) return answer("Ты уже не записан на эту игру", true);
+  await answer(n ? `Отметил: ты и ещё ${n}` : "Отметил: идёшь один");
+  if (cq.message) await tgApi("editMessageReplyMarkup", { chat_id: cq.message.chat.id, message_id: cq.message.message_id,
+    reply_markup: { inline_keyboard: [[0, 1, 2, 3].map((k) => ({ text: (k === n ? "✔️ " : "") + (k ? `+${k}` : "один"), callback_data: `p:${g}:${e}:${k}` }))] } });
 }
 
 // ---------- polls: «кто за мафию?» with answer buttons right in the bot ----------
@@ -501,6 +524,7 @@ async function hook(req: Request) {
   if (upd.callback_query?.data?.startsWith("cj:")) { await ceventJoin(upd.callback_query); return new Response("ok"); }
   if (upd.callback_query?.data === "noop") { await tgApi("answerCallbackQuery", { callback_query_id: upd.callback_query.id }); return new Response("ok"); }
   if (upd.callback_query?.data?.startsWith("j:")) { await joinFromButton(upd.callback_query); return new Response("ok"); }
+  if (upd.callback_query?.data?.startsWith("p:")) { await plusFromButton(upd.callback_query); return new Response("ok"); }
   const msg = upd.message;
   if (msg?.chat?.type === "private") {
     await tgApi("sendMessage", {
