@@ -675,10 +675,12 @@ async function hook(req: Request) {
     if (who) {
       const { data: had } = await admin.from("world_presence").select("status, emoji").eq("user_id", who.id).maybeSingle();
       await admin.from("world_presence").upsert({ user_id: who.id, lat: loc.location.latitude, lng: loc.location.longitude, visible: true, status: had?.status ?? null, emoji: had?.emoji ?? null, updated_at: new Date().toISOString() });
-      if (upd.message) await tgApi("sendMessage", { chat_id: loc.chat.id, text: loc.location.live_period
-        ? "📍 Готово! Пока идёт трансляция геопозиции, ты на карте DACHA и точка обновляется сама — даже когда приложение закрыто."
-        : "📍 Точка на карте DACHA обновлена. Чтобы она обновлялась сама, отправь «Транслировать геопозицию» → «Пока не выключу».",
-        reply_markup: { inline_keyboard: [[{ text: "Открыть карту", web_app: { url: APP + "?v=map" } }]] } });
+      if (upd.message) {
+        const t = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Bangkok" });
+        await tgApi("sendMessage", { chat_id: loc.chat.id, reply_markup: { remove_keyboard: true },
+          text: loc.location.live_period ? `✅ Трансляция включена — ты на карте DACHA, точка двигается сама.` : `✅ Готово! Ты на карте DACHA (обновлено в ${t}).` });
+        await tgApi("sendMessage", { chat_id: loc.chat.id, text: "Открыть карту:", reply_markup: { inline_keyboard: [[{ text: "🗺 Карта дачников", web_app: { url: APP + "?v=map" } }]] } });
+      }
     } else if (upd.message) await tgApi("sendMessage", { chat_id: loc.chat.id, text: "Сначала открой DACHA кнопкой «Дача», потом пришли геопозицию ещё раз." });
     return new Response("ok");
   }
