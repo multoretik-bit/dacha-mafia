@@ -13,8 +13,8 @@
     }
   } catch {}
 </script>
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=2">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2121,7 +2121,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <div class="hw-only hw-fly" aria-hidden="true"><img class="bat b1" src="hw/bat.svg" alt=""><img class="bat b2" src="hw/bat.svg" alt=""><img class="bat b3" src="hw/bat.svg" alt=""><img class="ghost" src="hw/ghost.svg" alt=""></div>
 <main class="app" id="app">
   <header class="topbar" id="topbar" hidden>
-    <button class="mini back-btn" id="goHome" aria-label="Назад"><span class="back-ic" aria-hidden="true">‹</span><img src="logo-dacha-mini.webp" alt="" draggable="false"></button>
+    <button class="mini back-btn" id="goHome" aria-label="Назад"><span class="back-ic" aria-hidden="true">‹</span><img src="logo-dacha-mini.webp?v=2" alt="" draggable="false"></button>
     <div class="tabs" role="tablist" id="tabsBox">
       <button role="tab" id="tabHost" aria-selected="false" hidden>раздача</button>
       <button role="tab" id="tabEvents" aria-selected="false" hidden>запись</button>
@@ -2145,7 +2145,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       <button class="icon-btn" id="hubMe" type="button" aria-label="Профиль"></button>
     </div>
     <div class="hub-hero">
-      <img class="hub-logo" src="logo-dacha-hub.webp" alt="DACHA" draggable="false">
+      <img class="hub-logo" src="logo-dacha-hub.webp?v=2" alt="DACHA" draggable="false">
       <p class="hub-tag">Дом, вдали от дома</p>
     </div>
     <div id="hubHello"></div>
@@ -2595,7 +2595,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106063839"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106065353"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
