@@ -152,7 +152,7 @@ async function broadcast(req: Request, body: any) {
   }
   const joinBtn = eventId ? [{ text: "✋ Я буду", callback_data: `j:${game}:${eventId}` }] : null;
   const markup = body.button ? { inline_keyboard: [...(joinBtn ? [joinBtn] : []), [{ text: joinBtn ? "Открыть в приложении" : btn[0], web_app: { url: APP + btn[1] } }]] } : undefined;
-  const groupMarkup = body.button ? { inline_keyboard: [...(joinBtn ? [joinBtn] : []), [{ text: "Открыть DACHA", url: "https://t.me/dacha_gay" }]] } : undefined;
+  const groupMarkup = body.button ? { inline_keyboard: [...(joinBtn ? [joinBtn] : []), [{ text: "Открыть DACHA", url: "https://t.me/dacha_play_game" }]] } : undefined;
   let chats: number[];
   if (body.test) chats = [me!.tg_id];
   else {
@@ -214,7 +214,7 @@ async function joinFromButton(cq: any) {
   const [, g, e] = String(cq.data || "").split(":");
   if (!["mafia", "volley", "foot"].includes(g) || !e) return answer("Не понял кнопку");
   const { data: prof } = await admin.from("profiles").select("id,nick").eq("tg_id", cq.from?.id).maybeSingle();
-  if (!prof) return answer("Сначала открой бота @dacha_gay и нажми «Дача», потом жми «Я буду» ещё раз", true);
+  if (!prof) return answer("Сначала открой бота @dacha_play_game и нажми «Дача», потом жми «Я буду» ещё раз", true);
   const table = g === "mafia" ? "signups" : "sport_signups";
   const { data: ev } = g === "mafia"
     ? await admin.from("events").select("id,day,status").eq("id", e).maybeSingle()
@@ -561,7 +561,7 @@ async function ceventJoin(cq: any) {
   const answer = (text: string, alert = false) => tgApi("answerCallbackQuery", { callback_query_id: cq.id, text, show_alert: alert });
   const [, id, day0] = String(cq.data).split(":");
   const { data: prof } = await admin.from("profiles").select("id,nick").eq("tg_id", cq.from?.id).maybeSingle();
-  if (!prof) return answer("Сначала открой бота @dacha_gay и нажми «Дача», потом жми «Я буду» ещё раз", true);
+  if (!prof) return answer("Сначала открой бота @dacha_play_game и нажми «Дача», потом жми «Я буду» ещё раз", true);
   const { data: ev } = await admin.from("cevents").select("*").eq("id", id).maybeSingle();
   if (!ev || ev.status !== "approved") return answer("Этот ивент уже недоступен", true);
   const day = day0 >= bkkToday() ? day0 : nextDay(ev);
@@ -710,6 +710,20 @@ Deno.serve(async (req) => {
   if (body.action === "world_invite") return worldInvite(req, body);
   if (body.action === "invite_answered") return inviteAnswered(req, body);
   if (body.action === "dm_notify") return dmNotify(req, body);
+  if (body.action === "live_hint") {
+    const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+    const { data: { user } } = await admin.auth.getUser(jwt);
+    if (!user) return json({ error: "Нужно войти" }, 401);
+    const { data: p } = await admin.from("profiles").select("tg_id").eq("id", user.id).maybeSingle();
+    if (p?.tg_id) await tgApi("sendMessage", { chat_id: p.tg_id, text: `📍 Ты на карте DACHA!
+
+Чтобы точка обновлялась сама, даже когда приложение закрыто:
+📎 → Геопозиция → «Транслировать геопозицию» → «Пока не выключу».
+
+Или нажми кнопку ниже — отправит твоё место один раз.`,
+      reply_markup: { keyboard: [[{ text: "📍 Отправить мою геопозицию", request_location: true }]], resize_keyboard: true, one_time_keyboard: true } });
+    return json({ ok: true });
+  }
   if (body.action === "poll") return pollCreate(req, body);
   if (body.action === "poll_close") return pollClose(req, body);
   return json({ error: "unknown action" }, 400);

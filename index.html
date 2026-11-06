@@ -2078,7 +2078,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .w-pin2.stale .w-bub, .w-pin2.stale .w-tail { filter: grayscale(1); opacity: .6; }
 .w-pin2.stale .w-dot { background: #9AA2B3; } .w-pin2.stale .w-nm { background: #7B8396; }
 .wh-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.wh-live { padding: 6px 10px; border-radius: 99px; background: #F1F3F8; font: 800 12px/1 var(--f-body); color: #071B4D; }
+.wh-hint { font: 800 11.5px/1 var(--f-body); color: #16A34A; }
 
 /* boards v2 (06.11) */
 .g-board { border: 0 !important; padding: 8px; background: linear-gradient(145deg, #0B2466, #071B4D); border-radius: 20px !important; box-shadow: 0 0 0 3px #FFC83D, 0 22px 36px -18px rgba(7,27,77,.75) !important; gap: 0; }
@@ -2803,7 +2803,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         <div class="eyebrow">Вход</div>
         <h1 class="h1" id="authTitle">Заходи через Telegram</h1>
         <p class="lead" id="authLead">Аккаунты дачников живут в Telegram-боте. Открой бота и нажми «Дача»: ты сразу окажешься в списке участников, регистрация не нужна.</p>
-        <a class="pill wide" href="https://t.me/dacha_gay" target="_blank" rel="noopener" data-tglink>открыть @dacha_gay</a>
+        <a class="pill wide" href="https://t.me/dacha_play_game" target="_blank" rel="noopener" data-tglink>открыть @dacha_play_game</a>
         <p class="err" id="auErr" role="alert"></p>
       </div>
       <div class="stub"><span>Без паролей и почты</span><b>@DACHA_GAY</b></div>
@@ -3072,7 +3072,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106121230"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106121821"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3082,7 +3082,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const inTG = !!tgInit;
   const tgId = (() => { try { return String(JSON.parse(new URLSearchParams(tgInit).get("user") || "{}").id || ""); } catch { return ""; } })();
   const haptic = (kind) => { try { kind === "card" ? tg?.HapticFeedback?.notificationOccurred("success") : tg?.HapticFeedback?.impactOccurred("medium"); } catch {} };
-  const BOT_URL = "https://t.me/dacha_gay";
+  const BOT_URL = "https://t.me/dacha_play_game";
 
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -3543,7 +3543,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     else if (!me && inTG) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>${authError ? esc(authError) : "Входим через Telegram…"}</div></div></div></div>`;
     else if (!me) box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body">
         <h2 class="h2">Заходи через Telegram</h2>
-        <p class="lead">Открой бота @dacha_gay и нажми «Дача»: ты сразу появишься в списке дачников, карты ролей будут приходить на телефон, а в профиле копятся игры и победы.</p>
+        <p class="lead">Открой бота @dacha_play_game и нажми «Дача»: ты сразу появишься в списке дачников, карты ролей будут приходить на телефон, а в профиле копятся игры и победы.</p>
         <div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>
       </div></div></div>`;
     else {
@@ -3901,7 +3901,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const list = $("pickList"), empty = $("pickEmpty");
     if (!sb || !me) {
       list.innerHTML = ""; empty.hidden = false;
-      empty.innerHTML = sb ? `Онлайн-раздача работает через Telegram. <a class="linkish" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>Открой бота @dacha_gay</a> и нажми «Дача».` : "Нет связи с сервером. Включи интернет или выбери «один телефон».";
+      empty.innerHTML = sb ? `Онлайн-раздача работает через Telegram. <a class="linkish" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>Открой бота @dacha_play_game</a> и нажми «Дача».` : "Нет связи с сервером. Включи интернет или выбери «один телефон».";
       $("guestForm").hidden = true; drawPickSum(); return;
     }
     $("guestForm").hidden = false;
@@ -3970,7 +3970,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     q.innerHTML = `${t ? `<button class="pill sm" type="button" data-allsigned ${missing ? "" : "disabled"}>${missing ? `выбрать всех записавшихся (${t.signups.length})` : `все записавшиеся выбраны ✓`}</button>` : ""}
       ${seatBtn}${L.length ? `<button class="linkish" type="button" data-clearpick>снять всех</button>` : ""}`;
     empty.hidden = people.length > 1;
-    empty.textContent = "Пока в списке только ты. Скинь друзьям бота @dacha_gay: как только они нажмут «Дача», появятся здесь.";
+    empty.textContent = "Пока в списке только ты. Скинь друзьям бота @dacha_play_game: как только они нажмут «Дача», появятся здесь.";
     $("guestChips").innerHTML = L.map((x, i) => (x.g ? `<span class="gchip"><b>${i + 1}</b>${esc(x.g)}<button type="button" data-rmg="${i}" aria-label="Убрать гостя">×</button></span>` : "")).join("");
     drawPickSum();
   };
@@ -4639,7 +4639,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       empty.innerHTML = !sb
         ? `<div class="ticket"><div class="ticket-in"><div class="t-body"><h1 class="h1">Нет связи</h1><p class="lead">Карта приходит через интернет. Проверь связь и обнови страницу.</p></div></div></div>`
         : !me
-        ? `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">${inTG ? "Входим через Telegram…" : "Карты приходят в Telegram"}</h1><p class="lead">${inTG ? esc(authError || "Секунду, подключаемся к даче.") : "Открой бота @dacha_gay и нажми «Дача». Ведущий отметит тебя, и карта роли придёт прямо туда."}</p>${inTG ? "" : `<div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`}</div></div></div>`
+        ? `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">${inTG ? "Входим через Telegram…" : "Карты приходят в Telegram"}</h1><p class="lead">${inTG ? esc(authError || "Секунду, подключаемся к даче.") : "Открой бота @dacha_play_game и нажми «Дача». Ведущий отметит тебя, и карта роли придёт прямо туда."}</p>${inTG ? "" : `<div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`}</div></div></div>`
         : `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">Моя карта</div><h1 class="h1">Ждём раздачи</h1>
             <div class="wait"><span class="pulse"></span>На связи как ${esc(me.nick)}</div>
             <p class="lead">Как только ведущий отметит тебя и нажмёт «Начать игру», карта появится здесь, а бот пришлёт сообщение. Обновлять ничего не нужно.</p></div>
@@ -4846,7 +4846,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const v = document.createElement("div");
     v.className = "veil full dim";
     v.innerHTML = `<div class="ticket seat-sheet" role="dialog" aria-modal="true" aria-label="Сделать анонс"><div class="ticket-in"><div class="t-body">
-      <div class="eyebrow">Анонс через @dacha_gay · ${people.length || "все"} дачников</div>
+      <div class="eyebrow">Анонс через @dacha_play_game · ${people.length || "все"} дачников</div>
       <h2 class="h1">Сделать анонс</h2>
       <div class="an-games" role="group" aria-label="По какой игре">${games.map((k) => `<button type="button" data-game="${k}" aria-pressed="${k === game}">${meta(k).emoji} ${meta(k).name}</button>`).join("")}</div>
       <div class="an-dates" id="anDates"></div>
@@ -4987,7 +4987,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const v = document.createElement("div");
     v.className = "veil full dim";
     v.innerHTML = `<div class="ticket seat-sheet" role="dialog" aria-modal="true" aria-label="Опрос в боте"><div class="ticket-in"><div class="t-body">
-      <div class="eyebrow">Опрос через @dacha_gay · ответы кнопками прямо в боте</div>
+      <div class="eyebrow">Опрос через @dacha_play_game · ответы кнопками прямо в боте</div>
       <h2 class="h1">Кто за мафию?</h2>
       <textarea class="field" id="poQ" maxlength="300" style="min-height:84px;resize:vertical;font-weight:600"></textarea>
       <div class="po-opts" id="poOpts"></div>
@@ -5252,7 +5252,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (inTG) return `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>${authError ? esc(authError) : "Входим через Telegram…"}</div></div></div></div>`;
     return `<div class="ticket"><div class="ticket-in"><div class="t-body">
         <h2 class="h2">Заходи через Telegram</h2>
-        <p class="lead">Открой бота @dacha_gay и нажми «Дача»: появишься среди дачников, сможешь записываться на мафию, волейбол и футбол и копить победы в рейтингах.</p>
+        <p class="lead">Открой бота @dacha_play_game и нажми «Дача»: появишься среди дачников, сможешь записываться на мафию, волейбол и футбол и копить победы в рейтингах.</p>
         <div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>
       </div></div></div>`;
   };
@@ -7102,7 +7102,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         <button class="wh-show ${W.sharing ? "on" : ""}" type="button" data-wshare aria-pressed="${W.sharing}"><span class="wh-sw"><i></i></span><small>${W.sharing ? "меня видно" : "отображать меня"}</small></button></div>
       <div class="wh-sts">${W_STATUS.map(([e2, l]) => `<button type="button" data-wst="${e2}|${l}" aria-pressed="${pr?.status === l}" title="${l}">${e2}</button>`).join("")}
         <button class="wh-call" type="button" data-winvite>позвать</button></div>
-      <div class="wh-foot">${pr?.status ? `<span class="wh-now">${esc(pr.emoji || "")} ${esc(pr.status)}</span>` : "<span></span>"}<button class="wh-live" type="button" data-wlive>📡 обновлять всегда</button></div>
+      <div class="wh-foot">${pr?.status ? `<span class="wh-now">${esc(pr.emoji || "")} ${esc(pr.status)}</span>` : "<span></span>"}<span class="wh-hint">${W.sharing ? "📡 точка обновляется сама" : ""}</span></div>
     </div>`;
   };
   const drawWorldStatus = () => drawWorldHead();
@@ -7190,14 +7190,17 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   };
   document.addEventListener("visibilitychange", () => { if (me && document.visibilityState === "visible") setTimeout(autoHere, 1500); });
   const openLiveHelp = () => sheet({ eyebrow: "Карта", title: "Чтобы точка обновлялась всегда",
-    text: "Открой чат с ботом @dacha_gay → 📎 → Геопозиция → «Транслировать геопозицию» → «Пока не выключу». Тогда ты на карте даже с закрытым приложением. Выключить можно в любой момент в том же чате.",
-    ok: "открыть бота", onOk: () => { try { tg?.openTelegramLink ? tg.openTelegramLink("https://t.me/dacha_gay") : window.open("https://t.me/dacha_gay", "_blank"); } catch { window.open("https://t.me/dacha_gay", "_blank"); } } });
+    text: "Открой чат с ботом @dacha_play_game → 📎 → Геопозиция → «Транслировать геопозицию» → «Пока не выключу». Тогда ты на карте даже с закрытым приложением. Выключить можно в любой момент в том же чате.",
+    ok: "открыть бота", onOk: () => { try { tg?.openTelegramLink ? tg.openTelegramLink("https://t.me/dacha_play_game") : window.open("https://t.me/dacha_play_game", "_blank"); } catch { window.open("https://t.me/dacha_play_game", "_blank"); } } });
   const shareLocation = (quiet) => new Promise((res) => {
     const done = async (lat, lng) => {
       const pr = myPres();
       const { error } = await sb.rpc("world_here", { la: lat, ln: lng, st: pr?.status || null, em: pr?.emoji || null, vis: true });
       if (error) { toast("Не получилось: " + humanErr(error)); return res(false); }
+      const first = !W.sharing;
       W.sharing = true; W.sent = { lat, lng, at: Date.now() }; startGeoWatch(); await loadWorld(); drawWorldMap(); drawWorldStatus();
+      // the bot sends the one-tap way to keep the point fresh with the app closed (Telegram live location)
+      if (first && !quiet) { sb.functions.invoke("tg", { body: { action: "live_hint" } }).catch(() => {}); toast("Ты на карте ✓ Бот прислал, как обновлять точку даже с закрытым приложением"); }
       if (!quiet) flyWorld(lat, lng);
       res(true);
     };
@@ -8060,7 +8063,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const renderEvents = async () => {
     const box = $("eventsList");
     if (!sb || !me) {
-      box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><h2 class="h2">Запись работает через Telegram</h2><p class="lead">Открой бота @dacha_gay и нажми «Дача», чтобы записаться на субботу.</p><div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div></div></div></div>`;
+      box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><h2 class="h2">Запись работает через Telegram</h2><p class="lead">Открой бота @dacha_play_game и нажми «Дача», чтобы записаться на субботу.</p><div class="row-btns" style="justify-content:flex-start"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div></div></div></div>`;
       $("paySettings").innerHTML = ""; return;
     }
     if (ev.loaded) drawEvents();
@@ -8293,7 +8296,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     $("dragHint").textContent = "нажми на игрока — заметки и цвет · зажми и тащи — пересадить";
     if (!ps.length) {
       $("notesEmptyBody").innerHTML = !sb || !me
-        ? `<h2 class="h2">Записи работают в игре через Telegram</h2><p class="lead">Открой бота @dacha_gay и нажми «Дача». Когда ведущий раздаст карты, здесь появятся все игроки за столом.</p><div class="row-btns"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`
+        ? `<h2 class="h2">Записи работают в игре через Telegram</h2><p class="lead">Открой бота @dacha_play_game и нажми «Дача». Когда ведущий раздаст карты, здесь появятся все игроки за столом.</p><div class="row-btns"><a class="pill sm" href="${BOT_URL}" target="_blank" rel="noopener" data-tglink>открыть бота</a></div>`
         : notesGameId()
         ? `<div class="wait"><span class="pulse"></span>Загружаю игроков…</div>`
         : `<h2 class="h2">Записи появятся с раздачей</h2><p class="lead">Как только ведущий разошлёт карты, здесь сами появятся все, кто в игре. Цвет меняй по ходу: серый — не знаю, чёрный — мафия, красный — верю. Записи видишь только ты.</p>`;
