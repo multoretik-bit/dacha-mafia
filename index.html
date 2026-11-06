@@ -2051,6 +2051,76 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .cb.lvl { background: var(--navy-ink); color: #fff; } .cb.lvl b { color: #FFC83D; font-weight: 900; }
 .crew-rank { font: 700 13px/1 var(--f-code); color: var(--muted); margin-left: auto; padding-right: 2px; }
 
+/* fresh / stale pins (06.11) */
+.w-nm small { display: block; font: 700 9.5px/1.2 var(--f-body); opacity: .75; }
+.w-pin2.stale .w-bub, .w-pin2.stale .w-tail { filter: grayscale(1); opacity: .6; }
+.w-pin2.stale .w-dot { background: #9AA2B3; } .w-pin2.stale .w-nm { background: #7B8396; }
+.wh-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.wh-live { padding: 6px 10px; border-radius: 99px; background: #F1F3F8; font: 800 12px/1 var(--f-body); color: #071B4D; }
+
+/* boards v2 (06.11) */
+.g-board { border: 0 !important; padding: 8px; background: linear-gradient(145deg, #0B2466, #071B4D); border-radius: 20px !important; box-shadow: 0 0 0 3px #FFC83D, 0 22px 36px -18px rgba(7,27,77,.75) !important; gap: 0; }
+.g-board .sq:first-child { border-top-left-radius: 12px; } .g-board .sq:nth-child(8) { border-top-right-radius: 12px; } .g-board .sq:nth-child(57) { border-bottom-left-radius: 12px; } .g-board .sq:nth-child(64) { border-bottom-right-radius: 12px; }
+.g-checkers .sq.l { background: #FBF0D9; } .g-checkers .sq.d { background: linear-gradient(145deg, #3A5BB0, #2A4590); }
+.g-chess .sq.l { background: #F3F5FB; } .g-chess .sq.d { background: linear-gradient(145deg, #8CA2D6, #7189C4); }
+.sq { transition: background .2s; }
+.sq.sel::before { background: rgba(255,200,61,.55) !important; box-shadow: inset 0 0 0 3px #FFC83D; }
+.sq.tgt::after { width: 28%; height: 28%; background: rgba(255,200,61,.95); box-shadow: 0 0 0 3px rgba(7,27,77,.35); animation: tgtPulse 1.4s ease-in-out infinite; }
+.sq.tgt.cap::after { width: 84%; height: 84%; background: none; box-shadow: inset 0 0 0 4px rgba(227,38,58,.85); animation: tgtPulse 1.4s ease-in-out infinite; }
+@keyframes tgtPulse { 0%, 100% { transform: scale(1); opacity: .95; } 50% { transform: scale(1.12); opacity: .7; } }
+.pc { transition: transform .2s; }
+.sq.sel .pc { transform: translateY(-3px) scale(1.08); filter: drop-shadow(0 8px 8px rgba(0,0,0,.35)); }
+.pc.ck { width: 80%; border: 0 !important; box-shadow: 0 4px 0 rgba(0,0,0,.28), 0 6px 10px rgba(0,0,0,.3) !important; }
+.pc.ck::before { content: ""; position: absolute; inset: 16%; border-radius: 50%; box-shadow: inset 0 0 0 2.5px rgba(0,0,0,.12), 0 1px 0 rgba(255,255,255,.6); }
+.pc.ck.w { background: radial-gradient(circle at 35% 28%, #FFFFFF, #F4E6C6 62%, #E3CFA3) !important; }
+.pc.ck.b { background: radial-gradient(circle at 35% 28%, #FF8A7E, #E3263A 60%, #B4141F) !important; }
+.pc.ck.king::after { content: "" !important; position: absolute; inset: 22%; background: center / contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 18 2 7l5.5 4L12 4l4.5 7L22 7l-1 11Z' fill='%23FFC83D' stroke='%23071B4D' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E"); -webkit-text-stroke: 0; }
+.pc.gone { position: absolute; animation: pcGone .45s ease-in forwards; }
+@keyframes pcGone { to { opacity: 0; transform: scale(.3) rotate(25deg); } }
+.g-clock { position: relative; height: 30px; border-radius: 99px; background: #E9ECF3; overflow: hidden; }
+.g-clock i { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, #C9CED9, #B7BECD); transition: width 1s linear; }
+.g-clock.mine i { background: linear-gradient(90deg, #4ADE80, #16A34A); } .g-clock.low i { background: linear-gradient(90deg, #FF8A7E, #E3263A); }
+.g-clock span { position: relative; display: grid; place-items: center; height: 100%; font: 800 12.5px/1 var(--f-body); color: #071B4D; }
+.g-clock.mine span { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.25); } .g-clock.low span { color: #fff; }
+
+/* bell + chat (06.11) */
+.bell-btn { position: relative; color: #071B4D; }
+.bell-btn.ring svg { animation: bellRing 2.4s ease-in-out infinite; transform-origin: 50% 10%; }
+@keyframes bellRing { 0%, 70%, 100% { transform: rotate(0); } 74% { transform: rotate(14deg); } 80% { transform: rotate(-12deg); } 86% { transform: rotate(8deg); } 92% { transform: rotate(-4deg); } }
+.bell-n { position: absolute; right: -3px; top: -3px; min-width: 19px; height: 19px; padding: 0 5px; box-sizing: border-box; border-radius: 99px; background: #E3263A; color: #fff; font: 900 11px/19px var(--f-body); font-style: normal; text-align: center; box-shadow: 0 0 0 2px #fff; }
+.ph-mini.chat { color: #071B4D; margin-left: auto; } .ph-mini.chat + .ph-mini.tm { margin-left: 8px; }
+.nf-card { display: grid; padding: 4px; border-radius: 22px; background: #fff; box-shadow: var(--sh); margin-bottom: 16px; }
+.nf-row { display: flex; align-items: center; gap: 11px; width: 100%; padding: 9px 10px; border-radius: 18px; text-align: left; color: #071B4D; }
+.nf-row + .nf-row { border-top: 1px solid var(--hair); border-radius: 0 0 18px 18px; }
+.nf-row:active { background: #F4F6FA; }
+.nf-row .ava, .nf-row .prem { width: 44px; height: 44px; flex: none; } .nf-row .prem .ava { width: 100%; height: 100%; } .nf-row .prem-ic { display: none; }
+.nf-row > span { display: grid; gap: 2px; flex: 1; min-width: 0; } .nf-row > span b { font: 800 14.5px/1.15 var(--f-body); } .nf-row > span small { font-weight: 700; font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nf-row em { font-style: normal; flex: none; padding: 7px 12px; border-radius: 99px; background: #0033FF; color: #fff; font: 800 12.5px/1 var(--f-body); }
+.nf-row > i { font-style: normal; flex: none; display: grid; justify-items: end; gap: 4px; font: 700 11.5px/1 var(--f-body); color: var(--muted); }
+.nf-n { min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 99px; background: #0033FF; color: #fff; font: 900 11px/20px var(--f-body); text-align: center; }
+.nf-row.th.unread > span b { color: #0033FF; } .nf-row.th.unread > span small { color: #071B4D; }
+.nf-empty { padding: 14px 16px; margin-bottom: 16px; border-radius: 18px; background: #fff; box-shadow: var(--sh); color: var(--muted); font-weight: 700; font-size: 13.5px; line-height: 1.4; }
+.nf-h { display: flex; align-items: center; justify-content: space-between; margin: 4px 2px 10px; }
+.nf-h .pill { display: inline-flex; align-items: center; gap: 6px; }
+.ch-head { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border-radius: 20px; background: #fff; box-shadow: var(--sh); text-align: left; position: sticky; top: calc(70px + env(safe-area-inset-top, 0px)); z-index: 4; }
+.ch-head .ava, .ch-head .prem { width: 42px; height: 42px; flex: none; } .ch-head .prem .ava { width: 100%; height: 100%; }
+.ch-head span { display: grid; gap: 2px; } .ch-head b { font: 800 16px/1.1 var(--f-body); color: #071B4D; } .ch-head small { font-weight: 700; font-size: 12px; color: var(--muted); }
+.ch-list { display: flex; flex-direction: column; gap: 3px; padding: 14px 2px 90px; min-height: 50vh; }
+.ch-day { align-self: center; margin: 10px 0 6px; padding: 4px 10px; border-radius: 99px; background: rgba(7,27,77,.08); font: 800 11px/1 var(--f-body); color: var(--muted); }
+.ch-msg { position: relative; max-width: 78%; align-self: flex-start; padding: 8px 12px 6px; border-radius: 18px; background: #fff; color: #071B4D; font-weight: 600; font-size: 15px; line-height: 1.35; box-shadow: 0 1px 2px rgba(15,23,42,.08); overflow-wrap: anywhere; }
+.ch-msg.me { align-self: flex-end; background: #0033FF; color: #fff; }
+.ch-msg.tail { border-bottom-left-radius: 6px; margin-bottom: 6px; } .ch-msg.me.tail { border-bottom-left-radius: 18px; border-bottom-right-radius: 6px; }
+.ch-msg i { display: block; margin-top: 2px; text-align: right; font: 700 10.5px/1 var(--f-body); font-style: normal; opacity: .6; }
+.ch-msg.new { animation: msgIn .28s cubic-bezier(.2,1.3,.4,1); }
+@keyframes msgIn { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
+.ch-empty { margin: auto; text-align: center; color: var(--muted); font-weight: 800; font-size: 15px; } .ch-empty small { font-weight: 700; font-size: 12.5px; }
+.ch-bar { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); z-index: 30; display: flex; align-items: flex-end; gap: 8px; width: min(100%, 560px); box-sizing: border-box; padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)); background: rgba(244,245,249,.94); backdrop-filter: blur(10px); box-shadow: 0 -1px 0 var(--hair); }
+.ch-bar textarea { flex: 1; resize: none; min-height: 44px; max-height: 120px; padding: 11px 14px; box-sizing: border-box; border: 0; border-radius: 22px; background: #fff; box-shadow: inset 0 0 0 1.5px var(--hair); font: 600 15px/1.35 var(--f-body); color: #071B4D; outline: none; }
+.ch-bar textarea:focus { box-shadow: inset 0 0 0 2px #0033FF; }
+.ch-bar button { width: 44px; height: 44px; flex: none; border-radius: 50%; background: #0033FF; color: #fff; display: grid; place-items: center; }
+.ch-bar button:active { transform: scale(.92); }
+#vChat:not([hidden]) ~ * .ad, body:has(#vChat:not([hidden])) .ad.float { display: none !important; }
+
 /* invitations (06.11) */
 .inv-card { display: grid; gap: 2px; margin-bottom: 12px; padding: 12px 6px 6px; border-radius: 22px; background: #fff; box-shadow: 0 0 0 2px #FFC83D, var(--sh); }
 .inv-card .eyebrow { padding: 0 10px 4px; }
@@ -2092,7 +2162,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .or-n { min-width: 22px; height: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 99px; background: #E3263A; color: #fff; font: 900 12px/22px var(--f-body); font-style: normal; text-align: center; }
 .or-go { font-size: 22px; color: var(--muted); }
 /* compact top row (06.11) */
-.hub-top { display: grid !important; grid-template-columns: minmax(0, auto) 1fr auto; gap: 8px !important; }
+.hub-top { display: grid !important; grid-template-columns: minmax(0, auto) 1fr auto auto; gap: 8px !important; }
 .hub-top .crew-combo { min-width: 0; justify-self: start; }
 .hub-top .bal-pill { justify-self: end; margin-left: 0; padding: 0 12px; min-height: 40px; white-space: nowrap; }
 .hub-top #hubMe { flex: none; }
@@ -2256,7 +2326,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .w-grow .ava, .w-grow .prem { width: 40px; height: 40px; } .w-grow .prem .ava { width: 100%; height: 100%; }
 .w-grow .wg-t { display: grid; gap: 2px; flex: 1; min-width: 0; } .w-grow > .ava, .w-grow > .prem { flex: none; } .w-grow b { font-weight: 800; font-size: 14px; } .w-grow small { color: var(--muted); font-weight: 700; font-size: 12px; } .w-grow em { font-style: normal; color: var(--muted); font-size: 20px; }
 .w-grow.hot small { color: #16A34A; font-weight: 900; }
-.w-pacts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; } .w-pacts button { min-height: 40px; border-radius: 14px; background: var(--soft); color: var(--navy-ink); font: 800 12.5px/1 var(--f-body); } .w-pacts button:first-child { background: var(--navy-ink); color: #fff; }
+.w-pacts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; } .w-pacts button { min-height: 40px; border-radius: 14px; background: var(--soft); color: var(--navy-ink); font: 800 12.5px/1 var(--f-body); } .w-pacts button:first-child { background: var(--navy-ink); color: #fff; }
 /* the board */
 .g-wrap { display: grid; gap: 10px; }
 .g-title { display: grid; gap: 2px; padding: 0 2px; } .g-title b { font: 800 26px/1 var(--f-display); color: var(--navy-ink); }
@@ -2514,12 +2584,15 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   <!-- HUB: DACHA main page -->
   <section id="vWorld" class="col" hidden></section>
   <section id="vGame" class="col" hidden><div id="gameBox"></div></section>
+  <section id="vInbox" class="col" hidden><div id="inboxBox"></div></section>
+  <section id="vChat" class="col" hidden><div id="chatBox"></div></section>
   <section id="vOnline" class="col" hidden><div class="sec-title" style="margin:2px 2px 10px">Онлайн-игры</div><div id="hubOnline"></div></section>
   <section id="vHub" class="col" hidden>
     <div class="game-on" id="gameOnHub" hidden></div>
     <div class="hub-top">
       <div class="crew-combo"><button class="crew-btn" id="goCrew" type="button" aria-label="Дачники"><span class="crew-faces" id="crewFaces"></span><span class="crew-n" id="crewN">дачники</span></button><button class="map-btn" id="goMap" type="button" aria-label="Карта дачников"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6Z"/><path d="M9 4v14M15 6v14"/></svg></button></div>
       <button class="bal-pill" id="hubBal" type="button" hidden></button>
+      <button class="icon-btn bell-btn" id="goInbox" type="button" aria-label="Уведомления"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i class="bell-n" id="bellN" hidden></i></button>
       <button class="icon-btn" id="hubMe" type="button" aria-label="Профиль"></button>
     </div>
     <div class="hub-hero">
@@ -2977,7 +3050,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106115312"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106120506"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3291,7 +3364,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   });
 
   /* ---------- navigation ---------- */
-  const VIEWS = ["vOnline", "vGame", "vWorld", "vRat", "vCev", "vReq", "vPremium", "vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
+  const VIEWS = ["vInbox", "vChat", "vOnline", "vGame", "vWorld", "vRat", "vCev", "vReq", "vPremium", "vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
   let profileId = null;
   const online = () => S.hostMode === "online";
   const hostView = () => {
@@ -3309,7 +3382,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const go = (view, arg) => {
     if (view !== "profile") setPdark(false);
     if (navReady && !navBack && S.view && (S.view !== view || (view === "profile" && arg && arg !== profileId) || (view === "sport" && arg && arg !== sportId))) {
-      navStack.push({ v: S.view, a: S.view === "profile" ? profileId : ["sport", "sportorg", "sportrate", "sportlist"].includes(S.view) ? sportId : S.view === "cevent" ? ceId : undefined });
+      navStack.push({ v: S.view, a: S.view === "profile" ? profileId : ["sport", "sportorg", "sportrate", "sportlist"].includes(S.view) ? sportId : S.view === "cevent" ? ceId : S.view === "chat" ? chatPeer : S.view === "game" ? gameId : undefined });
       if (navStack.length > 40) navStack.shift();
     }
     if (view === "hub") navStack.length = 0;
@@ -3321,11 +3394,12 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (["sport", "sportorg", "sportrate", "sportlist"].includes(view)) sportId = SPORTS[arg] ? arg : sportId;
     if (view === "cevent" && arg) ceId = arg;
     if (view === "game" && arg) gameId = arg;
+    if (view === "chat" && arg) chatPeer = arg;
     if (view === "world") { view = "crew"; crewTab = "map"; }
     if (view === "pay" && S.view !== "pay") payFrom = S.view;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { online: "vOnline", game: "vGame", world: "vWorld", ratings: "vRat", cevent: "vCev", sportlist: "vSport", sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { inbox: "vInbox", chat: "vChat", online: "vOnline", game: "vGame", world: "vWorld", ratings: "vRat", cevent: "vCev", sportlist: "vSport", sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "hub";
     if (typeof checkBlock === "function") try { checkBlock(); } catch {}
@@ -3333,7 +3407,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     renderTabs(view);
     if (id !== "vLive") stopLive();
     ({
-      vOnline: () => drawHubOnline(), vGame: () => renderGame(), vWorld: () => renderWorld(), vRat: renderRat, vCev: renderCev, vReq: renderReq, vPremium: renderPremium, vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
+      vInbox: () => renderInbox(), vChat: () => renderChat(), vOnline: () => drawHubOnline(), vGame: () => renderGame(), vWorld: () => renderWorld(), vRat: renderRat, vCev: renderCev, vReq: renderReq, vPremium: renderPremium, vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
       vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople, vMonth: () => { boardMonth = null; drawMonth(); }, vDeck: renderDeck,
       vPick: renderPick, vCount: renderCount, vRoles: renderRoles, vLive: renderLive, vDeal: renderDeal, vDone: renderDone,
       vCard: renderCard, vNotes: () => renderNotes(false), vEvents: renderEvents, vPlayer: renderPlayer,
@@ -3397,7 +3471,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     $("goPeople").setAttribute("aria-label", ["sport", "sportorg", "sportlist", "sportrate"].includes(view) ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("goPeople").setAttribute("aria-label", view === "sport" ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("topTitle").hidden = !!set.length;
-    $("topTitle").textContent = { online: "онлайн", game: "игра", world: "dacha world", ratings: "рейтинги", cevent: "ивент", host: "раздача", events: "запись", sportlist: "запись", sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
+    $("topTitle").textContent = { inbox: "уведомления", chat: "чат", online: "онлайн", game: "игра", world: "dacha world", ratings: "рейтинги", cevent: "ивент", host: "раздача", events: "запись", sportlist: "запись", sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
   };
 
   const renderHostAccess = () => {
@@ -3551,9 +3625,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (S.view === "profile" && profileId === id) {
       // own page: everything behind one gear; someone else's: a small tomato to throw
       $("phAch")?.insertAdjacentHTML("afterend", isMe ? `<button class="ph-mini" type="button" id="phGear" aria-label="Настройки профиля" title="Настройки"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>`
-        : `<button class="ph-mini tm" type="button" id="phTomato" aria-label="Бросить помидор" title="Бросить помидор">🍅<i id="tomatoN">${myTomatoes ?? 0}</i></button>`);
+        : `<button class="ph-mini chat" type="button" id="phChat" aria-label="Написать" title="Написать"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button><button class="ph-mini tm" type="button" id="phTomato" aria-label="Бросить помидор" title="Бросить помидор">🍅<i id="tomatoN">${myTomatoes ?? 0}</i></button>`);
       if (isMe) { $("phActs")?.classList.add("own"); $("phGear").onclick = () => openProfMenu(); }
-      else $("phTomato").onclick = () => throwTomato(id);
+      else { $("phTomato").onclick = () => throwTomato(id); $("phChat").onclick = () => go("chat", id); }
     }
     drawProfBal(id, isMe, row);
     // win rate only from 5 games: fewer games say nothing
@@ -5168,7 +5242,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     $("goPolls").hidden = true;
     drawGameOn();
     $("hubHello").innerHTML = me ? "" : loginPrompt();
-    drawCrewBtn(); drawWeek(); drawHubGames(); drawBalPill(); drawHubOnline(); startInvites().then(() => drawHubInvites());
+    setTimeout(autoHere, 2500);
+    drawCrewBtn(); drawWeek(); drawHubGames(); drawBalPill(); drawHubOnline(); startInvites().then(() => { drawHubInvites(); startDM(); refreshBell(); });
     $("hubPrem").hidden = !me || isPremium(me);
     if (!me) return;
     const need = [];
@@ -6761,7 +6836,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const myChar = () => W.chars.find((c) => c.user_id === me?.id) || null;
   const myPres = () => W.pres.find((x) => x.user_id === me?.id) || null;
   const loadWorld = async () => {
-    const since = new Date(Date.now() - 12 * 3600e3).toISOString();
+    const since = new Date(Date.now() - 24 * 3600e3).toISOString();
     const [{ data: chars }, { data: pres }, { data: games }, { data: ppl }, { data: lv }, { data: myxp }] = await Promise.all([
       sb.from("world_chars").select("*").order("xp", { ascending: false }).limit(200),
       sb.from("world_presence").select("*").gte("updated_at", since),
@@ -6825,10 +6900,10 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         const i = W.pres.findIndex((x) => x.user_id === n.user_id); if (i >= 0) W.pres[i] = n; else W.pres.push(n);
         if (inMap() && W.dacha) drawWorldMap();
       }).on("postgres_changes", { event: "*", schema: "public", table: "world_chars" }, worldAgain).on("postgres_changes", { event: "*", schema: "public", table: "world_games" }, worldAgain).subscribe();
-    clearInterval(W.timer); W.timer = setInterval(() => { if (!inMap()) return clearInterval(W.timer); if (W.sharing && W.watch == null) shareLocation(true); }, 120000);
+    clearInterval(W.timer); W.timer = setInterval(() => { if (!inMap()) return clearInterval(W.timer); if (W.sharing && W.watch == null) shareLocation(true); drawWorldMap(); }, 60000);
   };
   let worldT = 0;
-  const worldAgain = () => { clearTimeout(worldT); worldT = setTimeout(async () => { if (S.view === "game") return refreshGame(); if (S.view === "hub" || S.view === "online") return drawHubOnline(); if (!inMap() || !W.dacha) return; await loadWorld(); drawWorldMap(); }, 400); };
+  const worldAgain = () => { clearTimeout(worldT); worldT = setTimeout(async () => { if (S.view === "game") return refreshGame(); if (S.view === "hub" || S.view === "online" || S.view === "inbox") return drawHubOnline(); if (!inMap() || !W.dacha) return; await loadWorld(); drawWorldMap(); }, 400); };
   const drawWorldMap = () => {
     if (!window.maplibregl || !$("wMap")) return;
     if (!W.map || W.map.getContainer() !== $("wMap")) {
@@ -6863,12 +6938,14 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       W.map.on("zoom", zoomStyle); zoomStyle();
 
     }
-    const shown = W.pres.filter((x) => x.visible && x.lat != null), ids = new Set(shown.map((x) => x.user_id));
+    const fresh = (x) => Date.now() - new Date(x.updated_at).getTime();
+    const shown = W.pres.filter((x) => x.visible && x.lat != null && fresh(x) < 24 * 3600e3), ids = new Set(shown.map((x) => x.user_id));
     $("wOnline").textContent = shown.length;
     W.markers.forEach((m, uid) => { if (!ids.has(uid)) { m.remove(); W.markers.delete(uid); } });
     shown.forEach((x) => {
       const pp = personOf(x.user_id);
-      const html = `<div class="w-pin2 ${x.user_id === me.id ? "me" : ""}"><div class="w-bub">${avaP({ ...pp, id: x.user_id })}${x.emoji ? `<i class="w-st">${esc(x.emoji)}</i>` : ""}<b class="w-lv">${wLevel(lvlXP(x.user_id)).lvl}</b></div><span class="w-tail"></span><span class="w-dot"></span><span class="w-nm">${esc(pp.nick)}</span></div>`;
+      const age = fresh(x), ago = age < 3 * 60000 ? "" : age < 3600e3 ? `${Math.round(age / 60000)} мин назад` : `${Math.round(age / 3600e3)} ч назад`;
+      const html = `<div class="w-pin2 ${x.user_id === me.id ? "me" : ""} ${age > 3600e3 ? "stale" : ""}"><div class="w-bub">${avaP({ ...pp, id: x.user_id })}${x.emoji ? `<i class="w-st">${esc(x.emoji)}</i>` : ""}<b class="w-lv">${wLevel(lvlXP(x.user_id)).lvl}</b></div><span class="w-tail"></span><span class="w-dot"></span><span class="w-nm">${esc(pp.nick)}${ago ? `<small>${ago}</small>` : ""}</span></div>`;
       const m = W.markers.get(x.user_id);
       if (m) { glide(m, { lng: x.lng, lat: x.lat }); if (m._dHtml !== html) { m.getElement().innerHTML = html; m._dHtml = html; } return; }
       const el = document.createElement("div"); el.className = "w-pin-el"; el.innerHTML = html;
@@ -6885,7 +6962,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const applyClusters = () => {
     if (!W.map) return;
     W.clusters?.forEach((c) => c.remove()); W.clusters = [];
-    const SAME_SPOT = 20, pts = [];   // metres: one building / one table
+    const SAME_SPOT = 100, pts = [];   // metres: the same house / place (GPS indoors drifts 50–80 m)
     W.markers.forEach((m, uid) => { const ll = m.getLngLat(); pts.push({ uid, m, ll }); });
     const used = new Set();
     pts.sort((a0, b0) => a0.uid.localeCompare(b0.uid)).forEach((p0) => {
@@ -6946,16 +7023,36 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const gameArt = (k) => k === "chess" ? `<span class="gg-art chess"><i>♚\uFE0E</i><i>♞\uFE0E</i></span>`
     : k === "checkers" ? `<span class="gg-art checkers"><i></i><i></i><i class="k"></i></span>`
     : `<span class="gg-art durak"><i>A<small>♠\uFE0E</small></i><i>K<small>♥\uFE0E</small></i><i>Q<small>♦\uFE0E</small></i></span>`;
+  const MOVE_MS = 5 * 60 * 1000;
   const loadMyGames = async () => {
     if (!sb || !me) return;
     const { data } = await sb.from("world_games").select("*").in("status", ["invite", "active"]).or(`a.eq.${me.id},b.eq.${me.id}`).order("updated_at", { ascending: false }).limit(20);
     W.games = data || [];
+    // a game where somebody sat on his move for 5 minutes is over
+    const late = W.games.filter((g) => g.status === "active" && Date.now() - new Date(g.updated_at).getTime() > MOVE_MS);
+    if (late.length) { await Promise.all(late.map((g) => sb.rpc("game_timeout", { g: g.id }))); W.games = W.games.filter((g) => !late.includes(g)); }
+  };
+  // the move clock under the board
+  let gTick = 0;
+  const moveClock = () => {
+    clearInterval(gTick);
+    const r = G.row; const el = document.getElementById("gClock");
+    if (!el || !r || r.status !== "active") return;
+    const upd = () => {
+      const left = MOVE_MS - (Date.now() - new Date(r.updated_at).getTime());
+      if (!document.getElementById("gClock")) return clearInterval(gTick);
+      const mine = r.turn === me.id, sec = Math.max(0, Math.ceil(left / 1000));
+      el.className = "g-clock " + (mine ? "mine " : "") + (sec <= 60 ? "low" : "");
+      el.innerHTML = `<i style="width:${Math.max(0, Math.min(100, (left / MOVE_MS) * 100))}%"></i><span>${mine ? "Твой ход" : "Ход соперника"} · ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}</span>`;
+      if (left <= 0) { clearInterval(gTick); sb.rpc("game_timeout", { g: r.id }).then(() => refreshGame()); }
+    };
+    upd(); gTick = setInterval(upd, 1000);
   };
   const drawHubOnline = async () => {
     if (!$("hubOnline")) return;
     drawWorldGames();
     if (!me || !sb) return;
-    await loadMyGames(); drawOnlineBadge(); if (S.view !== "online") return; drawWorldGames();
+    await loadMyGames(); drawOnlineBadge(); drawBell(); if (S.view === "inbox") drawInbox(); if (S.view !== "online") return; drawWorldGames();
     if (!W.gchan) W.gchan = sb.channel("mygames").on("postgres_changes", { event: "*", schema: "public", table: "world_games" }, worldAgain).subscribe();
   };
   const drawOnlineBadge = () => {
@@ -6983,7 +7080,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         <button class="wh-show ${W.sharing ? "on" : ""}" type="button" data-wshare aria-pressed="${W.sharing}"><span class="wh-sw"><i></i></span><small>${W.sharing ? "меня видно" : "отображать меня"}</small></button></div>
       <div class="wh-sts">${W_STATUS.map(([e2, l]) => `<button type="button" data-wst="${e2}|${l}" aria-pressed="${pr?.status === l}" title="${l}">${e2}</button>`).join("")}
         <button class="wh-call" type="button" data-winvite>позвать</button></div>
-      ${pr?.status ? `<div class="wh-now">${esc(pr.emoji || "")} ${esc(pr.status)}</div>` : ""}
+      <div class="wh-foot">${pr?.status ? `<span class="wh-now">${esc(pr.emoji || "")} ${esc(pr.status)}</span>` : "<span></span>"}<button class="wh-live" type="button" data-wlive>📡 обновлять всегда</button></div>
     </div>`;
   };
   const drawWorldStatus = () => drawWorldHead();
@@ -7000,12 +7097,13 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     v.innerHTML = `<div class="bank w-person" role="dialog" aria-modal="true">
       <div class="w-me"><div class="w-me-av">${avaP({ ...pp, id: uid })}<span class="w-lvl">${wLevel(lvlXP(uid)).lvl}</span></div>
         <div class="w-me-t"><b>${esc(pp.nick)}</b><small>уровень дачника ${wLevel(lvlXP(uid)).lvl}</small><small>${pr?.status ? `${esc(pr.emoji || "")} ${esc(pr.status)}` : "без статуса"}</small>${pr?.updated_at ? `<small>на карте с ${new Date(pr.updated_at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}</small>` : ""}</div></div>
-      ${uid !== me.id ? `<div class="w-pacts"><button type="button" data-wcall="${uid}">позвать</button><button type="button" data-wplay="chess:${uid}">♚\uFE0E шахматы</button><button type="button" data-wplay="checkers:${uid}">⛀ шашки</button></div>` : ""}
+      ${uid !== me.id ? `<div class="w-pacts"><button type="button" data-wchat="${uid}">💬 написать</button><button type="button" data-wcall="${uid}">позвать</button><button type="button" data-wplay="chess:${uid}">♚\uFE0E шахматы</button><button type="button" data-wplay="checkers:${uid}">⛀ шашки</button></div>` : ""}
       <div class="row-btns" style="justify-content:flex-start">${pr?.visible && pr.lat != null ? `<button class="pill sm" type="button" data-wfly="${uid}">📍 показать на карте</button>` : ""}<button class="pill sm ghost" type="button" data-wprof="${uid}">профиль</button></div>
       <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
     v.addEventListener("click", (e) => {
       if (e.target === v || e.target.closest("[data-close]")) return v.remove();
       const cb = e.target.closest("[data-wcall]"); if (cb) { v.remove(); return worldInvite(cb.dataset.wcall); }
+      const hb = e.target.closest("[data-wchat]"); if (hb) { v.remove(); return go("chat", hb.dataset.wchat); }
       const gb = e.target.closest("[data-wplay]"); if (gb) { v.remove(); const [k, u] = gb.dataset.wplay.split(":"); return newGame(k, u); }
       const pb = e.target.closest("[data-wprof]"); if (pb) { v.remove(); return go("profile", pb.dataset.wprof); }
       const fb = e.target.closest("[data-wfly]"); if (fb) { v.remove(); const q = W.pres.find((x) => x.user_id === fb.dataset.wfly); if (q) { $("wMap")?.scrollIntoView({ behavior: "smooth", block: "center" }); flyWorld(q.lat, q.lng); } return; }
@@ -7057,6 +7155,21 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     }, () => {}, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
   };
   const stopGeoWatch = () => { if (W.watch != null) { navigator.geolocation.clearWatch(W.watch); W.watch = null; } };
+  const autoHere = async () => {
+    if (!sb || !me || document.hidden) return;
+    if (autoHere.last && Date.now() - autoHere.last < 60000) return; autoHere.last = Date.now();
+    const { data: pr } = await sb.from("world_presence").select("visible, lat, status, emoji").eq("user_id", me.id).maybeSingle();
+    if (!pr?.visible || pr.lat == null) return;
+    const send = (la, ln) => sb.rpc("world_here", { la, ln, st: pr.status || null, em: pr.emoji || null, vis: true }).then(() => {});
+    const lm = tg?.LocationManager;
+    if (lm?.init) { try { lm.init(() => { if (lm.isLocationAvailable && lm.isAccessGranted) lm.getLocation((d) => d && send(d.latitude, d.longitude)); }); return; } catch {} }
+    try { const st = await navigator.permissions?.query({ name: "geolocation" }); if (st?.state !== "granted") return; } catch { return; }
+    navigator.geolocation?.getCurrentPosition((p0) => send(p0.coords.latitude, p0.coords.longitude), () => {}, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  };
+  document.addEventListener("visibilitychange", () => { if (me && document.visibilityState === "visible") setTimeout(autoHere, 1500); });
+  const openLiveHelp = () => sheet({ eyebrow: "Карта", title: "Чтобы точка обновлялась всегда",
+    text: "Открой чат с ботом @dacha_gay → 📎 → Геопозиция → «Транслировать геопозицию» → «Пока не выключу». Тогда ты на карте даже с закрытым приложением. Выключить можно в любой момент в том же чате.",
+    ok: "открыть бота", onOk: () => { try { tg?.openTelegramLink ? tg.openTelegramLink("https://t.me/dacha_gay") : window.open("https://t.me/dacha_gay", "_blank"); } catch { window.open("https://t.me/dacha_gay", "_blank"); } } });
   const shareLocation = (quiet) => new Promise((res) => {
     const done = async (lat, lng) => {
       const pr = myPres();
@@ -7159,7 +7272,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     let line;
     if (r.status === "invite") line = r.b === me.id ? `<b>${esc(personOf(r.a).nick)}</b> зовёт тебя в дурака` : `Ждём, пока ${esc(personOf(r.b).nick)} примет приглашение`;
     else if (r.status === "declined") line = "Партия отменена";
-    else if (r.status === "done") line = r.result === "draw" ? "Ничья · +15 XP обоим" : r.winner === me.id ? "Ты не дурак! Победа +30 XP" : `Ты остался дураком · +10 XP`;
+    else if (r.status === "done") line = r.result === "draw" ? "Ничья · +15 XP обоим" : r.result === "timeout" ? (r.winner === me.id ? "Соперник не походил 5 минут — победа +30 XP" : "Время на ход вышло — поражение") : r.winner === me.id ? "Ты не дурак! Победа +30 XP" : `Ты остался дураком · +10 XP`;
     else line = myTurn ? (iAtt ? (tbl.length ? (open ? "Ждём защиту" : "Подкинь или «бито»") : "Твой ход — ходи картой") : "Отбивайся или бери") : (iAtt ? "Соперник отбивается" : "Соперник ходит");
     box.innerHTML = `<div class="g-wrap g-durak">
       <div class="g-title"><span class="gt-code">CRD · подкидной</span><b>Дурак</b></div>
@@ -7171,6 +7284,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         ${st.out ? `<span class="dk-out">бито ${st.out}</span>` : ""}
       </div>
       <div class="g-line ${myTurn ? "mine" : ""}">${line}</div>
+      ${r.status === "active" ? `<div class="g-clock" id="gClock"></div>` : ""}
       <div class="dk-hand">${hand.map((c) => dkCard(c, `${playable(c) ? "ok" : "dim"} ${G.sel === c ? "sel" : ""}`, `data-dkc="${c}" role="button" tabindex="0"`)).join("")}</div>
       <div class="g-acts">${r.status === "invite" && r.b === me.id ? `<button class="pill" type="button" data-gaccept>принять</button><button class="pill ghost" type="button" data-gdecline>отказаться</button>`
         : myTurn && iAtt && tbl.length && !open ? `<button class="pill" type="button" data-dkact="done">бито</button>`
@@ -7178,6 +7292,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         ${r && ["active", "invite"].includes(r.status) ? `<button class="pill sm ghost" type="button" data-gresign>${r.status === "invite" ? "отменить" : "сдаться"}</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
     </div>`;
   };
+  const dkAfter = () => moveClock();
   const dkPlay = async (act, card = null, i = null) => {
     if (G.busy) return; G.busy = true;
     const { error } = await sb.rpc("durak_play", { g: G.row.id, act, card, i });
@@ -7196,7 +7311,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   };
   const drawGame = () => {
     const box = $("gameBox"); if (!box || S.view !== "game") return;
-    if (G.row?.kind === "durak") return drawDurak();
+    if (G.row?.kind === "durak") { drawDurak(); return dkAfter(); }
     const k = gKind(), st = gState(), flip = !G.local && myColor() === "b";
     let squares = [], status = "", over = null, targets = [], last = st.last || [];
     if (k === "chess") {
@@ -7225,7 +7340,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     let line;
     if (row?.status === "invite") line = row.b === me.id ? `<b>${esc(a.nick)}</b> зовёт тебя сыграть` : `Ждём, пока ${esc(bP.nick)} примет приглашение`;
     else if (row?.status === "declined") line = "Партия отменена";
-    else if (done) { const w = row ? row.winner : G.local.over?.winC; line = row ? (row.result === "draw" ? "Ничья · +15 XP обоим" : `${row.winner === me.id ? "Ты победил! +30 XP" : `Победил ${esc(personOf(row.winner).nick)} · тебе +10 XP`}${row.result === "resign" ? " (сдался соперник)" : ""}`) : (G.local.over.res === "draw" ? G.local.over.why : `${G.local.over.why} · победили ${w === "w" ? "белые" : k === "chess" ? "чёрные" : "красные"}`); }
+    else if (done) { const w = row ? row.winner : G.local.over?.winC; line = row ? (row.result === "draw" ? "Ничья · +15 XP обоим" : `${row.winner === me.id ? "Ты победил! +30 XP" : `Победил ${esc(personOf(row.winner).nick)} · тебе +10 XP`}${row.result === "resign" ? " (соперник сдался)" : row.result === "timeout" ? " (время на ход вышло)" : ""}`) : (G.local.over.res === "draw" ? G.local.over.why : `${G.local.over.why} · победили ${w === "w" ? "белые" : k === "chess" ? "чёрные" : "красные"}`); }
     else line = gMyTurn() ? (G.local ? `Ходят ${turnC === "w" ? "белые" : k === "chess" ? "чёрные" : "красные"}` : "Твой ход") : "Ход соперника";
     const order = [...Array(64).keys()]; if (flip) order.reverse();
     box.innerHTML = `<div class="g-wrap g-${k}">
@@ -7235,11 +7350,27 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         return `<button type="button" class="sq ${dark ? "d" : "l"} ${G.sel === i ? "sel" : ""} ${targets.includes(i) ? (squares[i] ? "tgt cap" : "tgt") : ""} ${last.includes(i) ? "last" : ""}" data-sq="${i}">${squares[i]}</button>`; }).join("")}</div>
       ${head(bottom)}
       <div class="g-line ${gMyTurn() && !done ? "mine" : ""}">${status ? `<em>${status}</em> ` : ""}${line}</div>
+      ${row?.status === "active" ? `<div class="g-clock" id="gClock"></div>` : ""}
       <div class="g-acts">${row?.status === "invite" && row.b === me.id ? `<button class="pill" type="button" data-gaccept>принять</button><button class="pill ghost" type="button" data-gdecline>отказаться</button>`
         : row && ["active", "invite"].includes(row.status) ? `<button class="pill sm ghost" type="button" data-gresign>${row.status === "invite" ? "отменить" : "сдаться"}</button>`
         : G.local ? `<button class="pill sm ghost" type="button" data-grestart>заново</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
     </div>`;
     if (over && !done && !G.busy) finishGame(over);
+    animateMove(st.last, k); moveClock();
+  };
+  // a piece slides from its square; taken pieces fade away
+  const animateMove = (last, k) => {
+    const key = (G.row ? G.row.id + ":" + G.row.ver : "local:" + JSON.stringify(last)) ;
+    if (!last || last.length < 2 || G.animKey === key) return; G.animKey = key;
+    const board = document.getElementById("gBoard"); if (!board) return;
+    const sq = (i) => board.querySelector(`[data-sq="${i}"]`), from = sq(last[0]), to = sq(last[1]); if (!from || !to) return;
+    const pc = to.querySelector(".pc"); if (!pc) return;
+    const a0 = from.getBoundingClientRect(), b0 = to.getBoundingClientRect();
+    pc.style.transition = "none"; pc.style.transform = `translate(${a0.left - b0.left}px, ${a0.top - b0.top}px)`; pc.style.zIndex = 5;
+    requestAnimationFrame(() => requestAnimationFrame(() => { pc.style.transition = "transform .38s cubic-bezier(.3,.8,.3,1)"; pc.style.transform = ""; }));
+    if (k === "checkers") last.slice(2).forEach((i) => { const t = sq(i); if (!t) return; const moved = to.querySelector(".pc");
+      const col = moved?.classList.contains("w") ? "b" : "w"; t.insertAdjacentHTML("beforeend", `<span class="pc ck ${col} gone"></span>`); });
+    haptic("tap");
   };
   const sqName = (i) => "abcdefgh"[i % 8] + (8 - Math.floor(i / 8));
   const sqIdx = (n) => (8 - +n[1]) * 8 + "abcdefgh".indexOf(n[0]);
@@ -7331,6 +7462,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       return shareLocation(false);
     }
     if (b.hasAttribute("data-winvite")) return worldInvite();
+    if (b.hasAttribute("data-wlive")) return openLiveHelp();
     if (b.dataset.wperson) return openWorldPerson(b.dataset.wperson);
   });
   // @tivishka opens the world to someone from his profile
@@ -7358,7 +7490,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const box = $("hubInv"); if (!box || !me) return;
     const inc = INV.list.filter((x) => x.to_id === me.id && (x.status === "pending" || x.status === "talk"));
     const ans = INV.list.filter((x) => x.from_id === me.id && x.status !== "pending" && x.answered_at && Date.now() - new Date(x.answered_at).getTime() < 6 * 3600e3);
-    if (!inc.length && !ans.length) { box.innerHTML = ""; return; }
+    box.innerHTML = ""; drawBell(); return;   // 06.11: everything lives under the bell now
+    // eslint-disable-next-line no-unreachable
     box.innerHTML = `<div class="inv-card"><div class="eyebrow">Приглашения</div>
       ${inc.map((x) => { const pp = personOf(x.from_id); return `<button class="inv-row in" type="button" data-inv="${x.id}">${avaP({ ...pp, id: x.from_id })}<span><b>${esc(pp.nick)} зовёт тебя</b><small>${esc(invWhat(x.what))}${x.status === "talk" ? " · ты ответил" : ""}</small></span><em>ответить</em></button>`; }).join("")}
       ${ans.map((x) => { const pp = personOf(x.to_id); return `<button class="inv-row out ${x.status}" type="button" data-inv="${x.id}">${avaP({ ...pp, id: x.to_id })}<span><b>${esc(pp.nick)} ${x.status === "accepted" ? "придёт ✅" : x.status === "declined" ? "не сможет" : "ответил 💬"}</b><small>${esc(invWhat(x.what))}${x.reply ? ` · «${esc(x.reply)}»` : ""}</small></span></button>`; }).join("")}
@@ -7375,7 +7508,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         ${mine ? `<p class="lead" style="margin:0">${x.status === "pending" ? "Ждём ответа…" : x.status === "accepted" ? "Придёт ✅" : x.status === "declined" ? "Не сможет ❌" : "Хочет договориться"}</p>`
           : talk ? `<textarea class="field" data-invmsg maxlength="200" rows="3" placeholder="Например: давай через час, я у Ката"></textarea><div class="inv-acts"><button class="pill" type="button" data-invsend>отправить</button><button class="pill ghost" type="button" data-invback>назад</button></div>`
           : `<div class="inv-acts"><button class="pill green" type="button" data-inva="accepted">✅ Иду</button><button class="pill ghost" type="button" data-invtalk>💬 Договориться</button><button class="pill ghost red-t" type="button" data-inva="declined">Не могу</button></div>`}
-        ${pp.tg_username ? `<a class="pill sm ghost" href="https://t.me/${esc(pp.tg_username)}" target="_blank" rel="noopener" data-tglink style="justify-self:start">написать в Telegram</a>` : ""}
+        <button class="pill sm ghost" type="button" data-invchat style="justify-self:start">💬 написать ${esc(pp.nick)}</button>
         <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
     };
     const answer = async (st, msg) => {
@@ -7384,6 +7517,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       sb.functions.invoke("tg", { body: { action: "invite_answered", invite: x.id } }).catch(() => {});
       haptic("card"); toast(st === "accepted" ? "Отлично! Он узнает, что ты придёшь" : st === "declined" ? "Ок, передадим" : "Ответ отправлен");
       v.remove(); await loadInvites(); drawHubInvites();
+      if (st === "talk" && msg) { await sendDM(x.from_id, `${invWhat(x.what)}: ${msg}`); go("chat", x.from_id); }
     };
     draw(false);
     v.addEventListener("click", (e) => {
@@ -7391,6 +7525,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       const a = e.target.closest("[data-inva]"); if (a) return answer(a.dataset.inva);
       if (e.target.closest("[data-invtalk]")) { draw(true); v.querySelector("[data-invmsg]")?.focus(); return; }
       if (e.target.closest("[data-invback]")) return draw(false);
+      if (e.target.closest("[data-invchat]")) { v.remove(); return go("chat", other); }
       if (e.target.closest("[data-invsend]")) { const t = v.querySelector("[data-invmsg]").value.trim(); if (!t) return toast("Напиши пару слов"); return answer("talk", t); }
     });
     document.body.append(v);
@@ -7412,11 +7547,125 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     await loadInvites(); drawHubInvites();
     const upsert = (row) => { const i = INV.list.findIndex((y) => y.id === row.id); if (i >= 0) INV.list[i] = row; else INV.list.unshift(row); drawHubInvites(); };
     INV.chan = sb.channel("inv-" + me.id)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "world_invites", filter: `to_id=eq.${me.id}` }, (p0) => { upsert(p0.new); invBanner(p0.new); })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "world_invites", filter: `to_id=eq.${me.id}` }, (p0) => { upsert(p0.new); invBanner(p0.new); drawBell(); if (S.view === "inbox") drawInbox(); })
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "world_invites", filter: `from_id=eq.${me.id}` }, (p0) => { upsert(p0.new); if (p0.new.status !== "pending") invBanner(p0.new); })
       .subscribe();
   };
   document.addEventListener("click", (e) => { const r = e.target.closest("#hubInv [data-inv]"); if (r) openInvite(r.dataset.inv); });
+
+
+  /* =================== the bell: invitations, games, messages · and the chat =================== */
+  let chatPeer = null;
+  const DM = { threads: [], chan: null, msgs: [] };
+  const loadThreads = async () => { if (!sb || !me) return; const { data } = await sb.rpc("dm_threads"); DM.threads = (data || []).sort((a, b) => String(b.last_at).localeCompare(String(a.last_at))); };
+  const bellCount = () => {
+    if (!me) return 0;
+    const inv = INV.list.filter((x) => x.to_id === me.id && x.status === "pending").length + INV.list.filter((x) => x.from_id === me.id && x.status !== "pending" && x.answered_at && !INV.seen?.has(x.id + x.status)).length;
+    const games = W.games.filter((g) => (g.status === "invite" && g.b === me.id) || (g.status === "active" && g.turn === me.id)).length;
+    return inv + games + DM.threads.reduce((t, x) => t + (+x.unread || 0), 0);
+  };
+  const drawBell = () => { const b = $("bellN"); if (!b) return; const n = bellCount(); b.hidden = !n; b.textContent = n > 9 ? "9+" : n; $("goInbox")?.classList.toggle("ring", n > 0); };
+  const refreshBell = async () => { if (!me) return; await Promise.all([loadThreads(), loadInvites(), loadMyGames()]); drawBell(); drawOnlineBadge(); };
+  const timeAgo = (t) => { const d = (Date.now() - new Date(t).getTime()) / 60000; if (d < 1) return "сейчас"; if (d < 60) return Math.floor(d) + " мин"; if (d < 1440) return Math.floor(d / 60) + " ч";
+    return new Date(t).toLocaleDateString("ru-RU", { day: "numeric", month: "short" }); };
+  // a banner at the top for anything new
+  const popBanner = ({ uid, title, sub, cta, onClick }) => {
+    document.querySelector(".inv-pop")?.remove();
+    const pp = personOf(uid), b = document.createElement("button"); b.type = "button"; b.className = "inv-pop";
+    b.innerHTML = `${avaP({ ...pp, id: uid })}<span><b>${esc(title)}</b><small>${esc(sub || "")}</small></span><em>${esc(cta || "›")}</em>`;
+    b.onclick = () => { b.remove(); onClick?.(); };
+    document.body.append(b);
+    try { navigator.vibrate?.([40, 60, 40]); } catch {} haptic("card");
+    setTimeout(() => b.classList.add("out"), 8000); setTimeout(() => b.remove(), 8600);
+  };
+  const sendDM = async (to, text) => {
+    const { data: id, error } = await sb.rpc("dm_send", { to_: to, body_: text });
+    if (error) { toast(/too fast/.test(error.message) ? "Слишком быстро — подожди немного" : "Не получилось: " + humanErr(error)); return null; }
+    sb.functions.invoke("tg", { body: { action: "dm_notify", id } }).catch(() => {});
+    return id;
+  };
+  const startDM = () => {
+    if (!sb || !me || DM.chan) return;
+    DM.chan = sb.channel("dm-" + me.id).on("postgres_changes", { event: "INSERT", schema: "public", table: "dm_messages", filter: `to_id=eq.${me.id}` }, async (p0) => {
+      const m = p0.new;
+      if (S.view === "chat" && chatPeer === m.from_id && !document.hidden) { DM.msgs.push(m); drawChatMsgs(true); sb.rpc("dm_read", { peer: m.from_id }).then(() => {}); return; }
+      await loadThreads(); drawBell(); if (S.view === "inbox") drawInbox();
+      popBanner({ uid: m.from_id, title: personOf(m.from_id).nick, sub: m.body, cta: "ответить", onClick: () => go("chat", m.from_id) });
+    }).subscribe();
+    if (!W.gchan) W.gchan = sb.channel("mygames").on("postgres_changes", { event: "*", schema: "public", table: "world_games" }, worldAgain).subscribe();
+    refreshBell();
+  };
+  const renderInbox = async () => {
+    const box = $("inboxBox"); if (!me) return go("auth");
+    if (!box.innerHTML) box.innerHTML = `<div class="empty-note"><div class="wait"><span class="pulse"></span>Загружаю…</div></div>`;
+    await Promise.all([refreshBell(), people.length ? null : loadPeople()]);
+    if (S.view !== "inbox") return;
+    drawInbox();
+    INV.seen = INV.seen || new Set(); INV.list.forEach((x) => INV.seen.add(x.id + x.status)); drawBell();
+  };
+  const drawInbox = () => {
+    const box = $("inboxBox"); if (!box) return;
+    const inc = INV.list.filter((x) => x.to_id === me.id && (x.status === "pending" || x.status === "talk"));
+    const ans = INV.list.filter((x) => x.from_id === me.id && x.status !== "pending" && x.answered_at && Date.now() - new Date(x.answered_at).getTime() < 24 * 3600e3);
+    const games = W.games.filter((g) => (g.status === "invite" && g.b === me.id) || (g.status === "active" && g.turn === me.id));
+    const news = [
+      ...inc.map((x) => ({ at: x.created_at, html: `<button class="nf-row hot" type="button" data-nfinv="${x.id}">${avaP({ ...personOf(x.from_id), id: x.from_id })}<span><b>${esc(personOf(x.from_id).nick)} зовёт тебя</b><small>${esc(invWhat(x.what))}</small></span><em>ответить</em></button>` })),
+      ...ans.map((x) => ({ at: x.answered_at, html: `<button class="nf-row" type="button" data-nfinv="${x.id}">${avaP({ ...personOf(x.to_id), id: x.to_id })}<span><b>${esc(personOf(x.to_id).nick)} ${x.status === "accepted" ? "придёт ✅" : x.status === "declined" ? "не сможет" : "ответил 💬"}</b><small>${esc(invWhat(x.what))}${x.reply ? ` · «${esc(x.reply)}»` : ""}</small></span><i>${timeAgo(x.answered_at)}</i></button>` })),
+      ...games.map((g) => { const opp = g.a === me.id ? g.b : g.a; return { at: g.updated_at, html: `<button class="nf-row hot" type="button" data-nfgame="${g.id}">${avaP({ ...personOf(opp), id: opp })}<span><b>${GAMES_W[g.kind].name} · ${esc(personOf(opp).nick)}</b><small>${g.status === "invite" ? "зовёт тебя сыграть" : "твой ход"}</small></span><em>${g.status === "invite" ? "играть" : "ходить"}</em></button>` }; }),
+    ].sort((a, b) => String(b.at).localeCompare(String(a.at)));
+    box.innerHTML = `<div class="sec-title" style="margin:2px 2px 10px">Уведомления</div>
+      ${news.length ? `<div class="nf-card">${news.map((x) => x.html).join("")}</div>` : `<div class="nf-empty">Новых уведомлений нет</div>`}
+      <div class="nf-h"><div class="sec-title" style="margin:0">Сообщения</div><button class="pill sm" type="button" data-nfnew>${'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'} написать</button></div>
+      ${DM.threads.length ? `<div class="nf-card">${DM.threads.map((t) => { const pp = personOf(t.peer); return `<button class="nf-row th ${t.unread ? "unread" : ""}" type="button" data-nfchat="${t.peer}">${avaP({ ...pp, id: t.peer })}<span><b>${esc(pp.nick)}</b><small>${t.last_from === me.id ? "ты: " : ""}${esc(t.last_body)}</small></span><i>${timeAgo(t.last_at)}${t.unread ? `<b class="nf-n">${t.unread}</b>` : ""}</i></button>`; }).join("")}</div>`
+        : `<div class="nf-empty">Пока нет переписок. Напиши любому дачнику — если он не в приложении, сообщение придёт ему в Telegram.</div>`}`;
+  };
+  const renderChat = async () => {
+    const box = $("chatBox"); if (!me) return go("auth"); if (!chatPeer) return go("inbox");
+    if (!people.length) await loadPeople();
+    const pp = personOf(chatPeer);
+    box.innerHTML = `<button class="ch-head" type="button" data-chprof>${avaP({ ...pp, id: chatPeer })}<span><b>${esc(pp.nick)}</b><small>${pp.tg_username ? "@" + esc(pp.tg_username) : "дачник"} · профиль</small></span></button>
+      <div class="ch-list" id="chList"><div class="empty-note"><div class="wait"><span class="pulse"></span>Загружаю…</div></div></div>
+      <form class="ch-bar" id="chForm"><textarea id="chIn" rows="1" maxlength="1000" placeholder="Сообщение…" enterkeyhint="send"></textarea><button type="submit" aria-label="Отправить">${'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg>'}</button></form>`;
+    const peer = chatPeer;
+    const { data } = await sb.from("dm_messages").select("*").or(`and(from_id.eq.${me.id},to_id.eq.${peer}),and(from_id.eq.${peer},to_id.eq.${me.id})`).order("created_at", { ascending: false }).limit(100);
+    if (S.view !== "chat" || chatPeer !== peer) return;
+    DM.msgs = (data || []).reverse(); drawChatMsgs(false);
+    sb.rpc("dm_read", { peer }).then(() => loadThreads().then(drawBell));
+  };
+  const drawChatMsgs = (smooth) => {
+    const box = $("chList"); if (!box) return;
+    if (!DM.msgs.length) { box.innerHTML = `<div class="ch-empty">Напиши первым 👋<br><small>Если ${esc(personOf(chatPeer).nick)} не в приложении, сообщение придёт ему в Telegram.</small></div>`; return; }
+    let lastDay = "";
+    box.innerHTML = DM.msgs.map((m, i) => {
+      const day = new Date(m.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }), mine = m.from_id === me.id, nx = DM.msgs[i + 1];
+      const tail = !nx || nx.from_id !== m.from_id;
+      const sep = day !== lastDay ? `<div class="ch-day">${day}</div>` : ""; lastDay = day;
+      return `${sep}<div class="ch-msg ${mine ? "me" : ""} ${tail ? "tail" : ""} ${m._new ? "new" : ""}">${esc(m.body).replace(/\n/g, "<br>")}<i>${new Date(m.created_at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}${m.via_tg ? " · из Telegram" : ""}${mine ? (m.read_at ? " ✓✓" : " ✓") : ""}</i></div>`;
+    }).join("");
+    DM.msgs.forEach((m) => delete m._new);
+    requestAnimationFrame(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: smooth ? "smooth" : "auto" }));
+  };
+  $("chatBox").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const inp = $("chIn"), t = inp.value.trim(); if (!t) return;
+    inp.value = ""; inp.style.height = "";
+    const temp = { id: "tmp" + Date.now(), from_id: me.id, to_id: chatPeer, body: t, created_at: new Date().toISOString(), _new: true };
+    DM.msgs.push(temp); drawChatMsgs(true); haptic("tap");
+    const id = await sendDM(chatPeer, t);
+    if (!id) { DM.msgs = DM.msgs.filter((m) => m !== temp); drawChatMsgs(false); inp.value = t; return; }
+    temp.id = id;
+  });
+  $("chatBox").addEventListener("keydown", (e) => { if (e.target.id === "chIn" && e.key === "Enter" && !e.shiftKey && !matchMedia("(pointer: coarse)").matches) { e.preventDefault(); $("chForm").requestSubmit(); } });
+  $("chatBox").addEventListener("input", (e) => { if (e.target.id !== "chIn") return; e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px"; });
+  $("chatBox").addEventListener("click", (e) => { if (e.target.closest("[data-chprof]")) go("profile", chatPeer); });
+  $("inboxBox").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.nfinv) return openInvite(b.dataset.nfinv);
+    if (b.dataset.nfgame) return go("game", b.dataset.nfgame);
+    if (b.dataset.nfchat) return go("chat", b.dataset.nfchat);
+    if (b.hasAttribute("data-nfnew")) return pickPerson({ title: "Кому написать?", exclude: [me.id], onPick: (u) => go("chat", u) });
+  });
+  $("goInbox").onclick = () => { haptic("tap"); me ? go("inbox") : go("auth"); };
 
   /* =================== tomatoes: throw one at a friend's screen =================== */
   let myTomatoes = null;
@@ -8271,6 +8520,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (SPORTS[deep]) { startView = "sport"; sportId = deep; }
     if (deep === "game") { const qg = new URLSearchParams(location.search).get("g"); if (qg) { startView = "game"; gameId = qg; } }
     if (deep === "world" || deep === "map") { startView = "crew"; crewTab = "map"; }
+    if (deep === "chat") { const qu = new URLSearchParams(location.search).get("u"); if (qu) { startView = "chat"; chatPeer = qu; } }
+    if (deep === "inbox") startView = "inbox";
     const deepInv = deep === "invite" ? new URLSearchParams(location.search).get("i") : null;
     if (deepInv) setTimeout(async () => { await startInvites(); if (!INV.list.some((y) => y.id === deepInv)) await loadInvites(); openInvite(deepInv); }, 2500);
     if (inTG) {

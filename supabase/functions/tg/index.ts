@@ -346,6 +346,46 @@ async function worldInvite(req: Request, body: any) {
   return json({ ok: !!r?.ok, error: r?.ok ? undefined : "Telegram не доставил" });
 }
 
+// ---------- chat: a message not read in the app within a few seconds goes to Telegram too ----------
+const esc2 = (t: string) => String(t).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c] as string));
+async function dmDeliver(m: any) {
+  const [{ data: from }, { data: to }] = await Promise.all([
+    admin.from("profiles").select("nick, tg_username").eq("id", m.from_id).maybeSingle(),
+    admin.from("profiles").select("tg_id").eq("id", m.to_id).maybeSingle(),
+  ]);
+  if (!to?.tg_id) return;
+  const r: any = await tgApi("sendMessage", { chat_id: to.tg_id, parse_mode: "HTML",
+    text: `💬 <b>${esc2(from?.nick || "Дачник")}</b>:\n${esc2(m.body)}\n\n<i>Ответь на это сообщение (свайп влево) — ответ придёт в чат DACHA</i>`,
+    reply_markup: { inline_keyboard: [[{ text: "Открыть чат", web_app: { url: APP + "?v=chat&u=" + m.from_id } }]] } });
+  if (r?.ok) await admin.from("dm_messages").update({ tg_msg_id: r.result.message_id }).eq("id", m.id);
+}
+async function dmNotify(req: Request, body: any) {
+  const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const { data: { user } } = await admin.auth.getUser(jwt);
+  if (!user || typeof body.id !== "string") return json({ error: "Нужно войти" }, 401);
+  const { data: m } = await admin.from("dm_messages").select("*").eq("id", body.id).maybeSingle();
+  if (!m || m.from_id !== user.id || m.tg_msg_id || Date.now() - new Date(m.created_at).getTime() > 60000) return json({ ok: true, sent: 0 });
+  await new Promise((r) => setTimeout(r, 5000));   // the other one may be in the chat right now
+  const { data: again } = await admin.from("dm_messages").select("read_at, tg_msg_id").eq("id", m.id).maybeSingle();
+  if (!again || again.read_at || again.tg_msg_id) return json({ ok: true, sent: 0 });
+  await dmDeliver(m);
+  return json({ ok: true, sent: 1 });
+}
+// a Telegram reply to a duplicated message → back into the chat
+async function dmFromTelegram(msg: any): Promise<boolean> {
+  const rid = msg.reply_to_message?.message_id; if (!rid || !msg.text) return false;
+  const { data: me } = await admin.from("profiles").select("id").eq("tg_id", msg.from?.id).maybeSingle(); if (!me) return false;
+  const { data: orig } = await admin.from("dm_messages").select("from_id, to_id").eq("tg_msg_id", rid).eq("to_id", me.id).maybeSingle(); if (!orig) return false;
+  const { data: nm } = await admin.from("dm_messages").insert({ from_id: me.id, to_id: orig.from_id, body: String(msg.text).slice(0, 1000), via_tg: true }).select("*").maybeSingle();
+  await tgApi("setMessageReaction", { chat_id: msg.chat.id, message_id: msg.message_id, reaction: [{ type: "emoji", emoji: "👍" }] }).catch(() => {});
+  if (nm) {
+    await new Promise((r) => setTimeout(r, 5000));
+    const { data: a } = await admin.from("dm_messages").select("read_at").eq("id", nm.id).maybeSingle();
+    if (a && !a.read_at) await dmDeliver(nm);
+  }
+  return true;
+}
+
 // an invitation got an answer: tell the one who invited
 const INV_TXT: Record<string, string> = { accepted: "✅ придёт", declined: "❌ не сможет", talk: "💬 ответил" };
 async function inviteNotifyFrom(inv: any) {
@@ -626,7 +666,22 @@ async function hook(req: Request) {
   if (upd.callback_query?.data?.startsWith("j:")) { await joinFromButton(upd.callback_query); return new Response("ok"); }
   if (upd.callback_query?.data?.startsWith("p:")) { await plusFromButton(upd.callback_query); return new Response("ok"); }
   if (upd.callback_query?.data?.startsWith("wi:")) { await inviteCallback(upd.callback_query); return new Response("ok"); }
+  // live location shared with the bot keeps the map fresh even when the app is closed
+  const loc = (upd.edited_message || upd.message);
+  if (loc?.chat?.type === "private" && loc.location) {
+    const { data: who } = await admin.from("profiles").select("id").eq("tg_id", loc.from?.id).maybeSingle();
+    if (who) {
+      const { data: had } = await admin.from("world_presence").select("status, emoji").eq("user_id", who.id).maybeSingle();
+      await admin.from("world_presence").upsert({ user_id: who.id, lat: loc.location.latitude, lng: loc.location.longitude, visible: true, status: had?.status ?? null, emoji: had?.emoji ?? null, updated_at: new Date().toISOString() });
+      if (upd.message) await tgApi("sendMessage", { chat_id: loc.chat.id, text: loc.location.live_period
+        ? "📍 Готово! Пока идёт трансляция геопозиции, ты на карте DACHA и точка обновляется сама — даже когда приложение закрыто."
+        : "📍 Точка на карте DACHA обновлена. Чтобы она обновлялась сама, отправь «Транслировать геопозицию» → «Пока не выключу».",
+        reply_markup: { inline_keyboard: [[{ text: "Открыть карту", web_app: { url: APP + "?v=map" } }]] } });
+    } else if (upd.message) await tgApi("sendMessage", { chat_id: loc.chat.id, text: "Сначала открой DACHA кнопкой «Дача», потом пришли геопозицию ещё раз." });
+    return new Response("ok");
+  }
   const msg = upd.message;
+  if (msg?.chat?.type === "private" && msg.reply_to_message && await dmFromTelegram(msg)) return new Response("ok");
   if (msg?.chat?.type === "private") {
     await tgApi("sendMessage", {
       chat_id: msg.chat.id,
@@ -652,6 +707,7 @@ Deno.serve(async (req) => {
   if (body.action === "tomato_notify") return tomatoNotify(req, body);
   if (body.action === "world_invite") return worldInvite(req, body);
   if (body.action === "invite_answered") return inviteAnswered(req, body);
+  if (body.action === "dm_notify") return dmNotify(req, body);
   if (body.action === "poll") return pollCreate(req, body);
   if (body.action === "poll_close") return pollClose(req, body);
   return json({ error: "unknown action" }, 400);
