@@ -330,7 +330,11 @@ async function walletNotify(req: Request, body: any) {
       text = "◆ DACHA PREMIUM включён на месяц!\nБез рекламы, своя иконка, +200 ฿ на счёт и 50 🍅.";
     } else if (t.method === "transfer") {
       const { data: from } = await admin.from("profiles").select("nick,tg_username").eq("id", t.peer_id).maybeSingle();
-      text = `💸 ${from?.nick || "Дачник"}${from?.tg_username ? " (@" + from.tg_username + ")" : ""} перевёл тебе ${t.amount} ฿ на счёт DACHA.`;
+      const msg = String(t.note || "").trim();
+      text = `💸 ${from?.nick || "Дачник"}${from?.tg_username ? " (@" + from.tg_username + ")" : ""} перевёл тебе ${t.amount} ฿ на счёт DACHA.`
+        + (msg && !msg.startsWith("Перевод от ") ? `
+
+💬 «${msg}»` : "");
     } else if (t.method === "adjust") {
       text = `💸 На твой счёт DACHA пришло ${t.amount} ฿${t.note ? " · " + t.note : ""}.`;
     } else if (t.purpose === "gamepay") {
