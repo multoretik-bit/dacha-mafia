@@ -3080,7 +3080,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106123332"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106123745"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -7195,10 +7195,16 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const { data: pr } = await sb.from("world_presence").select("visible, lat, status, emoji").eq("user_id", me.id).maybeSingle();
     if (!pr?.visible || pr.lat == null) return;
     const send = (la, ln) => sb.rpc("world_here", { la, ln, st: pr.status || null, em: pr.emoji || null, vis: true }).then(() => {});
+    // everybody who shared before follows himself on the map while DACHA is open, on any screen
+    W.sharing = true;
     const lm = tg?.LocationManager;
-    if (lm?.init) { try { lm.init(() => { if (lm.isLocationAvailable && lm.isAccessGranted) lm.getLocation((d) => d && send(d.latitude, d.longitude)); }); return; } catch {} }
+    if (lm?.init) { try { lm.init(() => { if (!(lm.isLocationAvailable && lm.isAccessGranted)) return;
+      const tick = () => { if (document.hidden) return; lm.getLocation((d) => { if (!d) return; const here = { lat: d.latitude, lng: d.longitude, at: Date.now() };
+        if (W.sent && geoDist(W.sent, here) < 12 && here.at - W.sent.at < 30000) return; W.sent = here; send(d.latitude, d.longitude); }); };
+      tick(); clearInterval(autoHere.t); autoHere.t = setInterval(tick, 30000); }); return; } catch {} }
     try { const st = await navigator.permissions?.query({ name: "geolocation" }); if (st?.state !== "granted") return; } catch { return; }
     navigator.geolocation?.getCurrentPosition((p0) => send(p0.coords.latitude, p0.coords.longitude), () => {}, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+    startGeoWatch();
   };
   document.addEventListener("visibilitychange", () => { if (me && document.visibilityState === "visible") setTimeout(autoHere, 1500); });
   const openLiveHelp = () => sheet({ eyebrow: "Карта", title: "Чтобы точка обновлялась всегда",
