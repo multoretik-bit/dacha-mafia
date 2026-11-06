@@ -22,7 +22,7 @@ grant execute on function dacha_xp(uuid) to authenticated;
 
 -- the board of levels for the world rating
 create or replace function dacha_levels() returns table (user_id uuid, xp int) language sql stable security definer set search_path = public as $$
-  select p.id, dacha_xp(p.id) from profiles p where p.tg_id is not null order by 2 desc limit 60
+  select p.id, dacha_xp(p.id) from profiles p where p.tg_id is not null order by 2 desc limit 500
 $$;
 revoke all on function dacha_levels() from public, anon;
 grant execute on function dacha_levels() to authenticated;

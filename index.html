@@ -2044,11 +2044,29 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .ce-opts.txt button[aria-pressed="true"] { background: var(--navy-ink); color: #fff; }
 .w-person { gap: 12px; }
 
+/* level chips (06.11) */
+.lvl-chip { display: inline-flex; align-items: center; gap: 6px; width: fit-content; margin: 2px 0 4px; padding: 4px 10px 4px 4px; border-radius: 99px; background: var(--navy-ink); color: #fff; font: 800 12px/1 var(--f-body); }
+.lvl-chip b { min-width: 22px; height: 22px; border-radius: 99px; display: grid; place-items: center; background: #FFC83D; color: var(--navy-ink); font: 900 13px/1 var(--f-code); padding: 0 4px; box-sizing: border-box; }
+.lvl-chip i { width: 46px; height: 5px; border-radius: 99px; background: rgba(255,255,255,.22); overflow: hidden; } .lvl-chip em { display: block; height: 100%; background: #FFC83D; border-radius: 99px; }
+.cb.lvl { background: var(--navy-ink); color: #fff; } .cb.lvl b { color: #FFC83D; font-weight: 900; }
+.crew-rank { font: 700 13px/1 var(--f-code); color: var(--muted); margin-left: auto; padding-right: 2px; }
+
 /* DACHA WORLD v3 (06.11) */
 .w-tiles { filter: sepia(.5) saturate(1.7) hue-rotate(-10deg) brightness(1.04) contrast(.98); }
 .w-mapwrap { background: #5FA8EE; }
-.leaflet-marker-icon.w-pin-wrap { transition: transform .9s cubic-bezier(.3,.7,.3,1); }
-.leaflet-zoom-anim .leaflet-marker-icon.w-pin-wrap { transition: none; }
+.w-pin2 { position: relative; width: 120px; height: 100px; pointer-events: none; }
+.w-pin2 > * { pointer-events: auto; }
+.w-bub { position: absolute; left: 36px; top: 0; width: 48px; height: 48px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px #fff, 0 8px 14px -6px rgba(7,27,77,.55); }
+.w-bub .ava, .w-bub .prem { width: 48px; height: 48px; border-radius: 50%; } .w-bub .prem .ava { width: 100%; height: 100%; } .w-bub .prem-ic { display: none; }
+.w-pin2.me .w-bub { box-shadow: 0 0 0 3px #FFC83D, 0 8px 14px -6px rgba(7,27,77,.55); }
+.w-tail { position: absolute; left: 54px; top: 46px; width: 12px; height: 12px; background: #fff; transform: rotate(45deg); border-radius: 2px; box-shadow: 3px 3px 6px -3px rgba(7,27,77,.4); }
+.w-pin2.me .w-tail { background: #FFC83D; }
+.w-dot { position: absolute; left: 53px; top: 59px; width: 14px; height: 14px; border-radius: 50%; background: #0033FF; box-shadow: 0 0 0 3px #fff, 0 2px 6px rgba(7,27,77,.5); }
+.w-pin2.me .w-dot::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; background: rgba(0,51,255,.28); animation: wPulse 2s ease-out infinite; }
+@keyframes wPulse { from { transform: scale(.4); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+.w-nm { position: absolute; left: 50%; top: 78px; transform: translateX(-50%); max-width: 116px; padding: 2px 8px; border-radius: 99px; background: var(--navy-ink); color: #fff; font: 800 10.5px/1.45 var(--f-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.w-st { position: absolute; right: -8px; top: -6px; width: 22px; height: 22px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-style: normal; font-size: 13px; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.w-lv { position: absolute; left: -8px; top: -6px; min-width: 20px; height: 20px; border-radius: 99px; background: #FFC83D; color: var(--navy-ink); font: 900 11px/20px var(--f-code); text-align: center; box-shadow: 0 0 0 2px #fff; }
 .w-spot span { background: rgba(255,255,255,.94); }
 .w-lvl { right: auto !important; bottom: auto !important; left: -4px; top: -4px; }
 .w-pin-lv { left: -6px !important; top: -6px !important; }
@@ -2814,7 +2832,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106093233"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106094950"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3359,7 +3377,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const totG = (+row.games || 0) + sAll.reduce((t, x) => t + +x.games, 0), totW = (+row.wins || 0) + sAll.reduce((t, x) => t + +x.wins, 0);
     $("profHead").innerHTML = `<div class="ph-top">${avaP({ ...row, id }, "lg")}
         <div class="ph-ach" id="phAch"></div></div>
-      <div class="ph-name"><h1 class="h1">${esc(row.nick)}</h1>
+      <div class="ph-name"><h1 class="h1">${esc(row.nick)}</h1><span class="lvl-chip" id="phLvl" hidden></span>
         ${me ? `<button class="bal-chip" type="button" id="profBal" data-uid="${id}"><svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>баланс…</button>` : ""}
         <div class="ph-sub">${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}<span class="ph-since" id="phSince"></span><span class="ph-bday" id="phBday" hidden></span></div></div>
       ${badges.length ? `<div class="prof-badges">${badges.map((b) => `<span class="cb host">${esc(b)}</span>`).join("")}</div>` : ""}
@@ -5187,10 +5205,10 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const box = $("crewList");
     if (!sb || !me) { box.innerHTML = `<div class="empty-note">${loginPrompt()}</div>`; return; }
     if (!people.length) box.innerHTML = `<div class="empty-note"><div class="wait"><span class="pulse"></span>Загружаю дачников…</div></div>`;
-    const [, v, f] = await Promise.all([loadPeople(), sportBoard("volley").catch(() => []), sportBoard("foot").catch(() => []), sp.loaded ? null : loadSports().catch(() => {}), loadBdays().catch(() => {})]);
+    const [, v, f, , , lv] = await Promise.all([loadPeople(), sportBoard("volley").catch(() => []), sportBoard("foot").catch(() => []), sp.loaded ? null : loadSports().catch(() => {}), loadBdays().catch(() => {}), sb.rpc("dacha_levels").then((r) => r.data || []).catch(() => [])]);
     if (S.view !== "crew") return;
     const by = (list) => Object.fromEntries(list.map((x) => [x.id, x]));
-    crewData = { v: by(v), f: by(f) };
+    crewData = { v: by(v), f: by(f), lv: new Map((lv || []).map((r) => [r.user_id, +r.xp])) };
     $("crewEb").textContent = `Дачники · ${people.length}`;
     drawCrew();
   };
@@ -5199,11 +5217,12 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const q = $("crewQ").value.trim().toLowerCase().replace(/^@/, "");
     const total = (p) => (+p.games || 0) + (+crewData.v[p.id]?.games || 0) + (+crewData.f[p.id]?.games || 0) + (+p.hosted || 0);
     const list = people.filter((p) => !q || p.nick.toLowerCase().includes(q) || String(p.tg_username || "").toLowerCase().includes(q))
-      .sort((a, b) => lockedIds.has(a.id) - lockedIds.has(b.id) || total(b) - total(a) || a.nick.localeCompare(b.nick));
+      .sort((a, b) => lockedIds.has(a.id) - lockedIds.has(b.id) || (crewData.lv.get(b.id) || 0) - (crewData.lv.get(a.id) || 0) || total(b) - total(a) || a.nick.localeCompare(b.nick));
     $("crewList").innerHTML = list.length ? list.map((p) => {
       const v = crewData.v[p.id], f = crewData.f[p.id];
       const hostOf = Object.values(SPORTS).filter((x) => sp.hosts.some((h) => h.sport === x.id && h.user_id === p.id));
       const chips = [
+        `<span class="cb lvl"><b>${wLevel(crewData.lv.get(p.id) || 0).lvl}</b> ур.</span>`,
         bdays.get(p.id) && bdayIn(bdays.get(p.id)) <= 14 ? `<span class="cb bd">🎂 ${esc(bdaySoon(bdays.get(p.id)))}</span>` : "",
         p.games ? `<span class="cb">🎭 ${p.wins} ${plural(+p.wins, "победа", "победы", "побед")}</span>` : "",
         v ? `<span class="cb">🏐 ${v.wins} ${plural(+v.wins, "победа", "победы", "побед")}</span>` : "",
@@ -5474,20 +5493,17 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     document.body.append(v);
   };
   // profile: one tile per played game (tap = details sheet, tap on #N = rating), upcoming dates, achievements
-  document.addEventListener("click", (e) => { if (!e.target.closest("[data-pworld]")) return; if (!worldOK()) return toast("DACHA WORLD скоро откроется"); haptic("tap"); go("world"); });
-  const drawProfWorld = async (id) => {
+  // the dachnik's level from all activity, as a small chip under the name
+  const drawProfLevel = async (id) => {
     if (!sb || !me) return;
-    const { data: w } = await sb.rpc("world_card", { u: id });
-    if (!w || profileId !== id || !$("profGames")) return;
-    const L3 = wLevel(w.xp);
-    $("profGames").insertAdjacentHTML("beforeend", `<div class="pb-world"><div class="sec-label eyebrow">DACHA WORLD</div>
-      <div class="pbw-row"><button class="pbw-lv" type="button" data-pworld><b>${L3.lvl}</b><small>уровень в DACHA WORLD</small><em>${L3.xp} XP</em></button>
-        <span class="pbw-g"><i>♚\uFE0E</i><b>${w.chess_w}</b><small>побед в шахматах из ${w.chess_n}</small></span>
-        <span class="pbw-g"><i class="ckd"></i><b>${w.checkers_w}</b><small>побед в шашках из ${w.checkers_n}</small></span></div>
-      ${worldOK() ? `<button class="pbw-go" type="button" data-pworld>Открыть DACHA WORLD <span>›</span></button>` : ""}</div>`);
+    const { data: xp } = await sb.rpc("dacha_xp", { u: id });
+    const c = $("phLvl"); if (!c || profileId !== id) return;
+    const L4 = wLevel(xp); c.hidden = false;
+    c.innerHTML = `<b>${L4.lvl}</b> уровень дачника <i><em style="width:${L4.pct}%"></em></i>`;
+    c.title = `${L4.xp} XP · до ${L4.lvl + 1} уровня ${L4.left}`;
   };
   const drawProfGames = (id, row, sstats, rolesHTML, nRoles) => {
-    setTimeout(() => drawProfWorld(id), 0);
+    setTimeout(() => drawProfLevel(id), 0);
     const ranked = [...people].filter((p) => p.games > 0).sort((a, b) => b.wins - a.wins || b.games - a.games || a.nick.localeCompare(b.nick));
     const played = [];
     if (+row.games) played.push({ k: "mafia", place: ranked.findIndex((p) => p.id === id) + 1, games: +row.games, wins: +row.wins });
@@ -6592,7 +6608,6 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     W.levels = new Map((lv || []).map((r) => [r.user_id, +r.xp])); W.levels.set(me.id, +myxp || 0);
     W.chars = chars || []; W.pres = pres || []; W.games = games || []; W.people = (ppl || []).map((x) => (typeof x === "string" ? x : x.world_people || Object.values(x)[0]));
     if (!people.length) await loadPeople();
-    if (!myChar()) { await sb.rpc("world_save_char", { nm: me.nick, lk: {} }); const { data } = await sb.from("world_chars").select("*").eq("user_id", me.id).maybeSingle(); if (data) W.chars.push(data); }
   };
   const loadScript = (src, test) => test() ? Promise.resolve() : new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = src; sc.onload = res; sc.onerror = rej; document.head.append(sc); });
   const loadLeaflet = () => { if (!document.querySelector("link[data-leaflet]")) { const l = document.createElement("link"); l.rel = "stylesheet"; l.dataset.leaflet = "1"; l.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"; document.head.append(l); }
@@ -6613,29 +6628,29 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     box.innerHTML = `<div class="w-mapwrap"><div id="wMap" class="w-map"></div>
         <div class="w-mapbar"><span class="w-chip">Dacha Phuket · <b id="wOnline">0</b> на карте</span><button class="w-chip btn" type="button" data-wback>дачи</button></div>
         <button class="w-locate" type="button" data-wlocate aria-label="Показать меня"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12Z"/><circle cx="12" cy="9" r="2.6"/></svg></button></div>
-      <div id="wMe"></div><div id="wGames"></div><div id="wStatus"></div><div id="wRate"></div>`;
+      <div id="wGames"></div><div id="wStatus"></div>`;
     try { await Promise.all([loadWorld(), loadLeaflet(), null]); } catch { toast("Карта не загрузилась — проверь интернет"); }
     if (S.view !== "world" || !W.dacha) return;
-    drawWorldMap(); drawWorldMe(); drawWorldGames(); drawWorldStatus(); drawWorldRate();
+    drawWorldMap(); drawWorldGames(); drawWorldStatus();
     if (!W.chan) W.chan = sb.channel("world").on("postgres_changes", { event: "*", schema: "public", table: "world_presence" }, (pl) => {
         const n = pl.new; if (!n?.user_id) return worldAgain();
         const i = W.pres.findIndex((x) => x.user_id === n.user_id); if (i >= 0) W.pres[i] = n; else W.pres.push(n);
         if (S.view === "world" && W.dacha) drawWorldMap();
       }).on("postgres_changes", { event: "*", schema: "public", table: "world_chars" }, worldAgain).on("postgres_changes", { event: "*", schema: "public", table: "world_games" }, worldAgain).subscribe();
-    clearInterval(W.timer); W.timer = setInterval(() => { if (S.view !== "world") return clearInterval(W.timer); if (W.sharing) shareLocation(true); drawWorldMe(); }, 120000);
+    clearInterval(W.timer); W.timer = setInterval(() => { if (S.view !== "world") return clearInterval(W.timer); if (W.sharing && W.watch == null) shareLocation(true); }, 120000);
   };
   let worldT = 0;
-  const worldAgain = () => { clearTimeout(worldT); worldT = setTimeout(async () => { if (S.view === "game") return refreshGame(); if (S.view !== "world" || !W.dacha) return; await loadWorld(); drawWorldMap(); drawWorldMe(); drawWorldGames(); drawWorldRate(); }, 400); };
+  const worldAgain = () => { clearTimeout(worldT); worldT = setTimeout(async () => { if (S.view === "game") return refreshGame(); if (S.view !== "world" || !W.dacha) return; await loadWorld(); drawWorldMap(); drawWorldGames(); }, 400); };
   const drawWorldMap = () => {
     if (!window.L || !$("wMap")) return;
     if (!W.map || W.map.getContainer() !== $("wMap")) {
       W.map?.remove(); W.markers = new Map();
       const ring = (W.island?.coordinates?.[0] || []).map(([x, y]) => [y, x]);
       const bounds = ring.length ? L.latLngBounds(ring) : L.latLngBounds([[7.75, 98.25], [8.2, 98.45]]);
-      W.map = L.map("wMap", { zoomControl: false, attributionControl: true, maxBounds: bounds.pad(0.12), maxBoundsViscosity: 1, zoomSnap: 0.25 });
+      W.map = L.map("wMap", { zoomControl: false, attributionControl: true, maxBounds: bounds.pad(0.12), maxBoundsViscosity: 1, zoomSnap: 0.25, maxZoom: 19 }); W.acc = null;
       W.map.fitBounds(bounds, { padding: [10, 10] });
       W.map.setMinZoom(W.map.getZoom());
-      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", { maxZoom: 16, className: "w-tiles", attribution: "Esri · OpenStreetMap" }).addTo(W.map);
+      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", { maxNativeZoom: 16, maxZoom: 19, className: "w-tiles", attribution: "Esri · OpenStreetMap" }).addTo(W.map);
       if (ring.length) {
         // everything outside the island is the sea; the island gets a navy coast like the logo
         L.polygon([[[5.5, 96], [5.5, 101], [10.5, 101], [10.5, 96]], ring], { stroke: false, fillColor: "#5FA8EE", fillOpacity: 1, interactive: false, className: "w-sea" }).addTo(W.map);
@@ -6651,13 +6666,31 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     W.markers.forEach((m, uid) => { if (!ids.has(uid)) { W.layer.removeLayer(m); W.markers.delete(uid); } });
     shown.forEach((x) => {
       const pp = personOf(x.user_id);
-      const html = `<div class="w-pin ${x.user_id === me.id ? "me" : ""}">${x.emoji ? `<i class="w-pin-st">${esc(x.emoji)}</i>` : ""}<div class="w-pin-av">${avaP({ ...pp, id: x.user_id })}</div><b class="w-pin-lv">${wLevel(lvlXP(x.user_id)).lvl}</b><span class="w-pin-nm">${esc(pp.nick)}</span></div>`;
+      const html = `<div class="w-pin2 ${x.user_id === me.id ? "me" : ""}"><div class="w-bub">${avaP({ ...pp, id: x.user_id })}${x.emoji ? `<i class="w-st">${esc(x.emoji)}</i>` : ""}<b class="w-lv">${wLevel(lvlXP(x.user_id)).lvl}</b></div><span class="w-tail"></span><span class="w-dot"></span><span class="w-nm">${esc(pp.nick)}</span></div>`;
+      const icon = () => L.divIcon({ className: "w-pin-wrap", html, iconSize: [120, 100], iconAnchor: [60, 66] });
       const m = W.markers.get(x.user_id);
-      if (m) { m.setLatLng([x.lat, x.lng]); if (m._dHtml !== html) { m.setIcon(L.divIcon({ className: "w-pin-wrap", html, iconSize: [64, 80], iconAnchor: [32, 72] })); m._dHtml = html; } return; }
-      const nm = L.marker([x.lat, x.lng], { icon: L.divIcon({ className: "w-pin-wrap", html, iconSize: [64, 80], iconAnchor: [32, 72] }) }).addTo(W.layer).on("click", () => openWorldPerson(x.user_id));
+      if (m) { glide(m, L.latLng(x.lat, x.lng)); if (m._dHtml !== html) { m.setIcon(icon()); m._dHtml = html; } return; }
+      const nm = L.marker([x.lat, x.lng], { icon: icon(), riseOnHover: true }).addTo(W.layer).on("click", () => openWorldPerson(x.user_id));
       nm._dHtml = html; W.markers.set(x.user_id, nm);
     });
+    drawMyAccuracy();
     setTimeout(() => W.map?.invalidateSize(), 60);
+  };
+  // glide a pin to its new place in ~0.9 s (only when the person really moved)
+  const glide = (m, to) => {
+    const from = m.getLatLng(); if (from.distanceTo(to) < 1) return;
+    if (from.distanceTo(to) > 3000) return m.setLatLng(to);
+    cancelAnimationFrame(m._raf); const t0 = performance.now();
+    const step = (t) => { const k = Math.min(1, (t - t0) / 900), e = 1 - Math.pow(1 - k, 3);
+      m.setLatLng([from.lat + (to.lat - from.lat) * e, from.lng + (to.lng - from.lng) * e]); if (k < 1) m._raf = requestAnimationFrame(step); };
+    m._raf = requestAnimationFrame(step);
+  };
+  // my own accuracy circle (what the phone says)
+  const drawMyAccuracy = () => {
+    if (!W.map || !W.here || !W.sharing) { if (W.acc) { W.acc.remove(); W.acc = null; } return; }
+    const ll = [W.here.lat, W.here.lng];
+    if (!W.acc) W.acc = L.circle(ll, { radius: W.here.acc || 20, color: "#0033FF", weight: 1.5, opacity: .5, fillColor: "#0033FF", fillOpacity: .1, interactive: false }).addTo(W.map);
+    else { W.acc.setLatLng(ll); W.acc.setRadius(W.here.acc || 20); }
   };
   const statBar = (k, label, v) => `<div class="w-stat ${v < 30 ? "low" : ""}"><span class="w-si">${WI[k]}</span><span>${label}</span><i><b style="width:${v}%"></b></i><em>${v}</em></div>`;
   const drawWorldMe = () => {
@@ -6705,20 +6738,20 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         : `<div class="empty-note">Пока никого.</div>`}</div></div>`;
   };
   const openWorldPerson = (uid) => {
-    const c = W.chars.find((y) => y.user_id === uid), pr = W.pres.find((x) => x.user_id === uid), pp = personOf(uid), st = c ? wStats(c) : null;
+    const pr = W.pres.find((x) => x.user_id === uid), pp = personOf(uid);
     const v = document.createElement("div"); v.className = "veil bank-veil";
     v.innerHTML = `<div class="bank w-person" role="dialog" aria-modal="true">
       <div class="w-me"><div class="w-me-av">${avaP({ ...pp, id: uid })}<span class="w-lvl">${wLevel(lvlXP(uid)).lvl}</span></div>
-        <div class="w-me-t"><b>${esc(pp.nick)}</b><small>${pr?.status ? `${esc(pr.emoji || "")} ${esc(pr.status)}` : "без статуса"}</small>${pr?.updated_at ? `<small>на карте с ${new Date(pr.updated_at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}</small>` : ""}</div></div>
-      ${st ? `<div class="w-stats">${W_CARE.map(([k, , , , lab, sk]) => statBar(k, lab, st[sk])).join("")}</div>` : ""}
+        <div class="w-me-t"><b>${esc(pp.nick)}</b><small>уровень дачника ${wLevel(lvlXP(uid)).lvl}</small><small>${pr?.status ? `${esc(pr.emoji || "")} ${esc(pr.status)}` : "без статуса"}</small>${pr?.updated_at ? `<small>на карте с ${new Date(pr.updated_at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}</small>` : ""}</div></div>
       ${uid !== me.id ? `<div class="w-pacts"><button type="button" data-wcall="${uid}">позвать</button><button type="button" data-wplay="chess:${uid}">♚\uFE0E шахматы</button><button type="button" data-wplay="checkers:${uid}">⛀ шашки</button></div>` : ""}
-      <button class="pill sm ghost" type="button" data-wprof="${uid}" style="justify-self:start">профиль</button>
+      <div class="row-btns" style="justify-content:flex-start">${pr?.visible && pr.lat != null ? `<button class="pill sm" type="button" data-wfly="${uid}">📍 показать на карте</button>` : ""}<button class="pill sm ghost" type="button" data-wprof="${uid}">профиль</button></div>
       <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
     v.addEventListener("click", (e) => {
       if (e.target === v || e.target.closest("[data-close]")) return v.remove();
       const cb = e.target.closest("[data-wcall]"); if (cb) { v.remove(); return worldInvite(cb.dataset.wcall); }
       const gb = e.target.closest("[data-wplay]"); if (gb) { v.remove(); const [k, u] = gb.dataset.wplay.split(":"); return newGame(k, u); }
       const pb = e.target.closest("[data-wprof]"); if (pb) { v.remove(); return go("profile", pb.dataset.wprof); }
+      const fb = e.target.closest("[data-wfly]"); if (fb) { v.remove(); const q = W.pres.find((x) => x.user_id === fb.dataset.wfly); if (q) { $("wMap")?.scrollIntoView({ behavior: "smooth", block: "center" }); W.map?.flyTo([q.lat, q.lng], 17, { duration: .9 }); } return; }
     });
     document.body.append(v);
   };
@@ -6752,13 +6785,18 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (W.watch != null || !navigator.geolocation) return;
     W.watch = navigator.geolocation.watchPosition(async (p0) => {
       if (!W.sharing) return stopGeoWatch();
-      const here = { lat: p0.coords.latitude, lng: p0.coords.longitude, at: Date.now() };
-      if (W.sent && geoDist(W.sent, here) < 15 && here.at - W.sent.at < 30000) return;
-      W.sent = here; const pr = myPres();
-      await sb.rpc("world_here", { la: here.lat, ln: here.lng, st: pr?.status || null, em: pr?.emoji || null, vis: true });
+      const acc = p0.coords.accuracy || 999, here = { lat: p0.coords.latitude, lng: p0.coords.longitude, acc, at: Date.now() };
+      // a rough reading right after a precise one is noise: skip it
+      if (W.here && acc > 80 && acc > W.here.acc * 2 && here.at - W.here.at < 60000) return;
+      // jitter smaller than the accuracy is not a move
+      if (W.here && geoDist(W.here, here) < Math.max(8, Math.min(acc, W.here.acc) * 0.6) && here.at - W.here.at < 30000) return;
+      W.here = here;
       const mine = W.pres.find((x) => x.user_id === me.id); if (mine) { mine.lat = here.lat; mine.lng = here.lng; }
       if (S.view === "world") drawWorldMap();
-    }, () => {}, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+      if (W.sent && geoDist(W.sent, here) < 12 && here.at - W.sent.at < 30000) return;
+      W.sent = here; const pr = myPres();
+      sb.rpc("world_here", { la: here.lat, ln: here.lng, st: pr?.status || null, em: pr?.emoji || null, vis: true }).then(() => {});
+    }, () => {}, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
   };
   const stopGeoWatch = () => { if (W.watch != null) { navigator.geolocation.clearWatch(W.watch); W.watch = null; } };
   const shareLocation = (quiet) => new Promise((res) => {
@@ -6767,11 +6805,11 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       const { error } = await sb.rpc("world_here", { la: lat, ln: lng, st: pr?.status || null, em: pr?.emoji || null, vis: true });
       if (error) { toast("Не получилось: " + humanErr(error)); return res(false); }
       W.sharing = true; W.sent = { lat, lng, at: Date.now() }; startGeoWatch(); await loadWorld(); drawWorldMap(); drawWorldStatus();
-      if (!quiet) W.map?.flyTo([lat, lng], 14, { duration: .8 });
+      if (!quiet) W.map?.flyTo([lat, lng], 17, { duration: .9 });
       res(true);
     };
     if (!navigator.geolocation) { toast("Телефон не даёт геолокацию"); return res(false); }
-    navigator.geolocation.getCurrentPosition((p0) => done(p0.coords.latitude, p0.coords.longitude),
+    navigator.geolocation.getCurrentPosition((p0) => { W.here = { lat: p0.coords.latitude, lng: p0.coords.longitude, acc: p0.coords.accuracy || 50, at: Date.now() }; done(p0.coords.latitude, p0.coords.longitude); },
       () => { if (!quiet) toast("Разреши доступ к геолокации для Telegram"); res(false); }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
   });
 
@@ -6955,7 +6993,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (b.dataset.gnew) return newGame(b.dataset.gnew);
     if (b.dataset.glocal) { haptic("tap"); return go("game", "local:" + b.dataset.glocal); }
     if (b.dataset.gopen) return go("game", b.dataset.gopen);
-    if (b.hasAttribute("data-wlocate")) return shareLocation(false);
+    if (b.hasAttribute("data-wlocate")) { if (W.sharing && W.here) { haptic("tap"); return W.map?.flyTo([W.here.lat, W.here.lng], 17, { duration: .9 }); } return shareLocation(false); }
     if (b.dataset.wcare) {
       const { error } = await sb.rpc("world_care", { a: b.dataset.wcare });
       if (error) return toast(/cooldown/.test(error.message) ? "Пока рано — загляни чуть позже" : "Не получилось: " + humanErr(error));
