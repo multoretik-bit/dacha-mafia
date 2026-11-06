@@ -1974,6 +1974,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .fx-box b { font: 700 32px/1.1 var(--f-code); font-variant-numeric: tabular-nums; }
 .fx-box small { font-weight: 700; font-size: 12px; opacity: .75; }
 .usdt-card { gap: 10px; }
+.usdt-net.sbp { background: #EEF0FF; color: #3D2FB0; }
 .usdt-net { justify-self: center; padding: 5px 12px; border-radius: 99px; background: #E7F7EF; color: #12764A; font: 800 12px/1 var(--f-body); }
 .usdt-addr { display: grid; gap: 4px; width: 100%; padding: 10px 12px; border-radius: 14px; background: var(--soft, #EEF0F5); text-align: center; }
 .usdt-addr code { font: 700 13px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--navy-ink); overflow-wrap: anywhere; }
@@ -2615,7 +2616,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106072054"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106072547"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -5810,7 +5811,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   document.addEventListener("click", (e) => { const b = e.target.closest("[data-pay]"); if (!b) return; e.stopPropagation(); e.preventDefault(); const [k, id] = b.dataset.pay.split(":"); openPay(k, id); }, true);
   let payCtx = null, payAmt = null, payMethod = "qr", payRecv = null, payCur = "thb";
   // top-ups: the balance is in baht; rubles and USDT are converted at the Central Bank rate + a margin
-  const USDT_ADDR = "TAva2ZL7qoYeKJPqgHnhKWNDxVnnBhHXXn";
+  const USDT_ADDR = "TAva2ZL7qoYeKJPqgHnhKWNDxVnnBhHXXn", RUB_PHONE = "+7 953 852-13-44", RUB_NAME = "Денис Д.";
   const FX_MARGIN = { rub: 1.12, usdt: 1.03 };
   let fx = null, fxLoading = null;
   const loadFx = () => fxLoading || (fxLoading = (async () => {
@@ -5839,7 +5840,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (!fx) return "";
     if (payCur === "rub") {
       const url = rubQrs.get(ownerId());
-      return url ? `<div class="qr-card"><img src="${esc(url)}" alt="Скан для оплаты в рублях"><p>Отсканируй в приложении банка и переведи <b>${fmtRub(rubFor(b))}</b>.</p>
+      return url ? `<div class="qr-card usdt-card"><span class="usdt-net sbp">СБП · Т-Банк или Сбербанк</span><img src="${esc(url)}" alt="Скан для оплаты в рублях">
+          <button class="usdt-addr" type="button" data-copyphone title="Скопировать номер"><code>${RUB_PHONE} · ${RUB_NAME}</code><span>копировать номер</span></button>
+          <p>Отсканируй в приложении банка или переведи по номеру <b>${fmtRub(rubFor(b))}</b>.</p>
           <button class="pill sm ghost" type="button" data-rubsave>⬇ скачать скан</button></div>
         <button class="pill wide" type="button" data-sendcur="rub">я перевёл ${fmtRub(rubFor(b))}</button>`
         : `<p class="lead">Скан для рублей ещё не загружен. Напиши @tivishka, он пришлёт реквизиты.</p>`;
@@ -5981,6 +5984,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (b.hasAttribute("data-qrsave")) return downloadQR(qrFor(ctxEvent())?.url);
     if (b.dataset.cur) { payCur = b.dataset.cur; haptic("tap"); return drawPay(); }
     if (b.hasAttribute("data-rubsave")) return downloadQR(rubQrs.get(ownerId()));
+    if (b.hasAttribute("data-copyphone")) { try { await navigator.clipboard.writeText(RUB_PHONE.replace(/[\s-]/g, "")); toast("Номер скопирован"); } catch { toast(RUB_PHONE); } haptic("tap"); return; }
     if (b.hasAttribute("data-copyaddr")) { try { await navigator.clipboard.writeText(USDT_ADDR); toast("Адрес скопирован"); } catch { toast(USDT_ADDR); } haptic("tap"); return; }
     if (b.dataset.sendcur) {
       const baht = parseInt($("payAmt")?.value, 10);
