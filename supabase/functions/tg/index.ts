@@ -330,11 +330,57 @@ async function worldInvite(req: Request, body: any) {
     if (!g || g.a !== user.id || g.b !== body.to) return json({ error: "Нет такой партии" }, 400);
     gameUrl = APP + "?v=game&g=" + g.id;
   }
+  let invId = "";
+  if (typeof body.invite === "string") {
+    const { data: inv } = await admin.from("world_invites").select("id, from_id, to_id").eq("id", body.invite).maybeSingle();
+    if (!inv || inv.from_id !== user.id || inv.to_id !== body.to) return json({ error: "Нет такого приглашения" }, 400);
+    invId = inv.id;
+  }
   const { data: pr } = await admin.from("world_presence").select("lat, lng, visible").eq("user_id", user.id).maybeSingle();
   const where = pr?.visible && pr.lat != null ? `\n📍 Где он сейчас: https://maps.google.com/?q=${pr.lat.toFixed(5)},${pr.lng.toFixed(5)}` : "";
   const r: any = await tgApi("sendMessage", { chat_id: to.tg_id, text: `🌍 DACHA WORLD\n${me?.nick || "Дачник"}${me?.tg_username ? " (@" + me.tg_username + ")" : ""} зовёт тебя ${what}${gameUrl ? " ♟" : "!"}${gameUrl ? "" : where}`,
-    reply_markup: { inline_keyboard: [[{ text: gameUrl ? "Принять и играть" : "Открыть DACHA", web_app: { url: gameUrl || APP } }], ...(me?.tg_username ? [[{ text: "Ответить в Telegram", url: "https://t.me/" + me.tg_username }]] : [])] } });
+    reply_markup: { inline_keyboard: [
+      ...(invId ? [[{ text: "✅ Иду", callback_data: `wi:ok:${invId}` }, { text: "❌ Не могу", callback_data: `wi:no:${invId}` }]] : []),
+      [{ text: gameUrl ? "Принять и играть" : invId ? "💬 Договориться в приложении" : "Открыть DACHA", web_app: { url: gameUrl || (invId ? APP + "?v=invite&i=" + invId : APP) } }],
+      ...(me?.tg_username ? [[{ text: "Написать в Telegram", url: "https://t.me/" + me.tg_username }]] : [])] } });
   return json({ ok: !!r?.ok, error: r?.ok ? undefined : "Telegram не доставил" });
+}
+
+// an invitation got an answer: tell the one who invited
+const INV_TXT: Record<string, string> = { accepted: "✅ придёт", declined: "❌ не сможет", talk: "💬 ответил" };
+async function inviteNotifyFrom(inv: any) {
+  const [{ data: to }, { data: from }] = await Promise.all([
+    admin.from("profiles").select("nick, tg_username").eq("id", inv.to_id).maybeSingle(),
+    admin.from("profiles").select("tg_id").eq("id", inv.from_id).maybeSingle(),
+  ]);
+  if (!from?.tg_id) return;
+  await admin.from("world_invites").update({ notified_at: new Date().toISOString() }).eq("id", inv.id);
+  await tgApi("sendMessage", { chat_id: from.tg_id, text: `🌍 ${to?.nick || "Дачник"} ${INV_TXT[inv.status] || ""} — ${inv.what}${inv.reply ? `\n💬 «${inv.reply}»` : ""}`,
+    reply_markup: { inline_keyboard: [[{ text: "Открыть DACHA", web_app: { url: APP + "?v=invite&i=" + inv.id } }], ...(to?.tg_username ? [[{ text: "Написать в Telegram", url: "https://t.me/" + to.tg_username }]] : [])] } });
+}
+async function inviteAnswered(req: Request, body: any) {
+  const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const { data: { user } } = await admin.auth.getUser(jwt);
+  if (!user || typeof body.invite !== "string") return json({ error: "Нужно войти" }, 401);
+  const { data: inv } = await admin.from("world_invites").select("*").eq("id", body.invite).maybeSingle();
+  if (!inv || inv.to_id !== user.id || !inv.answered_at) return json({ ok: false });
+  if (Date.now() - new Date(inv.answered_at).getTime() > 2 * 60 * 1000) return json({ ok: false });
+  if (inv.notified_at && new Date(inv.notified_at) >= new Date(inv.answered_at)) return json({ ok: true, sent: 0 });
+  await inviteNotifyFrom(inv);
+  return json({ ok: true, sent: 1 });
+}
+async function inviteCallback(cq: any) {
+  const answer = (text: string, alert = false) => tgApi("answerCallbackQuery", { callback_query_id: cq.id, text, show_alert: alert });
+  const [, how, id] = String(cq.data || "").split(":");
+  const { data: prof } = await admin.from("profiles").select("id").eq("tg_id", cq.from?.id).maybeSingle();
+  const { data: inv } = await admin.from("world_invites").select("*").eq("id", id).maybeSingle();
+  if (!prof || !inv || inv.to_id !== prof.id) return answer("Это приглашение не тебе", true);
+  const status = how === "ok" ? "accepted" : "declined";
+  const { data: upd } = await admin.from("world_invites").update({ status, answered_at: new Date().toISOString() }).eq("id", id).select("*").maybeSingle();
+  await answer(status === "accepted" ? "Отлично, он узнает ✅" : "Ок, передам ❌");
+  if (cq.message) await tgApi("editMessageReplyMarkup", { chat_id: cq.message.chat.id, message_id: cq.message.message_id,
+    reply_markup: { inline_keyboard: [[{ text: status === "accepted" ? "✅ Ты идёшь" : "❌ Ты отказался", callback_data: "noop" }], [{ text: "💬 Договориться в приложении", web_app: { url: APP + "?v=invite&i=" + id } }]] } });
+  if (upd) await inviteNotifyFrom(upd);
 }
 
 // a tomato that didn't land on a screen (app closed): the bot tells the target
@@ -579,6 +625,7 @@ async function hook(req: Request) {
   if (upd.callback_query?.data === "noop") { await tgApi("answerCallbackQuery", { callback_query_id: upd.callback_query.id }); return new Response("ok"); }
   if (upd.callback_query?.data?.startsWith("j:")) { await joinFromButton(upd.callback_query); return new Response("ok"); }
   if (upd.callback_query?.data?.startsWith("p:")) { await plusFromButton(upd.callback_query); return new Response("ok"); }
+  if (upd.callback_query?.data?.startsWith("wi:")) { await inviteCallback(upd.callback_query); return new Response("ok"); }
   const msg = upd.message;
   if (msg?.chat?.type === "private") {
     await tgApi("sendMessage", {
@@ -604,6 +651,7 @@ Deno.serve(async (req) => {
   if (body.action === "wallet_notify") return walletNotify(req, body);
   if (body.action === "tomato_notify") return tomatoNotify(req, body);
   if (body.action === "world_invite") return worldInvite(req, body);
+  if (body.action === "invite_answered") return inviteAnswered(req, body);
   if (body.action === "poll") return pollCreate(req, body);
   if (body.action === "poll_close") return pollClose(req, body);
   return json({ error: "unknown action" }, 400);

@@ -2051,6 +2051,29 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .cb.lvl { background: var(--navy-ink); color: #fff; } .cb.lvl b { color: #FFC83D; font-weight: 900; }
 .crew-rank { font: 700 13px/1 var(--f-code); color: var(--muted); margin-left: auto; padding-right: 2px; }
 
+/* invitations (06.11) */
+.inv-card { display: grid; gap: 2px; margin-bottom: 12px; padding: 12px 6px 6px; border-radius: 22px; background: #fff; box-shadow: 0 0 0 2px #FFC83D, var(--sh); }
+.inv-card .eyebrow { padding: 0 10px 4px; }
+.inv-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border-radius: 16px; text-align: left; color: #071B4D; }
+.inv-row:active { background: #F4F6FA; }
+.inv-row .ava, .inv-row .prem { width: 40px; height: 40px; flex: none; } .inv-row .prem .ava { width: 100%; height: 100%; } .inv-row .prem-ic { display: none; }
+.inv-row span { display: grid; gap: 2px; flex: 1; min-width: 0; } .inv-row b { font: 800 14.5px/1.15 var(--f-body); } .inv-row small { font-weight: 700; font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.inv-row em { font-style: normal; flex: none; padding: 7px 12px; border-radius: 99px; background: #0033FF; color: #fff; font: 800 12.5px/1 var(--f-body); }
+.inv-row.out.accepted b { color: #137A3E; } .inv-row.out.declined b { color: #C0162A; }
+.inv-sheet { gap: 14px; }
+.inv-h { display: flex; align-items: center; gap: 14px; padding-right: 36px; } .inv-h .ava, .inv-h .prem { width: 64px; height: 64px; flex: none; } .inv-h .prem .ava { width: 100%; height: 100%; }
+.inv-h span { display: grid; gap: 3px; } .inv-h b { font: 900 19px/1.15 var(--f-body); color: #071B4D; } .inv-h small { font-weight: 800; font-size: 15px; color: #0033FF; }
+.inv-reply { padding: 10px 14px; border-radius: 16px; background: #F1F3F8; font-weight: 700; color: #071B4D; }
+.inv-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .inv-acts .pill { width: 100%; } .inv-acts .pill:first-child { grid-column: span 2; }
+.pill.green { background: #16A34A; color: #fff; } .pill.red-t { color: #C0162A; }
+.inv-pop { position: fixed; left: 50%; top: calc(10px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 2147482000; display: flex; align-items: center; gap: 10px; width: min(calc(100% - 20px), 440px); padding: 10px 12px; border-radius: 20px; background: #071B4D; color: #fff; text-align: left;
+  box-shadow: 0 18px 36px -12px rgba(7,27,77,.7); animation: invIn .35s cubic-bezier(.2,1.3,.4,1); transition: opacity .5s, transform .5s; }
+.inv-pop.out { opacity: 0; transform: translate(-50%, -20px); }
+@keyframes invIn { from { opacity: 0; transform: translate(-50%, -30px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.inv-pop .ava, .inv-pop .prem { width: 42px; height: 42px; flex: none; } .inv-pop .prem .ava { width: 100%; height: 100%; } .inv-pop .prem-ic { display: none; }
+.inv-pop span { display: grid; gap: 2px; flex: 1; min-width: 0; } .inv-pop b { font: 800 14.5px/1.15 var(--f-body); } .inv-pop small { font-weight: 700; font-size: 12.5px; opacity: .8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.inv-pop em { font-style: normal; flex: none; padding: 7px 12px; border-radius: 99px; background: #FFC83D; color: #071B4D; font: 800 12.5px/1 var(--f-body); }
+
 /* clusters (06.11) */
 .w-clu-el { cursor: pointer; }
 .w-clu { display: flex; align-items: center; gap: 8px; padding: 5px 12px 5px 5px; border-radius: 99px; background: #071B4D; color: #fff; box-shadow: 0 0 0 3px #fff, 0 10px 20px -8px rgba(7,27,77,.6); transform: scale(max(var(--pz, 1), .82)); white-space: nowrap; }
@@ -2504,6 +2527,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       <p class="hub-tag">Дом, вдали от дома</p>
     </div>
     <div id="hubHello"></div>
+    <div id="hubInv"></div>
     <div class="ticket week"><div class="ticket-in">
       <div class="week-h"><div class="eyebrow">Неделя на даче</div><h2 class="h2" id="weekTitle">Ближайшие 7 дней</h2></div>
       <div class="week-days" id="weekDays" role="tablist" aria-label="Дни недели"></div>
@@ -2953,7 +2977,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106114639"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106115312"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -5144,7 +5168,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     $("goPolls").hidden = true;
     drawGameOn();
     $("hubHello").innerHTML = me ? "" : loginPrompt();
-    drawCrewBtn(); drawWeek(); drawHubGames(); drawBalPill(); drawHubOnline();
+    drawCrewBtn(); drawWeek(); drawHubGames(); drawBalPill(); drawHubOnline(); startInvites().then(() => drawHubInvites());
     $("hubPrem").hidden = !me || isPremium(me);
     if (!me) return;
     const need = [];
@@ -6837,7 +6861,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       // people get bigger as you zoom in, smaller far away
       const zoomStyle = () => { const z = W.map.getZoom(), box = $("wMap"); if (box) box.style.setProperty("--pz", Math.max(.5, Math.min(1.15, .5 + (z - 10) * .14)).toFixed(3)); };
       W.map.on("zoom", zoomStyle); zoomStyle();
-      W.map.on("zoomend", () => applyClusters()); W.map.on("moveend", () => applyClusters());
+
     }
     const shown = W.pres.filter((x) => x.visible && x.lat != null), ids = new Set(shown.map((x) => x.user_id));
     $("wOnline").textContent = shown.length;
@@ -6861,12 +6885,12 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const applyClusters = () => {
     if (!W.map) return;
     W.clusters?.forEach((c) => c.remove()); W.clusters = [];
-    const R = 54, pts = [];
-    W.markers.forEach((m, uid) => { const ll = m.getLngLat(), p0 = W.map.project(ll); pts.push({ uid, m, ll, x: p0.x, y: p0.y }); });
+    const SAME_SPOT = 20, pts = [];   // metres: one building / one table
+    W.markers.forEach((m, uid) => { const ll = m.getLngLat(); pts.push({ uid, m, ll }); });
     const used = new Set();
     pts.sort((a0, b0) => a0.uid.localeCompare(b0.uid)).forEach((p0) => {
       if (used.has(p0.uid)) return;
-      const grp = pts.filter((q) => !used.has(q.uid) && Math.hypot(q.x - p0.x, q.y - p0.y) < R);
+      const grp = pts.filter((q) => !used.has(q.uid) && geoM(q.ll, p0.ll) <= SAME_SPOT);
       if (grp.length < 2) { p0.m.getElement().style.display = ""; return; }
       grp.forEach((q) => { used.add(q.uid); q.m.getElement().style.display = "none"; });
       const lng = grp.reduce((t, q) => t + q.ll.lng, 0) / grp.length, lat = grp.reduce((t, q) => t + q.ll.lat, 0) / grp.length;
@@ -6879,10 +6903,6 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   };
   const openCluster = (uids) => {
     const list = uids.map((u) => W.pres.find((x) => x.user_id === u)).filter(Boolean);
-    const lats = list.map((x) => x.lat), lngs = list.map((x) => x.lng);
-    const span = geoDist({ lat: Math.min(...lats), lng: Math.min(...lngs) }, { lat: Math.max(...lats), lng: Math.max(...lngs) });
-    // spread out a little — zoom in; really one spot — show who is there
-    if (span > 25 && W.map.getZoom() < 18) return W.map.fitBounds([[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]], { padding: 90, maxZoom: 18.5, duration: 800 });
     const v = document.createElement("div"); v.className = "veil bank-veil";
     v.innerHTML = `<div class="bank pick-sheet" role="dialog" aria-modal="true"><div class="ps-h"><div class="eyebrow">Скопление дачников</div><h2 class="h2">${uids.length} ${plural(uids.length, "дачник", "дачника", "дачников")} в одном месте</h2></div>
       <div class="ps-list">${list.map((x) => { const pp = personOf(x.user_id); return `<button class="ps-row" type="button" data-cu="${x.user_id}">${avaP({ ...pp, id: x.user_id })}<span class="nm"><b>${esc(pp.nick)}${x.user_id === me.id ? " · ты" : ""}</b><small>${x.status ? `${esc(x.emoji || "")} ${esc(x.status)}` : `уровень ${wLevel(lvlXP(x.user_id)).lvl}`}</small></span></button>`; }).join("")}</div>
@@ -6996,9 +7016,10 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const worldInvite = (to) => {
     const ask = (uid) => choose({ eyebrow: "DACHA WORLD", title: `Куда позвать ${personOf(uid).nick}?`, text: "Бот сразу напишет ему в Telegram.",
       options: W_INVITE.map(([e2, l]) => ({ label: `${e2} ${l}`, run: async () => {
-        const { data, error } = await sb.functions.invoke("tg", { body: { action: "world_invite", to: uid, what: l } });
-        if (error || !data?.ok) return toast("Не получилось отправить: " + (data?.error || error?.message || ""));
-        haptic("card"); toast(`Позвал ${personOf(uid).nick} ${l}`);
+        const { data: iid, error: e1 } = await sb.rpc("invite_send", { to_: uid, what_: `${e2} ${l}` });
+        if (e1) return toast(/too many/.test(e1.message) ? "Слишком много приглашений — подожди немного" : "Не получилось: " + humanErr(e1));
+        sb.functions.invoke("tg", { body: { action: "world_invite", to: uid, what: l, invite: iid } }).catch(() => {});
+        haptic("card"); toast(`Позвал ${personOf(uid).nick} ${l}. Ответ придёт сюда`);
       } })) });
     if (to) return ask(to);
     pickPerson({ title: "Кого позвать?", exclude: [me.id], onPick: ask });
@@ -7322,6 +7343,80 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     b.setAttribute("aria-checked", on); b.querySelector(".switch").classList.toggle("on", on); b.querySelector("small").textContent = on ? "открыт" : "закрыт";
     haptic("tap"); toast(on ? "DACHA WORLD открыт" : "DACHA WORLD закрыт");
   }, true);
+
+
+  /* =================== invitations inside the app: a notification with «иду / договориться / не могу» =================== */
+  const INV = { list: [], chan: null, shown: new Set() };
+  const invWhat = (w) => String(w || "").replace(/^(\S+)\s/, "$1 ");
+  const loadInvites = async () => {
+    if (!sb || !me) return;
+    const since = new Date(Date.now() - 2 * 864e5).toISOString();
+    const { data } = await sb.from("world_invites").select("*").or(`to_id.eq.${me.id},from_id.eq.${me.id}`).gte("created_at", since).order("created_at", { ascending: false }).limit(30);
+    INV.list = data || [];
+  };
+  const drawHubInvites = () => {
+    const box = $("hubInv"); if (!box || !me) return;
+    const inc = INV.list.filter((x) => x.to_id === me.id && (x.status === "pending" || x.status === "talk"));
+    const ans = INV.list.filter((x) => x.from_id === me.id && x.status !== "pending" && x.answered_at && Date.now() - new Date(x.answered_at).getTime() < 6 * 3600e3);
+    if (!inc.length && !ans.length) { box.innerHTML = ""; return; }
+    box.innerHTML = `<div class="inv-card"><div class="eyebrow">Приглашения</div>
+      ${inc.map((x) => { const pp = personOf(x.from_id); return `<button class="inv-row in" type="button" data-inv="${x.id}">${avaP({ ...pp, id: x.from_id })}<span><b>${esc(pp.nick)} зовёт тебя</b><small>${esc(invWhat(x.what))}${x.status === "talk" ? " · ты ответил" : ""}</small></span><em>ответить</em></button>`; }).join("")}
+      ${ans.map((x) => { const pp = personOf(x.to_id); return `<button class="inv-row out ${x.status}" type="button" data-inv="${x.id}">${avaP({ ...pp, id: x.to_id })}<span><b>${esc(pp.nick)} ${x.status === "accepted" ? "придёт ✅" : x.status === "declined" ? "не сможет" : "ответил 💬"}</b><small>${esc(invWhat(x.what))}${x.reply ? ` · «${esc(x.reply)}»` : ""}</small></span></button>`; }).join("")}
+    </div>`;
+  };
+  const openInvite = (id) => {
+    const x = INV.list.find((y) => y.id === id); if (!x) return;
+    const mine = x.from_id === me.id, other = mine ? x.to_id : x.from_id, pp = personOf(other);
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    const draw = (talk) => {
+      v.innerHTML = `<div class="bank inv-sheet" role="dialog" aria-modal="true">
+        <div class="inv-h">${avaP({ ...pp, id: other }, "lg")}<span><div class="eyebrow">${mine ? "Твоё приглашение" : "Тебя зовут"}</div><b>${mine ? `Ты позвал ${esc(pp.nick)}` : `${esc(pp.nick)} зовёт тебя`}</b><small>${esc(invWhat(x.what))}</small></span></div>
+        ${x.reply ? `<div class="inv-reply">💬 «${esc(x.reply)}»</div>` : ""}
+        ${mine ? `<p class="lead" style="margin:0">${x.status === "pending" ? "Ждём ответа…" : x.status === "accepted" ? "Придёт ✅" : x.status === "declined" ? "Не сможет ❌" : "Хочет договориться"}</p>`
+          : talk ? `<textarea class="field" data-invmsg maxlength="200" rows="3" placeholder="Например: давай через час, я у Ката"></textarea><div class="inv-acts"><button class="pill" type="button" data-invsend>отправить</button><button class="pill ghost" type="button" data-invback>назад</button></div>`
+          : `<div class="inv-acts"><button class="pill green" type="button" data-inva="accepted">✅ Иду</button><button class="pill ghost" type="button" data-invtalk>💬 Договориться</button><button class="pill ghost red-t" type="button" data-inva="declined">Не могу</button></div>`}
+        ${pp.tg_username ? `<a class="pill sm ghost" href="https://t.me/${esc(pp.tg_username)}" target="_blank" rel="noopener" data-tglink style="justify-self:start">написать в Telegram</a>` : ""}
+        <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
+    };
+    const answer = async (st, msg) => {
+      const { error } = await sb.rpc("invite_answer", { i: x.id, st, msg: msg || null });
+      if (error) return toast("Не получилось: " + humanErr(error));
+      sb.functions.invoke("tg", { body: { action: "invite_answered", invite: x.id } }).catch(() => {});
+      haptic("card"); toast(st === "accepted" ? "Отлично! Он узнает, что ты придёшь" : st === "declined" ? "Ок, передадим" : "Ответ отправлен");
+      v.remove(); await loadInvites(); drawHubInvites();
+    };
+    draw(false);
+    v.addEventListener("click", (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      const a = e.target.closest("[data-inva]"); if (a) return answer(a.dataset.inva);
+      if (e.target.closest("[data-invtalk]")) { draw(true); v.querySelector("[data-invmsg]")?.focus(); return; }
+      if (e.target.closest("[data-invback]")) return draw(false);
+      if (e.target.closest("[data-invsend]")) { const t = v.querySelector("[data-invmsg]").value.trim(); if (!t) return toast("Напиши пару слов"); return answer("talk", t); }
+    });
+    document.body.append(v);
+  };
+  // a fresh invitation pops up as a banner wherever you are
+  const invBanner = (x) => {
+    if (INV.shown.has(x.id + x.status)) return; INV.shown.add(x.id + x.status);
+    const incoming = x.to_id === me.id, pp = personOf(incoming ? x.from_id : x.to_id);
+    document.querySelector(".inv-pop")?.remove();
+    const b = document.createElement("button"); b.type = "button"; b.className = "inv-pop";
+    b.innerHTML = `${avaP({ ...pp, id: pp.id })}<span><b>${incoming ? `${esc(pp.nick)} зовёт тебя` : `${esc(pp.nick)} ${x.status === "accepted" ? "придёт ✅" : x.status === "declined" ? "не сможет" : "ответил 💬"}`}</b><small>${esc(invWhat(x.what))}${!incoming && x.reply ? ` · «${esc(x.reply)}»` : ""}</small></span><em>${incoming ? "ответить" : "›"}</em>`;
+    b.onclick = () => { b.remove(); openInvite(x.id); };
+    document.body.append(b);
+    try { navigator.vibrate?.([40, 60, 40]); } catch {} haptic("card");
+    setTimeout(() => b.classList.add("out"), 9000); setTimeout(() => b.remove(), 9600);
+  };
+  const startInvites = async () => {
+    if (!sb || !me || INV.chan) return;
+    await loadInvites(); drawHubInvites();
+    const upsert = (row) => { const i = INV.list.findIndex((y) => y.id === row.id); if (i >= 0) INV.list[i] = row; else INV.list.unshift(row); drawHubInvites(); };
+    INV.chan = sb.channel("inv-" + me.id)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "world_invites", filter: `to_id=eq.${me.id}` }, (p0) => { upsert(p0.new); invBanner(p0.new); })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "world_invites", filter: `from_id=eq.${me.id}` }, (p0) => { upsert(p0.new); if (p0.new.status !== "pending") invBanner(p0.new); })
+      .subscribe();
+  };
+  document.addEventListener("click", (e) => { const r = e.target.closest("#hubInv [data-inv]"); if (r) openInvite(r.dataset.inv); });
 
   /* =================== tomatoes: throw one at a friend's screen =================== */
   let myTomatoes = null;
@@ -8176,6 +8271,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (SPORTS[deep]) { startView = "sport"; sportId = deep; }
     if (deep === "game") { const qg = new URLSearchParams(location.search).get("g"); if (qg) { startView = "game"; gameId = qg; } }
     if (deep === "world" || deep === "map") { startView = "crew"; crewTab = "map"; }
+    const deepInv = deep === "invite" ? new URLSearchParams(location.search).get("i") : null;
+    if (deepInv) setTimeout(async () => { await startInvites(); if (!INV.list.some((y) => y.id === deepInv)) await loadInvites(); openInvite(deepInv); }, 2500);
     if (inTG) {
       try { tg?.ready(); tg?.expand(); const hw = document.documentElement.classList.contains("hw");
         tg?.setHeaderColor?.(hw ? "#FFA24C" : "#FFF1C9"); tg?.setBackgroundColor?.(hw ? "#F07A1A" : "#F4F5F9"); tg?.setBottomBarColor?.(hw ? "#3B1150" : "#F4F5F9"); tg?.disableVerticalSwipes?.(); } catch {}
