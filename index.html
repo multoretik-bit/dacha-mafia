@@ -1983,6 +1983,13 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .qr-cap { font-weight: 900; color: var(--navy-ink); }
 .qr-one .t-body { gap: 12px; }
 
+/* who threw the tomato */
+.tm-who { position: absolute; left: 50%; top: calc(18px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); display: flex; align-items: center; gap: 10px; max-width: calc(100% - 32px); box-sizing: border-box; padding: 8px 16px 8px 8px; border-radius: 99px; background: #fff; box-shadow: 0 14px 30px -12px rgba(0,0,0,.55); opacity: 0; animation: tmWho .35s cubic-bezier(.2,1.4,.4,1) .75s both; z-index: 2; }
+.tm-who .ava { width: 44px; height: 44px; font-size: 19px; flex: none; }
+.tm-who span { display: grid; gap: 1px; min-width: 0; }
+.tm-who b { font: 900 16px/1.15 var(--f-body); color: var(--navy-ink); overflow-wrap: anywhere; }
+.tm-who small { font-weight: 800; font-size: 12.5px; color: #C8170F; }
+@keyframes tmWho { from { opacity: 0; transform: translate(-50%, -16px) scale(.9); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
 /* scan cards (06.11 v2) */
 .qr-card { background: #fff; box-shadow: 0 0 0 1px var(--hair), 0 12px 26px -18px rgba(15,23,42,.35); border-radius: 22px; padding: 16px 14px 14px; gap: 12px; }
 .qr-card img { width: min(64vw, 240px); padding: 12px; border-radius: 18px; background: #fff; box-shadow: 0 0 0 1px var(--hair); }
@@ -2627,7 +2634,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106073638"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106074110"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4631,20 +4638,23 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         else toast("Пришла твоя карта", { label: "открыть", run: () => go("card") });
       })
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "promos" }, (p) => onPromo(p.new))
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "tomato_throws", filter: `to_id=eq.${me.id}` }, (p) => { if (splatTomato(p.new.from_id)) sb.rpc("tomato_seen", { ids: [p.new.id] }).then(() => {}); })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "tomato_throws", filter: `to_id=eq.${me.id}` }, () => setTimeout(checkTomatoes, 300))
       .subscribe();
     setTimeout(checkTomatoes, 2500);
   };
-  // tomatoes thrown while I was away: the screen is already splattered when I come back
+  // tomatoes thrown while I was away wait for me; one counts as seen only after I wipe it off
   let tmChecking = false;
+  const appInFront = () => !document.hidden && tg?.isActive !== false;
+  try { tg?.onEvent?.("activated", () => setTimeout(checkTomatoes, 700)); } catch {}
   const checkTomatoes = async () => {
-    if (!sb || !me || tmChecking || document.hidden) return;
+    if (!sb || !me || tmChecking || !appInFront() || document.querySelector(".tomato-fx:not(.out)")) return;
     tmChecking = true;
     try {
-      const { data } = await sb.from("tomato_throws").select("id, from_id, created_at, from:profiles!tomato_throws_from_id_fkey(nick)").eq("to_id", me.id).is("seen_at", null).order("created_at");
-      if (!data?.length || document.hidden) return;
-      const last = data[data.length - 1];
-      if (splatTomato(last.from_id, data.length - 1, last.from?.nick)) await sb.rpc("tomato_seen", { ids: data.map((x) => x.id) });
+      const { data } = await sb.from("tomato_throws").select("id, from_id, created_at, from:profiles!tomato_throws_from_id_fkey(nick, tg_photo)").eq("to_id", me.id).is("seen_at", null).order("created_at");
+      if (!data?.length || !appInFront()) return;
+      const last = data[data.length - 1], names = [...new Set(data.map((x) => x.from?.nick || personOf(x.from_id).nick))];
+      splatTomato(last.from_id, data.length, { nick: last.from?.nick, photo: last.from?.tg_photo, names },
+        () => sb.rpc("tomato_seen", { ids: data.map((x) => x.id) }).then(() => {}));
     } finally { tmChecking = false; }
   };
   document.addEventListener("visibilitychange", () => { if (me && document.visibilityState === "visible") setTimeout(checkTomatoes, 600); });
@@ -6331,12 +6341,14 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     return d + "Z";
   };
   // the splat is painted on a canvas: it drips, stays until wiped off with a finger (or 30 s pass)
-  const splatTomato = (fromId, more = 0, nick = "") => {
+  const splatTomato = (fromId, count = 1, who = {}, onSeen = null) => {
     if (document.hidden) return false;
     document.querySelector(".tomato-fx")?.remove();
-    const from = nick ? { nick } : personOf(fromId);
+    const p0 = personOf(fromId), nick = who.nick || p0.nick || "дачник", others = (who.names || []).filter((n) => n !== nick);
     const fx = document.createElement("div"); fx.className = "tomato-fx";
-    fx.innerHTML = `<div class="tm-fly">🍅</div><canvas class="tm-cv"></canvas><div class="tm-from">🍅 от ${esc(from.nick || "дачника")}${more ? ` и ещё ${more}` : ""} · сотри пальцем</div>`;
+    fx.innerHTML = `<div class="tm-fly">🍅</div><canvas class="tm-cv"></canvas>
+      <div class="tm-who">${ava(nick, fromId, "", who.photo || p0.tg_photo)}<span><b>${esc(nick)}${others.length ? ` и ${esc(others.slice(0, 2).join(", "))}${others.length > 2 ? "…" : ""}` : ""}</b><small>${count > 1 ? `${count} ${plural(count, "помидор", "помидора", "помидоров")} в тебя` : "бросил в тебя помидор"}</small></span></div>
+      <div class="tm-from">сотри пальцем 👆</div>`;
     document.body.append(fx);
     const cv = fx.querySelector("canvas"), dpr = Math.min(2, window.devicePixelRatio || 1);
     const W = innerWidth, H = innerHeight;
@@ -6371,19 +6383,20 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     // wipe with a finger
     let last = null, moves = 0, gone = false, ready = false;
     const left = () => { const img = ctx.getImageData(0, 0, cv.width, cv.height).data; let n = 0, all = 0; for (let i = 3; i < img.length; i += 4 * 97) { all++; if (img[i] > 40) n++; } return n / all; };
-    const finish = () => { if (gone) return; gone = true; cancelAnimationFrame(raf); fx.classList.add("out"); setTimeout(() => fx.remove(), 900); };
+    const finish = (wiped) => { if (gone) return; gone = true; cancelAnimationFrame(raf); fx.classList.add("out"); setTimeout(() => fx.remove(), 900); if (wiped === true) onSeen?.(); };
     const rub = (x, y) => {
       if (!ready) return;
       ctx.globalCompositeOperation = "destination-out"; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = 64;
       ctx.beginPath(); ctx.moveTo(...(last || [x, y])); ctx.lineTo(x, y); ctx.stroke();
       last = [x, y];
-      if (++moves % 12 === 0 && left() < 0.12) finish();
+      if (++moves % 12 === 0 && left() < 0.12) finish(true);
     };
-    cv.addEventListener("pointerdown", (e) => { e.preventDefault(); last = null; rub(e.clientX, e.clientY); fx.querySelector(".tm-from").classList.add("hide"); });
+    cv.addEventListener("pointerdown", (e) => { e.preventDefault(); last = null; touched = true; rub(e.clientX, e.clientY); fx.querySelector(".tm-from").classList.add("hide"); });
     cv.addEventListener("pointermove", (e) => { if (e.buttons || e.pointerType === "touch") rub(e.clientX, e.clientY); });
-    cv.addEventListener("pointerup", () => { last = null; if (ready && left() < 0.12) finish(); });
+    cv.addEventListener("pointerup", () => { last = null; if (ready && left() < 0.12) finish(true); });
     cv.addEventListener("pointercancel", () => { last = null; });
-    setTimeout(finish, 30000);
+    let touched = false;
+    setTimeout(() => finish(touched), 30000);   // nobody touched it — it waits for the next visit
     return true;
   };
   const openProfMenu = () => {
