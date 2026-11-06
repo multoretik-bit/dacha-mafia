@@ -1871,6 +1871,43 @@ html:has(.theme-panel) .app { padding-bottom: 46vh; }
 .tseat.dragging { z-index: 5; transform: translate(-50%, -50%) scale(1.15); }
 .tseat.dragging .seat-ring { box-shadow: 0 14px 24px -8px rgba(0,0,0,.6); }
 .tbl-box.sorting .tseat:not(.dragging) { opacity: .7; }
+/* notes: arrows (06.11) */
+.tbl-arr { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 1; }
+.tseat { z-index: 2; }
+.tbl-felt > b, .tbl-felt > small, .tbl-felt > .tbl-tally { position: relative; z-index: 3; text-shadow: 0 0 6px var(--card, #fff), 0 0 3px var(--card, #fff); }
+.tbl-arr .arr { pointer-events: auto; cursor: pointer; }
+.tbl-arr path { fill: none; stroke-linecap: round; }
+.tbl-arr .arr-line { stroke-width: .95; }
+.tbl-arr .arr-halo { stroke: #fff; stroke-width: 2.4; fill: #fff; stroke-linejoin: round; opacity: .9; }
+.tbl-arr .arr-hit { stroke: transparent; stroke-width: 7; }
+.tbl-box.arrowing .tseat .seat-ring { animation: arrWig 1.6s ease-in-out infinite; }
+@keyframes arrWig { 0%, 100% { transform: none; } 50% { transform: scale(1.04); } }
+.tseat.arr-src .seat-ring { animation: none !important; box-shadow: 0 0 0 4px #FFC83D, 0 8px 18px -6px rgba(15,23,42,.5); transform: scale(1.08); }
+.arr-bar { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.arr-tg { display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 16px; border-radius: 99px; background: var(--card, #fff); color: var(--navy-ink); font: 800 13px/1 var(--f-body); box-shadow: 0 0 0 1px var(--hair), 0 4px 10px -6px rgba(15,23,42,.3); }
+.arr-bar.on .arr-tg { background: var(--navy-ink); color: #fff; box-shadow: none; }
+.arr-clear { height: 38px; padding: 0 12px; border-radius: 99px; color: var(--muted); font: 800 12px/1 var(--f-body); }
+.arr-cols { display: inline-flex; gap: 4px; padding: 3px; border-radius: 99px; background: var(--soft, #EEF0F5); }
+.arr-cols button { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 99px; font: 800 12.5px/1 var(--f-body); color: var(--navy-ink); }
+.arr-cols button i { width: 14px; height: 4px; border-radius: 2px; background: #111; } .arr-cols .c-red i { background: #E3263A; }
+.arr-cols button[aria-pressed="true"] { background: var(--card, #fff); box-shadow: 0 2px 6px -2px rgba(15,23,42,.3); }
+.arr-cols.big { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; }
+.arr-cols.big button { height: 44px; justify-content: center; font-size: 14px; }
+.arr-hint { margin: 8px auto 0; max-width: 34ch; text-align: center; font-weight: 700; font-size: 12.5px; color: var(--muted); text-wrap: balance; }
+.arr-hint b { color: var(--navy-ink); }
+.arr-sheet { gap: 12px; }
+.as-h { display: flex; align-items: center; justify-content: center; gap: 14px; padding-top: 4px; }
+.as-h .ava, .as-h .prem { width: 52px; height: 52px; font-size: 24px; } .as-h .prem .ava { width: 100%; height: 100%; } .as-h .prem .cash, .as-h .prem-ic { display: none; }
+.as-to { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #111; color: #fff; transform: rotate(45deg); } .as-to.c-red { background: #E3263A; }
+.as-t { margin: 0; text-align: center; font-weight: 700; color: var(--navy-ink); }
+.ss-arr { display: grid; gap: 6px; }
+.ss-arr-h { display: flex; align-items: center; justify-content: space-between; } .ss-arr-h b { font-weight: 800; font-size: 13px; color: var(--muted); }
+.ss-arr-h button { padding: 6px 10px; border-radius: 99px; background: var(--soft, #EEF0F5); font: 800 12px/1 var(--f-body); color: var(--navy-ink); }
+.ss-ar { display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 12px; border-radius: 12px; background: var(--soft, #EEF0F5); font-weight: 800; font-size: 13.5px; color: var(--ink); }
+.ss-ar i { width: 16px; height: 4px; border-radius: 2px; background: #111; flex: none; } .ss-ar.c-red i { background: #E3263A; }
+.ss-ar span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ss-ar button { width: 30px; height: 30px; border-radius: 50%; color: var(--muted); font-size: 18px; }
+.ss-arr-e { color: var(--muted); font-weight: 700; font-size: 12px; }
 .seat-sheet2 { gap: 12px; }
 .ss-acts { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .ss-acts [data-close] { flex: 1; max-width: 220px; }
@@ -3080,7 +3117,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106123745"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106135004"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -8354,21 +8391,103 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   /* ---------- notes as a round table: avatars around, ring = your colour; tap = notes, hold & drag = reseat ---------- */
   const TRUST = [["gray", "Серый", "не знаю"], ["black", "Чёрный", "мафия"], ["red", "Красный", "верю"]];
   const shortName = (n) => { const t = String(n || "").trim(); return t.length > 9 ? t.slice(0, 8) + "…" : t; };
+  // arrows between players: who plays with / against whom (only in your notes)
+  const AR = { on: false, src: null, c: "black" };
+  const arrows = () => (S.notes.arrows ||= []);
+  const arrKey = (x) => x.a + ">" + x.b;
+  const addArrow = (a, b, c) => {
+    const L = arrows(), same = L.find((x) => x.a === a && x.b === b);
+    if (same) same.c = c; else L.push({ a, b, c });
+    save(); haptic("tap");
+  };
+  const delArrow = (k) => { S.notes.arrows = arrows().filter((x) => arrKey(x) !== k); save(); };
+  const drawArrows = () => {
+    const tbl = document.querySelector("#tableBox .tbl"), svg = tbl?.querySelector(".tbl-arr"); if (!svg) return;
+    const W = tbl.clientWidth || 360, sz = parseFloat(getComputedStyle(tbl).getPropertyValue("--sz")) || 50;
+    const pos = new Map(); tbl.querySelectorAll(".tseat").forEach((el) => {
+      const ring = el.querySelector(".seat-ring"); const r = ring.getBoundingClientRect(), t = tbl.getBoundingClientRect();
+      pos.set(el.dataset.pid, [((r.left + r.width / 2 - t.left) / t.width) * 100, ((r.top + r.height / 2 - t.top) / t.height) * 100]);
+    });
+    const rad = ((sz / 2 + 5) / W) * 100;
+    svg.innerHTML = arrows().map((x) => {
+      const A = pos.get(x.a), B = pos.get(x.b); if (!A || !B) return "";
+      const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
+      const bend = Math.min(10, L * 0.14), cx = (A[0] + B[0]) / 2 - uy * bend, cy = (A[1] + B[1]) / 2 + ux * bend;
+      // start/end on the rim of the avatars, along the curve
+      const sd = Math.hypot(cx - A[0], cy - A[1]) || 1, ed = Math.hypot(B[0] - cx, B[1] - cy) || 1;
+      const s0 = [A[0] + ((cx - A[0]) / sd) * rad, A[1] + ((cy - A[1]) / sd) * rad];
+      const tx = (B[0] - cx) / ed, ty = (B[1] - cy) / ed, e0 = [B[0] - tx * rad, B[1] - ty * rad];
+      const h = 4.2, w = 2.4, base = [e0[0] - tx * h, e0[1] - ty * h];
+      const d = `M${s0[0].toFixed(2)} ${s0[1].toFixed(2)} Q${cx.toFixed(2)} ${cy.toFixed(2)} ${base[0].toFixed(2)} ${base[1].toFixed(2)}`;
+      const head = `${e0[0].toFixed(2)},${e0[1].toFixed(2)} ${(base[0] - ty * w).toFixed(2)},${(base[1] + tx * w).toFixed(2)} ${(base[0] + ty * w).toFixed(2)},${(base[1] - tx * w).toFixed(2)}`;
+      const col = x.c === "red" ? "#E3263A" : "#111";
+      return `<g class="arr c-${x.c}" data-arr="${esc(arrKey(x))}">
+        <path d="${d}" class="arr-halo"/><polygon points="${head}" class="arr-halo"/>
+        <path d="${d}" stroke="${col}" class="arr-line"/><polygon points="${head}" fill="${col}"/>
+        <path d="${d}" class="arr-hit"/></g>`;
+    }).join("");
+  };
+  addEventListener("resize", () => { if (S?.view === "notes") drawArrows(); });
   const drawTable = () => {
     const box = $("tableBox"); if (!box) return;
     const ps = S.notes.players || [];
-    if (!ps.length) { box.innerHTML = ""; return; }
+    if (!ps.length) { box.innerHTML = ""; AR.on = false; AR.src = null; return; }
+    if (AR.src && !ps.some((p) => p.id === AR.src)) AR.src = null;
+    const nA = arrows().length, srcP = AR.src && ps.find((p) => p.id === AR.src);
     const n = ps.length, R = n > 14 ? 43 : 41, sz = n > 16 ? 38 : n > 12 ? 44 : n > 8 ? 50 : 56;
     const alive = ps.filter((p) => !p.out), cnt = (c) => alive.filter((p) => (p.c || "gray") === c).length;
     box.innerHTML = `<div class="tbl" style="--sz:${sz}px">
       <div class="tbl-felt"><b>${alive.length}</b><small>в игре из ${n}</small>
         <div class="tbl-tally"><span class="red">${cnt("red")}</span><span class="black">${cnt("black")}</span><span class="gray">${cnt("gray")}</span></div></div>
+      <svg class="tbl-arr" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
       ${ps.map((p, i) => { const a = ((-90 + (i * 360) / n) * Math.PI) / 180;
-        return `<button class="tseat c-${p.c || "gray"} ${p.out ? "out" : ""} ${p.self ? "self" : ""}" type="button" data-pid="${esc(p.id)}" data-i="${i}" style="left:${(50 + R * Math.cos(a)).toFixed(2)}%;top:${(50 + R * Math.sin(a)).toFixed(2)}%">
+        return `<button class="tseat c-${p.c || "gray"} ${p.out ? "out" : ""} ${p.self ? "self" : ""} ${AR.src === p.id ? "arr-src" : ""}" type="button" data-pid="${esc(p.id)}" data-i="${i}" style="left:${(50 + R * Math.cos(a)).toFixed(2)}%;top:${(50 + R * Math.sin(a)).toFixed(2)}%">
           <span class="seat-ring">${avaP({ nick: p.name, id: p.uid || p.name, tg_photo: p.photo })}</span><i class="seat-n">${esc(p.seat)}</i>${p.note ? `<em class="seat-note">✎</em>` : ""}
           <span class="seat-nm">${esc(shortName(p.name))}</span></button>`; }).join("")}
-    </div>`;
+    </div>
+    <div class="arr-bar ${AR.on ? "on" : ""}">
+      <button class="arr-tg" type="button" data-armode aria-pressed="${AR.on}"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19 19 5"/><path d="M9 5h10v10"/></svg><span>${AR.on ? "готово" : nA ? `стрелки · ${nA}` : "стрелки"}</span></button>
+      ${AR.on ? `<div class="arr-cols" role="group" aria-label="Цвет стрелки">${[["black", "чёрная"], ["red", "красная"]].map(([c, l]) => `<button type="button" class="c-${c}" data-arc="${c}" aria-pressed="${AR.c === c}"><i></i>${l}</button>`).join("")}</div>`
+        : nA ? `<button class="arr-clear" type="button" data-arclear>убрать все</button>` : ""}
+    </div>
+    ${AR.on ? `<p class="arr-hint">${srcP ? `От <b>${esc(shortName(srcP.name))}</b> — теперь нажми, на кого` : "Нажми, от кого стрелка, потом — на кого. Нажми на стрелку — цвет или удалить"}</p>` : ""}`;
+    box.classList.toggle("arrowing", AR.on);
+    const dh = $("dragHint"); if (dh) dh.style.display = AR.on ? "none" : "";
+    requestAnimationFrame(drawArrows);
   };
+  const pickArrow = (p) => {
+    if (!AR.src) { AR.src = p.id; haptic("tap"); return drawTable(); }
+    if (AR.src === p.id) { AR.src = null; return drawTable(); }
+    addArrow(AR.src, p.id, AR.c); AR.src = null; drawTable();
+  };
+  const openArrow = (k) => {
+    const x = arrows().find((y) => arrKey(y) === k); if (!x) return;
+    const A = pById(x.a), B = pById(x.b); if (!A || !B) return;
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    const draw = () => {
+      v.innerHTML = `<div class="bank arr-sheet" role="dialog" aria-modal="true" aria-label="Стрелка">
+        <div class="as-h">${avaP({ nick: A.name, id: A.uid || A.name, tg_photo: A.photo })}<i class="as-to c-${x.c}"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19 19 5"/><path d="M9 5h10v10"/></svg></i>${avaP({ nick: B.name, id: B.uid || B.name, tg_photo: B.photo })}</div>
+        <p class="as-t"><b>${esc(A.name)}</b> → <b>${esc(B.name)}</b></p>
+        <div class="arr-cols big">${[["black", "чёрная"], ["red", "красная"]].map(([c, l]) => `<button type="button" class="c-${c}" data-asc="${c}" aria-pressed="${x.c === c}"><i></i>${l}</button>`).join("")}</div>
+        <div class="ss-acts"><button class="pill sm ghost" type="button" data-aflip>⇄ развернуть</button><button class="pill sm red" type="button" data-adel>удалить</button></div>
+        <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
+    };
+    draw();
+    v.addEventListener("click", (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) { v.remove(); return; }
+      const c = e.target.closest("[data-asc]");
+      if (c) { x.c = c.dataset.asc; save(); haptic("tap"); drawTable(); v.remove(); return; }
+      if (e.target.closest("[data-aflip]")) { const k2 = x.b + ">" + x.a; S.notes.arrows = arrows().filter((y) => arrKey(y) !== k2); [x.a, x.b] = [x.b, x.a]; save(); drawTable(); v.remove(); return; }
+      if (e.target.closest("[data-adel]")) { delArrow(k); drawTable(); v.remove(); toast("Стрелка удалена"); }
+    });
+    document.body.append(v);
+  };
+  $("tableBox").addEventListener("click", (e) => {
+    if (e.target.closest("[data-armode]")) { AR.on = !AR.on; AR.src = null; haptic("tap"); return drawTable(); }
+    const c = e.target.closest("[data-arc]"); if (c) { AR.c = c.dataset.arc; return drawTable(); }
+    if (e.target.closest("[data-arclear]")) return choose({ eyebrow: "Заметки", title: "Убрать все стрелки?", text: "Цвета и записи у игроков останутся.", options: [{ label: "убрать", cls: "red", run: () => { S.notes.arrows = []; save(); drawTable(); } }] });
+    const g = e.target.closest("[data-arr]"); if (g) return openArrow(g.dataset.arr);
+  });
   const openSeat = (p) => {
     const v = document.createElement("div"); v.className = "veil bank-veil";
     const draw = () => {
@@ -8376,6 +8495,10 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         <div class="ss-h">${avaP({ nick: p.name, id: p.uid || p.name, tg_photo: p.photo })}<span><b>${esc(p.name)}${p.self ? " · ты" : ""}</b><small>место ${esc(p.seat)}${p.out ? " · выбыл" : ""}</small></span></div>
         <div class="ss-colors">${TRUST.map(([c, l, sub]) => `<button type="button" class="c-${c}" data-sc="${c}" aria-pressed="${(p.c || "gray") === c}"><i></i><b>${l}</b><small>${sub}</small></button>`).join("")}</div>
         <textarea class="field ss-note" placeholder="Что говорил, за кого голосовал…">${esc(p.note || "")}</textarea>
+        ${(() => { const L = arrows().filter((x) => x.a === p.id || x.b === p.id);
+          return `<div class="ss-arr"><div class="ss-arr-h"><b>Стрелки</b><button type="button" data-sarrow>+ от ${esc(shortName(p.name))}</button></div>
+            ${L.length ? L.map((x) => { const o = pById(x.a === p.id ? x.b : x.a); return `<div class="ss-ar c-${x.c}"><i></i><span>${x.a === p.id ? "→" : "←"} ${esc(o?.name || "?")}</span><button type="button" data-sdel="${esc(arrKey(x))}" aria-label="Удалить стрелку">×</button></div>`; }).join("")
+              : `<small class="ss-arr-e">Покажи, с кем он играет: стрелка от него к другому</small>`}</div>`; })()}
         <div class="ss-acts"><button class="pill" type="button" data-close>готово</button><button class="pill sm ${p.out ? "ghost" : "red"}" type="button" data-sout>${p.out ? "вернуть в игру" : "выбыл"}</button></div>
         <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
     };
@@ -8385,6 +8508,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       if (e.target === v || e.target.closest("[data-close]")) { v.remove(); renderNotes(false); return; }
       const c = e.target.closest("[data-sc]");
       if (c) { p.c = c.dataset.sc; save(); haptic("tap"); draw(); drawTable(); return; }
+      if (e.target.closest("[data-sarrow]")) { v.remove(); AR.on = true; AR.src = p.id; drawTable(); return; }
+      const sd = e.target.closest("[data-sdel]"); if (sd) { delArrow(sd.dataset.sdel); draw(); drawTable(); return; }
       if (e.target.closest("[data-sout]")) { p.out = !p.out; p.outAt = p.out ? Date.now() : 0; save(); if (p.out) toast(`${p.name} выбыл`); v.remove(); renderNotes(false); }
     });
     document.body.append(v);
@@ -8396,7 +8521,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     box.addEventListener("pointerdown", (e) => {
       const el = e.target.closest(".tseat"); if (!el) return;
       pend = { el, x: e.clientX, y: e.clientY, t: setTimeout(() => {
-        if (!pend) return;
+        if (!pend || AR.on) return;
         drag = { el, id: el.dataset.pid };
         el.classList.add("dragging"); box.classList.add("sorting");
         try { navigator.vibrate?.(15); } catch {} haptic("tap");
@@ -8417,9 +8542,10 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         let ang = (Math.atan2(e.clientY - cy, e.clientX - cx) * 180) / Math.PI + 90; if (ang < 0) ang += 360;
         const to = Math.round((ang / 360) * n) % n, from = ps.findIndex((q) => q.id === drag.id);
         if (from >= 0 && to !== from) { const [m] = ps.splice(from, 1); ps.splice(to, 0, m); save(); }
+        drag.el.style.left = drag.el.style.top = "";
         drag.el.classList.remove("dragging"); box.classList.remove("sorting"); drag = null; drawTable(); return;
       }
-      if (pend) { clearTimeout(pend.t); const p = pById(pend.el.dataset.pid); pend = null; if (p && e.type === "pointerup") openSeat(p); }
+      if (pend) { clearTimeout(pend.t); const p = pById(pend.el.dataset.pid); pend = null; if (p && e.type === "pointerup") AR.on ? pickArrow(p) : openSeat(p); }
     };
     box.addEventListener("pointerup", end);
     box.addEventListener("pointercancel", end);
