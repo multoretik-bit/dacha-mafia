@@ -2051,6 +2051,13 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .cb.lvl { background: var(--navy-ink); color: #fff; } .cb.lvl b { color: #FFC83D; font-weight: 900; }
 .crew-rank { font: 700 13px/1 var(--f-code); color: var(--muted); margin-left: auto; padding-right: 2px; }
 
+/* MapLibre map (06.11) */
+.w-pin-el { width: 120px; height: 100px; pointer-events: none; }
+.w-pin-el .w-pin2 > * { pointer-events: auto; cursor: pointer; }
+.w-mapwrap .maplibregl-ctrl-bottom-right { bottom: 8px; right: 6px; }
+.w-mapwrap .maplibregl-ctrl-group { border-radius: 14px; overflow: hidden; box-shadow: 0 6px 16px -8px rgba(0,0,0,.4); }
+.w-mapwrap .maplibregl-ctrl-attrib { font-size: 9px; }
+.w-locate { z-index: 5; } .w-mapbar { z-index: 5; }
 /* dachas (06.11) */
 .w-dacha.cur { box-shadow: 0 0 0 2.5px #071B4D, var(--sh); } .wd-cur { font-weight: 800; font-size: 12px; padding: 5px 10px; border-radius: 99px; background: #071B4D; color: #FFC83D; }
 .w-dacha.soon .wd-soon { background: none; font-size: 18px; padding: 0; }
@@ -2087,8 +2094,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .wh-sts .wh-call { width: auto; padding: 0 14px; border-radius: 99px; background: #0033FF; color: #fff; font: 800 13px/1 var(--f-body); margin-left: auto; }
 .wh-now { font-weight: 800; font-size: 12.5px; color: #071B4D; margin-top: -2px; }
 /* game-style map */
-.w-map, #wMap.leaflet-container { background: radial-gradient(120% 90% at 50% 40%, #6CB6F5 0%, #3E8EE0 100%); }
-.w-map::after { content: ""; position: absolute; inset: 0; z-index: 399; pointer-events: none; opacity: .35;
+.w-map { background: #DDEBF7; }
+.w-map-old-waves { content: ""; position: absolute; inset: 0; z-index: 399; pointer-events: none; opacity: .35;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='30'%3E%3Cpath d='M0 15 q7.5 -8 15 0 t15 0 t15 0 t15 0' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-size: 60px 30px; }
 .w-map:not(.near) .w-tiles { opacity: 0 !important; } .w-map.near .w-tiles { opacity: 1 !important; } .w-tiles { transition: opacity .35s; }
 .w-map:not(.near) .w-sea { fill-opacity: 0 !important; } .w-map.near .w-land { fill-opacity: .14; } .w-map.near::after { opacity: 0; }
@@ -2903,7 +2910,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106103059"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106103751"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -6692,8 +6699,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (!people.length) await loadPeople();
   };
   const loadScript = (src, test) => test() ? Promise.resolve() : new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = src; sc.onload = res; sc.onerror = rej; document.head.append(sc); });
-  const loadLeaflet = () => { if (!document.querySelector("link[data-leaflet]")) { const l = document.createElement("link"); l.rel = "stylesheet"; l.dataset.leaflet = "1"; l.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"; document.head.append(l); }
-    return loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", () => !!window.L); };
+  const loadLeaflet = () => { if (!document.querySelector("link[data-mlgl]")) { const l = document.createElement("link"); l.rel = "stylesheet"; l.dataset.mlgl = "1"; l.href = "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"; document.head.append(l); }
+    return loadScript("https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js", () => !!window.maplibregl); };
   const W_DACHAS = [["phuket", "Dacha Phuket", "🇹🇭", "Пхукет, Таиланд", true], ["bali", "Dacha Bali", "🇮🇩", "Бали, Индонезия", false], ["moscow", "Dacha Moscow", "🇷🇺", "Москва", false], ["spb", "Dacha Saint Petersburg", "🇷🇺", "Санкт-Петербург", false]];
   // the dacha is chosen once and remembered; it changes only in the profile settings
   let worldDachaLoaded = false;
@@ -6747,62 +6754,73 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   let worldT = 0;
   const worldAgain = () => { clearTimeout(worldT); worldT = setTimeout(async () => { if (S.view === "game") return refreshGame(); if (S.view !== "world" || !W.dacha) return; await loadWorld(); drawWorldMap(); drawWorldGames(); }, 400); };
   const drawWorldMap = () => {
-    if (!window.L || !$("wMap")) return;
+    if (!window.maplibregl || !$("wMap")) return;
     if (!W.map || W.map.getContainer() !== $("wMap")) {
-      W.map?.remove(); W.markers = new Map();
-      const ring = (W.island?.coordinates?.[0] || []).map(([x, y]) => [y, x]);
-      const bounds = ring.length ? L.latLngBounds(ring) : L.latLngBounds([[7.75, 98.25], [8.2, 98.45]]);
-      W.map = L.map("wMap", { zoomControl: false, attributionControl: true, maxBounds: bounds.pad(0.12), maxBoundsViscosity: 1, zoomSnap: 0.25, maxZoom: 19 }); W.acc = null;
-      W.map.fitBounds(bounds, { padding: [10, 10] });
-      W.map.setMinZoom(W.map.getZoom());
-      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", { maxNativeZoom: 16, maxZoom: 19, className: "w-tiles", attribution: "Esri · OpenStreetMap" }).addTo(W.map);
-      if (ring.length) {
-        // everything outside the island is the sea; the island gets a navy coast like the logo
-        L.polygon([[[5.5, 96], [5.5, 101], [10.5, 101], [10.5, 96]], ring], { stroke: false, fillColor: "#4EA0EC", fillOpacity: 1, interactive: false, className: "w-sea" }).addTo(W.map);
-        L.polygon(ring, { color: "#FFFFFF", weight: 14, opacity: .55, fill: false, interactive: false, className: "w-foam" }).addTo(W.map);
-        L.polygon(ring, { color: "#F6DFA4", weight: 8, opacity: 1, fill: true, fillColor: "#86CF7E", fillOpacity: 1, interactive: false, className: "w-land" }).addTo(W.map);
-        L.polygon(ring, { color: "#071B4D", weight: 2.6, fill: false, interactive: false }).addTo(W.map);
-      }
-      // decoration: hills, palms, beaches, a boat, the lighthouse — drawn, not labelled
-      W_DECOR.forEach(([k, la, ln]) => L.marker([la, ln], { interactive: false, keyboard: false, icon: L.divIcon({ className: "w-deco-wrap", html: `<span class="w-deco ${k}">${DECO[k]}</span>`, iconSize: [60, 60], iconAnchor: [30, 30] }) }).addTo(W.map));
-      const zoomStyle = () => { const z = W.map.getZoom(), box = $("wMap"); if (!box) return;
-        box.style.setProperty("--pz", Math.max(.5, Math.min(1.15, .5 + (z - 10) * .16)).toFixed(3));
-        box.style.setProperty("--dz", Math.max(.55, Math.min(1.4, .55 + (z - 10) * .3)).toFixed(3));
-        box.classList.toggle("near", z >= 13.5); };
+      W.map?.remove(); W.markers = new Map(); W.mapReady = false;
+      const ring = W.island?.coordinates?.[0] || [];
+      const xs = ring.map((p0) => p0[0]), ys = ring.map((p0) => p0[1]);
+      const bb = ring.length ? [[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]] : [[98.25, 7.75], [98.45, 8.2]];
+      const pad = 0.08, maxB = [[bb[0][0] - pad, bb[0][1] - pad], [bb[1][0] + pad, bb[1][1] + pad]];
+      W.map = new maplibregl.Map({ container: "wMap", style: "https://tiles.openfreemap.org/styles/liberty", bounds: bb, fitBoundsOptions: { padding: 16 },
+        maxBounds: maxB, maxZoom: 19, attributionControl: { compact: true }, dragRotate: false, pitchWithRotate: false, touchPitch: false });
+      W.map.touchZoomRotate.disableRotation();
+      W.map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+      W.map.on("load", () => {
+        const m = W.map;
+        // labels in Russian where the map knows them, then English
+        m.getStyle().layers.forEach((l) => { if (l.type === "symbol" && l.layout?.["text-field"]) try { m.setLayoutProperty(l.id, "text-field", ["coalesce", ["get", "name:ru"], ["get", "name:en"], ["get", "name"]]); } catch {} });
+        ["road_one_way_arrow", "road_one_way_arrow_opposite", "highway-shield-non-us", "highway-shield-us-interstate", "road_shield_us", "poi_r20", "poi_r7"].forEach((id) => { if (m.getLayer(id)) m.setLayoutProperty(id, "visibility", "none"); });
+        // Phuket in focus: the world around it is softly faded, the coast gets a thin navy line
+        if (ring.length) {
+          m.addSource("phk", { type: "geojson", data: { type: "Feature", geometry: { type: "Polygon", coordinates: [[[96, 5.5], [101, 5.5], [101, 10.5], [96, 10.5], [96, 5.5]], ring] } } });
+          m.addLayer({ id: "phk-fade", type: "fill", source: "phk", paint: { "fill-color": "#EAF3FF", "fill-opacity": 0.55 } });
+          m.addSource("phk-line", { type: "geojson", data: { type: "Feature", geometry: { type: "LineString", coordinates: ring } } });
+          m.addLayer({ id: "phk-coast", type: "line", source: "phk-line", paint: { "line-color": "#071B4D", "line-width": ["interpolate", ["linear"], ["zoom"], 9, 1.2, 14, 2.4], "line-opacity": 0.55 } });
+        }
+        m.addSource("acc", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+        m.addLayer({ id: "acc-fill", type: "fill", source: "acc", paint: { "fill-color": "#0033FF", "fill-opacity": 0.1 } });
+        m.addLayer({ id: "acc-line", type: "line", source: "acc", paint: { "line-color": "#0033FF", "line-opacity": 0.45, "line-width": 1.5 } });
+        W.mapReady = true; drawMyAccuracy();
+      });
+      // people get bigger as you zoom in, smaller far away
+      const zoomStyle = () => { const z = W.map.getZoom(), box = $("wMap"); if (box) box.style.setProperty("--pz", Math.max(.5, Math.min(1.15, .5 + (z - 10) * .14)).toFixed(3)); };
       W.map.on("zoom", zoomStyle); zoomStyle();
-      L.control.zoom({ position: "bottomright" }).addTo(W.map);
-      W.layer = L.layerGroup().addTo(W.map);
     }
     const shown = W.pres.filter((x) => x.visible && x.lat != null), ids = new Set(shown.map((x) => x.user_id));
     $("wOnline").textContent = shown.length;
-    W.markers.forEach((m, uid) => { if (!ids.has(uid)) { W.layer.removeLayer(m); W.markers.delete(uid); } });
+    W.markers.forEach((m, uid) => { if (!ids.has(uid)) { m.remove(); W.markers.delete(uid); } });
     shown.forEach((x) => {
       const pp = personOf(x.user_id);
       const html = `<div class="w-pin2 ${x.user_id === me.id ? "me" : ""}"><div class="w-bub">${avaP({ ...pp, id: x.user_id })}${x.emoji ? `<i class="w-st">${esc(x.emoji)}</i>` : ""}<b class="w-lv">${wLevel(lvlXP(x.user_id)).lvl}</b></div><span class="w-tail"></span><span class="w-dot"></span><span class="w-nm">${esc(pp.nick)}</span></div>`;
-      const icon = () => L.divIcon({ className: "w-pin-wrap", html, iconSize: [120, 100], iconAnchor: [60, 66] });   // scaled around the dot by CSS (--pz)
       const m = W.markers.get(x.user_id);
-      if (m) { glide(m, L.latLng(x.lat, x.lng)); if (m._dHtml !== html) { m.setIcon(icon()); m._dHtml = html; } return; }
-      const nm = L.marker([x.lat, x.lng], { icon: icon(), riseOnHover: true }).addTo(W.layer).on("click", () => openWorldPerson(x.user_id));
+      if (m) { glide(m, { lng: x.lng, lat: x.lat }); if (m._dHtml !== html) { m.getElement().innerHTML = html; m._dHtml = html; } return; }
+      const el = document.createElement("div"); el.className = "w-pin-el"; el.innerHTML = html;
+      el.addEventListener("click", (e2) => { e2.stopPropagation(); openWorldPerson(x.user_id); });
+      // the element's top-left is 60/66 px away from the dot: anchor exactly on the dot
+      const nm = new maplibregl.Marker({ element: el, anchor: "top-left", offset: [-60, -66] }).setLngLat([x.lng, x.lat]).addTo(W.map);
       nm._dHtml = html; W.markers.set(x.user_id, nm);
     });
     drawMyAccuracy();
-    setTimeout(() => W.map?.invalidateSize(), 60);
+    setTimeout(() => W.map?.resize(), 60);
   };
+  const flyWorld = (lat, lng, zoom = 16.5) => W.map?.flyTo({ center: [lng, lat], zoom, speed: 1.4, essential: true });
   // glide a pin to its new place in ~0.9 s (only when the person really moved)
+  const geoM = (a0, b0) => geoDist({ lat: a0.lat, lng: a0.lng }, { lat: b0.lat, lng: b0.lng });
   const glide = (m, to) => {
-    const from = m.getLatLng(); if (from.distanceTo(to) < 1) return;
-    if (from.distanceTo(to) > 3000) return m.setLatLng(to);
+    const from = m.getLngLat(), d = geoM(from, to); if (d < 1) return;
+    if (d > 3000) return m.setLngLat([to.lng, to.lat]);
     cancelAnimationFrame(m._raf); const t0 = performance.now();
     const step = (t) => { const k = Math.min(1, (t - t0) / 900), e = 1 - Math.pow(1 - k, 3);
-      m.setLatLng([from.lat + (to.lat - from.lat) * e, from.lng + (to.lng - from.lng) * e]); if (k < 1) m._raf = requestAnimationFrame(step); };
+      m.setLngLat([from.lng + (to.lng - from.lng) * e, from.lat + (to.lat - from.lat) * e]); if (k < 1) m._raf = requestAnimationFrame(step); };
     m._raf = requestAnimationFrame(step);
   };
   // my own accuracy circle (what the phone says)
   const drawMyAccuracy = () => {
-    if (!W.map || !W.here || !W.sharing) { if (W.acc) { W.acc.remove(); W.acc = null; } return; }
-    const ll = [W.here.lat, W.here.lng];
-    if (!W.acc) W.acc = L.circle(ll, { radius: W.here.acc || 20, color: "#0033FF", weight: 1.5, opacity: .5, fillColor: "#0033FF", fillOpacity: .1, interactive: false }).addTo(W.map);
-    else { W.acc.setLatLng(ll); W.acc.setRadius(W.here.acc || 20); }
+    const src = W.mapReady && W.map?.getSource("acc"); if (!src) return;
+    if (!W.here || !W.sharing) return src.setData({ type: "FeatureCollection", features: [] });
+    const r = Math.max(8, Math.min(W.here.acc || 20, 300)), pts = [];
+    for (let i = 0; i <= 48; i++) { const t = (i / 48) * 2 * Math.PI; pts.push([W.here.lng + (r / (111320 * Math.cos((W.here.lat * Math.PI) / 180))) * Math.cos(t), W.here.lat + (r / 110540) * Math.sin(t)]); }
+    src.setData({ type: "Feature", geometry: { type: "Polygon", coordinates: [pts] } });
   };
   const statBar = (k, label, v) => `<div class="w-stat ${v < 30 ? "low" : ""}"><span class="w-si">${WI[k]}</span><span>${label}</span><i><b style="width:${v}%"></b></i><em>${v}</em></div>`;
   const drawWorldMe = () => {
@@ -6867,7 +6885,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       const cb = e.target.closest("[data-wcall]"); if (cb) { v.remove(); return worldInvite(cb.dataset.wcall); }
       const gb = e.target.closest("[data-wplay]"); if (gb) { v.remove(); const [k, u] = gb.dataset.wplay.split(":"); return newGame(k, u); }
       const pb = e.target.closest("[data-wprof]"); if (pb) { v.remove(); return go("profile", pb.dataset.wprof); }
-      const fb = e.target.closest("[data-wfly]"); if (fb) { v.remove(); const q = W.pres.find((x) => x.user_id === fb.dataset.wfly); if (q) { $("wMap")?.scrollIntoView({ behavior: "smooth", block: "center" }); W.map?.flyTo([q.lat, q.lng], 17, { duration: .9 }); } return; }
+      const fb = e.target.closest("[data-wfly]"); if (fb) { v.remove(); const q = W.pres.find((x) => x.user_id === fb.dataset.wfly); if (q) { $("wMap")?.scrollIntoView({ behavior: "smooth", block: "center" }); flyWorld(q.lat, q.lng); } return; }
     });
     document.body.append(v);
   };
@@ -6921,7 +6939,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       const { error } = await sb.rpc("world_here", { la: lat, ln: lng, st: pr?.status || null, em: pr?.emoji || null, vis: true });
       if (error) { toast("Не получилось: " + humanErr(error)); return res(false); }
       W.sharing = true; W.sent = { lat, lng, at: Date.now() }; startGeoWatch(); await loadWorld(); drawWorldMap(); drawWorldStatus();
-      if (!quiet) W.map?.flyTo([lat, lng], 17, { duration: .9 });
+      if (!quiet) flyWorld(lat, lng);
       res(true);
     };
     if (!navigator.geolocation) { toast("Телефон не даёт геолокацию"); return res(false); }
@@ -7163,7 +7181,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (b.dataset.gnew) return newGame(b.dataset.gnew);
     if (b.dataset.glocal) { haptic("tap"); return go("game", "local:" + b.dataset.glocal); }
     if (b.dataset.gopen) return go("game", b.dataset.gopen);
-    if (b.hasAttribute("data-wlocate")) { if (W.sharing && W.here) { haptic("tap"); return W.map?.flyTo([W.here.lat, W.here.lng], 17, { duration: .9 }); } return shareLocation(false); }
+    if (b.hasAttribute("data-wlocate")) { if (W.sharing && W.here) { haptic("tap"); return flyWorld(W.here.lat, W.here.lng); } return shareLocation(false); }
     if (b.dataset.wcare) {
       const { error } = await sb.rpc("world_care", { a: b.dataset.wcare });
       if (error) return toast(/cooldown/.test(error.message) ? "Пока рано — загляни чуть позже" : "Не получилось: " + humanErr(error));
