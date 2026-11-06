@@ -2051,6 +2051,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .cb.lvl { background: var(--navy-ink); color: #fff; } .cb.lvl b { color: #FFC83D; font-weight: 900; }
 .crew-rank { font: 700 13px/1 var(--f-code); color: var(--muted); margin-left: auto; padding-right: 2px; }
 
+/* dachas (06.11) */
+.w-dacha.cur { box-shadow: 0 0 0 2.5px #071B4D, var(--sh); } .wd-cur { font-weight: 800; font-size: 12px; padding: 5px 10px; border-radius: 99px; background: #071B4D; color: #FFC83D; }
+.w-dacha.soon .wd-soon { background: none; font-size: 18px; padding: 0; }
 /* DACHA WORLD v5 (06.11) */
 .world-tile { position: relative; display: grid; grid-template-columns: 40% minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; column-gap: 8px; width: min(100%, 520px); justify-self: center; margin-top: 14px; padding: 14px 16px; border-radius: 26px; text-align: left; overflow: hidden; isolation: isolate;
   background: radial-gradient(120% 140% at 15% 0%, #FFF3C4 0%, #FFD45E 45%, #FFC83D 75%); box-shadow: 0 16px 30px -18px rgba(176,122,0,.75), inset 0 0 0 2.5px #071B4D; }
@@ -2900,7 +2903,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106101207"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106103059"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -6691,7 +6694,29 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const loadScript = (src, test) => test() ? Promise.resolve() : new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = src; sc.onload = res; sc.onerror = rej; document.head.append(sc); });
   const loadLeaflet = () => { if (!document.querySelector("link[data-leaflet]")) { const l = document.createElement("link"); l.rel = "stylesheet"; l.dataset.leaflet = "1"; l.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"; document.head.append(l); }
     return loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", () => !!window.L); };
-  const W_DACHAS = [["phuket", "Dacha Phuket", "🇹🇭", "Пхукет, Таиланд", true], ["bali", "Dacha Bali", "🇮🇩", "Бали", false], ["dubai", "Dacha Dubai", "🇦🇪", "Дубай", false], ["moscow", "Dacha Moscow", "🇷🇺", "Москва", false]];
+  const W_DACHAS = [["phuket", "Dacha Phuket", "🇹🇭", "Пхукет, Таиланд", true], ["bali", "Dacha Bali", "🇮🇩", "Бали, Индонезия", false], ["moscow", "Dacha Moscow", "🇷🇺", "Москва", false], ["spb", "Dacha Saint Petersburg", "🇷🇺", "Санкт-Петербург", false]];
+  // the dacha is chosen once and remembered; it changes only in the profile settings
+  let worldDachaLoaded = false;
+  const loadWorldDacha = async () => { if (worldDachaLoaded || !sb || !me) return; const { data } = await sb.rpc("my_world_dacha"); W.dacha = data || null; worldDachaLoaded = true; };
+  const dachaPickerHTML = (cur) => `<div class="w-dachas">${W_DACHAS.map(([k, n, fl, sub, open]) => `<button class="w-dacha ${open ? "" : "soon"} ${cur === k ? "cur" : ""}" type="button" data-wdacha="${k}" ${open ? "" : "disabled"}>
+      <span class="wd-fl">${fl}</span><span class="wd-t"><b>${n}</b><small>${open ? sub : sub + " · скоро"}</small></span>${open ? (cur === k ? `<span class="wd-cur">твоя</span>` : `<span class="wd-go">›</span>`) : `<span class="wd-soon">🔒</span>`}</button>`).join("")}</div>`;
+  const chooseDacha = async (k, then) => {
+    const { error } = await sb.rpc("set_world_dacha", { d: k });
+    if (error) return toast(/locked/.test(error.message) ? "Эта дача пока закрыта" : "Не получилось: " + humanErr(error));
+    W.dacha = k; worldDachaLoaded = true; haptic("card"); then?.();
+  };
+  const openDachaSettings = () => {
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    v.innerHTML = `<div class="bank" role="dialog" aria-modal="true" aria-label="Моя дача"><div class="ps-h"><div class="eyebrow">DACHA WORLD</div><h2 class="h2">Моя дача</h2></div>
+      ${dachaPickerHTML(W.dacha)}<p class="bio-meta" style="margin:0">Остальные дачи откроются позже.</p>
+      <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
+    v.addEventListener("click", (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      const b = e.target.closest("[data-wdacha]"); if (!b || b.disabled) return;
+      chooseDacha(b.dataset.wdacha, () => { v.remove(); toast("Дача выбрана"); if (S.view === "world") { W.map?.remove(); W.map = null; renderWorld(); } });
+    });
+    document.body.append(v);
+  };
   const GAMES_W = { chess: { name: "Шахматы", code: "CHS" }, checkers: { name: "Шашки", code: "CHK" }, durak: { name: "Дурак", code: "CRD" } };
 
   const renderWorld = async () => {
@@ -6699,14 +6724,14 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (!me) return go("auth");
     if (worldMember === null) await drawWorldEntry();
     if (!worldOK()) { box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="eyebrow">DACHA WORLD</div><h2 class="h2">Пока недоступно</h2><p class="lead">Мир дачи скоро откроется для всех.</p></div></div></div>`; return; }
+    await loadWorldDacha();
+    if (S.view !== "world") return;
     if (!W.dacha) {
-      box.innerHTML = `<div class="sec-title" style="margin:2px 2px 10px">Выбери дачу</div>
-        <div class="w-dachas">${W_DACHAS.map(([k, n, fl, sub, open]) => `<button class="w-dacha ${open ? "" : "soon"}" type="button" data-wdacha="${k}" ${open ? "" : "disabled"}>
-          <span class="wd-fl">${fl}</span><span class="wd-t"><b>${n}</b><small>${open ? sub : "скоро откроется"}</small></span>${open ? `<span class="wd-go">›</span>` : `<span class="wd-soon">скоро</span>`}</button>`).join("")}</div>`;
+      box.innerHTML = `<div class="sec-title" style="margin:2px 2px 4px">Выбери свою дачу</div><p class="bio-meta" style="margin:0 2px 12px">Выбирается один раз — сменить можно в настройках профиля.</p>${dachaPickerHTML(null)}`;
       return;
     }
     box.innerHTML = `<div id="wHead"></div><div class="w-mapwrap"><div id="wMap" class="w-map"></div>
-        <div class="w-mapbar"><span class="w-chip">Dacha Phuket · <b id="wOnline">0</b> на карте</span><button class="w-chip btn" type="button" data-wback>дачи</button></div>
+        <div class="w-mapbar"><span class="w-chip">Dacha Phuket · <b id="wOnline">0</b> на карте</span></div>
         <button class="w-locate" type="button" data-wlocate aria-label="Показать меня"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12Z"/><circle cx="12" cy="9" r="2.6"/></svg></button></div>
       <div id="wGames"></div>`;
     try { await Promise.all([loadWorld(), loadLeaflet(), null]); } catch { toast("Карта не загрузилась — проверь интернет"); }
@@ -7134,8 +7159,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   $("goWorld").onclick = () => { haptic("tap"); if (!worldOK()) return toast("DACHA WORLD пока недоступна"); go("world"); };
   $("worldBox").addEventListener("click", async (e) => {
     const b = e.target.closest("button"); if (!b) return;
-    if (b.dataset.wdacha) { W.dacha = b.dataset.wdacha; haptic("tap"); return renderWorld(); }
-    if (b.hasAttribute("data-wback")) { W.dacha = null; W.map?.remove(); W.map = null; return renderWorld(); }
+    if (b.dataset.wdacha) return chooseDacha(b.dataset.wdacha, () => renderWorld());
     if (b.dataset.gnew) return newGame(b.dataset.gnew);
     if (b.dataset.glocal) { haptic("tap"); return go("game", "local:" + b.dataset.glocal); }
     if (b.dataset.gopen) return go("game", b.dataset.gopen);
@@ -7240,7 +7264,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const openProfMenu = () => {
     const v = document.createElement("div"); v.className = "veil bank-veil";
     const items = [["nick", "✏️", "Ник", "как тебя видят дачники"], ["bio", "📝", "О себе", "пара слов в профиле"], ["bday", "🎂", "День рождения", "увидят день и месяц"],
-      ["style", "🎨", "Стиль страницы", "фон, цвет, стикеры"], ["tomato", "🍅", `Помидоры · ${myTomatoes ?? 0}`, "купить ещё — 1 ฿ за штуку"]];
+      ["style", "🎨", "Стиль страницы", "фон, цвет, стикеры"], ["tomato", "🍅", `Помидоры · ${myTomatoes ?? 0}`, "купить ещё — 1 ฿ за штуку"],
+      ...(worldOK() ? [["dacha", "🌍", "Моя дача", "DACHA WORLD · сменить дачу"]] : [])];
     v.innerHTML = `<div class="bank" role="dialog" aria-modal="true" aria-label="Настройки профиля"><div class="ps-h"><div class="eyebrow">Настройки</div><h2 class="h2">Мой профиль</h2></div>
       <div class="pm-menu">${items.map(([k, ic, t, sub]) => `<button type="button" data-pm2="${k}"><span class="pmi">${ic}</span><span class="pmt"><b>${esc(t)}</b><small>${sub}</small></span><span class="wk-go">›</span></button>`).join("")}</div>
       <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
@@ -7254,6 +7279,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       else if (k === "bday") { $("bdayEdit")?.click(); $("profBio")?.scrollIntoView({ behavior: "smooth", block: "center" }); }
       else if (k === "style") $("themeEdit")?.click();
       else if (k === "tomato") buyTomatoes();
+      else if (k === "dacha") loadWorldDacha().then(openDachaSettings);
     });
     document.body.append(v);
   };
