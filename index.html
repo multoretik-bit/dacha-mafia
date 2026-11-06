@@ -1948,6 +1948,13 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .place-chip .pc-n { text-decoration: underline; text-decoration-color: rgba(7,27,77,.25); text-underline-offset: 3px; }
 
 /* audit fixes (06.11) */
+.linkish { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; padding: 0 14px; border-radius: 99px; background: var(--soft, #EEF0F5); color: var(--navy-ink); text-decoration: none; font: 800 13px/1.1 var(--f-body); text-align: center; }
+.linkish:active { transform: scale(.96); }
+.dock .row-btns { gap: 8px; }
+/* theme editor tabs: no overlap, scroll if narrow */
+.theme-panel .tp-tabs { display: flex; overflow-x: auto; scrollbar-width: none; }
+.theme-panel .tp-tabs::-webkit-scrollbar { display: none; }
+.theme-panel .tp-tabs button { flex: 1 0 auto; padding: 0 12px; font-size: 12.5px; }
 .veil.full.dim { background: rgba(7,27,77,.55); }
 .lb-row .nm small { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; line-height: 1.3; }
 .bal-card, .bal-card.pos { background: linear-gradient(135deg, #0B2466, var(--navy-ink, #071B4D)); }
@@ -2588,7 +2595,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106063410"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106063839"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -4294,8 +4301,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   };
   const renderPromoBox = () => {
     const box = $("promoBox");
-    box.hidden = !online() || !canHost();
-    if (box.hidden) return;
+    box.hidden = true; return; // 06.11: old promo ads retired, not offered in the deal any more
     if (promoUsedDay !== bkkToday()) { promoUsedDay = bkkToday(); loadPromoUsed().then(() => !$("vRoles").hidden && renderPromoBox()); }
     box.innerHTML = Object.entries(PROMOS).map(([k, pr]) => promoUsed.has(k)
       ? `<button class="pill wide ghost sm" type="button" disabled>${esc(pr.title)} · показана ✓</button>`
@@ -5871,7 +5877,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (!people.length) await loadPeople();
     const debts = (bals || []).filter((b) => +b.balance < 0).sort((a, b) => a.balance - b.balance);
     pend = (pend || []).filter((t) => t.purpose === "topup");
-    box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">Ты ведущий · оплаты дачников${canGrant ? ` · <button class="linkish" type="button" data-goreq style="padding:0">все запросы ›</button>` : ""}</div><h2 class="h2">${(pend || []).length ? `Проверь ${(pend || []).length} ${plural((pend || []).length, "оплату", "оплаты", "оплат")}` : "Новых оплат нет"}</h2></div>
+    box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">Ты ведущий · оплаты дачников${canGrant ? ` · <button class="linkish" type="button" data-goreq>все запросы ›</button>` : ""}</div><h2 class="h2">${(pend || []).length ? `Проверь ${(pend || []).length} ${plural((pend || []).length, "оплату", "оплаты", "оплат")}` : "Новых оплат нет"}</h2></div>
       ${(pend || []).map((t) => { const pp = personOf(t.user_id); return `<div class="tx-row host"><span class="tx-av">${avaP(pp)}</span><span class="tx-t"><b>${esc(pp.nick)} · ${t.purpose === "premium" ? `◆ PREMIUM ${t.amount} ${CUR[t.currency] || "฿"}` : "+" + money(t.amount)}</b><small>${t.method === "qr" ? "📱 говорит, что перевёл по QR" : t.method === "transfer" ? "🏦 говорит, что перевёл" : "💵 отдаст наличными"} · ${t.purpose === "premium" ? "PREMIUM на месяц" : esc(evTitle(t.game, t.event_id))}</small></span>
         <span class="tx-acts"><button class="round sm ok" type="button" data-decide="${t.id}" data-ok="1" aria-label="Получил">✓</button><button class="round sm no" type="button" data-decide="${t.id}" data-ok="0" aria-label="Не получил">✕</button></span></div>`; }).join("")}
       <div class="sec-label eyebrow">Долги · ${debts.length}</div>
