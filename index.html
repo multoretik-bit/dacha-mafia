@@ -2051,6 +2051,74 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .cb.lvl { background: var(--navy-ink); color: #fff; } .cb.lvl b { color: #FFC83D; font-weight: 900; }
 .crew-rank { font: 700 13px/1 var(--f-code); color: var(--muted); margin-left: auto; padding-right: 2px; }
 
+/* DACHA WORLD v5 (06.11) */
+.world-tile { position: relative; display: grid; grid-template-columns: 40% minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; column-gap: 8px; width: min(100%, 520px); justify-self: center; margin-top: 14px; padding: 14px 16px; border-radius: 26px; text-align: left; overflow: hidden; isolation: isolate;
+  background: radial-gradient(120% 140% at 15% 0%, #FFF3C4 0%, #FFD45E 45%, #FFC83D 75%); box-shadow: 0 16px 30px -18px rgba(176,122,0,.75), inset 0 0 0 2.5px #071B4D; }
+.world-tile::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: .5; background: repeating-linear-gradient(135deg, rgba(255,255,255,.35) 0 10px, transparent 10px 22px); }
+.wt-logo { grid-row: span 2; width: 100%; filter: drop-shadow(0 8px 12px rgba(7,27,77,.3)); }
+.wt-word { align-self: end; justify-self: start; max-width: 100%; font: 900 italic clamp(24px, 8.4vw, 40px)/1 var(--f-display); letter-spacing: .02em; color: #0033FF; -webkit-text-stroke: 7px #fff; paint-order: stroke fill;
+  text-shadow: 2px 0 0 #071B4D, -2px 0 0 #071B4D, 0 2px 0 #071B4D, 0 -2px 0 #071B4D, 2px 2px 0 #071B4D, -2px -2px 0 #071B4D, 2px -2px 0 #071B4D, -2px 2px 0 #071B4D, 0 6px 0 #071B4D; }
+.wt-sub { align-self: start; margin-top: 8px; font: 800 12px/1.25 var(--f-body); color: #071B4D; overflow-wrap: anywhere; }
+.world-tile:active { transform: scale(.97); }
+.world-tile .gw-lock { display: none; }
+.world-tile.locked { background: linear-gradient(150deg, #E6E8EE, #C9CED9); box-shadow: inset 0 0 0 2.5px #9AA2B3; }
+.world-tile.locked .wt-logo { filter: grayscale(1) opacity(.6); } .world-tile.locked .wt-word { color: #9AA2B3; text-shadow: none; -webkit-text-stroke: 5px #fff; }
+.world-tile.locked .wt-sub { display: none; }
+.world-tile.locked .gw-lock { display: inline-flex; align-self: start; width: fit-content; margin-top: 8px; padding: 5px 10px; border-radius: 99px; background: #fff; color: #5B647A; font: 800 12px/1 var(--f-body); }
+/* level chip: always navy, never white on white */
+.lvl-chip { background: #071B4D !important; color: #fff !important; } .lvl-chip b { background: #FFC83D !important; color: #071B4D !important; }
+/* world head */
+.w-head2 { display: grid; gap: 10px; margin-bottom: 12px; padding: 12px; border-radius: 22px; background: #fff; box-shadow: var(--sh); }
+.wh-row { display: flex; align-items: center; gap: 12px; }
+.wh-av { position: relative; width: 48px; height: 48px; flex: none; } .wh-av .ava, .wh-av .prem { width: 48px; height: 48px; } .wh-av .prem .ava { width: 100%; height: 100%; } .wh-av .prem-ic { display: none; }
+.wh-av .w-lv { position: absolute; left: -6px; top: -6px; }
+.wh-t { display: grid; gap: 4px; flex: 1; min-width: 0; } .wh-t b { font: 900 15px/1.1 var(--f-body); color: #071B4D; }
+.wh-t i { height: 6px; border-radius: 99px; background: #EEF0F5; overflow: hidden; } .wh-t em { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #FFC83D, #FF7A1A); }
+.wh-t small { font-weight: 700; font-size: 11.5px; color: var(--muted); }
+.wh-show { display: grid; justify-items: center; gap: 4px; flex: none; } .wh-show small { font: 800 10.5px/1 var(--f-body); color: var(--muted); }
+.wh-sw { width: 44px; height: 26px; border-radius: 99px; background: #C9CED9; position: relative; transition: background .2s; } .wh-sw i { position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: left .2s; }
+.wh-show.on .wh-sw { background: #16A34A; } .wh-show.on .wh-sw i { left: 21px; } .wh-show.on small { color: #16A34A; }
+.wh-sts { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; } .wh-sts::-webkit-scrollbar { display: none; }
+.wh-sts button { flex: none; width: 38px; height: 38px; border-radius: 50%; background: #F1F3F8; font-size: 18px; display: grid; place-items: center; }
+.wh-sts button[aria-pressed="true"] { background: #FFE9A6; box-shadow: 0 0 0 2.5px #071B4D; }
+.wh-sts .wh-call { width: auto; padding: 0 14px; border-radius: 99px; background: #0033FF; color: #fff; font: 800 13px/1 var(--f-body); margin-left: auto; }
+.wh-now { font-weight: 800; font-size: 12.5px; color: #071B4D; margin-top: -2px; }
+/* game-style map */
+.w-map, #wMap.leaflet-container { background: radial-gradient(120% 90% at 50% 40%, #6CB6F5 0%, #3E8EE0 100%); }
+.w-map::after { content: ""; position: absolute; inset: 0; z-index: 399; pointer-events: none; opacity: .35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='30'%3E%3Cpath d='M0 15 q7.5 -8 15 0 t15 0 t15 0 t15 0' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-size: 60px 30px; }
+.w-map:not(.near) .w-tiles { opacity: 0 !important; } .w-map.near .w-tiles { opacity: 1 !important; } .w-tiles { transition: opacity .35s; }
+.w-map:not(.near) .w-sea { fill-opacity: 0 !important; } .w-map.near .w-land { fill-opacity: .14; } .w-map.near::after { opacity: 0; }
+.w-land, .w-sea { transition: fill-opacity .35s; }
+.w-deco-wrap { background: none; border: 0; pointer-events: none; }
+.w-deco { display: grid; place-items: center; width: 60px; height: 60px; transform: scale(var(--dz, 1)); transition: opacity .3s; }
+.w-deco svg { width: 34px; height: 34px; overflow: visible; filter: drop-shadow(0 3px 2px rgba(7,27,77,.25)); } .w-deco.hill svg { width: 44px; } .w-deco.town svg { width: 40px; }
+.w-map.near .w-deco { opacity: 0; }
+.w-pin2 { transform: scale(var(--pz, 1)); transform-origin: 60px 66px; }
+/* durak */
+.g-durak .g-player { gap: 10px; } .dk-backs { margin-left: auto; display: flex; } .dk-backs i { width: 18px; height: 26px; border-radius: 4px; margin-left: -9px; border: 1.5px solid #071B4D;
+  background: repeating-linear-gradient(45deg, #E3263A 0 4px, #B5121F 4px 8px); box-shadow: 0 2px 4px rgba(0,0,0,.25); }
+.dk-felt { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; min-height: 170px; padding: 14px; border-radius: 22px; background: radial-gradient(120% 120% at 50% 30%, #1E8A4C 0%, #0E5A30 100%); box-shadow: inset 0 0 0 3px #071B4D, var(--sh); }
+.dk-deck { position: relative; width: 70px; height: 96px; }
+.dk-trump { position: absolute; left: 10px; top: 14px; transform: rotate(90deg); } .dk-stack { position: absolute; left: 0; top: 0; width: 52px; height: 74px; border-radius: 8px; border: 2px solid #071B4D;
+  background: repeating-linear-gradient(45deg, #E3263A 0 6px, #B5121F 6px 12px); display: grid; place-items: center; box-shadow: 3px 3px 0 #0A3D20; }
+.dk-stack b { min-width: 26px; height: 26px; border-radius: 99px; background: #fff; color: #071B4D; font: 900 14px/26px var(--f-code); text-align: center; }
+.dk-trumpsuit { display: grid; justify-items: center; color: #fff; font-size: 34px; line-height: 1; } .dk-trumpsuit.red { color: #FF8A8A; } .dk-trumpsuit small { font: 800 10px/1 var(--f-body); opacity: .8; }
+.dk-table { display: flex; flex-wrap: wrap; gap: 10px 8px; align-content: center; min-height: 100px; }
+.dk-pair { position: relative; width: 52px; height: 92px; padding: 0; } .dk-pair .def { position: absolute; left: 14px; top: 20px; transform: rotate(8deg); }
+.dk-pair.can .dk-card:first-child { box-shadow: 0 0 0 3px #FFC83D, 0 4px 8px rgba(0,0,0,.3); }
+.dk-empty { color: rgba(255,255,255,.5); font-weight: 800; font-size: 13px; }
+.dk-out { position: absolute; right: 12px; bottom: 8px; color: rgba(255,255,255,.65); font: 800 11px/1 var(--f-body); }
+.dk-card { position: relative; display: grid; width: 52px; height: 74px; border-radius: 8px; background: #fff; border: 2px solid #071B4D; color: #15151C; box-shadow: 0 4px 8px rgba(0,0,0,.3); user-select: none; -webkit-user-select: none; }
+.dk-card.red { color: #E3263A; }
+.dk-card b { position: absolute; left: 5px; top: 3px; font: 900 15px/1 var(--f-code); } .dk-card i { position: absolute; left: 5px; top: 19px; font-style: normal; font-size: 12px; line-height: 1; }
+.dk-card em { place-self: center; font-style: normal; font-size: 28px; line-height: 1; margin-top: 8px; font-family: "Segoe UI Symbol", "Apple Symbols", serif; }
+.dk-hand { display: flex; justify-content: center; padding: 6px 4px 2px; min-height: 92px; }
+.dk-hand .dk-card { width: 58px; height: 84px; margin-left: -18px; transition: transform .15s; cursor: pointer; } .dk-hand .dk-card:first-child { margin-left: 0; }
+.dk-hand .dk-card.ok { transform: translateY(-8px); box-shadow: 0 0 0 2px #16A34A, 0 6px 10px rgba(0,0,0,.3); } .dk-hand .dk-card.dim { filter: saturate(.6) brightness(.93); }
+.dk-hand .dk-card.sel { transform: translateY(-18px); box-shadow: 0 0 0 3px #FFC83D, 0 8px 12px rgba(0,0,0,.35); }
+.dk-hand .dk-card em { font-size: 32px; }
+
 /* DACHA WORLD v3 (06.11) */
 .w-tiles { filter: sepia(.5) saturate(1.7) hue-rotate(-10deg) brightness(1.04) contrast(.98); }
 .w-mapwrap { background: #5FA8EE; }
@@ -2383,7 +2451,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     <div class="hub-hero">
       <img class="hub-logo" src="logo-dacha-hub.webp?v=2" alt="DACHA" draggable="false">
       <p class="hub-tag">Дом, вдали от дома</p>
-      <button class="game-tile g-world" id="goWorld" type="button"><svg class="gw-island" viewBox="-6 -6 112 250" aria-hidden="true"><polygon points="0.0,142.6 1.8,143.3 1.5,147.0 2.2,149.2 5.3,148.3 6.7,148.5 9.5,148.8 11.2,150.5 12.5,152.3 17.9,153.2 20.9,158.6 17.0,169.1 13.2,168.9 7.8,169.2 7.0,167.1 3.8,166.5 2.9,166.0 1.6,169.5 3.9,172.6 7.4,172.5 9.2,175.7 8.3,177.6 8.3,179.1 12.7,180.4 15.1,184.2 18.8,191.8 17.5,201.0 18.7,202.4 21.4,205.1 20.9,208.1 21.6,210.6 21.1,214.9 19.4,217.8 14.4,220.0 16.3,222.6 17.5,223.8 16.2,227.3 20.5,227.5 25.3,228.2 25.5,232.3 24.7,237.3 26.7,237.0 29.6,237.6 32.5,236.6 32.5,234.3 38.4,228.7 42.7,227.7 40.5,222.8 43.8,211.4 48.5,201.1 55.1,198.0 63.0,194.5 65.1,196.1 66.0,202.2 68.8,210.9 70.5,210.5 73.2,208.5 74.9,208.3 76.4,211.3 80.9,215.0 83.2,214.9 81.4,211.1 77.6,209.2 78.7,207.3 79.8,205.6 76.9,202.7 78.7,201.0 77.4,198.1 80.6,196.7 82.0,195.5 78.8,194.6 75.5,194.5 73.6,189.4 72.2,188.3 73.4,186.3 74.0,183.4 76.7,182.7 76.4,178.9 81.8,173.6 83.7,174.3 84.2,177.3 85.0,172.3 84.8,168.2 86.7,166.3 88.4,164.6 88.4,162.2 87.2,162.9 86.9,161.8 87.8,159.4 85.1,156.1 83.9,154.0 83.7,151.6 83.3,148.4 81.1,142.9 77.4,139.9 74.0,134.0 74.2,131.0 74.2,127.3 73.5,124.0 73.8,118.5 74.8,115.6 75.2,115.1 78.4,113.0 78.4,113.5 80.5,112.6 81.5,112.5 88.0,116.6 90.4,114.8 87.8,113.9 83.7,108.0 82.7,103.3 81.1,102.9 82.0,100.9 81.9,96.9 84.6,89.9 86.0,86.8 86.2,85.5 85.6,82.3 88.4,83.2 91.4,85.0 93.8,85.9 92.7,84.4 93.0,81.0 94.9,73.0 96.8,72.5 99.1,71.1 96.9,69.2 95.2,66.4 97.5,58.5 96.1,58.0 94.2,55.4 92.0,55.8 90.0,53.7 89.8,56.7 81.7,63.0 79.7,65.1 74.6,65.2 67.1,58.7 65.6,57.3 63.2,45.6 58.8,43.2 52.2,47.8 50.6,48.4 50.6,46.6 49.9,45.7 51.7,44.4 51.7,42.7 49.6,40.6 47.4,45.8 47.0,39.2 47.0,35.6 48.1,34.3 45.3,29.8 44.4,20.8 43.3,16.3 40.0,15.1 33.7,10.9 29.6,7.4 27.5,8.6 27.1,7.2 24.1,5.2 24.4,3.9 23.3,3.5 21.1,0.7 18.5,0.1 13.8,2.0 23.4,43.9 20.8,54.4 20.5,60.7 15.7,62.2 10.1,64.9 6.9,67.7 9.5,74.3 10.5,79.1 10.4,83.2 9.5,85.8 9.0,88.2 12.4,89.1 14.4,89.7 15.6,91.5 18.6,105.1 16.0,114.8 10.3,114.8 7.3,113.8 7.9,115.9 9.9,117.4 10.5,119.3 11.4,124.8 11.5,127.4 13.5,128.1 12.2,134.4 8.5,134.7 4.3,136.2 2.3,135.7 0.0,142.6" fill="#F6E3B4" stroke="#071B4D" stroke-width="3" stroke-linejoin="round"/><polygon points="0.0,142.6 1.8,143.3 1.5,147.0 2.2,149.2 5.3,148.3 6.7,148.5 9.5,148.8 11.2,150.5 12.5,152.3 17.9,153.2 20.9,158.6 17.0,169.1 13.2,168.9 7.8,169.2 7.0,167.1 3.8,166.5 2.9,166.0 1.6,169.5 3.9,172.6 7.4,172.5 9.2,175.7 8.3,177.6 8.3,179.1 12.7,180.4 15.1,184.2 18.8,191.8 17.5,201.0 18.7,202.4 21.4,205.1 20.9,208.1 21.6,210.6 21.1,214.9 19.4,217.8 14.4,220.0 16.3,222.6 17.5,223.8 16.2,227.3 20.5,227.5 25.3,228.2 25.5,232.3 24.7,237.3 26.7,237.0 29.6,237.6 32.5,236.6 32.5,234.3 38.4,228.7 42.7,227.7 40.5,222.8 43.8,211.4 48.5,201.1 55.1,198.0 63.0,194.5 65.1,196.1 66.0,202.2 68.8,210.9 70.5,210.5 73.2,208.5 74.9,208.3 76.4,211.3 80.9,215.0 83.2,214.9 81.4,211.1 77.6,209.2 78.7,207.3 79.8,205.6 76.9,202.7 78.7,201.0 77.4,198.1 80.6,196.7 82.0,195.5 78.8,194.6 75.5,194.5 73.6,189.4 72.2,188.3 73.4,186.3 74.0,183.4 76.7,182.7 76.4,178.9 81.8,173.6 83.7,174.3 84.2,177.3 85.0,172.3 84.8,168.2 86.7,166.3 88.4,164.6 88.4,162.2 87.2,162.9 86.9,161.8 87.8,159.4 85.1,156.1 83.9,154.0 83.7,151.6 83.3,148.4 81.1,142.9 77.4,139.9 74.0,134.0 74.2,131.0 74.2,127.3 73.5,124.0 73.8,118.5 74.8,115.6 75.2,115.1 78.4,113.0 78.4,113.5 80.5,112.6 81.5,112.5 88.0,116.6 90.4,114.8 87.8,113.9 83.7,108.0 82.7,103.3 81.1,102.9 82.0,100.9 81.9,96.9 84.6,89.9 86.0,86.8 86.2,85.5 85.6,82.3 88.4,83.2 91.4,85.0 93.8,85.9 92.7,84.4 93.0,81.0 94.9,73.0 96.8,72.5 99.1,71.1 96.9,69.2 95.2,66.4 97.5,58.5 96.1,58.0 94.2,55.4 92.0,55.8 90.0,53.7 89.8,56.7 81.7,63.0 79.7,65.1 74.6,65.2 67.1,58.7 65.6,57.3 63.2,45.6 58.8,43.2 52.2,47.8 50.6,48.4 50.6,46.6 49.9,45.7 51.7,44.4 51.7,42.7 49.6,40.6 47.4,45.8 47.0,39.2 47.0,35.6 48.1,34.3 45.3,29.8 44.4,20.8 43.3,16.3 40.0,15.1 33.7,10.9 29.6,7.4 27.5,8.6 27.1,7.2 24.1,5.2 24.4,3.9 23.3,3.5 21.1,0.7 18.5,0.1 13.8,2.0 23.4,43.9 20.8,54.4 20.5,60.7 15.7,62.2 10.1,64.9 6.9,67.7 9.5,74.3 10.5,79.1 10.4,83.2 9.5,85.8 9.0,88.2 12.4,89.1 14.4,89.7 15.6,91.5 18.6,105.1 16.0,114.8 10.3,114.8 7.3,113.8 7.9,115.9 9.9,117.4 10.5,119.3 11.4,124.8 11.5,127.4 13.5,128.1 12.2,134.4 8.5,134.7 4.3,136.2 2.3,135.7 0.0,142.6" fill="#7FCB8A" transform="translate(6 10) scale(.86)" opacity=".75"/><circle cx="30" cy="150" r="6" fill="#FFC83D" stroke="#071B4D" stroke-width="2.5"/><circle cx="62" cy="95" r="6" fill="#E3263A" stroke="#071B4D" stroke-width="2.5"/><circle cx="38" cy="205" r="6" fill="#fff" stroke="#071B4D" stroke-width="2.5"/></svg><span class="gt-code">WRLD · PHUKET</span><b class="gt-name">Dacha World</b><small class="gt-next" id="worldSub">карта, игры, уровни</small><span class="gw-lock">Пока недоступно</span></button>
+      <button class="world-tile" id="goWorld" type="button"><img class="wt-logo" src="logo-dacha-hub.webp?v=2" alt="" draggable="false"><span class="wt-word">WORLD</span><span class="wt-sub">Пхукет · карта и игры онлайн</span><span class="gw-lock">Пока недоступно</span></button>
     </div>
     <div id="hubHello"></div>
     <div class="ticket week"><div class="ticket-in">
@@ -2832,7 +2900,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106094950"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106101207"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -6592,6 +6660,17 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const W_CARE = [["feed", "Покормить", "fed_at", 45, "Сытость", "food"], ["wash", "Помыть", "washed_at", 90, "Чистота", "clean"], ["play", "Поиграть", "played_at", 30, "Веселье", "fun"], ["sleep", "Уложить", "slept_at", 240, "Энергия", "energy"]];
   const W_STATUS = [["🏖", "на пляже"], ["🍹", "отдыхаю"], ["💻", "работаю"], ["🏋️", "в зале"], ["🍜", "ем"], ["🛵", "в пути"], ["🎉", "тусуюсь"], ["😴", "сплю"]];
   const W_INVITE = [["🏖", "на пляж"], ["🍜", "поесть"], ["🏋️", "в зал"], ["🎭", "на мафию"], ["☕", "на кофе"], ["🤝", "просто встретиться"]];
+  const DECO = {
+    hill: `<svg viewBox="0 0 60 40"><path d="M2 38 22 8l10 12 6-8 20 26Z" fill="#4FAE5C" stroke="#071B4D" stroke-width="2.4" stroke-linejoin="round"/><path d="M22 8l-5 8 5-2 4 4Z" fill="#fff" opacity=".7"/></svg>`,
+    palm: `<svg viewBox="0 0 40 50"><path d="M20 48c0-12 1-22 3-30" stroke="#8A5A2B" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M23 18c-6-8-15-8-20-3 7-1 12 1 20 3Zm0 0c5-8 13-9 17-4-6-1-11 1-17 4Zm0 0c-2-7-9-12-15-11 6 2 10 6 15 11Zm0 0c3-6 9-9 14-8-5 2-9 5-14 8Z" fill="#2E9E4F" stroke="#071B4D" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
+    beach: `<svg viewBox="0 0 44 44"><path d="M22 20v22" stroke="#071B4D" stroke-width="2.6" stroke-linecap="round"/><path d="M4 22a18 14 0 0 1 36 0Z" fill="#E3263A" stroke="#071B4D" stroke-width="2.4" stroke-linejoin="round"/><path d="M16 22c0-8 3-13 6-14 3 1 6 6 6 14" fill="#fff"/></svg>`,
+    boat: `<svg viewBox="0 0 50 40"><path d="M6 26h38l-6 9H12Z" fill="#fff" stroke="#071B4D" stroke-width="2.4" stroke-linejoin="round"/><path d="M24 4v22" stroke="#071B4D" stroke-width="2.4"/><path d="M26 6l12 16H26Z" fill="#FFC83D" stroke="#071B4D" stroke-width="2.2" stroke-linejoin="round"/></svg>`,
+    light: `<svg viewBox="0 0 30 50"><path d="M9 46 11 14h8l2 32Z" fill="#fff" stroke="#071B4D" stroke-width="2.4" stroke-linejoin="round"/><path d="M10 26h10M9.5 36h11" stroke="#E3263A" stroke-width="4"/><path d="M10 14h10l-2-6h-6Z" fill="#FFC83D" stroke="#071B4D" stroke-width="2.2" stroke-linejoin="round"/></svg>`,
+    plane: `<svg viewBox="0 0 44 44"><path d="M22 4c2 0 3 2 3 5v9l15 8v4l-15-4v8l5 4v3l-8-2-8 2v-3l5-4v-8L4 30v-4l15-8V9c0-3 1-5 3-5Z" fill="#fff" stroke="#071B4D" stroke-width="2.2" stroke-linejoin="round"/></svg>`,
+    town: `<svg viewBox="0 0 50 40"><path d="M4 38V20l9-7 9 7v18Z" fill="#FFC83D" stroke="#071B4D" stroke-width="2.2" stroke-linejoin="round"/><path d="M22 38V12l12-8 12 8v26Z" fill="#fff" stroke="#071B4D" stroke-width="2.2" stroke-linejoin="round"/><path d="M29 16h4v5h-4zM37 16h4v5h-4zM29 26h4v5h-4zM37 26h4v5h-4z" fill="#4EA0EC"/></svg>`,
+  };
+  const W_DECOR = [["hill", 7.94, 98.33], ["hill", 7.835, 98.315], ["hill", 8.04, 98.34], ["hill", 7.89, 98.36], ["palm", 7.905, 98.305], ["palm", 7.955, 98.29], ["palm", 8.08, 98.305], ["palm", 7.79, 98.33], ["palm", 7.995, 98.3],
+    ["beach", 7.893, 98.299], ["beach", 7.82, 98.302], ["beach", 7.845, 98.298], ["beach", 7.78, 98.307], ["boat", 7.815, 98.365], ["boat", 7.9, 98.27], ["light", 7.763, 98.305], ["plane", 8.112, 98.318], ["town", 7.885, 98.39]];
   const W_SPOTS = [["Патонг", 7.8961, 98.2965], ["Карон", 7.8458, 98.2946], ["Ката", 7.8204, 98.2977], ["Камала", 7.9506, 98.2827], ["Сурин", 7.9750, 98.2790], ["Банг Тао", 8.0006, 98.2950], ["Най Харн", 7.7781, 98.3050], ["Раваи", 7.7790, 98.3255], ["Чалонг", 7.8432, 98.3394], ["Кату", 7.9220, 98.3330], ["Пхукет-таун", 7.8804, 98.3923], ["Найян", 8.0880, 98.2950], ["Май Кхао", 8.1450, 98.3000], ["Аэропорт ✈", 8.1132, 98.3169]];
   const myChar = () => W.chars.find((c) => c.user_id === me?.id) || null;
   const myPres = () => W.pres.find((x) => x.user_id === me?.id) || null;
@@ -6614,6 +6693,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     return loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", () => !!window.L); };
   const W_DACHAS = [["phuket", "Dacha Phuket", "🇹🇭", "Пхукет, Таиланд", true], ["bali", "Dacha Bali", "🇮🇩", "Бали", false], ["dubai", "Dacha Dubai", "🇦🇪", "Дубай", false], ["moscow", "Dacha Moscow", "🇷🇺", "Москва", false]];
   const GAMES_W = { chess: { name: "Шахматы", code: "CHS" }, checkers: { name: "Шашки", code: "CHK" }, durak: { name: "Дурак", code: "CRD" } };
+
   const renderWorld = async () => {
     const box = $("worldBox");
     if (!me) return go("auth");
@@ -6625,13 +6705,13 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
           <span class="wd-fl">${fl}</span><span class="wd-t"><b>${n}</b><small>${open ? sub : "скоро откроется"}</small></span>${open ? `<span class="wd-go">›</span>` : `<span class="wd-soon">скоро</span>`}</button>`).join("")}</div>`;
       return;
     }
-    box.innerHTML = `<div class="w-mapwrap"><div id="wMap" class="w-map"></div>
+    box.innerHTML = `<div id="wHead"></div><div class="w-mapwrap"><div id="wMap" class="w-map"></div>
         <div class="w-mapbar"><span class="w-chip">Dacha Phuket · <b id="wOnline">0</b> на карте</span><button class="w-chip btn" type="button" data-wback>дачи</button></div>
         <button class="w-locate" type="button" data-wlocate aria-label="Показать меня"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12Z"/><circle cx="12" cy="9" r="2.6"/></svg></button></div>
-      <div id="wGames"></div><div id="wStatus"></div>`;
+      <div id="wGames"></div>`;
     try { await Promise.all([loadWorld(), loadLeaflet(), null]); } catch { toast("Карта не загрузилась — проверь интернет"); }
     if (S.view !== "world" || !W.dacha) return;
-    drawWorldMap(); drawWorldGames(); drawWorldStatus();
+    drawWorldHead(); drawWorldMap(); drawWorldGames();
     if (!W.chan) W.chan = sb.channel("world").on("postgres_changes", { event: "*", schema: "public", table: "world_presence" }, (pl) => {
         const n = pl.new; if (!n?.user_id) return worldAgain();
         const i = W.pres.findIndex((x) => x.user_id === n.user_id); if (i >= 0) W.pres[i] = n; else W.pres.push(n);
@@ -6653,11 +6733,18 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", { maxNativeZoom: 16, maxZoom: 19, className: "w-tiles", attribution: "Esri · OpenStreetMap" }).addTo(W.map);
       if (ring.length) {
         // everything outside the island is the sea; the island gets a navy coast like the logo
-        L.polygon([[[5.5, 96], [5.5, 101], [10.5, 101], [10.5, 96]], ring], { stroke: false, fillColor: "#5FA8EE", fillOpacity: 1, interactive: false, className: "w-sea" }).addTo(W.map);
-        L.polygon(ring, { color: "#FFFFFF", weight: 9, opacity: .75, fill: false, interactive: false, className: "w-surf" }).addTo(W.map);
-        L.polygon(ring, { color: "#071B4D", weight: 2.6, fill: true, fillColor: "#FFE6A8", fillOpacity: .18, interactive: false }).addTo(W.map);
+        L.polygon([[[5.5, 96], [5.5, 101], [10.5, 101], [10.5, 96]], ring], { stroke: false, fillColor: "#4EA0EC", fillOpacity: 1, interactive: false, className: "w-sea" }).addTo(W.map);
+        L.polygon(ring, { color: "#FFFFFF", weight: 14, opacity: .55, fill: false, interactive: false, className: "w-foam" }).addTo(W.map);
+        L.polygon(ring, { color: "#F6DFA4", weight: 8, opacity: 1, fill: true, fillColor: "#86CF7E", fillOpacity: 1, interactive: false, className: "w-land" }).addTo(W.map);
+        L.polygon(ring, { color: "#071B4D", weight: 2.6, fill: false, interactive: false }).addTo(W.map);
       }
-      W_SPOTS.forEach(([n, la, ln]) => L.marker([la, ln], { interactive: false, icon: L.divIcon({ className: "w-spot", html: `<span>${n}</span>`, iconSize: null }) }).addTo(W.map));
+      // decoration: hills, palms, beaches, a boat, the lighthouse — drawn, not labelled
+      W_DECOR.forEach(([k, la, ln]) => L.marker([la, ln], { interactive: false, keyboard: false, icon: L.divIcon({ className: "w-deco-wrap", html: `<span class="w-deco ${k}">${DECO[k]}</span>`, iconSize: [60, 60], iconAnchor: [30, 30] }) }).addTo(W.map));
+      const zoomStyle = () => { const z = W.map.getZoom(), box = $("wMap"); if (!box) return;
+        box.style.setProperty("--pz", Math.max(.5, Math.min(1.15, .5 + (z - 10) * .16)).toFixed(3));
+        box.style.setProperty("--dz", Math.max(.55, Math.min(1.4, .55 + (z - 10) * .3)).toFixed(3));
+        box.classList.toggle("near", z >= 13.5); };
+      W.map.on("zoom", zoomStyle); zoomStyle();
       L.control.zoom({ position: "bottomright" }).addTo(W.map);
       W.layer = L.layerGroup().addTo(W.map);
     }
@@ -6667,7 +6754,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     shown.forEach((x) => {
       const pp = personOf(x.user_id);
       const html = `<div class="w-pin2 ${x.user_id === me.id ? "me" : ""}"><div class="w-bub">${avaP({ ...pp, id: x.user_id })}${x.emoji ? `<i class="w-st">${esc(x.emoji)}</i>` : ""}<b class="w-lv">${wLevel(lvlXP(x.user_id)).lvl}</b></div><span class="w-tail"></span><span class="w-dot"></span><span class="w-nm">${esc(pp.nick)}</span></div>`;
-      const icon = () => L.divIcon({ className: "w-pin-wrap", html, iconSize: [120, 100], iconAnchor: [60, 66] });
+      const icon = () => L.divIcon({ className: "w-pin-wrap", html, iconSize: [120, 100], iconAnchor: [60, 66] });   // scaled around the dot by CSS (--pz)
       const m = W.markers.get(x.user_id);
       if (m) { glide(m, L.latLng(x.lat, x.lng)); if (m._dHtml !== html) { m.setIcon(icon()); m._dHtml = html; } return; }
       const nm = L.marker([x.lat, x.lng], { icon: icon(), riseOnHover: true }).addTo(W.layer).on("click", () => openWorldPerson(x.user_id));
@@ -6713,23 +6800,27 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const box = $("wGames"); if (!box) return;
     const mine = W.games.filter((g) => g.a === me.id || g.b === me.id);
     box.innerHTML = `<div class="sec-title" style="margin:6px 2px 10px">Игры</div>
-      <div class="w-gtiles">${["chess", "checkers", "durak"].map((k) => `<div class="w-gtile g-${k} ${k === "durak" ? "soon" : ""}">${gameArt(k)}<span class="gt-code">${GAMES_W[k].code}</span><b class="gt-name">${GAMES_W[k].name}</b>
-        ${k === "durak" ? `<small class="gt-next">скоро · на двоих</small>` : `<div class="w-gacts"><button type="button" data-gnew="${k}">позвать</button><button type="button" data-glocal="${k}">вдвоём</button></div>`}</div>`).join("")}</div>
+      <div class="w-gtiles">${["chess", "checkers", "durak"].map((k) => `<div class="w-gtile g-${k}">${gameArt(k)}<span class="gt-code">${GAMES_W[k].code}</span><b class="gt-name">${GAMES_W[k].name}</b>
+        ${k === "durak" ? `<small class="gt-next">подкидной · на двоих</small><div class="w-gacts"><button type="button" data-gnew="${k}">позвать</button></div>` : `<div class="w-gacts"><button type="button" data-gnew="${k}">позвать</button><button type="button" data-glocal="${k}">вдвоём</button></div>`}</div>`).join("")}</div>
       ${mine.length ? `<div class="ticket" style="margin-top:12px"><div class="ticket-in"><div class="t-body" style="padding-bottom:6px"><div class="eyebrow">Мои партии</div></div>
         ${mine.map((g) => { const opp = g.a === me.id ? g.b : g.a, pp = personOf(opp), myTurn = g.turn === me.id;
           const st = g.status === "invite" ? (g.b === me.id ? "зовёт тебя сыграть" : "ждём, пока примет") : myTurn ? "твой ход" : "ход соперника";
           return `<button class="w-grow ${g.status === "invite" && g.b === me.id ? "hot" : myTurn ? "hot" : ""}" type="button" data-gopen="${g.id}">${avaP({ ...pp, id: opp })}<span class="wg-t"><b>${GAMES_W[g.kind].name} · ${esc(pp.nick)}</b><small>${st}</small></span><em>›</em></button>`; }).join("")}</div></div>` : ""}`;
   };
-  const drawWorldStatus = () => {
-    const box = $("wStatus"); if (!box) return;
+  const drawWorldHead = () => {
+    const box = $("wHead"); if (!box) return;
     const pr = myPres(); W.sharing = !!(pr?.visible && pr?.lat != null); if (W.sharing) startGeoWatch();
-    box.innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:10px">
-      <div class="eyebrow">Чем сейчас занят</div>
-      <div class="w-sts">${W_STATUS.map(([e2, l]) => `<button type="button" data-wst="${e2}|${l}" aria-pressed="${pr?.status === l}">${e2} ${l}</button>`).join("")}</div>
-      <button class="host-row" type="button" data-wshare role="switch" aria-checked="${W.sharing}" style="border:0;padding:4px 0"><span class="hr-ic">📍</span><span class="hr-t"><b>Показывать меня на карте</b><small>${W.sharing ? "дачники видят, где ты" : "сейчас тебя не видно"}</small></span><i class="switch ${W.sharing ? "on" : ""}"></i></button>
-      <button class="pill wide" type="button" data-winvite>Позвать дачника</button>
-    </div></div></div>`;
+    const L2 = wLevel(lvlXP(me.id));
+    box.innerHTML = `<div class="w-head2">
+      <div class="wh-row"><span class="wh-av">${avaP(me)}<b class="w-lv">${L2.lvl}</b></span>
+        <span class="wh-t"><b>${L2.lvl} уровень дачника</b><i><em style="width:${L2.pct}%"></em></i><small>${L2.xp} XP · до ${L2.lvl + 1}-го ${L2.left}</small></span>
+        <button class="wh-show ${W.sharing ? "on" : ""}" type="button" data-wshare aria-pressed="${W.sharing}"><span class="wh-sw"><i></i></span><small>${W.sharing ? "меня видно" : "отображать меня"}</small></button></div>
+      <div class="wh-sts">${W_STATUS.map(([e2, l]) => `<button type="button" data-wst="${e2}|${l}" aria-pressed="${pr?.status === l}" title="${l}">${e2}</button>`).join("")}
+        <button class="wh-call" type="button" data-winvite>позвать</button></div>
+      ${pr?.status ? `<div class="wh-now">${esc(pr.emoji || "")} ${esc(pr.status)}</div>` : ""}
+    </div>`;
   };
+  const drawWorldStatus = () => drawWorldHead();
   const drawWorldRate = () => {
     const box = $("wRate"); if (!box) return;
     const top = [...W.levels].filter(([, xp]) => xp > 0).sort((a, b) => b[1] - a[1]).slice(0, 15).map(([user_id, xp]) => ({ user_id, xp }));
@@ -6770,13 +6861,13 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const start = async (u) => {
       const { data: id, error } = await sb.rpc("game_invite", { k, opp: u });
       if (error) return toast("Не получилось: " + humanErr(error));
-      sb.functions.invoke("tg", { body: { action: "world_invite", to: u, what: k === "chess" ? "сыграть в шахматы" : "сыграть в шашки", game: id } }).catch(() => {});
+      sb.functions.invoke("tg", { body: { action: "world_invite", to: u, what: { chess: "сыграть в шахматы", checkers: "сыграть в шашки", durak: "сыграть в дурака" }[k], game: id } }).catch(() => {});
       haptic("card"); toast(`Позвал ${personOf(u).nick}. Как примет — начнёте`);
       go("game", id);
     };
     if (uid) return start(uid);
     if (!people.length) await loadPeople();
-    pickPerson({ title: k === "chess" ? "С кем в шахматы?" : "С кем в шашки?", sub: "бот пришлёт приглашение в Telegram", exclude: [me.id], onPick: start });
+    pickPerson({ title: { chess: "С кем в шахматы?", checkers: "С кем в шашки?", durak: "С кем в дурака?" }[k], sub: "бот пришлёт приглашение в Telegram", exclude: [me.id], onPick: start });
   };
   // while I share, my pin follows me: the phone reports moves, we send them when I moved ≥ 15 m or every 30 s
   const geoDist = (a, b) => { const R = 6371e3, t = Math.PI / 180, dl = (b.lat - a.lat) * t, dn = (b.lng - a.lng) * t;
@@ -6872,7 +6963,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (G.local || !gameId) return;
     const { data } = await sb.from("world_games").select("*").eq("id", gameId).maybeSingle();
     if (!data) return; const changed = !G.row || data.ver !== G.row.ver || data.status !== G.row.status;
-    G.row = data; if (changed) { G.sel = null; drawGame(); }
+    G.row = data;
+    if (data.kind === "durak") { const { data: h } = await sb.from("durak_hands").select("cards").eq("game_id", data.id).eq("user_id", me.id).maybeSingle(); G.hand = h?.cards || []; }
+    if (changed) { G.sel = null; drawGame(); }
   };
   const renderGame = async () => {
     const box = $("gameBox");
@@ -6885,8 +6978,58 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     G.sel = null; drawGame();
   };
   const CH_GLYPH = { k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" }, CH_LINE = { k: "♔", q: "♕", r: "♖", b: "♗", n: "♘", p: "♙" };
+  // ---------- durak ----------
+  const DK_R = "6789TJQKA", DK_SHOW = { T: "10", J: "В", Q: "Д", K: "К", A: "Т" }, DK_SUIT = { S: "♠", H: "♥", D: "♦", C: "♣" };
+  const dkRank = (c) => DK_R.indexOf(c[0]);
+  const dkBeats = (d, a, tr) => (d[1] === a[1] && dkRank(d) > dkRank(a)) || (d[1] === tr[1] && a[1] !== tr[1]);
+  const dkCard = (c, cls = "", attr = "") => `<span class="dk-card ${"HD".includes(c[1]) ? "red" : ""} ${cls}" ${attr}><b>${DK_SHOW[c[0]] || c[0]}</b><i>${DK_SUIT[c[1]]}\uFE0E</i><em>${DK_SUIT[c[1]]}\uFE0E</em></span>`;
+  const drawDurak = () => {
+    const box = $("gameBox"), r = G.row, st = r.state || {}, tr = st.trump || "6S", opp = r.a === me.id ? r.b : r.a, pp = personOf(opp);
+    const tbl = st.table || [], iAtt = st.att === me.id, myTurn = r.status === "active" && r.turn === me.id, open = tbl.filter((x) => !x[1]).length;
+    const hand = [...(G.hand || [])].sort((x, y) => (x[1] === tr[1]) - (y[1] === tr[1]) || x[1].localeCompare(y[1]) || dkRank(x) - dkRank(y));
+    const oppN = st.hands?.[opp] ?? 0, ranksOn = new Set(tbl.flat().filter(Boolean).map((c) => c[0]));
+    const playable = (c) => !myTurn ? false : iAtt ? (!tbl.length || ranksOn.has(c[0])) && tbl.length < 6 : tbl.some((x) => !x[1] && dkBeats(c, x[0], tr));
+    let line;
+    if (r.status === "invite") line = r.b === me.id ? `<b>${esc(personOf(r.a).nick)}</b> зовёт тебя в дурака` : `Ждём, пока ${esc(personOf(r.b).nick)} примет приглашение`;
+    else if (r.status === "declined") line = "Партия отменена";
+    else if (r.status === "done") line = r.result === "draw" ? "Ничья · +15 XP обоим" : r.winner === me.id ? "Ты не дурак! Победа +30 XP" : `Ты остался дураком · +10 XP`;
+    else line = myTurn ? (iAtt ? (tbl.length ? (open ? "Ждём защиту" : "Подкинь или «бито»") : "Твой ход — ходи картой") : "Отбивайся или бери") : (iAtt ? "Соперник отбивается" : "Соперник ходит");
+    box.innerHTML = `<div class="g-wrap g-durak">
+      <div class="g-title"><span class="gt-code">CRD · подкидной</span><b>Дурак</b></div>
+      <div class="g-player ${r.turn === opp ? "act" : ""}">${avaP({ ...pp, id: opp })}<span class="gp-t"><b>${esc(pp.nick)}</b><small>${oppN} карт${st.att === opp ? " · ходит" : " · отбивается"}</small></span>
+        <span class="dk-backs">${Array.from({ length: Math.min(oppN, 8) }, () => `<i></i>`).join("")}</span></div>
+      <div class="dk-felt">
+        <div class="dk-deck">${st.deck ? `<span class="dk-trump">${dkCard(tr)}</span><span class="dk-stack"><b>${st.deck}</b></span>` : `<span class="dk-trumpsuit ${"HD".includes(tr[1]) ? "red" : ""}">${DK_SUIT[tr[1]]}\uFE0E<small>козырь</small></span>`}</div>
+        <div class="dk-table">${tbl.length ? tbl.map((x, i) => `<button type="button" class="dk-pair ${!x[1] && G.sel && dkBeats(G.sel, x[0], tr) ? "can" : ""}" data-dkpair="${i}">${dkCard(x[0])}${x[1] ? dkCard(x[1], "def") : ""}</button>`).join("") : `<span class="dk-empty">${r.status === "active" ? "стол пуст" : ""}</span>`}</div>
+        ${st.out ? `<span class="dk-out">бито ${st.out}</span>` : ""}
+      </div>
+      <div class="g-line ${myTurn ? "mine" : ""}">${line}</div>
+      <div class="dk-hand">${hand.map((c) => dkCard(c, `${playable(c) ? "ok" : "dim"} ${G.sel === c ? "sel" : ""}`, `data-dkc="${c}" role="button" tabindex="0"`)).join("")}</div>
+      <div class="g-acts">${r.status === "invite" && r.b === me.id ? `<button class="pill" type="button" data-gaccept>принять</button><button class="pill ghost" type="button" data-gdecline>отказаться</button>`
+        : myTurn && iAtt && tbl.length && !open ? `<button class="pill" type="button" data-dkact="done">бито</button>`
+        : myTurn && !iAtt && open ? `<button class="pill red" type="button" data-dkact="take">беру</button>` : ""}
+        ${r && ["active", "invite"].includes(r.status) ? `<button class="pill sm ghost" type="button" data-gresign>${r.status === "invite" ? "отменить" : "сдаться"}</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
+    </div>`;
+  };
+  const dkPlay = async (act, card = null, i = null) => {
+    if (G.busy) return; G.busy = true;
+    const { error } = await sb.rpc("durak_play", { g: G.row.id, act, card, i });
+    G.busy = false; G.sel = null;
+    if (error) { toast({ "rank not on table": "Подкинуть можно только карту того же достоинства", "table full": "Больше подкинуть нельзя", "does not beat": "Эта карта не бьёт", "not your turn": "Сейчас не твой ход" }[error.message.match(/rank not on table|table full|does not beat|not your turn/)?.[0]] || "Не получилось: " + humanErr(error)); }
+    haptic("tap"); await refreshGame(); drawGame();
+  };
+  const dkTapCard = (c) => {
+    const r = G.row, st = r.state || {}, tbl = st.table || [], tr = st.trump;
+    if (r.status !== "active" || r.turn !== me.id) return;
+    if (st.att === me.id) return dkPlay("attack", c);
+    const targets = tbl.map((x, i) => (!x[1] && dkBeats(c, x[0], tr) ? i : -1)).filter((i) => i >= 0);
+    if (!targets.length) return toast("Эта карта ничего не бьёт");
+    if (targets.length === 1) return dkPlay("defend", c, targets[0]);
+    G.sel = c; haptic("tap"); drawDurak(); toast("Нажми, какую карту на столе бьёшь");
+  };
   const drawGame = () => {
     const box = $("gameBox"); if (!box || S.view !== "game") return;
+    if (G.row?.kind === "durak") return drawDurak();
     const k = gKind(), st = gState(), flip = !G.local && myColor() === "b";
     let squares = [], status = "", over = null, targets = [], last = st.last || [];
     if (k === "chess") {
@@ -6974,6 +7117,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   };
   $("gameBox").addEventListener("click", async (e) => {
     const sq = e.target.closest("[data-sq]"); if (sq) return tapSquare(+sq.dataset.sq);
+    const dc = e.target.closest("[data-dkc]"); if (dc) return dkTapCard(dc.dataset.dkc);
+    const dp = e.target.closest("[data-dkpair]"); if (dp && G.sel) return dkPlay("defend", G.sel, +dp.dataset.dkpair);
+    const da = e.target.closest("[data-dkact]"); if (da) return dkPlay(da.dataset.dkact);
     const b = e.target.closest("button"); if (!b) return;
     if (b.hasAttribute("data-gworld")) return go("world");
     if (b.hasAttribute("data-grestart")) { G.local = null; return renderGame(); }
