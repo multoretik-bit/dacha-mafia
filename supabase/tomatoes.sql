@@ -21,7 +21,7 @@ begin
   if me_ is null then raise exception 'login'; end if;
   if to_ = me_ then raise exception 'self'; end if;
   if not exists (select 1 from profiles where id = to_ and tg_id is not null) then raise exception 'no such person'; end if;
-  if exists (select 1 from tomato_throws where from_id = me_ and created_at > now() - interval '10 seconds') then raise exception 'too fast'; end if;
+  -- 06.11: no cooldown between throws, any number to anyone
   update profiles set tomatoes = tomatoes - 1 where id = me_ and tomatoes > 0 returning tomatoes into left_;
   if left_ is null then raise exception 'no tomatoes'; end if;
   insert into tomato_throws (from_id, to_id) values (me_, to_);
