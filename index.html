@@ -2051,6 +2051,15 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .cb.lvl { background: var(--navy-ink); color: #fff; } .cb.lvl b { color: #FFC83D; font-weight: 900; }
 .crew-rank { font: 700 13px/1 var(--f-code); color: var(--muted); margin-left: auto; padding-right: 2px; }
 
+/* compact top row (06.11) */
+.hub-top { display: grid !important; grid-template-columns: minmax(0, auto) 1fr auto; gap: 8px !important; }
+.hub-top .crew-combo { min-width: 0; justify-self: start; }
+.hub-top .bal-pill { justify-self: end; margin-left: 0; padding: 0 12px; min-height: 40px; white-space: nowrap; }
+.hub-top #hubMe { flex: none; }
+.crew-combo .crew-btn { gap: 6px; padding: 4px 8px 4px 5px; min-width: 0; }
+.crew-combo .crew-n { display: grid; line-height: 1; text-align: left; } .crew-combo .crew-n b { font: 800 15px/1 var(--f-body); color: #071B4D; } .crew-combo .crew-n small { font: 700 10.5px/1.2 var(--f-body); color: var(--muted); }
+.crew-combo .crew-faces .ava, .crew-combo .crew-faces .prem { width: 28px; height: 28px; }
+.crew-combo .map-btn { width: 36px; height: 36px; }
 /* дачники + карта (06.11) */
 .crew-combo { display: inline-flex; align-items: center; border-radius: 999px; background: #fff; box-shadow: 0 0 0 1px var(--hair), 0 4px 12px -6px rgba(15,23,42,.25); }
 .crew-combo .crew-btn { box-shadow: none; background: none; padding-right: 10px; } .crew-combo .crew-n { white-space: nowrap; }
@@ -2927,7 +2936,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106113041"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106113501"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -5134,8 +5143,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   };
   const drawCrewBtn = () => {
     const withPhoto = people.filter((p) => p.tg_photo).sort((a, b) => b.games - a.games);
-    $("crewFaces").innerHTML = withPhoto.length ? withPhoto.slice(0, 3).map((p) => avaP(p)).join("") : `<span class="ic">${icon("user")}</span>`;
-    $("crewN").textContent = people.length ? `${people.length} ${plural(people.length, "дачник", "дачника", "дачников")}` : "дачники";
+    $("crewFaces").innerHTML = withPhoto.length ? withPhoto.slice(0, 2).map((p) => avaP(p)).join("") : `<span class="ic">${icon("user")}</span>`;
+    $("crewN").innerHTML = people.length ? `<b>${people.length}</b><small>${plural(people.length, "дачник", "дачника", "дачников")}</small>` : "дачники";
   };
   $("hubPrem").onclick = () => go("premium");
   $("hubBdays").onclick = (e) => { const b = e.target.closest("[data-id]"); if (b) go("profile", b.dataset.id); };
