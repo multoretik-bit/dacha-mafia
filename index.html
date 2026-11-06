@@ -2588,7 +2588,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106062817"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106063410"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -2747,8 +2747,17 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     : ava(p?.nick, p?.id, extra, p?.tg_photo);
   const canHost = () => !!me?.canHost;
   const tgLine = (p) => (p?.tg_username ? "@" + p.tg_username : p?.tg_name || "");
+  // money requests: ✓ confirms; ✕ deletes the request for good (+24 h before its author may ask again)
+  const decideReq = async (tx, ok) => {
+    if (ok) return sb.rpc("pay_decide", { tx, ok: true });
+    const r = await sb.rpc("req_reject", { tx });
+    if (r.error) return r;
+    return sb.rpc("pay_decide", { tx, ok: false });   // game-payment marks are still just rejected
+  };
   const humanErr = (e) => {
     const m = String(e?.message || e || "");
+    if (/request cooldown/.test(m)) return "Твой запрос отклонили. Новый можно отправить через сутки";
+    if (/too big/.test(m)) return "Слишком большая сумма — пополнение до 20 000 ฿";
     if (/rate limit|too many/i.test(m)) return "Слишком много попыток. Подожди минуту";
     if (/fetch|network/i.test(m)) return "Нет связи с сервером. Проверь интернет";
     return m || "Что-то пошло не так";
@@ -5895,7 +5904,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     }
     if (b.dataset.cancel) { const { error } = await sb.rpc("pay_cancel", { tx: b.dataset.cancel }); if (error) return toast("Не получилось: " + humanErr(error)); return walletChanged(); }
     if (b.dataset.decide) {
-      const { error } = await sb.rpc("pay_decide", { tx: b.dataset.decide, ok: b.dataset.ok === "1" });
+      const { error } = await decideReq(b.dataset.decide, b.dataset.ok === "1");
       if (error) return toast("Не получилось: " + humanErr(error));
       if (b.dataset.ok === "1") notifyTx(b.dataset.decide);
       toast(b.dataset.ok === "1" ? "Подтверждено, баланс пополнен" : "Отмечено: не получено"); haptic("tap");
@@ -6041,7 +6050,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const b = e.target.closest("[data-rq]"); if (!b) return;
     const ok = b.dataset.ok === "1";
     const run = async () => {
-      const { error } = await sb.rpc("pay_decide", { tx: b.dataset.rq, ok });
+      const { error } = await decideReq(b.dataset.rq, ok);
       if (error) return toast("Не получилось: " + humanErr(error));
       if (ok) notifyTx(b.dataset.rq);
       haptic("tap"); toast(ok ? "Подтверждено" : "Отклонено"); renderReq(); refreshReqCount();
