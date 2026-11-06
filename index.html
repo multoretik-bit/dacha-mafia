@@ -2051,6 +2051,16 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .cb.lvl { background: var(--navy-ink); color: #fff; } .cb.lvl b { color: #FFC83D; font-weight: 900; }
 .crew-rank { font: 700 13px/1 var(--f-code); color: var(--muted); margin-left: auto; padding-right: 2px; }
 
+/* online row (06.11) */
+.online-row { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 4px; padding: 12px 14px; border-radius: 20px; background: #fff; box-shadow: var(--sh); text-align: left; color: #071B4D; }
+.online-row:active { transform: scale(.98); }
+.or-ic { display: flex; flex: none; } .or-ic i { width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center; font-style: normal; margin-left: -6px; border: 2px solid #fff; }
+.or-ic i:first-child { margin-left: 0; background: #1A2147; color: #fff; font-size: 17px; font-family: "Segoe UI Symbol", "Apple Symbols", serif; }
+.or-ic i.ck { background: #E3263A; } .or-ic i.ck::after { content: ""; width: 14px; height: 14px; border-radius: 50%; background: #FFF6E4; border: 2px solid #071B4D; }
+.or-ic i.cd { background: #fff; color: #E3263A; font: 900 14px/1 var(--f-code); box-shadow: inset 0 0 0 2px #071B4D; }
+.or-t { display: grid; gap: 2px; flex: 1; min-width: 0; } .or-t b { font: 800 15px/1.1 var(--f-body); } .or-t small { font-weight: 700; font-size: 12px; color: var(--muted); }
+.or-n { min-width: 22px; height: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 99px; background: #E3263A; color: #fff; font: 900 12px/22px var(--f-body); font-style: normal; text-align: center; }
+.or-go { font-size: 22px; color: var(--muted); }
 /* compact top row (06.11) */
 .hub-top { display: grid !important; grid-template-columns: minmax(0, auto) 1fr auto; gap: 8px !important; }
 .hub-top .crew-combo { min-width: 0; justify-self: start; }
@@ -2474,6 +2484,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   <!-- HUB: DACHA main page -->
   <section id="vWorld" class="col" hidden></section>
   <section id="vGame" class="col" hidden><div id="gameBox"></div></section>
+  <section id="vOnline" class="col" hidden><div class="sec-title" style="margin:2px 2px 10px">Онлайн-игры</div><div id="hubOnline"></div></section>
   <section id="vHub" class="col" hidden>
     <div class="game-on" id="gameOnHub" hidden></div>
     <div class="hub-top">
@@ -2494,10 +2505,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     <div id="hubBdays" hidden></div>
     <div class="sec-title">Ивенты</div>
     <div class="games" id="hubGames"></div>
-    <div class="sec-title">Онлайн</div>
-    <div id="hubOnline"></div>
     <div class="sec-title" id="ceTitle">Ивенты дачников</div>
     <div id="hubCev"></div>
+    <button class="online-row" id="goOnline" type="button"><span class="or-ic"><i>♚︎</i><i class="ck"></i><i class="cd">A</i></span><span class="or-t"><b>Онлайн-игры</b><small>шахматы · шашки · дурак</small></span><em class="or-n" id="onlineN" hidden></em><span class="or-go">›</span></button>
     <button class="pm-card" type="button" id="hubPrem" hidden><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ и 50 🍅 каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>
     <div data-ad-slot></div>
     <div class="row-btns">
@@ -2936,7 +2946,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106113501"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106114049"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3250,7 +3260,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   });
 
   /* ---------- navigation ---------- */
-  const VIEWS = ["vGame", "vWorld", "vRat", "vCev", "vReq", "vPremium", "vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
+  const VIEWS = ["vOnline", "vGame", "vWorld", "vRat", "vCev", "vReq", "vPremium", "vPay", "vHub", "vCrew", "vSport", "vHome", "vAuth", "vProfile", "vPeople", "vMonth", "vDeck", "vPick", "vCount", "vRoles", "vLive", "vDeal", "vDone", "vCard", "vNotes", "vEvents", "vPlayer"];
   let profileId = null;
   const online = () => S.hostMode === "online";
   const hostView = () => {
@@ -3284,7 +3294,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (view === "pay" && S.view !== "pay") payFrom = S.view;
     if (view === "profile" && !profileId) view = "auth";
     S.view = view;
-    const id = { game: "vGame", world: "vWorld", ratings: "vRat", cevent: "vCev", sportlist: "vSport", sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
+    const id = { online: "vOnline", game: "vGame", world: "vWorld", ratings: "vRat", cevent: "vCev", sportlist: "vSport", sportrate: "vSport", sportorg: "vSport", requests: "vReq", premium: "vPremium", pay: "vPay", hub: "vHub", crew: "vCrew", sport: "vSport", home: "vHome", auth: "vAuth", profile: "vProfile", people: "vPeople", month: "vMonth", deck: "vDeck", host: null, card: "vCard", notes: "vNotes", events: "vEvents", player: "vPlayer" }[view] || hostView();
     VIEWS.forEach((v) => ($(v).hidden = v !== id));
     $("topbar").hidden = view === "hub";
     if (typeof checkBlock === "function") try { checkBlock(); } catch {}
@@ -3292,7 +3302,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     renderTabs(view);
     if (id !== "vLive") stopLive();
     ({
-      vGame: () => renderGame(), vWorld: () => renderWorld(), vRat: renderRat, vCev: renderCev, vReq: renderReq, vPremium: renderPremium, vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
+      vOnline: () => drawHubOnline(), vGame: () => renderGame(), vWorld: () => renderWorld(), vRat: renderRat, vCev: renderCev, vReq: renderReq, vPremium: renderPremium, vPay: renderPay, vHub: renderHub, vCrew: renderCrew, vSport: () => renderSport(),
       vHome: renderHome, vAuth: renderAuth, vProfile: renderProfile, vPeople: renderPeople, vMonth: () => { boardMonth = null; drawMonth(); }, vDeck: renderDeck,
       vPick: renderPick, vCount: renderCount, vRoles: renderRoles, vLive: renderLive, vDeal: renderDeal, vDone: renderDone,
       vCard: renderCard, vNotes: () => renderNotes(false), vEvents: renderEvents, vPlayer: renderPlayer,
@@ -3356,7 +3366,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     $("goPeople").setAttribute("aria-label", ["sport", "sportorg", "sportlist", "sportrate"].includes(view) ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("goPeople").setAttribute("aria-label", view === "sport" ? "Рейтинг: " + (SPORTS[sportId]?.name || "") : "Рейтинг мафии");
     $("topTitle").hidden = !!set.length;
-    $("topTitle").textContent = { game: "игра", world: "dacha world", ratings: "рейтинги", cevent: "ивент", host: "раздача", events: "запись", sportlist: "запись", sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
+    $("topTitle").textContent = { online: "онлайн", game: "игра", world: "dacha world", ratings: "рейтинги", cevent: "ивент", host: "раздача", events: "запись", sportlist: "запись", sportrate: "рейтинг", sportorg: "организатор", requests: "запросы", premium: "premium", pay: "баланс и оплата", home: "мафия", profile: "профиль", people: "рейтинг мафии", month: "мафия · месяц", auth: "вход", deck: "колода", crew: "дачники", sport: SPORTS[sportId]?.name.toLowerCase() }[view] || "";
   };
 
   const renderHostAccess = () => {
@@ -6787,7 +6797,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     clearInterval(W.timer); W.timer = setInterval(() => { if (!inMap()) return clearInterval(W.timer); if (W.sharing && W.watch == null) shareLocation(true); }, 120000);
   };
   let worldT = 0;
-  const worldAgain = () => { clearTimeout(worldT); worldT = setTimeout(async () => { if (S.view === "game") return refreshGame(); if (S.view === "hub") return drawHubOnline(); if (!inMap() || !W.dacha) return; await loadWorld(); drawWorldMap(); }, 400); };
+  const worldAgain = () => { clearTimeout(worldT); worldT = setTimeout(async () => { if (S.view === "game") return refreshGame(); if (S.view === "hub" || S.view === "online") return drawHubOnline(); if (!inMap() || !W.dacha) return; await loadWorld(); drawWorldMap(); }, 400); };
   const drawWorldMap = () => {
     if (!window.maplibregl || !$("wMap")) return;
     if (!W.map || W.map.getContainer() !== $("wMap")) {
@@ -6883,8 +6893,12 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (!$("hubOnline")) return;
     drawWorldGames();
     if (!me || !sb) return;
-    await loadMyGames(); if (S.view !== "hub") return; drawWorldGames();
+    await loadMyGames(); drawOnlineBadge(); if (S.view !== "online") return; drawWorldGames();
     if (!W.gchan) W.gchan = sb.channel("mygames").on("postgres_changes", { event: "*", schema: "public", table: "world_games" }, worldAgain).subscribe();
+  };
+  const drawOnlineBadge = () => {
+    const n = me ? W.games.filter((g) => (g.status === "invite" && g.b === me.id) || (g.status === "active" && g.turn === me.id)).length : 0;
+    const b = $("onlineN"); if (!b) return; b.hidden = !n; b.textContent = n;
   };
   const drawWorldGames = () => {
     const box = $("hubOnline"); if (!box) return;
@@ -7098,7 +7112,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       <div class="g-acts">${r.status === "invite" && r.b === me.id ? `<button class="pill" type="button" data-gaccept>принять</button><button class="pill ghost" type="button" data-gdecline>отказаться</button>`
         : myTurn && iAtt && tbl.length && !open ? `<button class="pill" type="button" data-dkact="done">бито</button>`
         : myTurn && !iAtt && open ? `<button class="pill red" type="button" data-dkact="take">беру</button>` : ""}
-        ${r && ["active", "invite"].includes(r.status) ? `<button class="pill sm ghost" type="button" data-gresign>${r.status === "invite" ? "отменить" : "сдаться"}</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>на главную</button></div>
+        ${r && ["active", "invite"].includes(r.status) ? `<button class="pill sm ghost" type="button" data-gresign>${r.status === "invite" ? "отменить" : "сдаться"}</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
     </div>`;
   };
   const dkPlay = async (act, card = null, i = null) => {
@@ -7160,7 +7174,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       <div class="g-line ${gMyTurn() && !done ? "mine" : ""}">${status ? `<em>${status}</em> ` : ""}${line}</div>
       <div class="g-acts">${row?.status === "invite" && row.b === me.id ? `<button class="pill" type="button" data-gaccept>принять</button><button class="pill ghost" type="button" data-gdecline>отказаться</button>`
         : row && ["active", "invite"].includes(row.status) ? `<button class="pill sm ghost" type="button" data-gresign>${row.status === "invite" ? "отменить" : "сдаться"}</button>`
-        : G.local ? `<button class="pill sm ghost" type="button" data-grestart>заново</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>на главную</button></div>
+        : G.local ? `<button class="pill sm ghost" type="button" data-grestart>заново</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
     </div>`;
     if (over && !done && !G.busy) finishGame(over);
   };
@@ -7211,7 +7225,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const dp = e.target.closest("[data-dkpair]"); if (dp && G.sel) return dkPlay("defend", G.sel, +dp.dataset.dkpair);
     const da = e.target.closest("[data-dkact]"); if (da) return dkPlay(da.dataset.dkact);
     const b = e.target.closest("button"); if (!b) return;
-    if (b.hasAttribute("data-gworld")) return go("hub");
+    if (b.hasAttribute("data-gworld")) return go("online");
     if (b.hasAttribute("data-grestart")) { G.local = null; return renderGame(); }
     if (b.hasAttribute("data-gaccept") || b.hasAttribute("data-gdecline")) {
       const { error } = await sb.rpc("game_answer", { g: G.row.id, ok: b.hasAttribute("data-gaccept") });
@@ -7222,6 +7236,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   });
 
 
+  $("goOnline").onclick = () => { haptic("tap"); go("online"); };
   $("hubOnline").addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
     if (!me) return go("auth");
