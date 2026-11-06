@@ -1963,6 +1963,25 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 #goReq { display: inline-flex; align-items: center; gap: 7px; }
 #goReq[hidden] { display: none; }
 
+/* top-up currencies (06.11) */
+.cur-seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 16px; background: var(--soft, #EEF0F5); }
+.cur-seg button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 42px; border-radius: 12px; font: 800 14px/1 var(--f-body); color: var(--muted); }
+.cur-seg button i { font-style: normal; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: rgba(7,27,77,.08); color: var(--navy-ink); font-weight: 900; font-size: 13px; }
+.cur-seg button[aria-selected="true"] { background: #fff; color: var(--navy-ink); box-shadow: 0 1px 4px rgba(15,23,42,.14); }
+.cur-seg button[aria-selected="true"] i { background: var(--navy-ink); color: #fff; }
+.fx-box { display: grid; gap: 2px; padding: 12px 14px; border-radius: 16px; background: linear-gradient(135deg, #0B2466, var(--navy-ink, #071B4D)); color: #fff; }
+.fx-box span { font: 800 11px/1 var(--f-body); letter-spacing: .12em; text-transform: uppercase; opacity: .7; }
+.fx-box b { font: 700 32px/1.1 var(--f-code); font-variant-numeric: tabular-nums; }
+.fx-box small { font-weight: 700; font-size: 12px; opacity: .75; }
+.usdt-card { gap: 10px; }
+.usdt-net { justify-self: center; padding: 5px 12px; border-radius: 99px; background: #E7F7EF; color: #12764A; font: 800 12px/1 var(--f-body); }
+.usdt-addr { display: grid; gap: 4px; width: 100%; padding: 10px 12px; border-radius: 14px; background: var(--soft, #EEF0F5); text-align: center; }
+.usdt-addr code { font: 700 13px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--navy-ink); overflow-wrap: anywhere; }
+.usdt-addr span { font: 800 12px/1 var(--f-body); color: var(--blue); }
+.usdt-addr:active { transform: scale(.98); }
+.qr-cap { font-weight: 900; color: var(--navy-ink); }
+.qr-one .t-body { gap: 12px; }
+
 /* topbar back button */
 .back-btn { display: flex; align-items: center; gap: 2px; width: auto !important; padding: 2px 6px 2px 0; }
 .back-btn img { width: 44px; height: auto; display: block; filter: drop-shadow(0 2px 3px rgba(9,47,128,.25)); }
@@ -2596,7 +2615,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106070904"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106072054"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3241,6 +3260,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     $("profBtns").innerHTML = `${premCard}${notifyCard}${iconPick}${myQr !== null ? `<div class="ticket qr-one" style="width:100%"><div class="ticket-in"><div class="t-body">
         ${extra?.pay_qr ? `<div class="qr-one-row"><img class="qr-one-img" src="${esc(extra.pay_qr)}" alt="Мой скан"><div class="qr-one-acts"><button class="pill sm" type="button" data-qrup="1">заменить скан</button><button class="pill sm ghost" type="button" data-qrdel="1">убрать</button></div></div>`
           : `<button class="pill wide qr-add" type="button" data-qrup="1"><span>＋</span>Добавить скан</button>`}
+        ${canGrant ? (extra?.pay_qr2 ? `<div class="qr-one-row"><img class="qr-one-img" src="${esc(extra.pay_qr2)}" alt="Скан для рублей"><div class="qr-one-acts"><b class="qr-cap">₽ Скан для рублей</b><button class="pill sm" type="button" data-qrup="2">заменить</button><button class="pill sm ghost" type="button" data-qrdel="2">убрать</button></div></div>`
+          : `<button class="pill wide ghost qr-add" type="button" data-qrup="2"><span>₽</span>Добавить скан для рублей</button>`) : ""}
         <input type="file" accept="image/*" id="myQrFile" hidden>
       </div></div></div>` : ""}${canGrant ? `<div class="pm-grant">
         <div class="pm-mark">DACHA <b>PREMIUM</b> · выдаёшь ты</div>
@@ -5694,7 +5715,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     b.innerHTML = `<svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>${money(wal.balance)}`;
     b.setAttribute("aria-label", "Баланс " + money(wal.balance));
   };
-  $("hubBal").onclick = () => openBank();
+  $("hubBal").onclick = () => openPay();
   const openBank = async (mode, toId) => {
     if (!me) return go("auth");
     haptic("tap");
@@ -5787,7 +5808,47 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     return `<button class="pay-btn" type="button" data-pay="${kind}:${e.id}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>Оплатить<b>${e.price} ฿</b></button>`;
   };
   document.addEventListener("click", (e) => { const b = e.target.closest("[data-pay]"); if (!b) return; e.stopPropagation(); e.preventDefault(); const [k, id] = b.dataset.pay.split(":"); openPay(k, id); }, true);
-  let payCtx = null, payAmt = null, payMethod = "qr", payRecv = null;
+  let payCtx = null, payAmt = null, payMethod = "qr", payRecv = null, payCur = "thb";
+  // top-ups: the balance is in baht; rubles and USDT are converted at the Central Bank rate + a margin
+  const USDT_ADDR = "TAva2ZL7qoYeKJPqgHnhKWNDxVnnBhHXXn";
+  const FX_MARGIN = { rub: 1.12, usdt: 1.03 };
+  let fx = null, fxLoading = null;
+  const loadFx = () => fxLoading || (fxLoading = (async () => {
+    try { const c = JSON.parse(localStorage.getItem("dacha.fx") || "null"); if (c && Date.now() - c.at < 6 * 3600e3) { fx = c; return; } } catch {}
+    try {
+      const d = await (await fetch("https://www.cbr-xml-daily.ru/daily_json.js")).json();
+      const thb = d.Valute.THB, usd = d.Valute.USD, rub = thb.Value / thb.Nominal;
+      fx = { rub, usd: rub / (usd.Value / usd.Nominal), date: d.Date, at: Date.now() };
+      try { localStorage.setItem("dacha.fx", JSON.stringify(fx)); } catch {}
+    } catch { try { fx = JSON.parse(localStorage.getItem("dacha.fx") || "null"); } catch {} }
+  })().finally(() => { fxLoading = null; }));
+  const rubFor = (b) => Math.ceil((b * fx.rub * FX_MARGIN.rub) / 10) * 10;
+  const usdtFor = (b) => Math.ceil(b * fx.usd * FX_MARGIN.usdt * 2) / 2;
+  const fmtRub = (n) => n.toLocaleString("ru-RU") + " ₽";
+  const fmtUsdt = (n) => n.toLocaleString("ru-RU", { minimumFractionDigits: n % 1 ? 1 : 0 }) + " USDT";
+  const rubQrs = new Map();
+  const curSwitchHTML = () => `<div class="cur-seg" role="tablist" aria-label="Чем платишь">${[["thb", "฿", "Баты"], ["rub", "₽", "Рубли"], ["usdt", "₮", "USDT"]].map(([k, sym, l]) => `<button type="button" role="tab" data-cur="${k}" aria-selected="${payCur === k}"><i>${sym}</i>${l}</button>`).join("")}</div>`;
+  const fxBoxHTML = (b) => {
+    if (!fx) return `<div class="fx-box"><small>Загружаю курс ЦБ…</small></div>`;
+    const day = fx.date ? new Date(fx.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) : "";
+    return payCur === "rub"
+      ? `<div class="fx-box"><span>К оплате</span><b>${fmtRub(rubFor(b))}</b><small>на баланс придёт ${money(b)} · курс ЦБ ${day ? "на " + day : ""} ${(fx.rub).toFixed(2).replace(".", ",")} ₽ + ${Math.round((FX_MARGIN.rub - 1) * 100)}%</small></div>`
+      : `<div class="fx-box"><span>К оплате</span><b>${fmtUsdt(usdtFor(b))}</b><small>на баланс придёт ${money(b)} · курс по ЦБ ${day ? "на " + day : ""}</small></div>`;
+  };
+  const curPayHTML = (b) => {
+    if (!fx) return "";
+    if (payCur === "rub") {
+      const url = rubQrs.get(ownerId());
+      return url ? `<div class="qr-card"><img src="${esc(url)}" alt="Скан для оплаты в рублях"><p>Отсканируй в приложении банка и переведи <b>${fmtRub(rubFor(b))}</b>.</p>
+          <button class="pill sm ghost" type="button" data-rubsave>⬇ скачать скан</button></div>
+        <button class="pill wide" type="button" data-sendcur="rub">я перевёл ${fmtRub(rubFor(b))}</button>`
+        : `<p class="lead">Скан для рублей ещё не загружен. Напиши @tivishka, он пришлёт реквизиты.</p>`;
+    }
+    return `<div class="qr-card usdt-card"><span class="usdt-net">USDT · сеть TRC20 (Tron)</span><img src="usdt-trc20.png" alt="QR-код адреса USDT TRC20">
+        <button class="usdt-addr" type="button" data-copyaddr title="Скопировать адрес"><code>${USDT_ADDR}</code><span>копировать</span></button>
+        <p>Отправь <b>${fmtUsdt(usdtFor(b))}</b> на этот адрес. Только USDT и только в сети TRC20 — другие монеты и сети потеряются.</p></div>
+      <button class="pill wide" type="button" data-sendcur="usdt">я отправил ${fmtUsdt(usdtFor(b))}</button>`;
+  };
   // every host has his own QR; paying for a date shows the QR of the person hosting it, top-ups show the owner's
   const qrs = new Map();
   let qrSlot = 0;
@@ -5795,6 +5856,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const { data } = await sb.from("profiles").select("id, pay_qr, pay_qr_label, pay_qr2, pay_qr2_label").or("pay_qr.not.is.null,pay_qr2.not.is.null");
     qrs.clear();
     (data || []).forEach((r) => { if (r.pay_qr) qrs.set(r.id, [{ url: r.pay_qr, label: null }]); });
+    rubQrs.clear(); (data || []).forEach((r) => { if (r.pay_qr2) rubQrs.set(r.id, r.pay_qr2); });
   };
   const ownerId = () => people.find((p) => String(p.tg_username || "").toLowerCase() === "tivishka")?.id;
   const qrPack = (uid) => { const list = qrs.get(uid); if (!list) return null; const i = Math.min(qrSlot, list.length - 1); return { list, i, url: list[i].url, label: list[i].label, who: personOf(uid) }; };
@@ -5803,6 +5865,12 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const o = ownerId(); return o && qrs.get(o) ? qrPack(o) : null;
   };
   const openPay = (kind, id) => { haptic("tap"); payCtx = kind && id ? { kind, id } : null; payAmt = null; go("pay"); };
+  document.addEventListener("input", (ev2) => {
+    if (ev2.target.id !== "payAmt" || payCur === "thb" || ctxEvent()) return;
+    const b = parseInt(ev2.target.value, 10) || 0;
+    if ($("fxBox")) $("fxBox").innerHTML = fxBoxHTML(b);
+    if ($("curPay")) $("curPay").innerHTML = curPayHTML(b);
+  });
   const ctxEvent = () => (!payCtx ? null : payCtx.kind === "mafia" ? ev.list.find((x) => x.id === payCtx.id) : sp.events.find((x) => x.id === payCtx.id)) || null;
   const evTitle = (game, id, day) => { const M = meta(game || "mafia"); const e = id && (ev.list.find((x) => x.id === id) || sp.events.find((x) => x.id === id)); const d = e?.day || day; return `${M.emoji} ${game ? M.name : "Пополнение"}${d ? " · " + dayLabel(d) : ""}`; };
   const renderPay = async () => {
@@ -5818,6 +5886,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   };
   const drawPay = () => {
     const bal = +wal.balance || 0, e = ctxEvent(), st = e ? evPayState(e.id) : null;
+    if (!e && payCur !== "thb" && !fx) loadFx().then(() => S.view === "pay" && drawPay());
     const def = e ? e.price : bal < 0 ? -bal : 250;
     const amt = payAmt ?? def;
     $("payTop").innerHTML = `<div class="bal-card ${bal < 0 ? "neg" : bal > 0 ? "pos" : ""}">
@@ -5835,8 +5904,11 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     $("payBody").innerHTML = `
       <div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:12px">
         <div class="eyebrow">${e ? "Оплатить игру" : "Пополнить баланс"}</div>
+        ${e ? "" : curSwitchHTML()}
         ${pm === "bal" ? "" : `<label class="amt-row"><input class="amt" id="payAmt" type="number" inputmode="numeric" min="1" max="100000" step="1" value="${amt}" aria-label="Сумма в батах"><span>฿</span></label>
         <div class="amt-chips">${chips.map((c) => `<button type="button" class="chip" data-amt="${c}" aria-pressed="${c === +amt}">${c === -bal && bal < 0 ? `долг ${c}` : c} ฿</button>`).join("")}</div>`}
+        ${!e && payCur !== "thb" ? `<div id="fxBox">${fxBoxHTML(+amt || 0)}</div>` : ""}
+        <div id="curPay">${!e && payCur !== "thb" ? curPayHTML(+amt || 0) : `
         <div class="pm-tiles ${balOpt ? "three" : ""}" role="group" aria-label="Способ оплаты">
           ${balOpt ? `<button type="button" data-pm="bal" aria-pressed="${pm === "bal"}" class="${(e.hosts || []).length ? "" : "locked"}"><span>${(e.hosts || []).length ? "👛" : "🔒"}</span><b>С баланса</b><small>${(e.hosts || []).length ? `доступно ${money(avail())}` : "ждём ведущего"}</small></button>` : ""}
           <button type="button" data-pm="qr" aria-pressed="${pm === "qr"}"><span>📱</span><b>QR-перевод</b><small>из приложения банка</small></button>
@@ -5856,7 +5928,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
             <button class="pill wide" type="button" data-send="qr">я перевёл ${money(+amt || 0)}</button>`
           : `<p class="lead">${e ? "Ведущий этой игры ещё не добавил свой QR. Можно отдать наличными." : "QR-код ещё не загружен. Пока можно отдать наличными."}</p>`)
           : `<p class="lead">Отдай <b>${money(+amt || 0)}</b> ${e ? "ведущему на месте. Как только он подтвердит, игра будет оплачена." : "при встрече. Как только получение подтвердят, баланс пополнится."}</p>
-            <button class="pill wide" type="button" data-send="cash">отдам ${money(+amt || 0)} наличными</button>`}
+            <button class="pill wide" type="button" data-send="cash">отдам ${money(+amt || 0)} наличными</button>`}`}</div>
         <p class="bio-meta" style="margin:0">${e ? "Оплата засчитается, когда ведущий подтвердит, что получил." : "Баланс пополнится, когда получение подтвердят."}</p>
       </div>
       ${pend.length ? `<div class="sec-label eyebrow">Ждут подтверждения</div>${pend.map((t) => `<div class="tx-row"><span class="tx-ic">⏳</span><span class="tx-t"><b>${t.purpose === "premium" ? `PREMIUM · ${t.amount} ${CUR[t.currency] || "฿"}` : t.purpose === "withdraw" ? `Вывод ${money(-t.amount)}` : t.purpose === "gamepay" ? `Оплата игры ${money(t.amount)} · ${t.method === "qr" ? "QR" : "наличные"}` : `+${money(t.amount)} · ${t.method === "qr" ? "QR" : "наличные"}`}</b><small>${t.purpose === "premium" ? "покупка на месяц" : t.purpose === "withdraw" ? esc(t.note || "") : esc(evTitle(t.game, t.event_id))}</small></span><button class="linkish" type="button" data-cancel="${t.id}">отменить</button></div>`).join("")}` : ""}
@@ -5907,6 +5979,19 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (b.dataset.amt) { payAmt = +b.dataset.amt; return drawPay(); }
     if (b.dataset.pm) { payMethod = b.dataset.pm; haptic("tap"); return drawPay(); }
     if (b.hasAttribute("data-qrsave")) return downloadQR(qrFor(ctxEvent())?.url);
+    if (b.dataset.cur) { payCur = b.dataset.cur; haptic("tap"); return drawPay(); }
+    if (b.hasAttribute("data-rubsave")) return downloadQR(rubQrs.get(ownerId()));
+    if (b.hasAttribute("data-copyaddr")) { try { await navigator.clipboard.writeText(USDT_ADDR); toast("Адрес скопирован"); } catch { toast(USDT_ADDR); } haptic("tap"); return; }
+    if (b.dataset.sendcur) {
+      const baht = parseInt($("payAmt")?.value, 10);
+      if (!(baht >= 1)) return toast("Укажи сумму");
+      if (!fx) return toast("Курс ещё не загрузился, попробуй через секунду");
+      const cur = b.dataset.sendcur, paid = cur === "rub" ? rubFor(baht) : usdtFor(baht);
+      const { data: tid, error } = await sb.rpc("topup_request", { amount: baht, cur: cur === "rub" ? "RUB" : "USD", paid, m: "qr" });
+      if (error) return toast("Не получилось: " + humanErr(error));
+      void tid; haptic("card"); toast(`Отметил: ${cur === "rub" ? fmtRub(paid) : fmtUsdt(paid)}. Баланс пополнится после проверки`);
+      payAmt = null; await walletChanged(); return;
+    }
     if (b.dataset.qrslot) { qrSlot = +b.dataset.qrslot; haptic("tap"); return drawPay(); }
     if (b.hasAttribute("data-topup")) { payCtx = null; payAmt = null; payMethod = "qr"; return drawPay(); }
     if (b.hasAttribute("data-frombal")) {
@@ -6040,7 +6125,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const when = (d) => new Date(d).toLocaleString("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
     const row = (t) => { const pp = personOf(t.user_id);
       const what = t.purpose === "premium" ? `◆ PREMIUM · ${t.amount} ${CUR[t.currency] || "฿"}` : t.purpose === "withdraw" ? `↓ вывести ${money(-t.amount)}` : `+${money(t.amount)}`;
-      const how = t.purpose === "withdraw" ? `куда: ${t.note || "—"}` : t.method === "qr" ? "📱 говорит, что перевёл по QR" : t.method === "transfer" ? "🏦 говорит, что перевёл" : "💵 наличными";
+      const how = t.purpose === "withdraw" ? `куда: ${t.note || "—"}` : t.purpose === "topup" && t.note ? `📱 ${t.note}` : t.method === "qr" ? "📱 говорит, что перевёл по QR" : t.method === "transfer" ? "🏦 говорит, что перевёл" : "💵 наличными";
       return `<div class="tx-row host"><span class="tx-av">${avaP(pp)}</span><span class="tx-t"><b>${esc(pp.nick)} · ${what}</b><small>${esc(how)}${t.purpose === "topup" && t.game ? " · " + esc(evTitle(t.game, t.event_id)) : ""} · ${when(t.created_at)}</small></span>
         <span class="tx-acts"><button class="round sm ok" type="button" data-rq="${t.id}" data-ok="1" aria-label="${t.purpose === "withdraw" ? "Выплатил" : "Получил"}">✓</button><button class="round sm no" type="button" data-rq="${t.id}" data-ok="0" aria-label="Отклонить">✕</button></span></div>`; };
     const sec = (title, hint, list) => `<div class="ticket" style="margin-bottom:12px"><div class="ticket-in"><div class="t-body" style="padding-bottom:8px"><div class="eyebrow">${title} · ${list.length}</div><p class="bio-meta" style="margin:0">${hint}</p></div>
