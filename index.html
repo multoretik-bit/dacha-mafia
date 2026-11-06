@@ -2616,7 +2616,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261106072547"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261106072946"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -5823,10 +5823,10 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       try { localStorage.setItem("dacha.fx", JSON.stringify(fx)); } catch {}
     } catch { try { fx = JSON.parse(localStorage.getItem("dacha.fx") || "null"); } catch {} }
   })().finally(() => { fxLoading = null; }));
-  const rubFor = (b) => Math.ceil((b * fx.rub * FX_MARGIN.rub) / 10) * 10;
-  const usdtFor = (b) => Math.ceil(b * fx.usd * FX_MARGIN.usdt * 2) / 2;
+  const rubFor = (b) => Math.ceil(b * fx.rub * FX_MARGIN.rub);                 // exact, whole rubles
+  const usdtFor = (b) => Math.ceil(b * fx.usd * FX_MARGIN.usdt * 100) / 100;   // exact, to the cent
   const fmtRub = (n) => n.toLocaleString("ru-RU") + " ₽";
-  const fmtUsdt = (n) => n.toLocaleString("ru-RU", { minimumFractionDigits: n % 1 ? 1 : 0 }) + " USDT";
+  const fmtUsdt = (n) => n.toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " USDT";
   const rubQrs = new Map();
   const curSwitchHTML = () => `<div class="cur-seg" role="tablist" aria-label="Чем платишь">${[["thb", "฿", "Баты"], ["rub", "₽", "Рубли"], ["usdt", "₮", "USDT"]].map(([k, sym, l]) => `<button type="button" role="tab" data-cur="${k}" aria-selected="${payCur === k}"><i>${sym}</i>${l}</button>`).join("")}</div>`;
   const fxBoxHTML = (b) => {
@@ -5958,7 +5958,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   // hosts: confirm requests, see debts, take money
   const drawPayHost = async () => {
     const box = $("payHost");
-    if (!canGrant) { box.innerHTML = ""; return; }
+    box.innerHTML = ""; return;   // 06.11: payments and debts are handled in «Запросы»
     let [{ data: pend }, { data: bals }] = await Promise.all([
       sb.from("wallet_tx").select("id, user_id, amount, method, game, event_id, created_at, purpose, currency").eq("status", "pending").order("created_at"),
       sb.rpc("wallet_balances"),
