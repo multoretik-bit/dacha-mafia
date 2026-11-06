@@ -19,20 +19,22 @@
     <!-- ears -->
     <ellipse cx="41.5" cy="57" rx="3.6" ry="5" fill="#EFAB78" stroke="#8A4B1E" stroke-width="1.4"/>
     <ellipse cx="74.5" cy="57" rx="3.6" ry="5" fill="#EFAB78" stroke="#8A4B1E" stroke-width="1.4"/>
-    <!-- bald head -->
-    <path d="M42 58c0-14 7-23 16-23s16 9 16 23c0 6-2 11-4 14H46c-2-3-4-8-4-14z" fill="url(#skin)" stroke="#8A4B1E" stroke-width="1.6"/>
+    <!-- neck -->
+    <rect x="51.5" y="70" width="13" height="15" rx="4" fill="#EFAB78" stroke="#8A4B1E" stroke-width="1.4"/>
+    <!-- bald head, round chin -->
+    <path d="M42 57c0-14 7-22 16-22s16 8 16 22c0 10-6.4 18.6-16 18.6S42 67 42 57z" fill="url(#skin)" stroke="#8A4B1E" stroke-width="1.6"/>
     <!-- shine on the bald head -->
     <path d="M49 42c3-3 7-4 10-3.6" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="2.6" stroke-linecap="round"/>
     <circle cx="64.5" cy="40.5" r="1.4" fill="#fff" fill-opacity=".85"/>
-    <!-- big beard -->
-    <path d="M42.5 58c1 4 3 7 6 8 3-2 6-2.6 9.5-2.6S64.5 64 67.5 66c3-1 5-4 6-8 2 9 1 19-4 25-3 4-7 6-11.5 6s-8.5-2-11.5-6c-5-6-6-16-4-25z" fill="url(#beard)" stroke="#2A160A" stroke-width="1.5" stroke-linejoin="round"/>
-    <path d="M50 74c2 4 4 7 8 9M66 74c-2 4-4 7-8 9M58 70v12" fill="none" stroke="#2A160A" stroke-opacity=".45" stroke-width="1.1" stroke-linecap="round"/>
-    <!-- moustache -->
-    <path d="M58 64.5c-3-1.6-7-1.4-10 1 3 .4 5 1.6 6.4 2.8 1.4-.6 2.6-1.2 3.6-2.6 1 1.4 2.2 2 3.6 2.6 1.4-1.2 3.4-2.4 6.4-2.8-3-2.4-7-2.6-10-1z" fill="#4A2A15" stroke="#2A160A" stroke-width="1.1" stroke-linejoin="round"/>
+    <!-- short trimmed beard along the jaw -->
+    <path d="M42.4 58c.2 9.6 6.6 17.6 15.6 17.6S73.4 67.6 73.6 58c-1 5-2.5 9-5 11-2 2.2-5.6 3.4-10.6 3.4s-8.6-1.2-10.6-3.4c-2.5-2-4-6-5-11z" fill="#3A2618" fill-opacity=".9" stroke="#24160C" stroke-width="1.1" stroke-linejoin="round"/>
+    <g fill="#24160C" fill-opacity=".55"><circle cx="46" cy="66" r=".5"/><circle cx="49" cy="70.6" r=".5"/><circle cx="53" cy="73.4" r=".5"/><circle cx="63" cy="73.4" r=".5"/><circle cx="67" cy="70.6" r=".5"/><circle cx="70" cy="66" r=".5"/></g>
+    <!-- thin moustache -->
+    <path d="M52.4 67.4c2-1.5 4-1.7 5.6-.9 1.6-.8 3.6-.6 5.6.9" fill="none" stroke="#3A2618" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".85"/>
     <!-- tight, unconvinced mouth -->
-    <path d="M55 69.6h6" stroke="#2A160A" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M55.2 70c1.9.6 3.7.6 5.6 0" fill="none" stroke="#8A4B1E" stroke-width="1.5" stroke-linecap="round"/>
     <!-- stern brows -->
-    <path d="M47 49.5l9 2.4M69 49.5l-9 2.4" stroke="#3E2312" stroke-width="3" stroke-linecap="round"/>
+    <path d="M47 49.5l9 2.4M69 49.5l-9 2.4" stroke="#6E4326" stroke-width="2.4" stroke-linecap="round"/>
     <!-- narrowed eyes: "не верю" -->
     <path d="M48.5 55.5c2-1.4 5-1.4 7 0-2 1.6-5 1.6-7 0z" fill="#fff" stroke="#2A1608" stroke-width="1.2" stroke-linejoin="round"/>
     <path d="M60.5 55.5c2-1.4 5-1.4 7 0-2 1.6-5 1.6-7 0z" fill="#fff" stroke="#2A1608" stroke-width="1.2" stroke-linejoin="round"/>
