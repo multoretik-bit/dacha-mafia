@@ -2292,6 +2292,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .wh-sts button { flex: none; width: 38px; height: 38px; border-radius: 50%; background: #F1F3F8; font-size: 18px; display: grid; place-items: center; }
 .wh-sts button[aria-pressed="true"] { background: #FFE9A6; box-shadow: 0 0 0 2.5px #071B4D; }
 .wh-sts .wh-call { width: auto; padding: 0 14px; border-radius: 99px; background: #0033FF; color: #fff; font: 800 13px/1 var(--f-body); margin-left: auto; }
+.wh-geo { border: 0; background: #EAF2FF; color: #0B3B9C; font-family: inherit; font-weight: 800; font-size: 11.5px; line-height: 1; padding: 7px 10px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.wh-geo.bad { background: #FFE7E3; color: #B42318; }
 .wh-now { font-weight: 800; font-size: 12.5px; color: #071B4D; margin-top: -2px; }
 /* game-style map */
 .w-map { background: #DDEBF7; }
@@ -3178,7 +3180,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261107082424"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261107173638"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3514,6 +3516,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   let navBack = false, navReady = false;
   const goBack = () => { haptic("tap"); const t = navStack.pop(); navBack = true; try { go(t ? t.v : "hub", t?.a); } finally { navBack = false; } };
   const go = (view, arg) => {
+    // whatever screen DACHA opens on, the map point of those who share it gets refreshed
+    if (me && !window.__geoBoot) { window.__geoBoot = 1; setTimeout(() => autoHere(), 2500); }
     if (view !== "profile") setPdark(false);
     if (navReady && !navBack && S.view && (S.view !== view || (view === "profile" && arg && arg !== profileId) || (view === "sport" && arg && arg !== sportId))) {
       navStack.push({ v: S.view, a: S.view === "profile" ? profileId : ["sport", "sportorg", "sportrate", "sportlist"].includes(S.view) ? sportId : S.view === "cevent" ? ceId : S.view === "chat" ? chatPeer : S.view === "game" ? gameId : undefined });
@@ -7248,7 +7252,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         <button class="wh-show ${W.sharing ? "on" : ""}" type="button" data-wshare aria-pressed="${W.sharing}"><span class="wh-sw"><i></i></span><small>${W.sharing ? "меня видно" : "отображать меня"}</small></button></div>
       <div class="wh-sts">${W_STATUS.map(([e2, l]) => `<button type="button" data-wst="${e2}|${l}" aria-pressed="${pr?.status === l}" title="${l}">${e2}</button>`).join("")}
         <button class="wh-call" type="button" data-winvite>позвать</button></div>
-      <div class="wh-foot">${pr?.status ? `<span class="wh-now">${esc(pr.emoji || "")} ${esc(pr.status)}</span>` : "<span></span>"}</div>
+      <div class="wh-foot">${pr?.status ? `<span class="wh-now">${esc(pr.emoji || "")} ${esc(pr.status)}</span>` : "<span></span>"}${W.sharing ? (W.geoDenied ? `<button class="wh-geo bad" type="button" data-wgeoset>⚠️ геопозиция выключена — включить</button>` : `<button class="wh-geo" type="button" data-wlive>📡 обновлять всегда</button>`) : ""}</div>
     </div>`;
   };
   const drawWorldStatus = () => drawWorldHead();
@@ -7323,24 +7327,75 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     }, () => {}, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
   };
   const stopGeoWatch = () => { if (W.watch != null) { navigator.geolocation.clearWatch(W.watch); W.watch = null; } };
+  // one reading of where I am: Telegram's own location access first (asked once, Telegram remembers it), the browser's as a fallback
+  const lmReady = () => new Promise((r) => {
+    const lm = tg?.LocationManager; if (!lm?.init || !tg.isVersionAtLeast?.("8.0")) return r(null);
+    if (lm.isInited) return r(lm);
+    let ok = false; const t = setTimeout(() => { if (!ok) r(null); }, 4000);
+    try { lm.init(() => { ok = true; clearTimeout(t); r(lm); }); } catch { clearTimeout(t); r(null); }
+  });
+  const navHere = () => new Promise((r) => {
+    if (!navigator.geolocation) return r({ err: "no geo" });
+    navigator.geolocation.getCurrentPosition((p0) => r({ lat: p0.coords.latitude, lng: p0.coords.longitude, acc: p0.coords.accuracy || 50, src: "nav" }),
+      (e) => r({ err: "nav " + (e?.code || "?") }), { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 });
+  });
+  const getHere = async () => {
+    const lm = await lmReady();
+    const denied = lm && lm.isAccessRequested && !lm.isAccessGranted;
+    if (lm?.isLocationAvailable && !denied) {
+      // the first call shows Telegram's own "allow location" prompt; after that it answers silently
+      const d = await new Promise((r) => { let fin = false; const t = setTimeout(() => { if (!fin) r(null); }, 60000);
+        try { lm.getLocation((x) => { fin = true; clearTimeout(t); r(x); }); } catch { clearTimeout(t); r(null); } });
+      if (d?.latitude != null) return { lat: d.latitude, lng: d.longitude, acc: d.horizontal_accuracy || 50, src: "tg" };
+    }
+    const n = await navHere();
+    if (n.lat == null && lm && lm.isAccessRequested && !lm.isAccessGranted) n.err = "tg denied, " + n.err;
+    else if (n.lat == null && lm && !lm.isLocationAvailable) n.err = "tg off, " + n.err;
+    return n;
+  };
+  // what happened with the location on this phone, so we can see in the base who is actually sending it
+  const geoNote = (t) => { if (geoNote.last === t && Date.now() - geoNote.at < 600000) return; geoNote.last = t; geoNote.at = Date.now(); sb?.rpc("geo_note", { t }).then(() => {}); };
+  const openGeoSettings = () => sheet({ eyebrow: "Карта", title: "Telegram не даёт DACHA геопозицию",
+    text: "У тебя включено «отображать меня», но доступ к геопозиции для DACHA выключен — поэтому точка на карте не обновляется. Включи его один раз в настройках, дальше всё будет само.",
+    ok: "открыть настройки", onOk: () => { try { tg?.LocationManager?.openSettings(); } catch {} } });
   const autoHere = async () => {
     if (!sb || !me || document.hidden) return;
-    if (autoHere.last && Date.now() - autoHere.last < 60000) return; autoHere.last = Date.now();
-    const { data: pr } = await sb.from("world_presence").select("visible, lat, status, emoji").eq("user_id", me.id).maybeSingle();
-    if (!pr?.visible || pr.lat == null) return;
-    const send = (la, ln) => sb.rpc("world_here", { la, ln, st: pr.status || null, em: pr.emoji || null, vis: true }).then(() => {});
-    // everybody who shared before follows himself on the map while DACHA is open, on any screen
-    W.sharing = true;
-    const lm = tg?.LocationManager;
-    if (lm?.init) { try { lm.init(() => { if (!(lm.isLocationAvailable && lm.isAccessGranted)) return;
-      const tick = () => { if (document.hidden) return; lm.getLocation((d) => { if (!d) return; const here = { lat: d.latitude, lng: d.longitude, at: Date.now() };
-        if (W.sent && geoDist(W.sent, here) < 12 && here.at - W.sent.at < 30000) return; W.sent = here; send(d.latitude, d.longitude); }); };
-      tick(); clearInterval(autoHere.t); autoHere.t = setInterval(tick, 30000); }); return; } catch {} }
-    try { const st = await navigator.permissions?.query({ name: "geolocation" }); if (st?.state !== "granted") return; } catch { return; }
-    navigator.geolocation?.getCurrentPosition((p0) => send(p0.coords.latitude, p0.coords.longitude), () => {}, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
-    startGeoWatch();
+    if (autoHere.busy || (autoHere.last && Date.now() - autoHere.last < 20000)) return; autoHere.last = Date.now(); autoHere.busy = true;
+    try {
+      const { data: pr } = await sb.from("world_presence").select("visible, status, emoji").eq("user_id", me.id).maybeSingle();
+      if (!pr?.visible) { clearInterval(autoHere.t); return; }
+      // everybody who ticked «отображать меня» follows himself on the map while DACHA is open, on any screen
+      W.sharing = true;
+      const tick = async () => {
+        if (document.hidden || tick.busy) return; tick.busy = true;
+        try {
+          const h = await getHere();
+          if (h.lat == null) {
+            geoNote(h.err || "no fix");
+            const was = W.geoDenied; W.geoDenied = /tg denied|tg off/.test(h.err || "");
+            if (W.geoDenied !== was) drawWorldHead();
+            // ask to switch it on at most once a day
+            if (W.geoDenied) { const day = new Date().toDateString(); let seen = null; try { seen = localStorage.getItem("geoAsk"); } catch {}
+              if (seen !== day) { try { localStorage.setItem("geoAsk", day); } catch {} openGeoSettings(); } }
+            return;
+          }
+          if (W.geoDenied) { W.geoDenied = false; drawWorldHead(); }
+          const here = { lat: h.lat, lng: h.lng, acc: h.acc, at: Date.now() };
+          W.here = here; W.sent = here;
+          const p2 = myPres() || pr;
+          const { error } = await sb.rpc("world_here", { la: h.lat, ln: h.lng, st: p2.status || null, em: p2.emoji || null, vis: true });
+          geoNote(error ? "send: " + error.message : "ok " + h.src);
+          const mine = W.pres.find((x) => x.user_id === me.id); if (mine) { mine.lat = h.lat; mine.lng = h.lng; mine.updated_at = new Date().toISOString(); }
+          if (inMap()) drawWorldMap();
+          // the browser watcher only makes the pin glide on the map; it is not needed when Telegram gives the place
+          if (h.src === "nav") startGeoWatch();
+        } finally { tick.busy = false; }
+      };
+      clearInterval(autoHere.t); autoHere.t = setInterval(tick, 30000);
+      await tick();
+    } finally { autoHere.busy = false; }
   };
-  document.addEventListener("visibilitychange", () => { if (me && document.visibilityState === "visible") setTimeout(autoHere, 1500); });
+  document.addEventListener("visibilitychange", () => { if (me && document.visibilityState === "visible") { autoHere.last = 0; setTimeout(autoHere, 1500); } });
   const openLiveHelp = () => sheet({ eyebrow: "Карта", title: "Чтобы точка обновлялась всегда",
     text: "Открой чат с ботом @dacha_play_game → 📎 → Геопозиция → «Транслировать геопозицию» → «Пока не выключу». Тогда ты на карте даже с закрытым приложением. Выключить можно в любой момент в том же чате.",
     ok: "открыть бота", onOk: () => { try { tg?.openTelegramLink ? tg.openTelegramLink("https://t.me/dacha_play_game") : window.open("https://t.me/dacha_play_game", "_blank"); } catch { window.open("https://t.me/dacha_play_game", "_blank"); } } });
@@ -7350,15 +7405,19 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       const { error } = await sb.rpc("world_here", { la: lat, ln: lng, st: pr?.status || null, em: pr?.emoji || null, vis: true });
       if (error) { toast("Не получилось: " + humanErr(error)); return res(false); }
       const first = !W.sharing;
-      W.sharing = true; W.sent = { lat, lng, at: Date.now() }; startGeoWatch(); await loadWorld(); drawWorldMap(); drawWorldStatus();
+      W.sharing = true; W.sent = { lat, lng, at: Date.now() }; await loadWorld(); drawWorldMap(); drawWorldStatus();
+      autoHere.last = 0; setTimeout(autoHere, 30000);
       // the bot sends the one-tap way to keep the point fresh with the app closed (Telegram live location)
       if (first && !quiet) { sb.functions.invoke("tg", { body: { action: "live_hint" } }).catch(() => {}); toast("Ты на карте ✓ Бот прислал, как обновлять точку даже с закрытым приложением"); }
       if (!quiet) flyWorld(lat, lng);
       res(true);
     };
-    if (!navigator.geolocation) { toast("Телефон не даёт геолокацию"); return res(false); }
-    navigator.geolocation.getCurrentPosition((p0) => { W.here = { lat: p0.coords.latitude, lng: p0.coords.longitude, acc: p0.coords.accuracy || 50, at: Date.now() }; done(p0.coords.latitude, p0.coords.longitude); },
-      () => { if (!quiet) toast("Разреши доступ к геолокации для Telegram"); res(false); }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+    getHere().then((h) => {
+      if (h.lat == null) { geoNote("share: " + (h.err || "no fix"));
+        if (!quiet) { if (/tg denied|tg off/.test(h.err || "")) openGeoSettings(); else toast("Разреши доступ к геолокации для Telegram"); }
+        return res(false); }
+      W.here = { lat: h.lat, lng: h.lng, acc: h.acc, at: Date.now() }; geoNote("share ok " + h.src); done(h.lat, h.lng);
+    });
   });
 
   /* ---------- games: chess (chess.js) and Russian checkers, live between two phones or on one ---------- */
@@ -7661,11 +7720,12 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       haptic("tap"); await loadWorld(); drawWorldStatus(); drawWorldMap(); return;
     }
     if (b.hasAttribute("data-wshare")) {
-      if (W.sharing) { const pr = myPres(); stopGeoWatch(); await sb.rpc("world_here", { la: null, ln: null, st: pr?.status || null, em: pr?.emoji || null, vis: false }); W.sharing = false; await loadWorld(); drawWorldMap(); drawWorldStatus(); return toast("Тебя больше не видно на карте"); }
+      if (W.sharing) { const pr = myPres(); stopGeoWatch(); clearInterval(autoHere.t); await sb.rpc("world_here", { la: null, ln: null, st: pr?.status || null, em: pr?.emoji || null, vis: false }); W.sharing = false; await loadWorld(); drawWorldMap(); drawWorldStatus(); return toast("Тебя больше не видно на карте"); }
       return shareLocation(false);
     }
     if (b.hasAttribute("data-winvite")) return worldInvite();
     if (b.hasAttribute("data-wlive")) return openLiveHelp();
+    if (b.hasAttribute("data-wgeoset")) return openGeoSettings();
     if (b.dataset.wperson) return openWorldPerson(b.dataset.wperson);
   });
   // @tivishka opens the world to someone from his profile
