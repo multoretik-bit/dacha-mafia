@@ -3178,7 +3178,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261107080922"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261107082424"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3364,12 +3364,18 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const { data: ch } = await sb.rpc("can_host");
     me = { ...data, canHost: !!ch };
   };
-  const loadPeople = async () => {
+  // the list of all dachniki: names and photos everywhere come from here.
+  // An expired session (phone woke the app after an hour) or a network blip used to leave it empty → everyone was «Дачник».
+  let peopleLoading = null;
+  const loadPeople = () => peopleLoading || (peopleLoading = (async () => {
     if (!sb || !me) return people;
-    const { data } = await sb.rpc("leaderboard");
-    if (data) people = data;
+    for (let i = 0; i < 3; i++) {
+      const { data, error } = await sb.rpc("leaderboard");
+      if (!error && data?.length) { people = data; break; }
+      if (i === 0) { try { await sb.auth.refreshSession(); } catch {} } else await new Promise((r) => setTimeout(r, 1500));
+    }
     return people;
-  };
+  })().finally(() => { peopleLoading = null; }));
 
   /* ---------- logos ---------- */
   document.querySelectorAll("[data-logo]").forEach((el) => el.append($("logoTpl").content.cloneNode(true)));
@@ -5209,6 +5215,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   // fallback when the phone slept and the socket dropped
   setInterval(() => { if (me && document.visibilityState === "visible" && (S.view === "card" || S.view === "home" || S.view === "hub")) loadMyCard(); }, 12000);
   document.addEventListener("visibilitychange", () => { if (me && document.visibilityState === "visible") loadMyCard(); });
+  document.addEventListener("visibilitychange", () => { if (me && document.visibilityState === "visible" && !people.length) healPeople(); });
 
   // Telegram keeps the mini app alive in the background; reload quietly when a new version is out
   let updateReady = false;
@@ -5315,7 +5322,17 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (kind === "mafia") { ev.sel = id; go("events"); focusCard(`#eventsList [data-ev="${id}"]`); }
     else { sp.focus = id; slSel = id; go("sportlist", kind); }   // same as mafia: straight to who signed up for that date
   };
-  const personOf = (uid) => people.find((p) => p.id === uid) || { id: uid, nick: "Дачник" };
+  // someone unknown on screen → reload the list once and redraw what is open
+  let healT = 0, healAt = 0;
+  const healPeople = () => {
+    if (healT || !sb || !me || Date.now() - healAt < 20000) return;
+    healT = setTimeout(async () => {
+      healT = 0; healAt = Date.now(); const before = people.length;
+      await loadPeople(); if (people.length === before && before) return;
+      if (isSportView()) renderSport(true); else if (S.view === "events") drawEvents(); else if (S.view === "crew") renderCrew(); else if (S.view === "hub") drawCrewBtn();
+    }, 300);
+  };
+  const personOf = (uid) => people.find((p) => p.id === uid) || (uid && healPeople(), { id: uid, nick: "Дачник" });
   const loadSports = () => sp.loading || (sp.loading = (async () => {
     if (!sb || !me) return;
     await sb.rpc("ensure_sport_events");
