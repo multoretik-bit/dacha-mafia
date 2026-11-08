@@ -2731,6 +2731,136 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .top-cap .fund-pill { min-height: 36px !important; padding: 0 12px 0 10px !important; border-radius: 999px; background: #F1F3F8 !important; gap: 6px; font-size: 13.5px; }
 .top-cap .fund-pill .wal-ic { color: #0B3B9C; }
 .top-cap #hubMe { margin-left: 0; }
+
+/* ===== 08.11: card tables v4 — the felt, durak for a company, «Ривер», lobby ===== */
+.felt2, .dk-felt.felt2 {
+  position: relative; isolation: isolate;
+  background:
+    radial-gradient(90% 70% at 50% 42%, rgba(255,255,255,.13), rgba(255,255,255,0) 62%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.035) 0 1px, transparent 1px 6px),
+    repeating-linear-gradient(-45deg, rgba(0,0,0,.05) 0 1px, transparent 1px 6px),
+    radial-gradient(ellipse at 50% 45%, #1F8A5C 0%, #136443 52%, #0A3F2B 100%) !important;
+  box-shadow: inset 0 0 0 2px #F2C14E, inset 0 0 0 8px #0B2A6B, inset 0 0 0 9.5px rgba(242,193,78,.55), inset 0 10px 40px rgba(0,0,0,.45), 0 22px 40px -22px rgba(7,27,77,.75) !important;
+}
+.dk-felt.felt2 { border-radius: 28px; padding: 18px 14px; min-height: 210px; }
+.dk-felt.felt2::before, .lob-felt::before { content: ""; position: absolute; inset: 9px; border-radius: 20px; border: 1px dashed rgba(255,255,255,.12); pointer-events: none; z-index: -1; }
+.dk-lim { position: absolute; right: 16px; bottom: 12px; font: 800 11px/1 var(--f-body); color: rgba(255,255,255,.75); background: rgba(0,0,0,.25); padding: 5px 8px; border-radius: 99px; }
+.dk-tr-only { display: grid; place-items: center; width: 50px; height: 70px; border-radius: 8px; border: 1.5px dashed rgba(255,255,255,.4); color: #fff; } .dk-tr-only .sv { width: 26px; height: 26px; fill: currentColor; }
+
+/* opponents around the table */
+.dk-opps { display: grid; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 8px; }
+.dk-opps.n1 { grid-template-columns: 1fr; }
+.dk-opp { position: relative; display: grid; justify-items: center; gap: 2px; padding: 8px 6px 6px; border-radius: 18px; background: #fff; box-shadow: var(--sh); min-width: 0; text-align: center; transition: box-shadow .2s, transform .2s; }
+.dk-opps.n1 .dk-opp { grid-template-columns: auto 1fr auto; justify-items: start; text-align: left; column-gap: 10px; padding: 8px 12px; }
+.dk-opps.n1 .dk-opp b, .dk-opps.n1 .dk-opp small { grid-column: 2; } .dk-opps.n1 .do-av { grid-row: span 2; } .dk-opps.n1 .do-fan { grid-column: 3; grid-row: 1 / span 2; }
+.dk-opp .do-av { position: relative; } .dk-opp .do-av .ava, .dk-opp .do-av .prem { width: 38px; height: 38px; }
+.dk-opp b { font: 800 12.5px/1.15 var(--f-body); color: #071B4D; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dk-opp small { font: 700 11px/1.2 var(--f-body); color: var(--muted); white-space: nowrap; }
+.dk-opp .do-fan { display: flex; height: 22px; margin-top: 2px; } .dk-opp .do-fan .dk-back { --cw: 15px; margin-left: -9px; box-shadow: 0 1px 2px rgba(0,0,0,.3); } .dk-opp .do-fan .dk-back:first-child { margin-left: 0; }
+.dk-opp .do-fan .dk-back i::after { content: none; }
+.dk-opp.act { box-shadow: 0 0 0 3px #FFC83D, 0 10px 24px -12px rgba(176,122,0,.7); transform: translateY(-2px); } .dk-opp.act small { color: #B07A00; }
+.dk-opp.out { opacity: .55; } .dk-opp.lose { box-shadow: 0 0 0 3px #E3263A, var(--sh); } .dk-opp.lose small { color: #C0162A; font-weight: 800; }
+.do-tag { position: absolute; right: -6px; bottom: -4px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-style: normal; background: #fff; box-shadow: 0 0 0 1.5px #071B4D; }
+.do-tag.att { background: #FFE9A8; } .do-tag.def { background: #DCEBFF; }
+.dk-me { display: flex; justify-content: center; min-height: 0; } .dk-role { font: 800 12px/1 var(--f-body); padding: 7px 12px; border-radius: 99px; background: #EEF2FA; color: #071B4D; }
+.dk-me.def .dk-role { background: #DCEBFF; color: #0B3B9C; } .dk-me.att .dk-role { background: #FFE9A8; color: #7A5200; }
+
+/* lobby */
+.lob-felt { position: relative; display: flex; align-items: center; gap: 14px; padding: 18px 16px; border-radius: 26px; color: #fff; min-height: 116px; overflow: hidden; }
+.lob-art { position: relative; flex: none; width: 104px; height: 82px; } .lob-art .gg-art { position: static; z-index: 0; }
+.lob-info { display: grid; gap: 4px; } .lob-info b { font: 900 20px/1.1 var(--f-display); } .lob-info small { font: 600 12.5px/1.35 var(--f-body); opacity: .85; }
+.lob-list { display: grid; gap: 0; background: #fff; border-radius: 20px; box-shadow: var(--sh); overflow: hidden; }
+.lob-row { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--hair); }
+.lob-row:first-child { border-top: 0; } .lob-row .ava, .lob-row .prem { width: 40px; height: 40px; }
+.lob-row .nm { display: grid; gap: 1px; min-width: 0; } .lob-row .nm b { font: 800 14px/1.2 var(--f-body); color: #071B4D; } .lob-row .nm small { font: 700 12px/1.2 var(--f-body); color: var(--muted); }
+.lob-row > i { font-style: normal; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 900; background: #F1F3F8; color: #475069; }
+.lob-row.in > i { background: #DCFCE7; color: #15803D; } .lob-row.declined { opacity: .55; } .lob-row.declined > i { background: #FFE4E6; color: #C0162A; }
+.lob-note { margin: 0 4px; font: 600 13px/1.4 var(--f-body); color: var(--muted); text-align: center; }
+.g-lobby .g-acts .pill[disabled] { opacity: .45; }
+
+/* table setup sheet */
+.ts-sheet .ts-head { display: flex; align-items: center; gap: 12px; }
+.ts-head .ts-art { position: relative; flex: none; width: 76px; height: 60px; border-radius: 16px; overflow: hidden; background: radial-gradient(ellipse at 50% 45%, #1F8A5C, #0A3F2B); }
+.ts-head .ts-art .gg-art { transform: scale(.62); transform-origin: top right; right: 2px; top: 4px; z-index: 0; }
+.ts-head .h2 { margin: 2px 0; } .ts-head small { font: 700 12px/1.2 var(--f-body); color: var(--muted); }
+.ts-stack { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.ts-stack button { display: grid; justify-items: center; gap: 2px; padding: 8px 4px; border-radius: 14px; border: 0; background: #F1F3F8; color: #071B4D; cursor: pointer; }
+.ts-stack button b { font: 900 15px/1 var(--f-body); } .ts-stack button small { font: 700 10px/1 var(--f-body); color: var(--muted); }
+.ts-stack button .pchip { width: 22px; height: 22px; }
+.ts-stack button[aria-pressed="true"] { background: #071B4D; color: #fff; box-shadow: 0 0 0 2px #FFC83D; } .ts-stack button[aria-pressed="true"] small { color: #FFC83D; }
+.ts-row .ts-check { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #C9CED9; flex: none; display: grid; place-items: center; transition: background .15s, border-color .15s; }
+.ts-row[aria-pressed="true"] { background: #F3F7FF; } .ts-row[aria-pressed="true"] .ts-check { background: #0033FF; border-color: #0033FF; }
+.ts-row[aria-pressed="true"] .ts-check::after { content: ""; width: 10px; height: 6px; border: solid #fff; border-width: 0 0 2.5px 2.5px; transform: rotate(-45deg) translate(1px, -1px); }
+.ts-go { position: sticky; bottom: 0; margin-top: 10px; } .ts-go[disabled] { opacity: .5; }
+
+/* chips */
+.pchip { width: 18px; height: 18px; flex: none; display: inline-block; vertical-align: -3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.35)); }
+.pchip circle:first-child { fill: var(--chip, #E3263A); } .pchip .ce { fill: none; stroke: #fff; stroke-width: 2.4; stroke-dasharray: 3.2 3.9; } .pchip .ci { fill: none; stroke: rgba(255,255,255,.75); stroke-width: 1.1; }
+.pchip.xs { width: 13px; height: 13px; vertical-align: -2px; margin-right: 3px; }
+.pchip.c1 { --chip: #E3263A; } .pchip.c2 { --chip: #0033FF; } .pchip.c3 { --chip: #111827; }
+
+/* «Ривер» table */
+.pk-table { position: relative; width: 100%; aspect-ratio: 1 / .9; max-height: 400px; border-radius: 48% / 46%; margin: 14px 0 2px; }
+.pk-table::before { content: ""; position: absolute; inset: 7%; border-radius: 48% / 46%; border: 1.5px solid rgba(255,255,255,.14); pointer-events: none; }
+.pk-logo { position: absolute; left: 50%; top: 84%; transform: translate(-50%, -50%); font: 900 30px/1 var(--f-display); letter-spacing: .08em; color: rgba(255,255,255,.07); pointer-events: none; }
+.pk-seat { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 1px; width: 76px; z-index: 2; transition: opacity .2s; }
+.pk-seat .ps-av { position: relative; border-radius: 50%; box-shadow: 0 0 0 2.5px #fff, 0 6px 14px -4px rgba(0,0,0,.6); }
+.pk-seat .ps-av .ava, .pk-seat .ps-av .prem { width: 40px; height: 40px; }
+.pk-seat.act .ps-av { box-shadow: 0 0 0 3px #FFC83D, 0 0 18px 2px rgba(255,200,61,.75); }
+.pk-seat .ps-cards { position: absolute; left: calc(50% + 12px); top: -2px; display: flex; z-index: -1; } .pk-seat .ps-cards > * { margin-left: -10px; transform: rotate(10deg); box-shadow: 0 2px 6px rgba(0,0,0,.4); }
+.pk-seat .ps-cards > *:first-child { transform: rotate(-6deg); }
+.dk-card.pk-sm, .dk-back.pk-sm { --cw: 22px; }
+.dk-card.pk-sm .cm, .dk-card.pk-sm .ci.br, .dk-card.pk-sm .cf { display: none; } .dk-card.pk-sm .ci.tl { left: 2px; top: 2px; width: auto; } .dk-card.pk-sm .ci b { font-size: 9px; } .dk-card.pk-sm .ci .sv { width: 8px; height: 8px; }
+.pk-seat.shown .ps-cards { position: static; z-index: 1; margin: 3px 0 1px; } .pk-seat.shown .ps-cards > * { --cw: 27px; transform: none; margin-left: 3px; } .pk-seat.shown .ps-cards > *:first-child { margin-left: 0; transform: none; }
+.dk-card.pk-sm.lit, .pk-seat.win .ps-cards .dk-card { box-shadow: 0 0 0 1.5px #4ADE80, 0 2px 8px rgba(0,0,0,.4); }
+.pk-seat .ps-name { display: grid; justify-items: center; margin-top: 3px; padding: 3px 8px 4px; border-radius: 10px; background: rgba(7,27,77,.82); min-width: 62px; max-width: 80px; }
+.pk-seat .ps-name b { font: 800 11px/1.15 var(--f-body); color: #fff; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pk-seat .ps-name small { font: 800 11px/1.1 var(--f-body); color: #FFD76A; white-space: nowrap; }
+.pk-seat.fold { opacity: .45; } .pk-seat.out { opacity: .35; filter: grayscale(1); }
+.pk-seat.win .ps-av { box-shadow: 0 0 0 3px #4ADE80, 0 0 20px 4px rgba(74,222,128,.7); }
+.ps-won { font: 900 11px/1 var(--f-body); color: #0B3F2B; background: #86EFAC; padding: 4px 7px; border-radius: 99px; margin-top: 3px; white-space: nowrap; animation: pkPop .5s cubic-bezier(.2,1.6,.4,1); }
+.pk-d { position: absolute; right: -7px; top: -4px; width: 18px; height: 18px; border-radius: 50%; background: #fff; color: #071B4D; font: 900 10px/18px var(--f-body); font-style: normal; text-align: center; box-shadow: 0 0 0 1.5px #071B4D, 0 2px 4px rgba(0,0,0,.4); }
+.pk-bet { position: absolute; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px 2px 2px; border-radius: 99px; background: rgba(0,0,0,.35); z-index: 1; animation: pkPop .35s ease-out; }
+.pk-bet b { font: 800 11.5px/1 var(--f-body); color: #fff; }
+.pk-center { position: absolute; left: 50%; top: 60%; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 8px; width: 92%; z-index: 1; }
+.pk-street { font: 800 10.5px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.6); min-height: 10px; }
+.pk-board { display: flex; gap: 5px; justify-content: center; }
+.pk-board .dk-card, .pk-slot { --cw: min(42px, 11.5vw); }
+.pk-board .dk-card { animation: pkFlip .45s ease-out both; } .pk-board .dk-card.lit { box-shadow: 0 0 0 1px rgba(7,27,77,.28), 0 0 14px rgba(255,215,106,.55); }
+.pk-slot { width: var(--cw); height: calc(var(--cw) * 1.4); border-radius: calc(var(--cw) * .14); border: 1.5px dashed rgba(255,255,255,.22); box-sizing: border-box; }
+.pk-pot { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 6px; border-radius: 99px; background: rgba(0,0,0,.3); box-shadow: inset 0 0 0 1px rgba(255,215,106,.4); }
+.pk-pot b { font: 900 15px/1 var(--f-body); color: #FFD76A; } .pk-pot small { font: 700 10.5px/1 var(--f-body); color: rgba(255,255,255,.65); } .pk-pot .pchip { width: 22px; height: 22px; }
+.pk-me { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 22px; background: #fff; box-shadow: var(--sh); }
+.pk-me.act { box-shadow: 0 0 0 3px #FFC83D, var(--sh); } .pk-me.fold { opacity: .6; }
+.pk-me .pm-av { position: relative; } .pk-me .pm-av .ava, .pk-me .pm-av .prem { width: 44px; height: 44px; }
+.pk-me .pm-cards { display: flex; gap: 6px; justify-content: center; } .dk-card.pk-hole { --cw: 56px; animation: pkFlip .5s ease-out both; } .dk-card.pk-hole + .dk-card.pk-hole { transform: rotate(4deg); } .pk-me .pm-cards .dk-card.pk-hole:first-child { transform: rotate(-4deg); }
+.pm-wait { font: 700 12px/1 var(--f-body); color: var(--muted); }
+.pk-me .pm-t { display: grid; justify-items: end; gap: 3px; } .pk-me .pm-t b { font: 900 17px/1 var(--f-body); color: #071B4D; display: inline-flex; align-items: center; } .pk-me .pm-t small { font: 800 11.5px/1.15 var(--f-body); color: #15803D; text-align: right; max-width: 90px; }
+.pk-nx { display: block; font: 600 11.5px/1.3 var(--f-body); color: var(--muted); margin-top: 3px; }
+.pk-acts { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 8px; }
+.pk-b { border: 0; border-radius: 18px; padding: 15px 6px; font: 900 15px/1 var(--f-body); cursor: pointer; transition: transform .12s; }
+.pk-b:active { transform: scale(.96); }
+.pk-b.fold { background: #F1F3F8; color: #475069; } .pk-b.call { background: #16A34A; color: #fff; box-shadow: 0 10px 20px -12px rgba(22,163,74,.9); }
+.pk-b.raise { background: #071B4D; color: #FFD76A; box-shadow: 0 10px 20px -12px rgba(7,27,77,.9); } .pk-b.raise.on { box-shadow: 0 0 0 3px #FFC83D; }
+.pk-raise { display: grid; gap: 10px; padding: 12px; border-radius: 20px; background: #fff; box-shadow: var(--sh); animation: pkPop .25s ease-out; }
+.pr-presets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.pr-presets button { display: grid; gap: 2px; padding: 8px 2px; border: 0; border-radius: 12px; background: #F1F3F8; color: #071B4D; font: 800 12px/1 var(--f-body); cursor: pointer; }
+.pr-presets button small { font: 700 11px/1 var(--f-body); color: var(--muted); } .pr-presets button[aria-pressed="true"] { background: #071B4D; color: #fff; } .pr-presets button[aria-pressed="true"] small { color: #FFD76A; }
+.pk-raise input[type=range] { width: 100%; accent-color: #071B4D; height: 28px; }
+.pk-go { background: #071B4D !important; color: #FFD76A !important; }
+@keyframes pkPop { from { transform: translate(-50%, -50%) scale(.6); opacity: 0; } }
+.ps-won, .pk-raise { animation-name: pkPop2; } @keyframes pkPop2 { from { transform: scale(.7); opacity: 0; } }
+@keyframes pkFlip { from { transform: rotateY(90deg) translateY(-6px); opacity: .2; } }
+@media (prefers-reduced-motion: reduce) { .pk-board .dk-card, .dk-card.pk-hole, .pk-bet, .ps-won, .pk-raise { animation: none; } }
+
+/* online tiles: four games, two per row */
+.w-gtile.g-durak { grid-column: auto; min-height: 160px; }
+.w-gtile.g-poker { background: linear-gradient(150deg, #1F8A5C 0%, #0F5A3D 55%, #0A3F2B 100%); box-shadow: inset 0 0 0 2px rgba(242,193,78,.6), var(--sh); }
+.w-gtile.g-durak { background: linear-gradient(150deg, #0B3B9C 0%, #071B4D 100%); box-shadow: inset 0 0 0 2px rgba(242,193,78,.5), var(--sh); }
+.gg-art.poker2 { right: 6px; top: 10px; } .gg-art.poker2 .dk-card { --cw: 40px; } .gg-art.poker2 .dk-card:first-child { transform: rotate(-10deg); } .gg-art.poker2 .dk-card:nth-child(2) { transform: rotate(8deg); margin-left: -18px; margin-top: 4px; }
+.gg-chips { position: absolute; right: 78px; top: 14px; display: grid; } .gg-chips .pchip { width: 26px; height: 26px; margin-top: -20px; } .gg-chips .pchip:first-child { margin-top: 0; }
+.w-gtile .gt-next { font: 700 11px/1.3 var(--f-body); opacity: .85; }
+.wg-faces { display: flex; flex: none; } .wg-faces .ava, .wg-faces .prem { width: 30px; height: 30px; box-shadow: 0 0 0 2px #fff; } .wg-faces > * + * { margin-left: -12px; }
 </style>
 </head>
 <body>
@@ -2785,7 +2915,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     <button class="online-row" id="goOnline" type="button"><span class="or-ic"><i>♚︎</i><i class="ck"></i><i class="cd">A</i></span><span class="or-t"><b>Онлайн-игры</b><small>шахматы · шашки · дурак</small></span><em class="or-n" id="onlineN" hidden></em><span class="or-go">›</span></button>
     <div class="sec-title" id="ceTitle">Ивенты дачников</div>
     <div id="hubCev"></div>
-    <button class="pm-card" type="button" id="hubPrem" hidden><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ и 50 🍅 каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>
+    <button class="pm-card" type="button" id="hubPrem" hidden><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">50 🍅 каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>
     <div data-ad-slot></div>
     <div class="row-btns">
       <button class="pill dark sm ic-pill" id="goReq" type="button" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>запросы</button>
@@ -3223,7 +3353,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261108065412"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261108074639"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3860,7 +3990,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const v2q = (sel) => $("profBtns").querySelector(sel);
     const qrUrlOf = (n) => (n === 1 ? extra?.pay_qr : extra?.pay_qr2) || null;
     document.querySelector("#vProfile .prof-card").classList.toggle("is-prem", isPremium({ id }));
-    const premCard = isMe ? `<button class="pm-card" type="button" data-p="premium"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">${isPremium(me) ? "PREMIUM активен · продлить" : "+200 ฿ и 50 🍅 каждый месяц, без рекламы, своя иконка"}</span><span class="pm-card-p">${isPremium(me) ? "›" : "от 400 ฿ / мес ›"}</span></button>` : "";
+    const premCard = isMe ? `<button class="pm-card" type="button" data-p="premium"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">${isPremium(me) ? "PREMIUM активен · продлить" : "50 🍅 каждый месяц, без рекламы, своя иконка"}</span><span class="pm-card-p">${isPremium(me) ? "›" : "от 400 ฿ / мес ›"}</span></button>` : "";
     const curIc = premIcons.get(me?.id) || "", curI = curIc.startsWith("i:") ? curIc.slice(2) : EMO_IC[curIc];
     const iconPick = isMe && isPremium(me) ? `<div class="ticket" style="width:100%"><div class="ticket-in"><div class="t-body" style="gap:10px">
         <div class="eyebrow">◆ PREMIUM · твоя иконка</div><p class="lead">Она будет на твоей аватарке во всех списках.</p>
@@ -3885,7 +4015,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       </div></div></div>` : ""}${canGrant ? `<div class="pm-grant">
         <div class="pm-mark">DACHA <b>PREMIUM</b> · выдаёшь ты</div>
         <h2>${active ? `PREMIUM ${forever ? "навсегда" : premLine}` : "Без PREMIUM"}</h2>
-        <p>Без рекламы, +200 ฿ и 50 🍅 за каждый выданный месяц, своя иконка и тёмный профиль.</p>
+        <p>Без рекламы, 50 🍅 за каждый выданный месяц, своя иконка и тёмный профиль.</p>
         <div class="pm-opts">
           <button type="button" data-prem="1"><b>+1</b><small>месяц</small></button>
           <button type="button" data-prem="3"><b>+3</b><small>месяца</small></button>
@@ -6511,7 +6641,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
           <button class="bank-hist" type="button" data-b="history"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg><span>История операций</span><em>›</em></button>`
         : tab === "shop" ? `<div class="bank-shop">
             <div class="eyebrow">Магазин DACHA</div>
-            <button class="shop-item prem" type="button" data-b="premium"><i>◆</i><span><b>PREMIUM на месяц</b><small>без рекламы, +200 ฿ и 50 🍅, своя иконка, тёмный профиль</small></span><em>${PREM_PRICE.THB} ฿</em></button>
+            <button class="shop-item prem" type="button" data-b="premium"><i>◆</i><span><b>PREMIUM на месяц</b><small>без рекламы, 50 🍅, своя иконка, тёмный профиль</small></span><em>${PREM_PRICE.THB} ฿</em></button>
             <div class="shop-sub">🍅 Помидоры · у тебя ${myTomatoes ?? 0}</div>
             <div class="shop-tm">${[5, 10, 30].map((n) => `<button type="button" data-tm="${n}"><b>${n} 🍅</b><em>${n} ฿</em></button>`).join("")}</div>
             <p class="bio-meta" style="margin:0">Оплата с баланса. Деньги идут на развитие DACHA.</p>
@@ -6745,7 +6875,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       ${rows.length ? rows.map((r) => `<div class="tx-row"><span class="tx-ic">${r.ic}</span><span class="tx-t"><b>${esc(r.t)}</b><small>${esc(r.s)}</small></span><span class="tx-amt ${r.amt < 0 ? "neg" : r.amt > 0 ? "pos" : ""}">${r.amt > 0 ? "+" : ""}${r.amt ? money(r.amt) : "—"}</span></div>`).join("")
         : `<div class="empty-note">Пока пусто. Здесь будут игры, за которые списались деньги, и пополнения.</div>`}
       <div class="stub"><span>${+wal.owed ? `Долгов ${money(wal.owed)}` : "Долгов нет"}</span><b>WALLET</b></div></div></div>
-      ${isPremium(me) ? "" : `<button class="pm-card" type="button" id="payPrem"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">+200 ฿ и 50 🍅 каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>`}`;
+      ${isPremium(me) ? "" : `<button class="pm-card" type="button" id="payPrem"><span class="pm-mark">DACHA <b>PREMIUM</b></span><span class="pm-card-t">50 🍅 каждый месяц, без рекламы, своя иконка</span><span class="pm-card-p">от 400 ฿ / мес ›</span></button>`}`;
     if ($("payPrem")) $("payPrem").onclick = () => go("premium");
   };
   // hosts: confirm requests, see debts, take money
@@ -7185,7 +7315,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     });
     document.body.append(v);
   };
-  const GAMES_W = { chess: { name: "Шахматы", code: "CHS" }, checkers: { name: "Шашки", code: "CHK" }, durak: { name: "Дурак", code: "CRD" } };
+  const GAMES_W = { chess: { name: "Шахматы", code: "CHS" }, checkers: { name: "Шашки", code: "CHK" }, durak: { name: "Дурак", code: "CRD" }, poker: { name: "Ривер", code: "RVR" } };
 
   const renderWorld = async () => {
     const box = $("worldBox");
@@ -7355,15 +7485,17 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const suitSvg = (x, cls = "") => `<svg class="sv ${cls}" viewBox="0 0 24 24" aria-hidden="true">${SUIT_SVG[x]}</svg>`;
   const gameArt = (k) => k === "chess" ? `<span class="gg-art chess2"><i class="pc ch w">${pcSvg("k")}</i><i class="pc ch b">${pcSvg("n")}</i></span>`
     : k === "checkers" ? `<span class="gg-art checkers"><i></i><i></i><i class="k"></i></span>`
+    : k === "poker" ? `<span class="gg-art poker2">${dkCard("AH")}${dkCard("AS")}<span class="gg-chips">${chipSvg("c1")}${chipSvg("c2")}${chipSvg("c3")}</span></span>`
     : `<span class="gg-art durak2">${dkCard("AS")}${dkCard("KH")}${dkCard("QD")}</span>`;
   const MOVE_MS = 5 * 60 * 1000;
   const loadMyGames = async () => {
     if (!sb || !me) return;
-    const { data } = await sb.from("world_games").select("*").in("status", ["invite", "active"]).or(`a.eq.${me.id},b.eq.${me.id}`).order("updated_at", { ascending: false }).limit(20);
+    const q = () => sb.from("world_games").select("*").in("status", ["invite", "active"]).or(`a.eq.${me.id},b.eq.${me.id},players.cs.{${me.id}}`).order("updated_at", { ascending: false }).limit(20);
+    const { data } = await q();
     W.games = data || [];
     // a game where somebody sat on his move for 5 minutes is over
-    const late = W.games.filter((g) => g.status === "active" && Date.now() - new Date(g.updated_at).getTime() > MOVE_MS);
-    if (late.length) { await Promise.all(late.map((g) => sb.rpc("game_timeout", { g: g.id }))); W.games = W.games.filter((g) => !late.includes(g)); }
+    const late = W.games.filter((g) => g.status === "active" && g.turn && Date.now() - new Date(g.updated_at).getTime() > MOVE_MS);
+    if (late.length) { await Promise.all(late.map((g) => sb.rpc("game_timeout", { g: g.id }))); const { data: d2 } = await q(); W.games = d2 || []; }
   };
   // the move clock under the board
   let gTick = 0;
@@ -7376,7 +7508,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       if (!document.getElementById("gClock")) return clearInterval(gTick);
       const mine = r.turn === me.id, sec = Math.max(0, Math.ceil(left / 1000));
       el.className = "g-clock " + (mine ? "mine " : "") + (sec <= 60 ? "low" : "");
-      el.innerHTML = `<i style="width:${Math.max(0, Math.min(100, (left / MOVE_MS) * 100))}%"></i><span>${mine ? "Твой ход" : "Ход соперника"} · ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}</span>`;
+      el.innerHTML = `<i style="width:${Math.max(0, Math.min(100, (left / MOVE_MS) * 100))}%"></i><span>${mine ? "Твой ход" : gPlayers(r).length > 2 && r.turn ? `Ходит ${esc(personOf(r.turn).nick)}` : "Ход соперника"} · ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}</span>`;
       if (left <= 0) { clearInterval(gTick); sb.rpc("game_timeout", { g: r.id }).then(() => refreshGame()); }
     };
     upd(); gTick = setInterval(upd, 1000);
@@ -7389,19 +7521,22 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (!W.gchan) W.gchan = sb.channel("mygames").on("postgres_changes", { event: "*", schema: "public", table: "world_games" }, worldAgain).subscribe();
   };
   const drawOnlineBadge = () => {
-    const n = me ? W.games.filter((g) => (g.status === "invite" && g.b === me.id) || (g.status === "active" && g.turn === me.id)).length : 0;
+    const n = me ? W.games.filter((g) => gInv(g) || (g.status === "active" && g.turn === me.id)).length : 0;
     const b = $("onlineN"); if (!b) return; b.hidden = !n; b.textContent = n;
   };
   const drawWorldGames = () => {
     const box = $("hubOnline"); if (!box) return;
-    const mine = me ? W.games.filter((g) => g.a === me.id || g.b === me.id) : [];
+    const mine = me ? W.games.filter((g) => g.a === me.id || g.b === me.id || gPlayers(g).includes(me.id)) : [];
     box.innerHTML = `
-      <div class="w-gtiles">${["chess", "checkers", "durak"].map((k) => `<div class="w-gtile g-${k}">${gameArt(k)}<span class="gt-code">${GAMES_W[k].code}</span><b class="gt-name">${GAMES_W[k].name}</b>
-        ${k === "durak" ? `<small class="gt-next">подкидной · на двоих</small><div class="w-gacts"><button type="button" data-gnew="${k}">позвать</button></div>` : `<div class="w-gacts"><button type="button" data-gnew="${k}">позвать</button><button type="button" data-glocal="${k}">вдвоём</button></div>`}</div>`).join("")}</div>
+      <div class="w-gtiles">${["chess", "checkers", "durak", "poker"].map((k) => `<div class="w-gtile g-${k}">${gameArt(k)}<span class="gt-code">${GAMES_W[k].code}</span><b class="gt-name">${GAMES_W[k].name}</b>
+        ${gMulti({ kind: k }) ? `<small class="gt-next">${k === "poker" ? "фишки" : "подкидной"} · 2–8 игроков</small><div class="w-gacts"><button type="button" data-gnew="${k}">собрать стол</button></div>` : `<div class="w-gacts"><button type="button" data-gnew="${k}">позвать</button><button type="button" data-glocal="${k}">вдвоём</button></div>`}</div>`).join("")}</div>
       ${mine.length ? `<div class="ticket" style="margin-top:12px"><div class="ticket-in"><div class="t-body" style="padding-bottom:6px"><div class="eyebrow">Мои партии</div></div>
-        ${mine.map((g) => { const opp = g.a === me.id ? g.b : g.a, pp = personOf(opp), myTurn = g.turn === me.id;
-          const st = g.status === "invite" ? (g.b === me.id ? "зовёт тебя сыграть" : "ждём, пока примет") : myTurn ? "твой ход" : "ход соперника";
-          return `<button class="w-grow ${g.status === "invite" && g.b === me.id ? "hot" : myTurn ? "hot" : ""}" type="button" data-gopen="${g.id}">${avaP({ ...pp, id: opp })}<span class="wg-t"><b>${GAMES_W[g.kind].name} · ${esc(pp.nick)}</b><small>${st}</small></span><em>›</em></button>`; }).join("")}</div></div>` : ""}`;
+        ${mine.map((g) => { const multi = gMulti(g), ps = gPlayers(g), opp = gOpp(g), pp = personOf(opp), myTurn = g.status === "active" && g.turn === me.id, inv = gInv(g);
+          const inN = multi ? ps.filter((u) => g.lobby?.[u] === "in").length : 0;
+          const st = g.status === "invite" ? (inv ? (g.a === me.id ? "зовёт тебя" : `${esc(personOf(g.a).nick)} зовёт за стол`) : multi ? `собираем стол · ${inN} из ${ps.length}` : "ждём, пока примет")
+            : myTurn ? "твой ход" : g.kind === "poker" && g.state?.street === "result" ? "вскрытие" : g.turn ? (ps.length > 2 ? `ходит ${esc(personOf(g.turn).nick)}` : "ход соперника") : "идёт игра";
+          const faces = multi && ps.length > 2 ? `<span class="wg-faces">${ps.filter((u) => u !== me.id).slice(0, 3).map((u) => avaP({ ...personOf(u), id: u })).join("")}</span>` : avaP({ ...pp, id: opp });
+          return `<button class="w-grow ${inv || myTurn ? "hot" : ""}" type="button" data-gopen="${g.id}">${faces}<span class="wg-t"><b>${gTitle(g)}</b><small>${st}</small></span><em>›</em></button>`; }).join("")}</div></div>` : ""}`;
   };
   const drawWorldHead = () => {
     const box = $("wHead"); if (!box) return;
@@ -7456,6 +7591,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     pickPerson({ title: "Кого позвать?", exclude: [me.id], onPick: ask });
   };
   const newGame = async (k, uid) => {
+    if (k === "durak" || k === "poker") return openTableSetup(k, uid);
     const start = async (u) => {
       const { data: id, error } = await sb.rpc("game_invite", { k, opp: u });
       if (error) return toast("Не получилось: " + humanErr(error));
@@ -7640,7 +7776,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const { data } = await sb.from("world_games").select("*").eq("id", gameId).maybeSingle();
     if (!data) return; const changed = !G.row || data.ver !== G.row.ver || data.status !== G.row.status;
     G.row = data;
-    if (data.kind === "durak") { const { data: h } = await sb.from("durak_hands").select("cards").eq("game_id", data.id).eq("user_id", me.id).maybeSingle(); G.hand = h?.cards || []; }
+    if (gMulti(data) && data.status !== "invite") { const { data: h } = await sb.from("durak_hands").select("cards").eq("game_id", data.id).eq("user_id", me.id).maybeSingle(); G.hand = h?.cards || []; }
     if (changed) { G.sel = null; drawGame(); }
   };
   const renderGame = async () => {
@@ -7678,62 +7814,245 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     }
     return html;
   };
+  // ---------- tables for a company: lobby, «Дурак» на 2–8, «Ривер» (2 карты + 5 на столе, фишки) ----------
+  const gPlayers = (g) => (g?.players?.length ? g.players : [g?.a, g?.b].filter(Boolean));
+  const gMulti = (g) => ["durak", "poker"].includes(g?.kind);
+  const gInv = (g) => !!me && g.status === "invite" && (g.lobby && Object.keys(g.lobby).length ? g.lobby[me.id] === "invited" : g.b === me.id);
+  const gOpp = (g) => (g.a === me.id ? g.b || gPlayers(g).find((x) => x !== me.id) : g.a);
+  const gTitle = (g) => `${GAMES_W[g.kind].name}${gMulti(g) && gPlayers(g).length > 2 ? ` · ${gPlayers(g).length} ${plural(gPlayers(g).length, "игрок", "игрока", "игроков")}` : ` · ${esc(personOf(gOpp(g)).nick)}`}`;
+  const seatOrder = (ps) => { const i0 = ps.indexOf(me.id); return i0 < 0 ? ps : [...ps.slice(i0 + 1), ...ps.slice(0, i0)]; };
+  const chipSvg = (c = "") => `<svg class="pchip ${c}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11"/><circle class="ce" cx="12" cy="12" r="9.6"/><circle class="ci" cx="12" cy="12" r="6"/></svg>`;
+  const PK_STACKS = [300, 500, 1000, 2000];
+
+  // who to call: several friends at once (+ the stack for «Ривер»)
+  const openTableSetup = async (k, pre) => {
+    if (!me) return go("auth");
+    if (!people.length) await loadPeople();
+    const sel = new Set(pre ? [pre] : []); let stack = 500;
+    const list = people.filter((p) => p.id !== me.id && !lockedIds.has(p.id)).sort((a, b) => a.nick.localeCompare(b.nick));
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    const head = () => `<div class="ts-head"><span class="ts-art">${gameArt(k)}</span><div><div class="eyebrow">${k === "poker" ? "Ривер · 2 карты в руке, 5 на столе" : "Дурак · подкидной · 52 карты"}</div>
+        <h2 class="h2">Кого зовём за стол?</h2><small>до 7 друзей · ${sel.size ? `выбрано ${sel.size}` : "выбери хотя бы одного"}</small></div></div>
+      ${k === "poker" ? `<div class="ts-stack" role="group" aria-label="Стек">${PK_STACKS.map((s) => `<button type="button" data-tstack="${s}" aria-pressed="${s === stack}">${chipSvg()}<b>${s}</b><small>блайнды ${s / 100}/${s / 50}</small></button>`).join("")}</div>` : ""}`;
+    v.innerHTML = `<div class="bank pick-sheet ts-sheet" role="dialog" aria-modal="true" aria-label="Собрать стол">
+        <div class="ts-top">${head()}</div>
+        <input class="field" type="search" placeholder="Найти по нику или @username" data-q autocomplete="off" enterkeyhint="search">
+        <div class="ps-list">${list.map((p) => `<button class="ps-row ts-row" type="button" data-tpick="${p.id}" aria-pressed="${sel.has(p.id)}" data-s="${esc((p.nick + " " + (p.tg_username || "")).toLowerCase())}">${avaP(p)}<span class="nm"><b>${esc(p.nick)}</b><small>${esc(tgLine(p) || "дачник")}</small></span><span class="ts-check"></span></button>`).join("")}</div>
+        <button class="pill wide ts-go" type="button" data-tgo ${sel.size ? "" : "disabled"}>${sel.size ? `позвать ${sel.size} · сесть за стол` : "выбери, кого позвать"}</button>
+        <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button></div>`;
+    const sync = () => { v.querySelector(".ts-top").innerHTML = head(); const g0 = v.querySelector("[data-tgo]"); g0.disabled = !sel.size; g0.textContent = sel.size ? `позвать ${sel.size} · сесть за стол` : "выбери, кого позвать"; };
+    v.addEventListener("input", (e) => { if (!e.target.matches("[data-q]")) return; const q = e.target.value.trim().toLowerCase().replace(/^@/, ""); v.querySelectorAll("[data-tpick]").forEach((r) => (r.hidden = !!q && !r.dataset.s.includes(q))); });
+    v.addEventListener("click", async (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) return v.remove();
+      const sb0 = e.target.closest("[data-tstack]"); if (sb0) { stack = +sb0.dataset.tstack; haptic("tap"); return sync(); }
+      const r0 = e.target.closest("[data-tpick]");
+      if (r0) { const id = r0.dataset.tpick; if (sel.has(id)) sel.delete(id); else { if (sel.size >= 7) return toast("За столом максимум 8 человек"); sel.add(id); }
+        r0.setAttribute("aria-pressed", sel.has(id)); haptic("tap"); return sync(); }
+      if (e.target.closest("[data-tgo]") && sel.size) {
+        const ids = [...sel];
+        const { data: id, error } = await sb.rpc("game_create", { k, opps: ids, o: { stack } });
+        if (error) return toast(/too many/.test(error.message) ? "Слишком много приглашений — подожди немного" : "Не получилось: " + humanErr(error));
+        const what = k === "poker" ? "сыграть в Ривер" : ids.length > 1 ? "сыграть в дурака компанией" : "сыграть в дурака";
+        ids.forEach((to) => sb.functions.invoke("tg", { body: { action: "world_invite", to, what, game: id } }).catch(() => {}));
+        haptic("card"); v.remove(); toast(ids.length > 1 ? `Позвал ${ids.length} человек — как сядут, начнёте` : `Позвал ${personOf(ids[0]).nick} — как примет, начнёте`);
+        go("game", id);
+      }
+    });
+    document.body.append(v);
+  };
+
+  // the lobby: who is at the table, who we still wait for
+  const drawLobby = () => {
+    const box = $("gameBox"), r = G.row, lb = r.lobby || {}, host = r.a === me.id, mine = lb[me.id], ps = gPlayers(r);
+    const inN = ps.filter((u) => lb[u] === "in").length, stack = +r.opts?.stack || 500, dead = r.status === "declined";
+    const tag = { in: ["за столом", "✓"], invited: ["ждём ответа…", "⏳"], declined: ["не сможет", "✕"] };
+    box.innerHTML = `<div class="g-wrap g-lobby">
+      <div class="g-title"><span class="gt-code">${GAMES_W[r.kind].code} · ${r.kind === "poker" ? "стол на компанию" : "подкидной"}</span><b>${GAMES_W[r.kind].name}</b></div>
+      <div class="lob-felt felt2"><span class="lob-art">${gameArt(r.kind)}</span>
+        <div class="lob-info"><b>${dead ? "Стол не собрался" : `За столом ${inN} из ${ps.length}`}</b>
+          <small>${r.kind === "poker" ? `Стек ${stack} фишек у каждого · блайнды ${stack / 100}/${stack / 50}, растут каждые 10 раздач` : "52 карты · по 6 в руку · подкидывают все · последний с картами — дурак"}</small></div></div>
+      <div class="lob-list">${ps.map((u) => { const p = personOf(u), s = lb[u] || "invited";
+        return `<div class="lob-row ${s}">${avaP({ ...p, id: u })}<span class="nm"><b>${esc(p.nick)}${u === me.id ? " · ты" : ""}</b><small>${u === r.a ? "собрал стол · " : ""}${tag[s][0]}</small></span><i>${tag[s][1]}</i></div>`; }).join("")}</div>
+      <p class="lob-note">${dead ? "Никто не сел — можно собрать новый стол." : host ? (inN >= 2 ? "Можно начинать, остальные подтянутся в следующий раз. Или подожди всех — игра начнётся сама." : "Ждём, пока кто-нибудь сядет за стол.") : mine === "invited" ? `${esc(personOf(r.a).nick)} зовёт тебя за стол.` : "Ты за столом. Начнём, когда все ответят или хозяин нажмёт «начать»."}</p>
+      <div class="g-acts">${dead ? `<button class="pill" type="button" data-gnew2="${r.kind}">собрать новый стол</button>`
+        : host ? `<button class="pill" type="button" data-lbstart ${inN >= 2 ? "" : "disabled"}>начать · ${inN} ${plural(inN, "игрок", "игрока", "игроков")}</button>${ps.length < 8 ? `<button class="pill ghost" type="button" data-lbadd>позвать ещё</button>` : ""}`
+        : mine === "invited" ? `<button class="pill" type="button" data-gaccept>сесть за стол</button><button class="pill ghost" type="button" data-gdecline>не могу</button>` : ""}
+        ${!dead ? `<button class="pill sm ghost" type="button" data-gresign>${host ? "отменить стол" : mine === "in" ? "выйти" : "закрыть"}</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
+    </div>`;
+  };
+  const lobbyAdd = () => {
+    const r = G.row;
+    pickPerson({ title: "Кого ещё позвать?", sub: "за столом максимум 8", exclude: [...gPlayers(r)], onPick: async (u) => {
+      const { error } = await sb.rpc("game_add", { g: r.id, opps: [u] });
+      if (error) return toast(/too many/.test(error.message) ? "За столом максимум 8 человек" : "Не получилось: " + humanErr(error));
+      sb.functions.invoke("tg", { body: { action: "world_invite", to: u, what: r.kind === "poker" ? "сыграть в Ривер" : "сыграть в дурака компанией", game: r.id } }).catch(() => {});
+      haptic("card"); toast(`Позвал ${personOf(u).nick}`); refreshGame();
+    } });
+  };
+
+  // ---------- «Дурак» на компанию ----------
   const drawDurak = () => {
-    const box = $("gameBox"), r = G.row, st = r.state || {}, tr = st.trump || "6S", opp = r.a === me.id ? r.b : r.a, pp = personOf(opp);
+    const box = $("gameBox"), r = G.row, st = r.state || {}, tr = st.trump || "6S", ps = gPlayers(r);
     if (r.status === "active" && String(st.log || "").startsWith("Раздача") && G.shuffle !== r.id) {
       let seen = false; try { seen = localStorage.getItem("dkShuf:" + r.id) === "1"; localStorage.setItem("dkShuf:" + r.id, "1"); } catch {}
       if (!seen) { G.shuffle = r.id; setTimeout(() => { if (G.shuffle === r.id) { G.shuffle = "done:" + r.id; document.querySelector(".dk-stack.shuffling")?.classList.remove("shuffling"); } }, 1500); }
     }
-    const tbl = st.table || [], iAtt = st.att === me.id, myTurn = r.status === "active" && r.turn === me.id, open = tbl.filter((x) => !x[1]).length;
+    const done = st.done || [], passed = st.passed || [], tbl = st.table || [], open = tbl.filter((x) => !x[1]).length, act = r.status === "active";
+    const iDef = st.def === me.id, iAtt = st.att === me.id, iOut = done.includes(me.id), myTurn = act && r.turn === me.id;
     const hand = [...(G.hand || [])].sort((x, y) => (x[1] === tr[1]) - (y[1] === tr[1]) || x[1].localeCompare(y[1]) || dkRank(x) - dkRank(y));
-    const oppN = st.hands?.[opp] ?? 0, ranksOn = new Set(tbl.flat().filter(Boolean).map((c) => c[0]));
-    const playable = (c) => !myTurn ? false : iAtt ? (!tbl.length || ranksOn.has(c[0])) && tbl.length < 6 : tbl.some((x) => !x[1] && dkBeats(c, x[0], tr));
+    const ranksOn = new Set(tbl.flat().filter(Boolean).map((c) => c[0])), lim = st.limit ?? 6, defN = st.hands?.[st.def] ?? 0;
+    const roomToThrow = act && !iDef && !iOut && tbl.length > 0 && tbl.length < lim && open + 1 <= defN;
+    const canThrowAny = roomToThrow && hand.some((c) => ranksOn.has(c[0]));
+    const playable = (c) => !act || iOut ? false : iDef ? tbl.some((x) => !x[1] && dkBeats(c, x[0], tr)) : !tbl.length ? iAtt : roomToThrow && ranksOn.has(c[0]);
+    const nm = (u) => esc(personOf(u).nick), loser = st.loser;
+    const role = (u) => done.includes(u) ? "вышел ✓" : !act ? "" : u === st.def ? "отбивается" : u === st.att ? "ходит" : passed.includes(u) ? "пас" : "";
     let line;
-    if (r.status === "invite") line = r.b === me.id ? `<b>${esc(personOf(r.a).nick)}</b> зовёт тебя в дурака` : `Ждём, пока ${esc(personOf(r.b).nick)} примет приглашение`;
-    else if (r.status === "declined") line = "Партия отменена";
-    else if (r.status === "done") line = r.result === "draw" ? "Ничья · +15 XP обоим" : r.result === "timeout" ? (r.winner === me.id ? "Соперник не походил 5 минут — победа +30 XP" : "Время на ход вышло — поражение") : r.winner === me.id ? "Ты не дурак! Победа +30 XP" : `Ты остался дураком · +10 XP`;
-    else line = myTurn ? (iAtt ? (tbl.length ? (open ? "Ждём защиту" : "Подкинь или «бито»") : "Твой ход — ходи картой") : "Отбивайся или бери") : (iAtt ? "Соперник отбивается" : "Соперник ходит");
-    box.innerHTML = `<div class="g-wrap g-durak">
-      <div class="g-title"><span class="gt-code">CRD · подкидной</span><b>Дурак</b></div>
-      <div class="g-player ${r.turn === opp ? "act" : ""}">${avaP({ ...pp, id: opp })}<span class="gp-t"><b>${esc(pp.nick)}</b><small>${oppN} ${plural(oppN, "карта", "карты", "карт")}${r.status !== "active" ? "" : st.att === opp ? " · ходит" : " · отбивается"}</small></span>
-        <span class="dk-backs">${Array.from({ length: Math.min(oppN, 10) }, () => dkBack("mini")).join("")}</span></div>
-      <div class="dk-felt">
+    if (r.status === "done") line = r.result === "draw" ? "Ничья — дураков нет · +15 XP" : loser === me.id ? (r.result === "timeout" ? "Время на ход вышло — ты дурак 🃏" : r.result === "resign" ? "Ты сдался — ты дурак 🃏" : "Ты — дурак 🃏 · +10 XP")
+      : `<b>${nm(loser)}</b> — дурак! ${ps.length > 2 ? "Ты выбрался ✓ +20 XP" : "Ты победил ✓ +20 XP"}`;
+    else if (iOut) line = "Ты без карт — ты не дурак ✓ Смотрим, кто останется";
+    else if (iDef) line = open ? "Отбивайся или бери" : "Всё отбито — ждём, подкинут ли ещё";
+    else if (!tbl.length) line = iAtt ? "Твой ход — ходи любой картой" : `Ходит <b>${nm(st.att)}</b> под <b>${nm(st.def)}</b>`;
+    else if (open) line = canThrowAny ? `<b>${nm(st.def)}</b> отбивается · можешь подкинуть` : `<b>${nm(st.def)}</b> отбивается`;
+    else line = canThrowAny && !passed.includes(me.id) ? "Всё отбито — подкинь или «бито»" : "Ждём остальных";
+    const opps = seatOrder(ps);
+    box.innerHTML = `<div class="g-wrap g-durak g-multi">
+      <div class="g-title"><span class="gt-code">CRD · подкидной${ps.length > 2 ? ` · ${ps.length} игроков` : ""}</span><b>Дурак</b></div>
+      <div class="dk-opps n${Math.min(opps.length, 7)}">${opps.map((u) => { const n = st.hands?.[u] ?? 0, p = personOf(u);
+        return `<div class="dk-opp ${act && r.turn === u ? "act" : ""} ${done.includes(u) ? "out" : ""} ${loser === u ? "lose" : ""}">
+          <span class="do-av">${avaP({ ...p, id: u })}${u === st.att && act ? `<i class="do-tag att">⚔</i>` : u === st.def && act ? `<i class="do-tag def">🛡</i>` : ""}</span>
+          <b>${esc(p.nick)}</b><small>${loser === u ? "дурак 🃏" : role(u) || `${n} ${plural(n, "карта", "карты", "карт")}`}</small>
+          <span class="do-fan">${Array.from({ length: Math.min(n, 8) }, () => dkBack("mini")).join("")}</span></div>`; }).join("")}</div>
+      <div class="dk-felt felt2">
         <div class="dk-side">
-          <div class="dk-deck ${st.deck ? "" : "empty"}">${st.deck ? `${dkCard(tr, "trump")}<span class="dk-stack ${G.shuffle === r.id ? "shuffling" : ""}">${dkBack("s3")}${dkBack("s2")}${dkBack("s1")}<b>${st.deck}</b></span>` : ""}</div>
+          <div class="dk-deck ${st.deck ? "" : "empty"}">${st.deck ? `${dkCard(tr, "trump")}<span class="dk-stack ${G.shuffle === r.id ? "shuffling" : ""}">${dkBack("s3")}${dkBack("s2")}${dkBack("s1")}<b>${st.deck}</b></span>` : `<span class="dk-tr-only">${suitSvg(tr[1])}</span>`}</div>
           <span class="dk-tchip ${"HD".includes(tr[1]) ? "red" : ""}">${suitSvg(tr[1])}<span><small>козырь</small><b>${DK_SUITN[tr[1]]}</b></span></span>
           ${st.out ? `<span class="dk-out">${dkBack("mini")}бито ${st.out}</span>` : ""}
         </div>
-        <div class="dk-table">${tbl.length ? tbl.map((x, i) => `<button type="button" class="dk-pair ${!x[1] && G.sel && dkBeats(G.sel, x[0], tr) ? "can" : ""} ${x[1] ? "beaten" : ""}" data-dkpair="${i}">${dkCard(x[0])}${x[1] ? dkCard(x[1], "def") : ""}</button>`).join("") : `<span class="dk-empty">${r.status === "active" ? (iAtt ? "твой ход — выбери карту" : "ждём ход соперника") : ""}</span>`}</div>
+        <div class="dk-table">${tbl.length ? tbl.map((x, i) => `<button type="button" class="dk-pair ${!x[1] && G.sel && dkBeats(G.sel, x[0], tr) ? "can" : ""} ${x[1] ? "beaten" : ""}" data-dkpair="${i}">${dkCard(x[0])}${x[1] ? dkCard(x[1], "def") : ""}</button>`).join("")
+          : `<span class="dk-empty">${act ? (iAtt ? "Ходи картой из руки" : `Ходит ${nm(st.att)}`) : r.status === "done" ? "Партия окончена" : ""}</span>`}</div>
+        ${act && tbl.length ? `<span class="dk-lim">${tbl.length} / ${lim}</span>` : ""}
+      </div>
+      <div class="g-line ${myTurn || (canThrowAny && !passed.includes(me.id)) ? "mine" : ""}">${line}</div>
+      ${act ? `<div class="g-clock" id="gClock"></div>` : ""}
+      <div class="dk-me ${iDef ? "def" : iAtt ? "att" : ""}">${act && !iOut ? `<span class="dk-role">${iDef ? "🛡 ты отбиваешься" : iAtt ? "⚔ ты ходишь" : "можешь подкидывать"}</span>` : ""}</div>
+      <div class="dk-hand">${dkHandRows(hand.map((c) => dkCard(c, `${playable(c) ? "ok" : act && !iOut ? "dim" : ""} ${G.sel === c ? "sel" : ""} ${c[1] === tr[1] ? "is-tr" : ""}`, `data-dkc="${c}" role="button" tabindex="0"`)), Math.min(440, (box.clientWidth || 360)) - 8)}</div>
+      <div class="g-acts">${act && iDef && open ? `<button class="pill red" type="button" data-dkact="take">беру</button>` : ""}
+        ${act && !iDef && !iOut && tbl.length && !open && !passed.includes(me.id) ? `<button class="pill" type="button" data-dkact="pass">${iAtt ? "бито" : "пас — не подкидываю"}</button>` : ""}
+        ${act ? `<button class="pill sm ghost" type="button" data-gresign>сдаться</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
+    </div>`;
+  };
+
+  // ---------- «Ривер» ----------
+  const PK_R = "23456789TJQKA";
+  const pkScore5 = (cs) => {
+    const rk = cs.map((c) => PK_R.indexOf(c[0]) + 2).sort((a, b) => b - a), fl = new Set(cs.map((c) => c[1])).size === 1;
+    const wheel = rk.join() === "14,5,4,3,2", st = new Set(rk).size === 5 && (rk[0] - rk[4] === 4 || wheel), hi = wheel ? 5 : rk[0];
+    const cnt = {}; rk.forEach((x) => (cnt[x] = (cnt[x] || 0) + 1));
+    const grp = Object.keys(cnt).map(Number).sort((a, b) => cnt[b] - cnt[a] || b - a), c0 = cnt[grp[0]], c1 = cnt[grp[1]];
+    const cat = st && fl ? 8 : c0 === 4 ? 7 : c0 === 3 && c1 === 2 ? 6 : fl ? 5 : st ? 4 : c0 === 3 ? 3 : c0 === 2 && c1 === 2 ? 2 : c0 === 2 ? 1 : 0;
+    if (cat === 8 || cat === 4) return cat * 759375 + hi;
+    let sc = 0; grp.forEach((x) => (sc = sc * 15 + x)); for (let i = grp.length; i < 5; i++) sc *= 15;
+    return cat * 759375 + sc;
+  };
+  const pkBest = (cs) => { if (cs.length < 5) return null; let best = -1; const n = cs.length;
+    const rec = (start, pick) => { if (pick.length === 5) { best = Math.max(best, pkScore5(pick)); return; } for (let i = start; i < n; i++) rec(i + 1, [...pick, cs[i]]); };
+    rec(0, []); return best; };
+  const pkName = (s) => { const c = Math.floor(s / 759375); return c === 8 ? (s % 759375 === 14 ? "Роял-флеш" : "Стрит-флеш") : ["Старшая карта", "Пара", "Две пары", "Сет", "Стрит", "Флеш", "Фулл-хаус", "Каре"][c]; };
+  const pkMyHand = (hand, board) => { if (hand.length < 2) return ""; if (board.length < 3) return hand[0][0] === hand[1][0] ? "Пара" : "Старшая карта"; return pkName(pkBest([...hand, ...board])); };
+  const drawPoker = () => {
+    const box = $("gameBox"), r = G.row, st = r.state || {}, ps = gPlayers(r), act = r.status === "active", res = st.street === "result" || !act;
+    const live = st.live || [], allin = st.allin || [], out = st.out || [], bet = st.bet || {}, chips = st.chips || {}, last = st.last || null;
+    const shown = res && last ? last.shown || {} : {}, board = (res && last ? last.board : st.board) || [];
+    const pot = (+st.pot || 0) + Object.values(bet).reduce((a, b) => a + +b, 0);
+    const myTurn = act && !res && r.turn === me.id, hand = G.hand || [];
+    const myBet = +bet[me.id] || 0, myChips = +chips[me.id] || 0, cur = +st.cur || 0, minr = +st.minr || +st.bb || 1, need = Math.max(0, cur - myBet);
+    const wins = res && last ? last.wins || [] : [];
+    const opps = seatOrder(ps);
+    const seat = (u, x, y, bx, by) => {
+      const p = personOf(u), inH = live.includes(u) && act && !res, isOut = out.includes(u), w = wins.find((q) => q.u === u), sh = shown[u];
+      return `<div class="pk-seat ${act && !res && r.turn === u ? "act" : ""} ${act && !res && !live.includes(u) && !isOut ? "fold" : ""} ${isOut ? "out" : ""} ${w ? "win" : ""} ${sh ? "shown" : ""}" style="left:${x}%;top:${y}%">
+          <span class="ps-av">${avaP({ ...p, id: u })}${st.dealer === u && act ? `<i class="pk-d">D</i>` : ""}</span>
+          <span class="ps-cards">${sh ? sh.map((c) => dkCard(c, "pk-sm")).join("") : inH ? dkBack("pk-sm") + dkBack("pk-sm") : ""}</span>
+          <span class="ps-name"><b>${esc(p.nick)}</b><small>${isOut ? "выбыл" : allin.includes(u) && act && !res ? "ва-банк" : chipSvg("xs") + (+chips[u] || 0)}</small></span>
+          ${w ? `<span class="ps-won">+${w.amt}${w.name ? ` · ${esc(w.name)}` : ""}</span>` : ""}
+        </div>${+bet[u] && act && !res ? `<span class="pk-bet" style="left:${bx}%;top:${by}%">${chipSvg()}<b>${bet[u]}</b></span>` : ""}`;
+    };
+    const seatsHTML = opps.map((u, i) => { const t = Math.PI - ((i + 1) * Math.PI) / (opps.length + 1);
+      return seat(u, 50 + 40 * Math.cos(t), 47 - 40 * Math.sin(t), 50 + 27 * Math.cos(t), 56 - 25 * Math.sin(t)); }).join("");
+    let line;
+    if (r.status === "done") line = r.winner === me.id ? "Все фишки твои — победа! +30 XP" : `Стол выиграл <b>${esc(personOf(r.winner).nick)}</b> · +10 XP`;
+    else if (res) line = wins.length ? wins.map((w) => `<b>${esc(personOf(w.u).nick)}</b> +${w.amt}${w.name ? ` · ${esc(w.name)}` : ""}`).join(" · ") + `<small class="pk-nx">следующая раздача через пару секунд…</small>` : "Раздача окончена";
+    else if (out.includes(me.id)) line = "Ты выбыл — можно досмотреть стол";
+    else if (myTurn) line = need ? `Твой ход · чтобы остаться, нужно ${Math.min(need, myChips)}` : "Твой ход · можно чек";
+    else if (!live.includes(me.id)) line = `Ты сбросил · ходит <b>${esc(personOf(r.turn).nick)}</b>`;
+    else line = `Ходит <b>${esc(personOf(r.turn).nick)}</b>`;
+    const minTo = Math.min(cur + minr, myBet + myChips), maxTo = myBet + myChips;
+    const rv = Math.max(minTo, Math.min(maxTo, G.pkRaise ?? minTo));
+    const potTo = (f) => Math.max(minTo, Math.min(maxTo, cur + Math.round((pot + need) * f)));
+    box.innerHTML = `<div class="g-wrap g-poker">
+      <div class="g-title"><span class="gt-code">RVR · ${act ? `раздача №${st.hand || 1} · блайнды ${st.sb}/${st.bb}` : "стол закрыт"}</span><b>Ривер</b></div>
+      <div class="pk-table felt2">
+        <span class="pk-logo">DACHA</span>
+        ${seatsHTML}
+        <div class="pk-center">
+          <span class="pk-street">${act ? ({ pre: "префлоп", flop: "флоп", turn: "тёрн", river: "ривер", result: "вскрытие" })[st.street] || "" : ""}</span>
+          <div class="pk-board">${[0, 1, 2, 3, 4].map((i) => (board[i] ? dkCard(board[i], wins.length && res ? "lit" : "") : `<span class="pk-slot"></span>`)).join("")}</div>
+          <span class="pk-pot">${chipSvg()}<b>${res ? (wins.reduce((a, w) => a + w.amt, 0) || pot) : pot}</b><small>банк</small></span>
+        </div>
+        ${+bet[me.id] && act && !res ? `<span class="pk-bet mine" style="left:50%;top:86%">${chipSvg()}<b>${bet[me.id]}</b></span>` : ""}
+      </div>
+      <div class="pk-me ${myTurn ? "act" : ""} ${act && !res && !live.includes(me.id) ? "fold" : ""}">
+        <span class="pm-av">${avaP(me)}${st.dealer === me.id && act ? `<i class="pk-d">D</i>` : ""}</span>
+        <span class="pm-cards">${(shown[me.id] || hand).length ? (shown[me.id] || hand).map((c) => dkCard(c, "pk-hole")).join("") : `<span class="pm-wait">${act ? "ждём раздачу" : ""}</span>`}</span>
+        <span class="pm-t"><b>${chipSvg("xs")}${myChips}</b><small>${hand.length && act ? esc(pkMyHand(shown[me.id] || hand, board)) : out.includes(me.id) ? "выбыл" : ""}</small></span>
       </div>
       <div class="g-line ${myTurn ? "mine" : ""}">${line}</div>
-      ${r.status === "active" ? `<div class="g-clock" id="gClock"></div>` : ""}
-      <div class="dk-hand">${dkHandRows(hand.map((c) => dkCard(c, `${playable(c) ? "ok" : myTurn ? "dim" : ""} ${G.sel === c ? "sel" : ""} ${c[1] === tr[1] ? "is-tr" : ""}`, `data-dkc="${c}" role="button" tabindex="0"`)), Math.min(440, (box.clientWidth || 360)) - 8)}</div>
-      <div class="g-acts">${r.status === "invite" && r.b === me.id ? `<button class="pill" type="button" data-gaccept>принять</button><button class="pill ghost" type="button" data-gdecline>отказаться</button>`
-        : myTurn && iAtt && tbl.length && !open ? `<button class="pill" type="button" data-dkact="done">бито</button>`
-        : myTurn && !iAtt && open ? `<button class="pill red" type="button" data-dkact="take">беру</button>` : ""}
-        ${r && ["active", "invite"].includes(r.status) ? `<button class="pill sm ghost" type="button" data-gresign>${r.status === "invite" ? "отменить" : "сдаться"}</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
+      ${act && !res ? `<div class="g-clock" id="gClock"></div>` : ""}
+      ${myTurn ? `<div class="pk-acts">
+          <button class="pk-b fold" type="button" data-pk="fold">Сбросить</button>
+          ${need ? `<button class="pk-b call" type="button" data-pk="call">${need >= myChips ? `Ва-банк ${myChips}` : `Колл ${need}`}</button>` : `<button class="pk-b call" type="button" data-pk="check">Чек</button>`}
+          ${maxTo > cur ? `<button class="pk-b raise ${G.pkRaise != null ? "on" : ""}" type="button" data-pkopen>${need ? "Рейз" : "Ставка"}</button>` : ""}
+        </div>
+        ${G.pkRaise != null && maxTo > cur ? `<div class="pk-raise">
+          <div class="pr-presets">${[["мин", minTo], ["½ банка", potTo(0.5)], ["банк", potTo(1)], ["ва-банк", maxTo]].map(([l, x]) => `<button type="button" data-pkset="${x}" aria-pressed="${x === rv}">${l}<small>${x}</small></button>`).join("")}</div>
+          <input type="range" min="${minTo}" max="${maxTo}" step="1" value="${rv}" data-pkrange aria-label="Сколько ставить">
+          <button class="pill wide pk-go" type="button" data-pk="raise">${rv >= maxTo ? `Ва-банк · ${maxTo}` : `${need ? "Рейз до" : "Поставить"} ${rv}`}</button></div>` : ""}` : ""}
+      <div class="g-acts">${act ? `<button class="pill sm ghost" type="button" data-gresign>выйти из-за стола</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
     </div>`;
+    clearTimeout(G.pkNext);
+    if (act && st.street === "result") G.pkNext = setTimeout(async () => { if (G.row?.id !== r.id) return; await sb.rpc("poker_next", { g: r.id }); refreshGame(); }, 5200);
+  };
+  const pkPlay = async (act, amt = null) => {
+    if (G.busy) return; G.busy = true;
+    const { error } = await sb.rpc("poker_act", { g: G.row.id, act, amt });
+    G.busy = false; G.pkRaise = null;
+    if (error) { toast({ "cannot check": "Чек нельзя — нужно уравнять", "raise too small": "Слишком маленький рейз", "not your turn": "Сейчас не твой ход" }[(error.message.match(/cannot check|raise too small|not your turn/) || [])[0]] || "Не получилось: " + humanErr(error)); return refreshGame(); }
+    haptic(act === "fold" ? "tap" : "card"); await refreshGame(); drawGame();
   };
   const dkAfter = () => moveClock();
   const dkPlay = async (act, card = null, i = null) => {
     if (G.busy) return; G.busy = true;
     const { error } = await sb.rpc("durak_play", { g: G.row.id, act, card, i });
     G.busy = false; G.sel = null;
-    if (error) { toast({ "rank not on table": "Подкинуть можно только карту того же достоинства", "table full": "Больше подкинуть нельзя", "does not beat": "Эта карта не бьёт", "not your turn": "Сейчас не твой ход" }[error.message.match(/rank not on table|table full|does not beat|not your turn/)?.[0]] || "Не получилось: " + humanErr(error)); }
+    if (error) { toast({ "rank not on table": "Подкинуть можно только карту того же достоинства", "table full": "Больше подкинуть нельзя", "does not beat": "Эта карта не бьёт", "not your turn": "Сейчас не твой ход", "you are out": "Ты уже вышел из игры" }[error.message.match(/rank not on table|table full|does not beat|not your turn|you are out/)?.[0]] || "Не получилось: " + humanErr(error)); }
     haptic("tap"); await refreshGame(); drawGame();
   };
   const dkTapCard = (c) => {
     const r = G.row, st = r.state || {}, tbl = st.table || [], tr = st.trump;
-    if (r.status !== "active" || r.turn !== me.id) return;
-    if (st.att === me.id) return dkPlay("attack", c);
-    const targets = tbl.map((x, i) => (!x[1] && dkBeats(c, x[0], tr) ? i : -1)).filter((i) => i >= 0);
-    if (!targets.length) return toast("Эта карта ничего не бьёт");
-    if (targets.length === 1) return dkPlay("defend", c, targets[0]);
-    G.sel = c; haptic("tap"); drawDurak(); toast("Нажми, какую карту на столе бьёшь");
+    if (r.status !== "active" || (st.done || []).includes(me.id)) return;
+    if (st.def === me.id) {
+      if (!tbl.some((x) => !x[1])) return toast("Сейчас нечего отбивать");
+      const targets = tbl.map((x, i) => (!x[1] && dkBeats(c, x[0], tr) ? i : -1)).filter((i) => i >= 0);
+      if (!targets.length) return toast("Эта карта ничего не бьёт");
+      if (targets.length === 1) return dkPlay("defend", c, targets[0]);
+      G.sel = c; haptic("tap"); drawDurak(); return toast("Нажми, какую карту на столе бьёшь");
+    }
+    if (!tbl.length && st.att !== me.id) return toast(`Первым ходит ${personOf(st.att).nick}`);
+    return dkPlay("attack", c);
   };
   const drawGame = () => {
     const box = $("gameBox"); if (!box || S.view !== "game") return;
-    if (G.row?.kind === "durak") { drawDurak(); mountGameChat(); return dkAfter(); }
+    if (gMulti(G.row)) { if (["invite", "declined"].includes(G.row.status)) drawLobby(); else if (G.row.kind === "durak") drawDurak(); else drawPoker(); mountGameChat(); return dkAfter(); }
     const k = gKind(), st = gState(), flip = !G.local && myColor() === "b";
     let squares = [], status = "", over = null, targets = [], last = st.last || [], took = null;
     if (k === "chess") {
@@ -7842,17 +8161,32 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const dp = e.target.closest("[data-dkpair]"); if (dp && G.sel) return dkPlay("defend", G.sel, +dp.dataset.dkpair);
     const da = e.target.closest("[data-dkact]"); if (da) return dkPlay(da.dataset.dkact);
     const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.pk) { if (b.dataset.pk !== "raise") return pkPlay(b.dataset.pk); const v0 = +(document.querySelector("[data-pkrange]")?.value || 0); return pkPlay(v0 >= +(document.querySelector("[data-pkrange]")?.max || 0) ? "allin" : "raise", v0); }
+    if (b.hasAttribute("data-pkopen")) { G.pkRaise = G.pkRaise == null ? -1 : null; haptic("tap"); return drawPoker(); }
+    if (b.dataset.pkset) { G.pkRaise = +b.dataset.pkset; haptic("tap"); return drawPoker(); }
+    if (b.hasAttribute("data-lbstart")) { const { error } = await sb.rpc("game_start", { g: G.row.id }); if (error) return toast("Не получилось: " + humanErr(error)); haptic("card"); return refreshGame(); }
+    if (b.hasAttribute("data-lbadd")) return lobbyAdd();
+    if (b.dataset.gnew2) return openTableSetup(b.dataset.gnew2);
     if (b.hasAttribute("data-gworld")) return go("online");
     if (b.hasAttribute("data-grestart")) { G.local = null; return renderGame(); }
     if (b.hasAttribute("data-gaccept") || b.hasAttribute("data-gdecline")) {
       const { error } = await sb.rpc("game_answer", { g: G.row.id, ok: b.hasAttribute("data-gaccept") });
       if (error) return toast("Не получилось: " + humanErr(error)); haptic("card"); return refreshGame();
     }
-    if (b.hasAttribute("data-gresign")) return sheet({ eyebrow: GAMES_W[G.row.kind].name, title: G.row.status === "invite" ? "Отменить приглашение?" : "Сдаться?", text: G.row.status === "invite" ? "" : "Соперник получит победу и +30 XP, тебе +5 XP.", ok: G.row.status === "invite" ? "отменить" : "сдаться", okClass: "red",
+    if (b.hasAttribute("data-gresign")) return sheet({ eyebrow: GAMES_W[G.row.kind].name,
+      title: G.row.status === "invite" ? (gMulti(G.row) && G.row.a !== me.id ? "Выйти из-за стола?" : gMulti(G.row) ? "Отменить стол?" : "Отменить приглашение?") : G.row.kind === "poker" ? "Выйти из-за стола?" : "Сдаться?",
+      text: G.row.status === "invite" ? "" : G.row.kind === "poker" ? "Твои фишки уйдут со стола, игра продолжится без тебя." : G.row.kind === "durak" ? "Кто сдаётся — тот и дурак. Остальным +20 XP, тебе +5 XP." : "Соперник получит победу и +30 XP, тебе +5 XP.",
+      ok: G.row.status === "invite" ? (gMulti(G.row) && G.row.a !== me.id ? "выйти" : "отменить") : G.row.kind === "poker" ? "выйти" : "сдаться", okClass: "red",
       onOk: async () => { const { error } = await sb.rpc("game_resign", { g: G.row.id }); if (error) return toast("Не получилось: " + humanErr(error)); refreshGame(); } });
   });
 
 
+  $("gameBox").addEventListener("input", (e) => {
+    if (!e.target.matches("[data-pkrange]")) return;
+    G.pkRaise = +e.target.value; const mx = +e.target.max, bt = document.querySelector(".pk-go");
+    if (bt) bt.textContent = G.pkRaise >= mx ? `Ва-банк · ${mx}` : `${(G.row.state?.cur || 0) > (G.row.state?.bet?.[me.id] || 0) ? "Рейз до" : "Поставить"} ${G.pkRaise}`;
+    document.querySelectorAll("[data-pkset]").forEach((x) => x.setAttribute("aria-pressed", +x.dataset.pkset === G.pkRaise));
+  });
   $("goOnline").onclick = () => { haptic("tap"); go("online"); };
   $("hubOnline").addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
@@ -7985,7 +8319,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const bellCount = () => {
     if (!me) return 0;
     const inv = INV.list.filter((x) => x.to_id === me.id && x.status === "pending").length + INV.list.filter((x) => x.from_id === me.id && x.status !== "pending" && x.answered_at && !INV.seen?.has(x.id + x.status)).length;
-    const games = W.games.filter((g) => (g.status === "invite" && g.b === me.id) || (g.status === "active" && g.turn === me.id)).length;
+    const games = W.games.filter((g) => gInv(g) || (g.status === "active" && g.turn === me.id)).length;
     return inv + games + DM.threads.reduce((t, x) => t + (+x.unread || 0), 0);
   };
   const drawBell = () => { const b = $("bellN"); if (!b) return; const n = bellCount(); b.hidden = !n; b.textContent = n > 9 ? "9+" : n; $("goInbox")?.classList.toggle("ring", n > 0); };
@@ -8005,6 +8339,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const GC = { gid: null, msgs: [] };
   const mountGameChat = () => {
     const r = G.row, wrap = document.querySelector("#gameBox .g-wrap"); if (!r || !wrap || G.local || r.status === "declined") return;
+    if (gMulti(r) && (gPlayers(r).length > 2 || r.status === "invite" || !r.b)) return;   // a table for a company has no private chat
     const opp = r.a === me.id ? r.b : r.a;
     wrap.insertAdjacentHTML("beforeend", `<div class="g-chat"><div class="gc-h">💬 Чат с ${esc(personOf(opp).nick)}</div><div class="gc-list" id="gcList"></div>
       <form class="gc-bar" id="gcForm"><input id="gcIn" maxlength="500" placeholder="Сообщение сопернику…" autocomplete="off" enterkeyhint="send"><button type="submit" aria-label="Отправить"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg></button></form></div>`);
@@ -8058,12 +8393,12 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const box = $("inboxBox"); if (!box) return;
     const inc = INV.list.filter((x) => x.to_id === me.id && (x.status === "pending" || x.status === "talk"));
     const ans = INV.list.filter((x) => x.from_id === me.id && x.status !== "pending" && x.answered_at && Date.now() - new Date(x.answered_at).getTime() < 24 * 3600e3);
-    const games = W.games.filter((g) => (g.status === "invite" && g.b === me.id) || (g.status === "active" && g.turn === me.id));
+    const games = W.games.filter((g) => gInv(g) || (g.status === "active" && g.turn === me.id));
     const news = [
       ...inc.map((x) => ({ at: x.created_at, html: `<button class="nf-row hot" type="button" data-nfinv="${x.id}">${avaP({ ...personOf(x.from_id), id: x.from_id })}<span><b>${esc(personOf(x.from_id).nick)} зовёт тебя</b><small>${esc(invWhat(x.what))}</small></span><em>ответить</em></button>` })),
       ...ans.map((x) => ({ at: x.answered_at, html: `<button class="nf-row" type="button" data-nfinv="${x.id}">${avaP({ ...personOf(x.to_id), id: x.to_id })}<span><b>${esc(personOf(x.to_id).nick)} ${x.status === "accepted" ? "придёт ✅" : x.status === "declined" ? "не сможет" : "ответил 💬"}</b><small>${esc(invWhat(x.what))}${x.reply ? ` · «${esc(x.reply)}»` : ""}</small></span><i>${timeAgo(x.answered_at)}</i></button>` })),
       ...DM.threads.map((t) => ({ at: t.last_at, html: `<button class="nf-row hot" type="button" data-nfgame="${t.game}">${avaP({ ...personOf(t.peer), id: t.peer })}<span><b>${esc(personOf(t.peer).nick)} написал в игре</b><small>${esc(t.last_body)}</small></span><i>${timeAgo(t.last_at)}<b class="nf-n">${t.unread}</b></i></button>` })),
-      ...games.map((g) => { const opp = g.a === me.id ? g.b : g.a; return { at: g.updated_at, html: `<button class="nf-row hot" type="button" data-nfgame="${g.id}">${avaP({ ...personOf(opp), id: opp })}<span><b>${GAMES_W[g.kind].name} · ${esc(personOf(opp).nick)}</b><small>${g.status === "invite" ? "зовёт тебя сыграть" : "твой ход"}</small></span><em>${g.status === "invite" ? "играть" : "ходить"}</em></button>` }; }),
+      ...games.map((g) => { const opp = gOpp(g); return { at: g.updated_at, html: `<button class="nf-row hot" type="button" data-nfgame="${g.id}">${avaP({ ...personOf(opp), id: opp })}<span><b>${GAMES_W[g.kind].name} · ${esc(personOf(opp).nick)}</b><small>${g.status === "invite" ? "зовёт тебя сыграть" : "твой ход"}</small></span><em>${g.status === "invite" ? "играть" : "ходить"}</em></button>` }; }),
     ].sort((a, b) => String(b.at).localeCompare(String(a.at)));
     box.innerHTML = `<div class="sec-title" style="margin:2px 2px 10px">Уведомления</div>
       ${news.length ? `<div class="nf-card">${news.map((x) => x.html).join("")}</div>` : `<div class="nf-empty">Новых уведомлений нет 🎉</div>`}

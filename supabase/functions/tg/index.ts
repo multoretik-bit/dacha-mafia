@@ -343,8 +343,8 @@ async function worldInvite(req: Request, body: any) {
   if (!to?.tg_id) return json({ error: "У человека не подключён бот" }, 400);
   let gameUrl = "";
   if (typeof body.game === "string") {
-    const { data: g } = await admin.from("world_games").select("id, a, b, kind").eq("id", body.game).maybeSingle();
-    if (!g || g.a !== user.id || g.b !== body.to) return json({ error: "Нет такой партии" }, 400);
+    const { data: g } = await admin.from("world_games").select("id, a, b, kind, players").eq("id", body.game).maybeSingle();
+    if (!g || g.a !== user.id || (g.b !== body.to && !(g.players || []).includes(body.to))) return json({ error: "Нет такой партии" }, 400);
     gameUrl = APP + "?v=game&g=" + g.id;
   }
   let invId = "";
