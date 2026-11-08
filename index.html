@@ -3420,7 +3420,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261108082657"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261108083435"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3757,7 +3757,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const goBack = () => { haptic("tap"); const t = navStack.pop(); navBack = true; try { go(t ? t.v : "hub", t?.a); } finally { navBack = false; } };
   const go = (view, arg) => {
     // whatever screen DACHA opens on, the map point of those who share it gets refreshed
-    if (me && !window.__geoBoot) { window.__geoBoot = 1; setTimeout(() => autoHere(), 2500); }
+    if (me && !window.__geoBoot) { window.__geoBoot = 1; setTimeout(() => autoHere(), 2500); setTimeout(() => { startInvites().then(() => startDM()).catch(() => startDM()); }, 800); }
     if (view !== "profile") setPdark(false);
     if (navReady && !navBack && S.view && (S.view !== view || (view === "profile" && arg && arg !== profileId) || (view === "sport" && arg && arg !== sportId))) {
       navStack.push({ v: S.view, a: S.view === "profile" ? profileId : ["sport", "sportorg", "sportrate", "sportlist"].includes(S.view) ? sportId : S.view === "cevent" ? ceId : S.view === "chat" ? chatPeer : S.view === "game" ? gameId : undefined });
@@ -8554,7 +8554,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const mountGameChat = () => {
     const r = G.row, host = $("gameChat"); if (!host) return;
     if (!r || G.local || r.status === "declined" || !gcOthers(r).length) { host.innerHTML = ""; GC.gid = null; return; }
-    if (GC.gid === r.id && host.firstChild) return drawGcHead();   // the same table: keep the input as it is
+    if (GC.gid === r.id && host.firstChild) { gcSync(); return drawGcHead(); }   // the same table: keep the input as it is, fetch what arrived meanwhile
     GC.gid = r.id; GC.msgs = []; GC.unread = 0;
     host.innerHTML = `<div class="g-chat2" id="gcBox">
         <div class="gc2-h"><span class="gc2-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12Z"/></svg></span>
@@ -8570,8 +8570,11 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       GC.io = new IntersectionObserver(([en]) => { GC.seen = en.isIntersecting; if (GC.seen) { GC.unread = 0; if (GC.gid) sb.rpc("dm_read_game", { g: GC.gid }).then(() => refreshBell()); } drawGcFab(); }, { threshold: 0.35 });
       GC.io.observe($("gcBox"));
     }
-    drawGcHead(); drawGcFab(); loadGameChat();
+    drawGcHead(); drawGcFab(); gcSync(true);
+    // the live channel can silently die on a phone: while the table is open, ask the server too
+    clearInterval(GC.poll); GC.poll = setInterval(() => { if (S.view === "game" && GC.gid && !document.hidden) gcSync(); }, 3000);
   };
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && S.view === "game" && GC.gid) gcSync(); });
   const drawGcHead = () => {
     const r = G.row, o = r ? gcOthers(r) : []; if (!$("gcWho")) return;
     $("gcWho").textContent = o.length > 1 ? `${o.length + 1} за столом · видят все` : o.length ? `с ${personOf(o[0]).nick}` : "";
@@ -8582,10 +8585,21 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     f.classList.toggle("hide", GC.seen); n.hidden = !GC.unread; n.textContent = GC.unread > 9 ? "9+" : GC.unread;
     f.classList.toggle("ping", GC.unread > 0);
   };
-  const loadGameChat = async () => {
-    const gid = GC.gid; const { data } = await sb.from("dm_messages").select("*").eq("game_id", gid).order("created_at", { ascending: true }).limit(300);
-    if (GC.gid !== gid) return; GC.msgs = []; (data || []).forEach(gcAdd); drawGameChat();
-    sb.rpc("dm_read_game", { g: gid }).then(() => refreshBell());
+  const gcSync = async (first = false) => {
+    const gid = GC.gid; if (!gid || !sb || GC.syncing === gid || (GC.sending > 0 && !first)) return;
+    GC.syncing = gid;
+    const res = await sb.rpc("game_chat", { g: gid }).catch(() => ({ error: true }));
+    if (GC.syncing === gid) GC.syncing = null;
+    if (GC.gid !== gid || res.error || GC.sending > 0) return;
+    const srv = [...(res.data || [])].reverse(), known = new Set(GC.msgs.map(gcKey)), srvK = new Set(srv.map(gcKey));
+    const fresh = srv.filter((m) => !known.has(gcKey(m)));
+    if (!first && !fresh.length) return;
+    if (!first) fresh.forEach((m) => (m._new = true));
+    GC.msgs = [...srv, ...GC.msgs.filter((m) => !srvK.has(gcKey(m)))];   // newer than this answer (live or just sent) stays
+    drawGameChat();
+    const theirs = fresh.filter((m) => m.from_id !== me.id);
+    if (!first) theirs.forEach(gcIncoming);
+    if (first || (GC.seen && theirs.length)) sb.rpc("dm_read_game", { g: gid }).then(() => refreshBell());
   };
   const drawGameChat = () => {
     const box = $("gcList"); if (!box) return;
@@ -8613,9 +8627,11 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const r = G.row; if (!t || !r) return false;
     const temp = { id: "t" + Date.now(), from_id: me.id, body: t, created_at: new Date().toISOString(), game_id: r.id, _new: true };
     GC.msgs.push(temp); drawGameChat(); haptic("tap");
+    GC.sending = (GC.sending || 0) + 1;
     const { data: grp, error } = await sb.rpc("game_say", { g: r.id, body_: t });
+    temp.grp = grp || undefined; GC.sending--;
     if (error) { GC.msgs = GC.msgs.filter((m) => m !== temp); drawGameChat(); toast(/too fast/.test(error.message) ? "Слишком быстро — подожди немного" : "Не получилось: " + humanErr(error)); return false; }
-    temp.grp = grp; sb.functions.invoke("tg", { body: { action: "chat_notify", grp } }).catch(() => {});
+    sb.functions.invoke("tg", { body: { action: "chat_notify", grp } }).catch(() => {});
     return true;
   };
   $("gameChat").addEventListener("submit", async (e) => {
