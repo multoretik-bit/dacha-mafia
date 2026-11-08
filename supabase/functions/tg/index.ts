@@ -371,10 +371,11 @@ async function dmDeliver(m: any) {
     admin.from("profiles").select("tg_id").eq("id", m.to_id).maybeSingle(),
   ]);
   if (!to?.tg_id || !m.game_id) return;
-  const { data: g } = await admin.from("world_games").select("kind").eq("id", m.game_id).maybeSingle();
-  const GN: Record<string, string> = { chess: "шахматы", checkers: "шашки", durak: "дурак" };
+  const { data: g } = await admin.from("world_games").select("kind, players").eq("id", m.game_id).maybeSingle();
+  const GN: Record<string, string> = { chess: "шахматы", checkers: "шашки", durak: "дурак", poker: "ривер" };
+  const many = (g?.players || []).length > 2;
   const r: any = await tgApi("sendMessage", { chat_id: to.tg_id, parse_mode: "HTML",
-    text: `💬 <b>${esc2(from?.nick || "Дачник")}</b> · ${GN[g?.kind] || "игра"}:\n${esc2(m.body)}\n\n<i>Ответь на это сообщение (свайп влево) — ответ придёт в игру</i>`,
+    text: `💬 <b>${esc2(from?.nick || "Дачник")}</b> · ${GN[g?.kind] || "игра"}${many ? ` · чат стола (${g.players.length})` : ""}:\n${esc2(m.body)}\n\n<i>Ответь на это сообщение (свайп влево) — ответ ${many ? "увидят все за столом" : "придёт в игру"}</i>`,
     reply_markup: { inline_keyboard: [[{ text: "Открыть игру", web_app: { url: APP + "?v=game&g=" + m.game_id } }]] } });
   if (r?.ok) await admin.from("dm_messages").update({ tg_msg_id: r.result.message_id }).eq("id", m.id);
 }
@@ -390,13 +391,44 @@ async function dmNotify(req: Request, body: any) {
   await dmDeliver(m);
   return json({ ok: true, sent: 1 });
 }
+// a table chat message: wait 5 s, then duplicate to those who have not read it; at a busy table not more than once in 2 minutes per person
+async function chatDeliverGrp(grp: string) {
+  await new Promise((r) => setTimeout(r, 5000));
+  const { data: rows } = await admin.from("dm_messages").select("*").eq("grp", grp).is("read_at", null).is("tg_msg_id", null);
+  for (const m of rows || []) {
+    if ((rows || []).length > 1) {
+      const since = new Date(Date.now() - 120000).toISOString();
+      const { data: recent } = await admin.from("dm_messages").select("id").eq("game_id", m.game_id).eq("to_id", m.to_id).not("tg_msg_id", "is", null).gt("created_at", since).limit(1);
+      if (recent?.length) continue;
+    }
+    await dmDeliver(m);
+  }
+}
+async function chatNotify(req: Request, body: any) {
+  const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const { data: { user } } = await admin.auth.getUser(jwt);
+  if (!user || typeof body.grp !== "string") return json({ error: "Нужно войти" }, 401);
+  const { data: one } = await admin.from("dm_messages").select("from_id, created_at").eq("grp", body.grp).limit(1).maybeSingle();
+  if (!one || one.from_id !== user.id || Date.now() - new Date(one.created_at).getTime() > 60000) return json({ ok: true, sent: 0 });
+  await chatDeliverGrp(body.grp);
+  return json({ ok: true });
+}
 // a Telegram reply to a duplicated message → back into the chat
 async function dmFromTelegram(msg: any): Promise<boolean> {
   const rid = msg.reply_to_message?.message_id; if (!rid || !msg.text) return false;
   const { data: me } = await admin.from("profiles").select("id").eq("tg_id", msg.from?.id).maybeSingle(); if (!me) return false;
   const { data: orig } = await admin.from("dm_messages").select("from_id, to_id, game_id").eq("tg_msg_id", rid).eq("to_id", me.id).maybeSingle(); if (!orig?.game_id) return false;
-  const { data: nm } = await admin.from("dm_messages").insert({ from_id: me.id, to_id: orig.from_id, body: String(msg.text).slice(0, 1000), via_tg: true, game_id: orig.game_id }).select("*").maybeSingle();
+  const { data: gm } = await admin.from("world_games").select("a, b, players, lobby").eq("id", orig.game_id).maybeSingle();
+  const seats: string[] = ((gm?.players?.length ? gm.players : [gm?.a, gm?.b]) as string[]).filter((x) => x && x !== me.id && (gm?.lobby || {})[x] !== "declined");
   await tgApi("setMessageReaction", { chat_id: msg.chat.id, message_id: msg.message_id, reaction: [{ type: "emoji", emoji: "👍" }] }).catch(() => {});
+  if (seats.length > 1) {
+    // a table for a company: the reply goes to everybody at the table
+    const grp = crypto.randomUUID();
+    await admin.from("dm_messages").insert(seats.map((to) => ({ from_id: me.id, to_id: to, body: String(msg.text).slice(0, 500), via_tg: true, game_id: orig.game_id, grp })));
+    await chatDeliverGrp(grp);
+    return true;
+  }
+  const { data: nm } = await admin.from("dm_messages").insert({ from_id: me.id, to_id: orig.from_id, body: String(msg.text).slice(0, 1000), via_tg: true, game_id: orig.game_id }).select("*").maybeSingle();
   if (nm) {
     await new Promise((r) => setTimeout(r, 5000));
     const { data: a } = await admin.from("dm_messages").select("read_at").eq("id", nm.id).maybeSingle();
@@ -730,6 +762,7 @@ Deno.serve(async (req) => {
   if (body.action === "world_invite") return worldInvite(req, body);
   if (body.action === "invite_answered") return inviteAnswered(req, body);
   if (body.action === "dm_notify") return dmNotify(req, body);
+  if (body.action === "chat_notify") return chatNotify(req, body);
   if (body.action === "live_hint") {
     const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
     const { data: { user } } = await admin.auth.getUser(jwt);

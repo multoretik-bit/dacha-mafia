@@ -2816,6 +2816,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .pk-seat .ps-name { display: grid; justify-items: center; margin-top: 3px; padding: 3px 8px 4px; border-radius: 10px; background: rgba(7,27,77,.82); min-width: 62px; max-width: 80px; }
 .pk-seat .ps-name b { font: 800 11px/1.15 var(--f-body); color: #fff; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pk-seat .ps-name small { font: 800 11px/1.1 var(--f-body); color: #FFD76A; white-space: nowrap; }
+.pk-seat.wait { opacity: .55; } .pk-seat.wait .ps-av { box-shadow: 0 0 0 2.5px rgba(255,255,255,.6); border-radius: 50%; } .pk-seat.wait .ps-av::after { content: "⏳"; position: absolute; right: -6px; bottom: -4px; font-size: 13px; }
 .pk-seat.fold { opacity: .45; } .pk-seat.out { opacity: .35; filter: grayscale(1); }
 .pk-seat.win .ps-av { box-shadow: 0 0 0 3px #4ADE80, 0 0 20px 4px rgba(74,222,128,.7); }
 .ps-won { font: 900 11px/1 var(--f-body); color: #0B3F2B; background: #86EFAC; padding: 4px 7px; border-radius: 99px; margin-top: 3px; white-space: nowrap; animation: pkPop .5s cubic-bezier(.2,1.6,.4,1); }
@@ -2861,6 +2862,38 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .gg-chips { position: absolute; right: 78px; top: 14px; display: grid; } .gg-chips .pchip { width: 26px; height: 26px; margin-top: -20px; } .gg-chips .pchip:first-child { margin-top: 0; }
 .w-gtile .gt-next { font: 700 11px/1.3 var(--f-body); opacity: .85; }
 .wg-faces { display: flex; flex: none; } .wg-faces .ava, .wg-faces .prem { width: 30px; height: 30px; box-shadow: 0 0 0 2px #fff; } .wg-faces > * + * { margin-left: -12px; }
+
+/* ===== 08.11: the table chat — big, shared, always at hand ===== */
+#gameChat { display: grid; gap: 10px; margin-top: 12px; }
+.g-chat2 { display: grid; gap: 10px; padding: 14px 14px 12px; border-radius: 24px; background: #fff; box-shadow: 0 0 0 2px #E3EAFF, var(--sh); scroll-margin-bottom: 12px; }
+.gc2-h { display: flex; align-items: center; gap: 10px; }
+.gc2-ic { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; flex: none; background: #0033FF; color: #fff; box-shadow: 0 8px 16px -8px rgba(0,51,255,.8); }
+.gc2-t { display: grid; gap: 2px; flex: 1; min-width: 0; } .gc2-t b { font: 900 17px/1.1 var(--f-body); color: #071B4D; } .gc2-t small { font: 700 12px/1.2 var(--f-body); color: var(--muted); }
+.gc2-faces { display: flex; } .gc2-faces .ava, .gc2-faces .prem { width: 28px; height: 28px; box-shadow: 0 0 0 2px #fff; } .gc2-faces > * + * { margin-left: -10px; } .gc2-faces .prem-ic { display: none; }
+.gc2-list { display: flex; flex-direction: column; gap: 3px; min-height: 120px; max-height: min(46vh, 380px); overflow-y: auto; padding: 10px 8px; border-radius: 18px; background: #F4F6FB; overscroll-behavior: contain; }
+.gc2-row { display: flex; align-items: flex-end; gap: 6px; } .gc2-row.me { justify-content: flex-end; } .gc2-row.first { margin-top: 6px; } .gc2-row.first:first-child { margin-top: 0; }
+.gc2-av { width: 28px; flex: none; } .gc2-av .ava, .gc2-av .prem { width: 28px; height: 28px; } .gc2-av .prem-ic { display: none; }
+.gc2-list .ch-msg { max-width: 80%; font-size: 15px; background: #fff; box-shadow: 0 1px 2px rgba(7,27,77,.08); align-self: auto; }
+.gc2-list .ch-msg.me { background: #0033FF; color: #fff; }
+.gc2-nm { display: block; font: 800 12px/1.2 var(--f-body); color: #0033FF; margin-bottom: 2px; }
+.gc2-quick { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 1px; } .gc2-quick::-webkit-scrollbar { display: none; }
+.gc2-quick button { flex: none; border: 0; padding: 8px 12px; border-radius: 99px; background: #EEF2FA; color: #071B4D; font: 800 13px/1 var(--f-body); cursor: pointer; }
+.gc2-quick button:active { transform: scale(.95); background: #DCE6FF; }
+.gc2-bar { display: flex; gap: 8px; }
+.gc2-bar input { flex: 1; min-width: 0; height: 48px; padding: 0 16px; border: 0; border-radius: 24px; background: #F1F3F8; font: 600 15.5px/1 var(--f-body); color: #071B4D; }
+.gc2-bar input:focus { outline: none; box-shadow: inset 0 0 0 2px #0033FF; background: #fff; }
+.gc2-bar button { width: 48px; height: 48px; flex: none; border: 0; border-radius: 50%; background: #0033FF; color: #fff; display: grid; place-items: center; box-shadow: 0 8px 16px -8px rgba(0,51,255,.8); cursor: pointer; }
+.gc-fab { position: fixed; right: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 40; width: 58px; height: 58px; border: 0; border-radius: 50%; display: grid; place-items: center; background: #0033FF; color: #fff; box-shadow: 0 0 0 3px #fff, 0 14px 28px -10px rgba(0,51,255,.9); cursor: pointer; transition: transform .25s, opacity .25s; }
+.gc-fab.hide { transform: scale(.4); opacity: 0; pointer-events: none; }
+.gc-fab i { position: absolute; top: -3px; right: -3px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 99px; background: #E5243B; color: #fff; font: 900 12px/22px var(--f-body); font-style: normal; text-align: center; box-shadow: 0 0 0 2.5px #fff; }
+.gc-fab.ping { animation: gcPing 1.6s ease-in-out infinite; } @keyframes gcPing { 50% { transform: scale(1.08); } }
+.gc-pop { position: fixed; left: 12px; right: 12px; top: calc(12px + env(safe-area-inset-top)); z-index: 60; display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 0; border-radius: 20px; background: #071B4D; color: #fff; text-align: left; box-shadow: 0 18px 36px -14px rgba(7,27,77,.8); animation: gcIn .32s cubic-bezier(.2,1.3,.4,1); cursor: pointer; }
+.gc-pop .ava, .gc-pop .prem { width: 36px; height: 36px; flex: none; } .gc-pop .prem-ic { display: none; }
+.gc-pop span { display: grid; gap: 2px; min-width: 0; font: 600 14.5px/1.3 var(--f-body); } .gc-pop span b { font: 800 12px/1 var(--f-body); color: #FFD76A; }
+.gc-pop span { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+.gc-pop.out { opacity: 0; transform: translateY(-16px); transition: opacity .4s, transform .4s; }
+@keyframes gcIn { from { opacity: 0; transform: translateY(-20px) scale(.96); } }
+@media (prefers-reduced-motion: reduce) { .gc-fab.ping, .gc-pop { animation: none; } }
 </style>
 </head>
 <body>
@@ -2886,7 +2919,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 
   <!-- HUB: DACHA main page -->
   <section id="vWorld" class="col" hidden></section>
-  <section id="vGame" class="col" hidden><div id="gameBox"></div></section>
+  <section id="vGame" class="col" hidden><div id="gameBox"></div><div id="gameChat"></div></section>
   <section id="vInbox" class="col" hidden><div id="inboxBox"></div></section>
   <section id="vChat" class="col" hidden><div id="chatBox"></div></section>
   <section id="vOnline" class="col" hidden><div class="sec-title" style="margin:2px 2px 10px">Онлайн-игры</div><div id="hubOnline"></div></section>
@@ -3353,7 +3386,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261108074639"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261108075658"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -7487,7 +7520,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     : k === "checkers" ? `<span class="gg-art checkers"><i></i><i></i><i class="k"></i></span>`
     : k === "poker" ? `<span class="gg-art poker2">${dkCard("AH")}${dkCard("AS")}<span class="gg-chips">${chipSvg("c1")}${chipSvg("c2")}${chipSvg("c3")}</span></span>`
     : `<span class="gg-art durak2">${dkCard("AS")}${dkCard("KH")}${dkCard("QD")}</span>`;
-  const MOVE_MS = 5 * 60 * 1000;
+  const MOVE_MS = 60 * 1000;   // a minute per move, then the move is lost
   const loadMyGames = async () => {
     if (!sb || !me) return;
     const q = () => sb.from("world_games").select("*").in("status", ["invite", "active"]).or(`a.eq.${me.id},b.eq.${me.id},players.cs.{${me.id}}`).order("updated_at", { ascending: false }).limit(20);
@@ -7533,7 +7566,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       ${mine.length ? `<div class="ticket" style="margin-top:12px"><div class="ticket-in"><div class="t-body" style="padding-bottom:6px"><div class="eyebrow">Мои партии</div></div>
         ${mine.map((g) => { const multi = gMulti(g), ps = gPlayers(g), opp = gOpp(g), pp = personOf(opp), myTurn = g.status === "active" && g.turn === me.id, inv = gInv(g);
           const inN = multi ? ps.filter((u) => g.lobby?.[u] === "in").length : 0;
-          const st = g.status === "invite" ? (inv ? (g.a === me.id ? "зовёт тебя" : `${esc(personOf(g.a).nick)} зовёт за стол`) : multi ? `собираем стол · ${inN} из ${ps.length}` : "ждём, пока примет")
+          const st = inv && g.status === "active" ? "зовут за стол · игра уже идёт" : g.status === "invite" ? (inv ? (g.a === me.id ? "зовёт тебя" : `${esc(personOf(g.a).nick)} зовёт за стол`) : multi ? `собираем стол · ${inN} из ${ps.length}` : "ждём, пока примет")
             : myTurn ? "твой ход" : g.kind === "poker" && g.state?.street === "result" ? "вскрытие" : g.turn ? (ps.length > 2 ? `ходит ${esc(personOf(g.turn).nick)}` : "ход соперника") : "идёт игра";
           const faces = multi && ps.length > 2 ? `<span class="wg-faces">${ps.filter((u) => u !== me.id).slice(0, 3).map((u) => avaP({ ...personOf(u), id: u })).join("")}</span>` : avaP({ ...pp, id: opp });
           return `<button class="w-grow ${inv || myTurn ? "hot" : ""}" type="button" data-gopen="${g.id}">${faces}<span class="wg-t"><b>${gTitle(g)}</b><small>${st}</small></span><em>›</em></button>`; }).join("")}</div></div>` : ""}`;
@@ -7817,7 +7850,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   // ---------- tables for a company: lobby, «Дурак» на 2–8, «Ривер» (2 карты + 5 на столе, фишки) ----------
   const gPlayers = (g) => (g?.players?.length ? g.players : [g?.a, g?.b].filter(Boolean));
   const gMulti = (g) => ["durak", "poker"].includes(g?.kind);
-  const gInv = (g) => !!me && g.status === "invite" && (g.lobby && Object.keys(g.lobby).length ? g.lobby[me.id] === "invited" : g.b === me.id);
+  const gInv = (g) => !!me && (g.status === "invite" || (g.status === "active" && g.kind === "poker")) && (g.lobby && Object.keys(g.lobby).length ? g.lobby[me.id] === "invited" : g.status === "invite" && g.b === me.id);
   const gOpp = (g) => (g.a === me.id ? g.b || gPlayers(g).find((x) => x !== me.id) : g.a);
   const gTitle = (g) => `${GAMES_W[g.kind].name}${gMulti(g) && gPlayers(g).length > 2 ? ` · ${gPlayers(g).length} ${plural(gPlayers(g).length, "игрок", "игрока", "игроков")}` : ` · ${esc(personOf(gOpp(g)).nick)}`}`;
   const seatOrder = (ps) => { const i0 = ps.indexOf(me.id); return i0 < 0 ? ps : [...ps.slice(i0 + 1), ...ps.slice(0, i0)]; };
@@ -7873,7 +7906,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
           <small>${r.kind === "poker" ? `Стек ${stack} фишек у каждого · блайнды ${stack / 100}/${stack / 50}, растут каждые 10 раздач` : "52 карты · по 6 в руку · подкидывают все · последний с картами — дурак"}</small></div></div>
       <div class="lob-list">${ps.map((u) => { const p = personOf(u), s = lb[u] || "invited";
         return `<div class="lob-row ${s}">${avaP({ ...p, id: u })}<span class="nm"><b>${esc(p.nick)}${u === me.id ? " · ты" : ""}</b><small>${u === r.a ? "собрал стол · " : ""}${tag[s][0]}</small></span><i>${tag[s][1]}</i></div>`; }).join("")}</div>
-      <p class="lob-note">${dead ? "Никто не сел — можно собрать новый стол." : host ? (inN >= 2 ? "Можно начинать, остальные подтянутся в следующий раз. Или подожди всех — игра начнётся сама." : "Ждём, пока кто-нибудь сядет за стол.") : mine === "invited" ? `${esc(personOf(r.a).nick)} зовёт тебя за стол.` : "Ты за столом. Начнём, когда все ответят или хозяин нажмёт «начать»."}</p>
+      <p class="lob-note">${dead ? "Никто не сел — можно собрать новый стол." : host ? (inN >= 2 ? "Можно начинать, остальные подтянутся в следующий раз. Или подожди всех — игра начнётся сама." : r.kind === "poker" ? "Как только сядет хотя бы один — сразу начнём, остальные подсядут позже." : "Ждём, пока кто-нибудь сядет за стол.") : mine === "invited" ? `${esc(personOf(r.a).nick)} зовёт тебя за стол.` : "Ты за столом. Начнём, когда все ответят или хозяин нажмёт «начать»."}</p>
       <div class="g-acts">${dead ? `<button class="pill" type="button" data-gnew2="${r.kind}">собрать новый стол</button>`
         : host ? `<button class="pill" type="button" data-lbstart ${inN >= 2 ? "" : "disabled"}>начать · ${inN} ${plural(inN, "игрок", "игрока", "игроков")}</button>${ps.length < 8 ? `<button class="pill ghost" type="button" data-lbadd>позвать ещё</button>` : ""}`
         : mine === "invited" ? `<button class="pill" type="button" data-gaccept>сесть за стол</button><button class="pill ghost" type="button" data-gdecline>не могу</button>` : ""}
@@ -7960,7 +7993,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const pkName = (s) => { const c = Math.floor(s / 759375); return c === 8 ? (s % 759375 === 14 ? "Роял-флеш" : "Стрит-флеш") : ["Старшая карта", "Пара", "Две пары", "Сет", "Стрит", "Флеш", "Фулл-хаус", "Каре"][c]; };
   const pkMyHand = (hand, board) => { if (hand.length < 2) return ""; if (board.length < 3) return hand[0][0] === hand[1][0] ? "Пара" : "Старшая карта"; return pkName(pkBest([...hand, ...board])); };
   const drawPoker = () => {
-    const box = $("gameBox"), r = G.row, st = r.state || {}, ps = gPlayers(r), act = r.status === "active", res = st.street === "result" || !act;
+    const box = $("gameBox"), r = G.row, st = r.state || {}, lb = r.lobby || {}, ps = gPlayers(r).filter((u) => lb[u] !== "declined"), act = r.status === "active", res = st.street === "result" || !act;
+    const iWait = lb[me.id] === "invited", iNext = act && lb[me.id] === "in" && !(st.seats || []).includes(me.id) && !(st.out || []).includes(me.id);
     const live = st.live || [], allin = st.allin || [], out = st.out || [], bet = st.bet || {}, chips = st.chips || {}, last = st.last || null;
     const shown = res && last ? last.shown || {} : {}, board = (res && last ? last.board : st.board) || [];
     const pot = (+st.pot || 0) + Object.values(bet).reduce((a, b) => a + +b, 0);
@@ -7970,10 +8004,11 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const opps = seatOrder(ps);
     const seat = (u, x, y, bx, by) => {
       const p = personOf(u), inH = live.includes(u) && act && !res, isOut = out.includes(u), w = wins.find((q) => q.u === u), sh = shown[u];
-      return `<div class="pk-seat ${act && !res && r.turn === u ? "act" : ""} ${act && !res && !live.includes(u) && !isOut ? "fold" : ""} ${isOut ? "out" : ""} ${w ? "win" : ""} ${sh ? "shown" : ""}" style="left:${x}%;top:${y}%">
+      const wait = lb[u] === "invited", next = act && lb[u] === "in" && !(st.seats || []).includes(u) && !isOut;
+      return `<div class="pk-seat ${act && !res && r.turn === u ? "act" : ""} ${act && !res && !live.includes(u) && !isOut ? "fold" : ""} ${isOut ? "out" : ""} ${wait ? "wait" : ""} ${w ? "win" : ""} ${sh ? "shown" : ""}" style="left:${x}%;top:${y}%">
           <span class="ps-av">${avaP({ ...p, id: u })}${st.dealer === u && act ? `<i class="pk-d">D</i>` : ""}</span>
           <span class="ps-cards">${sh ? sh.map((c) => dkCard(c, "pk-sm")).join("") : inH ? dkBack("pk-sm") + dkBack("pk-sm") : ""}</span>
-          <span class="ps-name"><b>${esc(p.nick)}</b><small>${isOut ? "выбыл" : allin.includes(u) && act && !res ? "ва-банк" : chipSvg("xs") + (+chips[u] || 0)}</small></span>
+          <span class="ps-name"><b>${esc(p.nick)}</b><small>${wait ? "зовём…" : next ? "со след. раздачи" : isOut ? "выбыл" : allin.includes(u) && act && !res ? "ва-банк" : chipSvg("xs") + (+chips[u] || 0)}</small></span>
           ${w ? `<span class="ps-won">+${w.amt}${w.name ? ` · ${esc(w.name)}` : ""}</span>` : ""}
         </div>${+bet[u] && act && !res ? `<span class="pk-bet" style="left:${bx}%;top:${by}%">${chipSvg()}<b>${bet[u]}</b></span>` : ""}`;
     };
@@ -7982,6 +8017,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     let line;
     if (r.status === "done") line = r.winner === me.id ? "Все фишки твои — победа! +30 XP" : `Стол выиграл <b>${esc(personOf(r.winner).nick)}</b> · +10 XP`;
     else if (res) line = wins.length ? wins.map((w) => `<b>${esc(personOf(w.u).nick)}</b> +${w.amt}${w.name ? ` · ${esc(w.name)}` : ""}`).join(" · ") + `<small class="pk-nx">следующая раздача через пару секунд…</small>` : "Раздача окончена";
+    else if (iWait) line = `<b>${esc(personOf(r.a).nick)}</b> зовёт тебя за стол — игра уже идёт, сядешь со следующей раздачи со стеком ${st.stack || r.opts?.stack || 500}`;
+    else if (iNext) line = "Ты за столом — карты придут со следующей раздачи";
     else if (out.includes(me.id)) line = "Ты выбыл — можно досмотреть стол";
     else if (myTurn) line = need ? `Твой ход · чтобы остаться, нужно ${Math.min(need, myChips)}` : "Твой ход · можно чек";
     else if (!live.includes(me.id)) line = `Ты сбросил · ходит <b>${esc(personOf(r.turn).nick)}</b>`;
@@ -8017,7 +8054,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
           <div class="pr-presets">${[["мин", minTo], ["½ банка", potTo(0.5)], ["банк", potTo(1)], ["ва-банк", maxTo]].map(([l, x]) => `<button type="button" data-pkset="${x}" aria-pressed="${x === rv}">${l}<small>${x}</small></button>`).join("")}</div>
           <input type="range" min="${minTo}" max="${maxTo}" step="1" value="${rv}" data-pkrange aria-label="Сколько ставить">
           <button class="pill wide pk-go" type="button" data-pk="raise">${rv >= maxTo ? `Ва-банк · ${maxTo}` : `${need ? "Рейз до" : "Поставить"} ${rv}`}</button></div>` : ""}` : ""}
-      <div class="g-acts">${act ? `<button class="pill sm ghost" type="button" data-gresign>выйти из-за стола</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
+      <div class="g-acts">${act && iWait ? `<button class="pill" type="button" data-gaccept>сесть за стол</button><button class="pill ghost" type="button" data-gdecline>не могу</button>` : ""}
+        ${act && r.a === me.id && ps.length < 8 ? `<button class="pill sm ghost" type="button" data-lbadd>позвать ещё</button>` : ""}
+        ${act && !iWait ? `<button class="pill sm ghost" type="button" data-gresign>выйти из-за стола</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
     </div>`;
     clearTimeout(G.pkNext);
     if (act && st.street === "result") G.pkNext = setTimeout(async () => { if (G.row?.id !== r.id) return; await sb.rpc("poker_next", { g: r.id }); refreshGame(); }, 5200);
@@ -8336,33 +8375,87 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     try { navigator.vibrate?.([40, 60, 40]); } catch {} haptic("card");
     setTimeout(() => b.classList.add("out"), 8000); setTimeout(() => b.remove(), 8600);
   };
-  const GC = { gid: null, msgs: [] };
+  // ---------- the table chat: everybody at the table sees everything; it lives outside the board, so a move never wipes what you type ----------
+  const GC = { gid: null, msgs: [], unread: 0, seen: false, io: null };
+  const gcKey = (m) => m.grp || m.id;
+  const gcAdd = (m) => { const k = gcKey(m); if (GC.msgs.some((x) => gcKey(x) === k)) return false; GC.msgs.push(m); return true; };
+  const GC_QUICK = ["👍", "го!", "ходи уже 😅", "😂", "красиво!", "ещё партию?"];
+  const gcOthers = (r) => gPlayers(r).filter((u) => u !== me.id && r.lobby?.[u] !== "declined");
   const mountGameChat = () => {
-    const r = G.row, wrap = document.querySelector("#gameBox .g-wrap"); if (!r || !wrap || G.local || r.status === "declined") return;
-    if (gMulti(r) && (gPlayers(r).length > 2 || r.status === "invite" || !r.b)) return;   // a table for a company has no private chat
-    const opp = r.a === me.id ? r.b : r.a;
-    wrap.insertAdjacentHTML("beforeend", `<div class="g-chat"><div class="gc-h">💬 Чат с ${esc(personOf(opp).nick)}</div><div class="gc-list" id="gcList"></div>
-      <form class="gc-bar" id="gcForm"><input id="gcIn" maxlength="500" placeholder="Сообщение сопернику…" autocomplete="off" enterkeyhint="send"><button type="submit" aria-label="Отправить"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg></button></form></div>`);
-    if (GC.gid !== r.id) { GC.gid = r.id; GC.msgs = []; loadGameChat(); } else drawGameChat();
+    const r = G.row, host = $("gameChat"); if (!host) return;
+    if (!r || G.local || r.status === "declined" || !gcOthers(r).length) { host.innerHTML = ""; GC.gid = null; return; }
+    if (GC.gid === r.id && host.firstChild) return drawGcHead();   // the same table: keep the input as it is
+    GC.gid = r.id; GC.msgs = []; GC.unread = 0;
+    host.innerHTML = `<div class="g-chat2" id="gcBox">
+        <div class="gc2-h"><span class="gc2-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12Z"/></svg></span>
+          <span class="gc2-t"><b>Чат стола</b><small id="gcWho"></small></span><span class="gc2-faces" id="gcFaces"></span></div>
+        <div class="gc2-list" id="gcList"></div>
+        <div class="gc2-quick">${GC_QUICK.map((q) => `<button type="button" data-gq="${esc(q)}">${esc(q)}</button>`).join("")}</div>
+        <form class="gc2-bar" id="gcForm"><input id="gcIn" maxlength="500" placeholder="Написать за стол…" autocomplete="off" enterkeyhint="send">
+          <button type="submit" aria-label="Отправить"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg></button></form>
+      </div>
+      <button class="gc-fab" id="gcFab" type="button" aria-label="Открыть чат стола"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12Z"/></svg><i id="gcFabN" hidden></i></button>`;
+    GC.io?.disconnect();
+    if (window.IntersectionObserver) {
+      GC.io = new IntersectionObserver(([en]) => { GC.seen = en.isIntersecting; if (GC.seen) { GC.unread = 0; if (GC.gid) sb.rpc("dm_read_game", { g: GC.gid }).then(() => refreshBell()); } drawGcFab(); }, { threshold: 0.35 });
+      GC.io.observe($("gcBox"));
+    }
+    drawGcHead(); drawGcFab(); loadGameChat();
+  };
+  const drawGcHead = () => {
+    const r = G.row, o = r ? gcOthers(r) : []; if (!$("gcWho")) return;
+    $("gcWho").textContent = o.length > 1 ? `${o.length + 1} за столом · видят все` : o.length ? `с ${personOf(o[0]).nick}` : "";
+    $("gcFaces").innerHTML = o.slice(0, 4).map((u) => avaP({ ...personOf(u), id: u })).join("");
+  };
+  const drawGcFab = () => {
+    const f = $("gcFab"), n = $("gcFabN"); if (!f) return;
+    f.classList.toggle("hide", GC.seen); n.hidden = !GC.unread; n.textContent = GC.unread > 9 ? "9+" : GC.unread;
+    f.classList.toggle("ping", GC.unread > 0);
   };
   const loadGameChat = async () => {
-    const gid = GC.gid; const { data } = await sb.from("dm_messages").select("*").eq("game_id", gid).order("created_at", { ascending: true }).limit(150);
-    if (GC.gid !== gid) return; GC.msgs = data || []; drawGameChat();
+    const gid = GC.gid; const { data } = await sb.from("dm_messages").select("*").eq("game_id", gid).order("created_at", { ascending: true }).limit(300);
+    if (GC.gid !== gid) return; GC.msgs = []; (data || []).forEach(gcAdd); drawGameChat();
     sb.rpc("dm_read_game", { g: gid }).then(() => refreshBell());
   };
   const drawGameChat = () => {
-    const box = document.getElementById("gcList"); if (!box) return;
-    box.innerHTML = GC.msgs.length ? GC.msgs.map((m) => `<div class="ch-msg ${m.from_id === me.id ? "me" : ""} ${m._new ? "new" : ""}">${esc(m.body)}<i>${new Date(m.created_at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}${m.via_tg ? " · из Telegram" : ""}</i></div>`).join("")
-      : `<div class="gc-empty">Напиши сопернику — если он не в приложении, сообщение придёт ему в Telegram</div>`;
+    const box = $("gcList"); if (!box) return;
+    const many = gcOthers(G.row || {}).length > 1;
+    let prev = null;
+    box.innerHTML = GC.msgs.length ? GC.msgs.map((m) => {
+      const mine = m.from_id === me.id, first = prev !== m.from_id; prev = m.from_id;
+      return `<div class="gc2-row ${mine ? "me" : ""} ${first ? "first" : ""}">${mine ? "" : `<span class="gc2-av">${first ? avaP({ ...personOf(m.from_id), id: m.from_id }) : ""}</span>`}
+        <div class="ch-msg ${mine ? "me" : ""} ${m._new ? "new" : ""}">${!mine && first && many ? `<b class="gc2-nm">${esc(personOf(m.from_id).nick)}</b>` : ""}${esc(m.body)}<i>${new Date(m.created_at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}${m.via_tg ? " · из Telegram" : ""}</i></div></div>`;
+    }).join("") : `<div class="gc-empty">${many ? "Пиши всем за столом — кто не в приложении, получит сообщение в Telegram" : "Напиши сопернику — если он не в приложении, сообщение придёт ему в Telegram"}</div>`;
     GC.msgs.forEach((m) => delete m._new); box.scrollTop = box.scrollHeight;
   };
-  $("gameBox").addEventListener("submit", async (e) => {
-    if (e.target.id !== "gcForm") return; e.preventDefault();
-    const inp = document.getElementById("gcIn"), t = inp.value.trim(), r = G.row; if (!t || !r) return;
-    inp.value = ""; const opp = r.a === me.id ? r.b : r.a;
-    const temp = { id: "t" + Date.now(), from_id: me.id, to_id: opp, body: t, created_at: new Date().toISOString(), game_id: r.id, _new: true };
+  // somebody wrote while the chat is out of sight: a bubble over the table + a counter on the chat button
+  const gcIncoming = (m) => {
+    if (GC.seen) return;
+    GC.unread++; drawGcFab(); haptic("tap");
+    document.querySelector(".gc-pop")?.remove();
+    const b = document.createElement("button"); b.type = "button"; b.className = "gc-pop";
+    b.innerHTML = `${avaP({ ...personOf(m.from_id), id: m.from_id })}<span><b>${esc(personOf(m.from_id).nick)}</b>${esc(m.body)}</span>`;
+    b.onclick = () => { b.remove(); gcOpen(); };
+    document.body.append(b); setTimeout(() => b.classList.add("out"), 4200); setTimeout(() => b.remove(), 4700);
+  };
+  const gcOpen = () => { $("gcBox")?.scrollIntoView({ behavior: "smooth", block: "end" }); setTimeout(() => $("gcIn")?.focus({ preventScroll: true }), 450); };
+  const gcSend = async (t) => {
+    const r = G.row; if (!t || !r) return false;
+    const temp = { id: "t" + Date.now(), from_id: me.id, body: t, created_at: new Date().toISOString(), game_id: r.id, _new: true };
     GC.msgs.push(temp); drawGameChat(); haptic("tap");
-    const id = await sendDM(opp, t, r.id); if (!id) { GC.msgs = GC.msgs.filter((m) => m !== temp); drawGameChat(); inp.value = t; } else temp.id = id;
+    const { data: grp, error } = await sb.rpc("game_say", { g: r.id, body_: t });
+    if (error) { GC.msgs = GC.msgs.filter((m) => m !== temp); drawGameChat(); toast(/too fast/.test(error.message) ? "Слишком быстро — подожди немного" : "Не получилось: " + humanErr(error)); return false; }
+    temp.grp = grp; sb.functions.invoke("tg", { body: { action: "chat_notify", grp } }).catch(() => {});
+    return true;
+  };
+  $("gameChat").addEventListener("submit", async (e) => {
+    if (e.target.id !== "gcForm") return; e.preventDefault();
+    const inp = $("gcIn"), t = inp.value.trim(); if (!t) return;
+    inp.value = ""; if (!(await gcSend(t))) inp.value = t;
+  });
+  $("gameChat").addEventListener("click", (e) => {
+    const q = e.target.closest("[data-gq]"); if (q) return gcSend(q.dataset.gq);
+    if (e.target.closest("#gcFab")) { haptic("tap"); gcOpen(); }
   });
   const sendDM = async (to, text, g) => {
     const { data: id, error } = await sb.rpc("dm_send", { to_: to, body_: text, g });
@@ -8374,7 +8467,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (!sb || !me || DM.chan) return;
     DM.chan = sb.channel("dm-" + me.id).on("postgres_changes", { event: "INSERT", schema: "public", table: "dm_messages", filter: `to_id=eq.${me.id}` }, async (p0) => {
       const m = p0.new; if (!m.game_id) return;
-      if (S.view === "game" && GC.gid === m.game_id && !document.hidden) { m._new = true; GC.msgs.push(m); drawGameChat(); sb.rpc("dm_read_game", { g: m.game_id }).then(() => {}); return; }
+      if (S.view === "game" && GC.gid === m.game_id && !document.hidden) { m._new = true; if (gcAdd(m)) { drawGameChat(); gcIncoming(m); } if (GC.seen) sb.rpc("dm_read_game", { g: m.game_id }).then(() => {}); return; }
       await loadThreads(); drawBell(); if (S.view === "inbox") drawInbox();
       popBanner({ uid: m.from_id, title: `${personOf(m.from_id).nick} · в игре`, sub: m.body, cta: "ответить", onClick: () => go("game", m.game_id) });
     }).subscribe();
