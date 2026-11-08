@@ -2827,14 +2827,14 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .pk-street { font: 800 10.5px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.6); min-height: 10px; }
 .pk-board { display: flex; gap: 5px; justify-content: center; }
 .pk-board .dk-card, .pk-slot { --cw: min(42px, 11.5vw); }
-.pk-board .dk-card { animation: pkFlip .45s ease-out both; } .pk-board .dk-card.lit { box-shadow: 0 0 0 1px rgba(7,27,77,.28), 0 0 14px rgba(255,215,106,.55); }
+.pk-board .dk-card.fresh { animation: pkFlip .45s ease-out both; } .pk-board .dk-card.lit { box-shadow: 0 0 0 1px rgba(7,27,77,.28), 0 0 14px rgba(255,215,106,.55); }
 .pk-slot { width: var(--cw); height: calc(var(--cw) * 1.4); border-radius: calc(var(--cw) * .14); border: 1.5px dashed rgba(255,255,255,.22); box-sizing: border-box; }
 .pk-pot { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 6px; border-radius: 99px; background: rgba(0,0,0,.3); box-shadow: inset 0 0 0 1px rgba(255,215,106,.4); }
 .pk-pot b { font: 900 15px/1 var(--f-body); color: #FFD76A; } .pk-pot small { font: 700 10.5px/1 var(--f-body); color: rgba(255,255,255,.65); } .pk-pot .pchip { width: 22px; height: 22px; }
 .pk-me { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 22px; background: #fff; box-shadow: var(--sh); }
 .pk-me.act { box-shadow: 0 0 0 3px #FFC83D, var(--sh); } .pk-me.fold { opacity: .6; }
 .pk-me .pm-av { position: relative; } .pk-me .pm-av .ava, .pk-me .pm-av .prem { width: 44px; height: 44px; }
-.pk-me .pm-cards { display: flex; gap: 6px; justify-content: center; } .dk-card.pk-hole { --cw: 56px; animation: pkFlip .5s ease-out both; } .dk-card.pk-hole + .dk-card.pk-hole { transform: rotate(4deg); } .pk-me .pm-cards .dk-card.pk-hole:first-child { transform: rotate(-4deg); }
+.pk-me .pm-cards { display: flex; gap: 6px; justify-content: center; } .dk-card.pk-hole { --cw: 56px; } .dk-card.pk-hole.fresh { animation: pkFlip .5s ease-out both; } .dk-card.pk-hole + .dk-card.pk-hole { transform: rotate(4deg); } .pk-me .pm-cards .dk-card.pk-hole:first-child { transform: rotate(-4deg); }
 .pm-wait { font: 700 12px/1 var(--f-body); color: var(--muted); }
 .pk-me .pm-t { display: grid; justify-items: end; gap: 3px; } .pk-me .pm-t b { font: 900 17px/1 var(--f-body); color: #071B4D; display: inline-flex; align-items: center; } .pk-me .pm-t small { font: 800 11.5px/1.15 var(--f-body); color: #15803D; text-align: right; max-width: 90px; }
 .pk-nx { display: block; font: 600 11.5px/1.3 var(--f-body); color: var(--muted); margin-top: 3px; }
@@ -2894,6 +2894,40 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .gc-pop.out { opacity: 0; transform: translateY(-16px); transition: opacity .4s, transform .4s; }
 @keyframes gcIn { from { opacity: 0; transform: translateY(-20px) scale(.96); } }
 @media (prefers-reduced-motion: reduce) { .gc-fab.ping, .gc-pop { animation: none; } }
+
+/* ===== 08.11: what is happening at the table ===== */
+.g-title { position: relative; }
+.g-snd { position: absolute; right: 0; top: 2px; width: 42px; height: 42px; border: 0; border-radius: 50%; display: grid; place-items: center; background: #fff; color: #071B4D; box-shadow: var(--sh); cursor: pointer; }
+.g-snd.off { color: #9AA3B5; }
+.dk-me, .pk-me { position: relative; }
+.fx-say { position: absolute; left: 50%; top: -12px; z-index: 6; padding: 6px 10px; border-radius: 12px; background: #071B4D; color: #fff; font: 800 12.5px/1.1 var(--f-body); white-space: nowrap; pointer-events: none; box-shadow: 0 8px 16px -6px rgba(7,27,77,.7); animation: fxSay 2.3s ease-out both; }
+.fx-say::after { content: ""; position: absolute; left: 50%; bottom: -5px; margin-left: -5px; border: 5px solid transparent; border-bottom: 0; border-top-color: inherit; border-top-color: #071B4D; }
+.fx-say.ok { background: #15803D; } .fx-say.ok::after { border-top-color: #15803D; }
+.fx-say.bad { background: #C0162A; } .fx-say.bad::after { border-top-color: #C0162A; }
+.fx-say.hot { background: #F2A900; color: #071B4D; } .fx-say.hot::after { border-top-color: #F2A900; }
+@keyframes fxSay { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.8); } 8% { opacity: 1; transform: translate(-50%, -100%) scale(1.06); } 14% { transform: translate(-50%, -100%) scale(1); } 85% { opacity: 1; transform: translate(-50%, -100%); } 100% { opacity: 0; transform: translate(-50%, -125%); } }
+.fx-flash { position: absolute; left: 50%; top: 50%; z-index: 7; max-width: 88%; padding: 12px 20px; border-radius: 18px; background: rgba(7,27,77,.92); color: #FFD76A; font: 900 22px/1.15 var(--f-display); text-align: center; pointer-events: none; box-shadow: 0 16px 34px -12px rgba(0,0,0,.7), inset 0 0 0 1.5px rgba(255,215,106,.6); animation: fxFlash 1.5s ease-out both; }
+.fx-flash.ok { background: rgba(21,128,61,.95); color: #fff; box-shadow: 0 16px 34px -12px rgba(0,0,0,.7), inset 0 0 0 1.5px #86EFAC; }
+.fx-flash.bad { background: rgba(192,22,42,.95); color: #fff; box-shadow: 0 16px 34px -12px rgba(0,0,0,.7), inset 0 0 0 1.5px #FDA4AF; }
+@keyframes fxFlash { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.6); } 12% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); } 20% { transform: translate(-50%, -50%) scale(1); } 80% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.06); } }
+.fx-chip { position: fixed; z-index: 70; width: 22px; height: 22px; pointer-events: none; } .fx-chip .pchip { width: 22px; height: 22px; }
+.dk-pair.fx-in { animation: fxIn .36s cubic-bezier(.2,1.2,.4,1) both; } @keyframes fxIn { from { opacity: 0; transform: translateY(46px) rotate(-8deg) scale(.8); } }
+.dk-card.fx-cover { animation: fxCover .34s cubic-bezier(.2,1.3,.4,1) both; } @keyframes fxCover { from { opacity: 0; transform: translate(26px, 34px) rotate(16deg) scale(1.15); } }
+.g-line.fx-go { animation: fxGo .7s ease-out 2; } @keyframes fxGo { 40% { transform: scale(1.09); color: #15803D; } }
+.pk-seat.act .ps-av::before, .dk-opp.act .do-av::before { content: ""; position: absolute; inset: -6px; border-radius: 50%; background: conic-gradient(#FFC83D calc(var(--tl, 100) * 1%), rgba(255,255,255,.18) 0); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 0); mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 0); pointer-events: none; }
+.pk-bl { position: absolute; left: -9px; top: -4px; min-width: 20px; height: 18px; padding: 0 3px; border-radius: 9px; background: #FFD76A; color: #071B4D; font: 900 9.5px/18px var(--f-body); font-style: normal; text-align: center; box-shadow: 0 0 0 1.5px #071B4D; box-sizing: border-box; } .pk-bl.bb { background: #FF9F68; }
+.pk-me .pm-inpot { color: #B07A00 !important; }
+.pk-ledger { display: grid; gap: 0; padding: 10px 12px; border-radius: 20px; background: #fff; box-shadow: var(--sh); }
+.lg-h, .lg-row { display: grid; grid-template-columns: minmax(0, 1fr) 54px 54px 58px; align-items: center; gap: 4px; }
+.lg-h { padding: 2px 2px 8px; font: 800 11px/1.1 var(--f-body); color: var(--muted); } .lg-h b { font: 900 14px/1.1 var(--f-body); color: #071B4D; } .lg-h span { text-align: right; }
+.lg-row { grid-template-columns: 30px minmax(0, 1fr) 54px 54px 58px; padding: 7px 2px; border-top: 1px solid var(--hair); font: 800 14px/1 var(--f-body); color: #071B4D; font-variant-numeric: tabular-nums; }
+.lg-row .ava, .lg-row .prem { width: 30px; height: 30px; } .lg-row .prem-ic { display: none; }
+.lg-row .nm { font: 800 13px/1.15 var(--f-body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-left: 4px; }
+.lg-row > span, .lg-row > em { text-align: right; font-style: normal; } .lg-row em.up { color: #15803D; } .lg-row em.down { color: #C0162A; }
+.lg-row.act { background: #FFF8E1; border-radius: 10px; } .lg-row.out { opacity: .5; }
+.lg-h { grid-template-columns: minmax(0, 1fr) 54px 54px 58px; }
+.lg-f { display: grid; gap: 4px; padding: 9px 2px 2px; border-top: 1px solid var(--hair); font: 700 12.5px/1.3 var(--f-body); color: #071B4D; } .lg-f b { font-weight: 900; } .lg-f small { font: 600 11.5px/1.35 var(--f-body); color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .fx-say, .fx-flash { animation-duration: .01s; animation-delay: 0s !important; } .dk-pair.fx-in, .dk-card.fx-cover, .g-line.fx-go { animation: none; } }
 </style>
 </head>
 <body>
@@ -3386,7 +3420,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261108075658"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261108082657"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -7540,7 +7574,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       const left = MOVE_MS - (Date.now() - new Date(r.updated_at).getTime());
       if (!document.getElementById("gClock")) return clearInterval(gTick);
       const mine = r.turn === me.id, sec = Math.max(0, Math.ceil(left / 1000));
-      el.className = "g-clock " + (mine ? "mine " : "") + (sec <= 60 ? "low" : "");
+      if (mine && sec <= 10 && sec > 0 && G.tickAt !== sec) { G.tickAt = sec; sfx("tick"); }
+      document.querySelectorAll("#gameBox .pk-seat.act .ps-av, #gameBox .dk-opp.act .do-av").forEach((x) => x.style.setProperty("--tl", Math.max(0, Math.min(100, (left / MOVE_MS) * 100))));
+      el.className = "g-clock " + (mine ? "mine " : "") + (sec <= 15 ? "low" : "");
       el.innerHTML = `<i style="width:${Math.max(0, Math.min(100, (left / MOVE_MS) * 100))}%"></i><span>${mine ? "Твой ход" : gPlayers(r).length > 2 && r.turn ? `Ходит ${esc(personOf(r.turn).nick)}` : "Ход соперника"} · ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}</span>`;
       if (left <= 0) { clearInterval(gTick); sb.rpc("game_timeout", { g: r.id }).then(() => refreshGame()); }
     };
@@ -7808,9 +7844,10 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (G.local || !gameId) return;
     const { data } = await sb.from("world_games").select("*").eq("id", gameId).maybeSingle();
     if (!data) return; const changed = !G.row || data.ver !== G.row.ver || data.status !== G.row.status;
+    const before = G.row && G.row.id === data.id ? G.row : null;
     G.row = data;
     if (gMulti(data) && data.status !== "invite") { const { data: h } = await sb.from("durak_hands").select("cards").eq("game_id", data.id).eq("user_id", me.id).maybeSingle(); G.hand = h?.cards || []; }
-    if (changed) { G.sel = null; drawGame(); }
+    if (changed) { G.sel = null; const ops = before && gMulti(data) ? fxDiff(before, data) : []; drawGame(); fxRun(ops); }
   };
   const renderGame = async () => {
     const box = $("gameBox");
@@ -7821,6 +7858,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       if (!W.chan) W.chan = sb.channel("world").on("postgres_changes", { event: "*", schema: "public", table: "world_games" }, worldAgain).subscribe();
       if (!people.length) await loadPeople(); }
     G.sel = null; drawGame();
+    clearInterval(G.poll); G.poll = setInterval(() => { if (S.view !== "game" || !G.row) return clearInterval(G.poll); if (!document.hidden && gMulti(G.row) && ["invite", "active"].includes(G.row.status)) refreshGame(); }, 3000);
   };
   const CH_GLYPH = { k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" }, CH_LINE = { k: "♔", q: "♕", r: "♖", b: "♗", n: "♘", p: "♙" };
   // ---------- durak ----------
@@ -7951,7 +7989,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     box.innerHTML = `<div class="g-wrap g-durak g-multi">
       <div class="g-title"><span class="gt-code">CRD · подкидной${ps.length > 2 ? ` · ${ps.length} игроков` : ""}</span><b>Дурак</b></div>
       <div class="dk-opps n${Math.min(opps.length, 7)}">${opps.map((u) => { const n = st.hands?.[u] ?? 0, p = personOf(u);
-        return `<div class="dk-opp ${act && r.turn === u ? "act" : ""} ${done.includes(u) ? "out" : ""} ${loser === u ? "lose" : ""}">
+        return `<div data-u="${u}" class="dk-opp ${act && r.turn === u ? "act" : ""} ${done.includes(u) ? "out" : ""} ${loser === u ? "lose" : ""}">
           <span class="do-av">${avaP({ ...p, id: u })}${u === st.att && act ? `<i class="do-tag att">⚔</i>` : u === st.def && act ? `<i class="do-tag def">🛡</i>` : ""}</span>
           <b>${esc(p.nick)}</b><small>${loser === u ? "дурак 🃏" : role(u) || `${n} ${plural(n, "карта", "карты", "карт")}`}</small>
           <span class="do-fan">${Array.from({ length: Math.min(n, 8) }, () => dkBack("mini")).join("")}</span></div>`; }).join("")}</div>
@@ -7961,13 +7999,13 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
           <span class="dk-tchip ${"HD".includes(tr[1]) ? "red" : ""}">${suitSvg(tr[1])}<span><small>козырь</small><b>${DK_SUITN[tr[1]]}</b></span></span>
           ${st.out ? `<span class="dk-out">${dkBack("mini")}бито ${st.out}</span>` : ""}
         </div>
-        <div class="dk-table">${tbl.length ? tbl.map((x, i) => `<button type="button" class="dk-pair ${!x[1] && G.sel && dkBeats(G.sel, x[0], tr) ? "can" : ""} ${x[1] ? "beaten" : ""}" data-dkpair="${i}">${dkCard(x[0])}${x[1] ? dkCard(x[1], "def") : ""}</button>`).join("")
+        <div class="dk-table">${tbl.length ? tbl.map((x, i) => `<button type="button" class="dk-pair ${!x[1] && G.sel && dkBeats(G.sel, x[0], tr) ? "can" : ""} ${x[1] ? "beaten" : ""} ${G.dkFx?.pair === i ? "fx-in" : ""}" data-dkpair="${i}">${dkCard(x[0])}${x[1] ? dkCard(x[1], `def ${G.dkFx?.cover === i ? "fx-cover" : ""}`) : ""}</button>`).join("")
           : `<span class="dk-empty">${act ? (iAtt ? "Ходи картой из руки" : `Ходит ${nm(st.att)}`) : r.status === "done" ? "Партия окончена" : ""}</span>`}</div>
         ${act && tbl.length ? `<span class="dk-lim">${tbl.length} / ${lim}</span>` : ""}
       </div>
       <div class="g-line ${myTurn || (canThrowAny && !passed.includes(me.id)) ? "mine" : ""}">${line}</div>
       ${act ? `<div class="g-clock" id="gClock"></div>` : ""}
-      <div class="dk-me ${iDef ? "def" : iAtt ? "att" : ""}">${act && !iOut ? `<span class="dk-role">${iDef ? "🛡 ты отбиваешься" : iAtt ? "⚔ ты ходишь" : "можешь подкидывать"}</span>` : ""}</div>
+      <div data-u="${me.id}" class="dk-me ${iDef ? "def" : iAtt ? "att" : ""}">${act && !iOut ? `<span class="dk-role">${iDef ? "🛡 ты отбиваешься" : iAtt ? "⚔ ты ходишь" : "можешь подкидывать"}</span>` : ""}</div>
       <div class="dk-hand">${dkHandRows(hand.map((c) => dkCard(c, `${playable(c) ? "ok" : act && !iOut ? "dim" : ""} ${G.sel === c ? "sel" : ""} ${c[1] === tr[1] ? "is-tr" : ""}`, `data-dkc="${c}" role="button" tabindex="0"`)), Math.min(440, (box.clientWidth || 360)) - 8)}</div>
       <div class="g-acts">${act && iDef && open ? `<button class="pill red" type="button" data-dkact="take">беру</button>` : ""}
         ${act && !iDef && !iOut && tbl.length && !open && !passed.includes(me.id) ? `<button class="pill" type="button" data-dkact="pass">${iAtt ? "бито" : "пас — не подкидываю"}</button>` : ""}
@@ -8002,21 +8040,24 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const myBet = +bet[me.id] || 0, myChips = +chips[me.id] || 0, cur = +st.cur || 0, minr = +st.minr || +st.bb || 1, need = Math.max(0, cur - myBet);
     const wins = res && last ? last.wins || [] : [];
     const opps = seatOrder(ps);
+    const blindTag = (u) => (act && !res && st.sbp === u ? `<i class="pk-bl">SB</i>` : act && !res && st.bbp === u ? `<i class="pk-bl bb">BB</i>` : "");
+    const netOf = (w) => w.amt - (+(st.contrib || {})[w.u] || 0);
+    const netTxt = (n0) => (n0 > 0 ? `+${n0}` : n0 < 0 ? `−${-n0}` : "своё");
     const seat = (u, x, y, bx, by) => {
       const p = personOf(u), inH = live.includes(u) && act && !res, isOut = out.includes(u), w = wins.find((q) => q.u === u), sh = shown[u];
       const wait = lb[u] === "invited", next = act && lb[u] === "in" && !(st.seats || []).includes(u) && !isOut;
-      return `<div class="pk-seat ${act && !res && r.turn === u ? "act" : ""} ${act && !res && !live.includes(u) && !isOut ? "fold" : ""} ${isOut ? "out" : ""} ${wait ? "wait" : ""} ${w ? "win" : ""} ${sh ? "shown" : ""}" style="left:${x}%;top:${y}%">
-          <span class="ps-av">${avaP({ ...p, id: u })}${st.dealer === u && act ? `<i class="pk-d">D</i>` : ""}</span>
+      return `<div data-u="${u}" class="pk-seat ${act && !res && r.turn === u ? "act" : ""} ${act && !res && !live.includes(u) && !isOut ? "fold" : ""} ${isOut ? "out" : ""} ${wait ? "wait" : ""} ${w ? "win" : ""} ${sh ? "shown" : ""}" style="left:${x}%;top:${y}%">
+          <span class="ps-av">${avaP({ ...p, id: u })}${st.dealer === u && act ? `<i class="pk-d">D</i>` : ""}${blindTag(u)}</span>
           <span class="ps-cards">${sh ? sh.map((c) => dkCard(c, "pk-sm")).join("") : inH ? dkBack("pk-sm") + dkBack("pk-sm") : ""}</span>
           <span class="ps-name"><b>${esc(p.nick)}</b><small>${wait ? "зовём…" : next ? "со след. раздачи" : isOut ? "выбыл" : allin.includes(u) && act && !res ? "ва-банк" : chipSvg("xs") + (+chips[u] || 0)}</small></span>
-          ${w ? `<span class="ps-won">+${w.amt}${w.name ? ` · ${esc(w.name)}` : ""}</span>` : ""}
+          ${w ? `<span class="ps-won">${netTxt(netOf(w))}${w.name ? ` · ${esc(w.name)}` : ""}</span>` : ""}
         </div>${+bet[u] && act && !res ? `<span class="pk-bet" style="left:${bx}%;top:${by}%">${chipSvg()}<b>${bet[u]}</b></span>` : ""}`;
     };
     const seatsHTML = opps.map((u, i) => { const t = Math.PI - ((i + 1) * Math.PI) / (opps.length + 1);
       return seat(u, 50 + 40 * Math.cos(t), 47 - 40 * Math.sin(t), 50 + 27 * Math.cos(t), 56 - 25 * Math.sin(t)); }).join("");
     let line;
     if (r.status === "done") line = r.winner === me.id ? "Все фишки твои — победа! +30 XP" : `Стол выиграл <b>${esc(personOf(r.winner).nick)}</b> · +10 XP`;
-    else if (res) line = wins.length ? wins.map((w) => `<b>${esc(personOf(w.u).nick)}</b> +${w.amt}${w.name ? ` · ${esc(w.name)}` : ""}`).join(" · ") + `<small class="pk-nx">следующая раздача через пару секунд…</small>` : "Раздача окончена";
+    else if (res) line = wins.length ? wins.map((w) => `<b>${esc(personOf(w.u).nick)}</b> забирает банк ${w.amt}${netOf(w) ? ` (${netTxt(netOf(w))} чистыми)` : ""}${w.name ? ` · ${esc(w.name)}` : ""}`).join(" · ") + `<small class="pk-nx">следующая раздача через пару секунд…</small>` : "Раздача окончена";
     else if (iWait) line = `<b>${esc(personOf(r.a).nick)}</b> зовёт тебя за стол — игра уже идёт, сядешь со следующей раздачи со стеком ${st.stack || r.opts?.stack || 500}`;
     else if (iNext) line = "Ты за столом — карты придут со следующей раздачи";
     else if (out.includes(me.id)) line = "Ты выбыл — можно досмотреть стол";
@@ -8033,15 +8074,15 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         ${seatsHTML}
         <div class="pk-center">
           <span class="pk-street">${act ? ({ pre: "префлоп", flop: "флоп", turn: "тёрн", river: "ривер", result: "вскрытие" })[st.street] || "" : ""}</span>
-          <div class="pk-board">${[0, 1, 2, 3, 4].map((i) => (board[i] ? dkCard(board[i], wins.length && res ? "lit" : "") : `<span class="pk-slot"></span>`)).join("")}</div>
+          <div class="pk-board">${[0, 1, 2, 3, 4].map((i) => (board[i] ? dkCard(board[i], `${wins.length && res ? "lit" : ""} ${G.pkFresh?.has(i) ? "fresh" : ""}`) : `<span class="pk-slot"></span>`)).join("")}</div>
           <span class="pk-pot">${chipSvg()}<b>${res ? (wins.reduce((a, w) => a + w.amt, 0) || pot) : pot}</b><small>банк</small></span>
         </div>
         ${+bet[me.id] && act && !res ? `<span class="pk-bet mine" style="left:50%;top:86%">${chipSvg()}<b>${bet[me.id]}</b></span>` : ""}
       </div>
-      <div class="pk-me ${myTurn ? "act" : ""} ${act && !res && !live.includes(me.id) ? "fold" : ""}">
-        <span class="pm-av">${avaP(me)}${st.dealer === me.id && act ? `<i class="pk-d">D</i>` : ""}</span>
-        <span class="pm-cards">${(shown[me.id] || hand).length ? (shown[me.id] || hand).map((c) => dkCard(c, "pk-hole")).join("") : `<span class="pm-wait">${act ? "ждём раздачу" : ""}</span>`}</span>
-        <span class="pm-t"><b>${chipSvg("xs")}${myChips}</b><small>${hand.length && act ? esc(pkMyHand(shown[me.id] || hand, board)) : out.includes(me.id) ? "выбыл" : ""}</small></span>
+      <div data-u="${me.id}" class="pk-me ${myTurn ? "act" : ""} ${act && !res && !live.includes(me.id) ? "fold" : ""}">
+        <span class="pm-av">${avaP(me)}${st.dealer === me.id && act ? `<i class="pk-d">D</i>` : ""}${blindTag(me.id)}</span>
+        <span class="pm-cards">${(shown[me.id] || hand).length ? (shown[me.id] || hand).map((c) => dkCard(c, `pk-hole ${G.pkDealt ? "fresh" : ""}`)).join("") : `<span class="pm-wait">${act ? "ждём раздачу" : ""}</span>`}</span>
+        <span class="pm-t"><b>${chipSvg("xs")}${myChips}</b>${act && !res && +(st.contrib || {})[me.id] ? `<small class="pm-inpot">в банке ${st.contrib[me.id]}</small>` : ""}<small>${hand.length && act ? esc(pkMyHand(shown[me.id] || hand, board)) : out.includes(me.id) ? "выбыл" : ""}</small></span>
       </div>
       <div class="g-line ${myTurn ? "mine" : ""}">${line}</div>
       ${act && !res ? `<div class="g-clock" id="gClock"></div>` : ""}
@@ -8057,6 +8098,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       <div class="g-acts">${act && iWait ? `<button class="pill" type="button" data-gaccept>сесть за стол</button><button class="pill ghost" type="button" data-gdecline>не могу</button>` : ""}
         ${act && r.a === me.id && ps.length < 8 ? `<button class="pill sm ghost" type="button" data-lbadd>позвать ещё</button>` : ""}
         ${act && !iWait ? `<button class="pill sm ghost" type="button" data-gresign>выйти из-за стола</button>` : ""}<button class="pill sm ghost" type="button" data-gworld>к играм</button></div>
+      ${pkLedger(r, st, ps, res)}
     </div>`;
     clearTimeout(G.pkNext);
     if (act && st.street === "result") G.pkNext = setTimeout(async () => { if (G.row?.id !== r.id) return; await sb.rpc("poker_next", { g: r.id }); refreshGame(); }, 5200);
@@ -8066,15 +8108,142 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const { error } = await sb.rpc("poker_act", { g: G.row.id, act, amt });
     G.busy = false; G.pkRaise = null;
     if (error) { toast({ "cannot check": "Чек нельзя — нужно уравнять", "raise too small": "Слишком маленький рейз", "not your turn": "Сейчас не твой ход" }[(error.message.match(/cannot check|raise too small|not your turn/) || [])[0]] || "Не получилось: " + humanErr(error)); return refreshGame(); }
-    haptic(act === "fold" ? "tap" : "card"); await refreshGame(); drawGame();
+    haptic(act === "fold" ? "tap" : "card"); await refreshGame();
   };
-  const dkAfter = () => moveClock();
+  // ---------- what is happening at the table: sounds, banners, bubbles over the seats, chips flying to the pot ----------
+  const SND = { ctx: null, on: (() => { try { return localStorage.getItem("gameSnd") !== "0"; } catch { return true; } })() };
+  const sndCtx = () => { if (!SND.ctx) { const C = window.AudioContext || window.webkitAudioContext; if (C) SND.ctx = new C(); } if (SND.ctx?.state === "suspended") SND.ctx.resume().catch(() => {}); return SND.ctx; };
+  document.addEventListener("pointerdown", () => { if (S.view === "game" && SND.on) sndCtx(); }, { passive: true });
+  const fxTone = (ac, t, f, d, type = "sine", v = 0.18, f2 = 0) => {
+    const o = ac.createOscillator(), g = ac.createGain(); o.type = type; o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + 0.02);
+  };
+  const fxNoise = (ac, t, d, f, q = 1, v = 0.25, f2 = 0) => {
+    const n = Math.ceil(ac.sampleRate * d), buf = ac.createBuffer(1, n, ac.sampleRate), x = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) x[i] = Math.random() * 2 - 1;
+    const s = ac.createBufferSource(), fl = ac.createBiquadFilter(), g = ac.createGain(); s.buffer = buf; fl.type = "bandpass"; fl.Q.value = q; fl.frequency.setValueAtTime(f, t);
+    if (f2) fl.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    s.connect(fl); fl.connect(g); g.connect(ac.destination); s.start(t); s.stop(t + d);
+  };
+  const SFX = {
+    card: (ac, t) => fxNoise(ac, t, 0.08, 2600, 0.8, 0.34, 1200),
+    deal: (ac, t) => { for (let i = 0; i < 4; i++) fxNoise(ac, t + i * 0.085, 0.07, 2600, 0.8, 0.28, 1200); },
+    flip: (ac, t) => { fxNoise(ac, t, 0.1, 1800, 0.7, 0.3, 3400); fxTone(ac, t + 0.03, 520, 0.05, "triangle", 0.05); },
+    beat: (ac, t) => { fxNoise(ac, t, 0.06, 1400, 0.7, 0.42); fxTone(ac, t, 150, 0.12, "sine", 0.32, 70); },
+    chip: (ac, t) => { [0, 0.05, 0.1].forEach((d, i) => { fxTone(ac, t + d, 3400 + i * 500, 0.045, "triangle", 0.11); fxTone(ac, t + d, 5200 + i * 300, 0.03, "sine", 0.05); }); },
+    pot: (ac, t) => { for (let i = 0; i < 7; i++) { fxTone(ac, t + i * 0.055, 3000 + (i % 3) * 600, 0.05, "triangle", 0.1); fxTone(ac, t + i * 0.055, 5000 + (i % 2) * 400, 0.03, "sine", 0.05); } },
+    check: (ac, t) => { fxTone(ac, t, 190, 0.08, "sine", 0.3, 110); fxTone(ac, t + 0.13, 190, 0.08, "sine", 0.3, 110); },
+    pass: (ac, t) => fxTone(ac, t, 210, 0.09, "sine", 0.24, 130),
+    fold: (ac, t) => fxNoise(ac, t, 0.24, 1500, 0.6, 0.24, 400),
+    bito: (ac, t) => fxNoise(ac, t, 0.42, 700, 0.5, 0.34, 3600),
+    take: (ac, t) => { fxTone(ac, t, 330, 0.16, "triangle", 0.18, 250); fxTone(ac, t + 0.15, 247, 0.24, "triangle", 0.18, 185); },
+    turn: (ac, t) => { fxTone(ac, t, 659, 0.14, "sine", 0.22); fxTone(ac, t + 0.12, 880, 0.26, "sine", 0.22); },
+    tick: (ac, t) => fxTone(ac, t, 1250, 0.04, "square", 0.07),
+    out: (ac, t) => { fxTone(ac, t, 523, 0.12, "sine", 0.16); fxTone(ac, t + 0.1, 784, 0.2, "sine", 0.16); },
+    win: (ac, t) => [523, 659, 784, 1047].forEach((f, i) => fxTone(ac, t + i * 0.12, f, i === 3 ? 0.5 : 0.18, "triangle", 0.2)),
+    lose: (ac, t) => [392, 330, 262, 196].forEach((f, i) => fxTone(ac, t + i * 0.16, f, i === 3 ? 0.55 : 0.2, "triangle", 0.18)),
+  };
+  const sfx = (name, delay = 0) => { if (!SND.on || document.hidden) return; const ac = sndCtx(); if (!ac || ac.state !== "running") return; try { SFX[name]?.(ac, ac.currentTime + 0.01 + delay); } catch {} };
+  const SAY_MS = 2300, FLASH_MS = 1500;
+  const fxCard = (c) => (c ? `${DK_SHOW[c[0]] || c[0]}${DK_SUIT[c[1]]}` : "");
+  const fxPaint = () => {
+    const box = $("gameBox"); if (!box) return;
+    box.querySelectorAll(".fx-say, .fx-flash").forEach((x) => x.remove());
+    const now = Date.now();
+    G.fxSays = (G.fxSays || []).filter((x) => now - x.at < SAY_MS);
+    G.fxSays.forEach((x) => { const seat = box.querySelector(`[data-u="${x.u}"]`); if (!seat) return;
+      const el = document.createElement("span"); el.className = `fx-say ${x.cls || ""}`; el.textContent = x.text; el.style.animationDelay = `-${now - x.at}ms`; seat.append(el); });
+    const f = G.fxFl; if (f && now - f.at < FLASH_MS) { const host = box.querySelector(".pk-table, .dk-felt"); if (host) {
+      const el = document.createElement("span"); el.className = `fx-flash ${f.cls || ""}`; el.textContent = f.text; el.style.animationDelay = `-${now - f.at}ms`; host.append(el); } }
+  };
+  const fxSay = (u, text, cls = "") => { G.fxSays = (G.fxSays || []).filter((x) => x.u !== u); G.fxSays.push({ u, text, cls, at: Date.now() }); fxPaint(); };
+  const fxFlash = (text, cls = "") => { G.fxFl = { text, cls, at: Date.now() }; fxPaint(); };
+  const fxFly = (fromEl, toEl, n = 3) => {
+    if (!fromEl || !toEl || !document.body.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+    const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
+    for (let i = 0; i < n; i++) { const el = document.createElement("span"); el.className = "fx-chip"; el.innerHTML = chipSvg(); el.style.left = `${a.left + a.width / 2 - 11}px`; el.style.top = `${a.top + a.height / 2 - 11}px`; document.body.append(el);
+      el.animate([{ transform: "translate(0,0) scale(.85)", opacity: 1 }, { transform: `translate(${dx}px,${dy}px) scale(.75)`, opacity: 0.95 }], { duration: 440, delay: i * 70, easing: "cubic-bezier(.3,.7,.3,1)", fill: "both" }).onfinish = () => el.remove(); }
+  };
+  const fxSeat = (u) => $("gameBox")?.querySelector(`[data-u="${u}"]`);
+  const fxPulse = () => document.querySelector("#gameBox .g-line")?.classList.add("fx-go");
+  // compare the table before and after: what just happened?
+  const fxDiff = (p, n) => {
+    const a = p.state || {}, b = n.state || {}, ops = [], nick = (u) => personOf(u).nick, T = (f) => ops.push(f);
+    const la = b.la && b.la.i !== a.la?.i ? b.la : null;
+    const started = p.status !== "active" && n.status === "active", ended = p.status === "active" && n.status === "done";
+    if (started) { G.pkDealt = true; T(() => { sfx("deal"); fxFlash(n.kind === "durak" ? "Раздача" : `Раздача №${b.hand || 1}`); }); }
+    if (n.kind === "durak" && !started) {
+      const at = a.table || [], bt = b.table || [];
+      G.dkFx = {}; if (bt.length > at.length) G.dkFx.pair = bt.length - 1;
+      bt.forEach((x, i) => { if (x[1] && at[i] && !at[i][1]) G.dkFx.cover = i; });
+      if (la) {
+        const t = { attack: at.length ? `подкидывает ${fxCard(la.c)}` : `ходит ${fxCard(la.c)}`, defend: `бьёт ${fxCard(la.c)}`, take: "беру!", pass: "пас" }[la.a];
+        T(() => { fxSay(la.u, t, la.a === "take" ? "bad" : la.a === "defend" ? "ok" : ""); if (la.a === "attack") sfx("card"); else if (la.a === "defend") sfx("beat"); else if (la.a === "pass") sfx("pass"); });
+      }
+      if (at.length && !bt.length) {
+        const bito = (+b.out || 0) > (+a.out || 0);
+        T(() => { fxFlash(bito ? "Бито!" : `${nick(a.def)} берёт карты`, bito ? "ok" : "bad"); sfx(bito ? "bito" : "take"); if ((+b.hands?.[me.id] || 0) > (+a.hands?.[me.id] || 0) && (+b.deck || 0) < (+a.deck || 0)) sfx("deal", 0.4); });
+      }
+      (b.done || []).filter((u) => !(a.done || []).includes(u)).forEach((u) => T(() => { fxSay(u, "без карт — вышел ✓", "ok"); sfx("out", 0.3); }));
+      if (n.status === "active" && !bt.length && !(ended)) {
+        if (b.def === me.id && a.def !== me.id) T(() => setTimeout(() => fxFlash("Теперь отбиваешься ты 🛡"), at.length ? 900 : 0));
+      }
+    }
+    if (n.kind === "poker" && !started) {
+      if (la) {
+        const t = { fold: "Сброс", check: "Чек", call: `Колл ${la.x}`, raise: `Рейз до ${la.to}`, allin: `Ва-банк ${la.to}`, leave: "Выбыл" }[la.a];
+        T(() => { fxSay(la.u, t, la.a === "fold" || la.a === "leave" ? "bad" : la.a === "allin" || la.a === "raise" ? "hot" : "");
+          if (la.a === "fold" || la.a === "leave") sfx("fold"); else if (la.a === "check") sfx("check"); else { sfx("chip"); if (la.a === "allin") sfx("chip", 0.16); }
+          if (la.x > 0) fxFly(fxSeat(la.u), document.querySelector("#gameBox .pk-pot"), la.a === "allin" ? 6 : 3); });
+      }
+      const na = a.street === "result" ? 0 : (a.board || []).length, nowB = b.street === "result" ? (b.last?.board || []) : (b.board || []);
+      const newHand = b.hand !== a.hand;
+      if (newHand) { G.pkDealt = true; T(() => { sfx("deal"); fxFlash(b.bb !== a.bb && a.bb ? `Блайнды выросли: ${b.sb}/${b.bb}` : `Раздача №${b.hand}`); }); }
+      else if (nowB.length > na) {
+        G.pkFresh = new Set(Array.from({ length: nowB.length - na }, (_, i) => i + na));
+        T(() => { for (let i = 0; i < nowB.length - na; i++) sfx("flip", i * 0.13); if (b.street !== "result") fxFlash({ flop: "Флоп", turn: "Тёрн", river: "Ривер" }[b.street] || ""); });
+      }
+      if (a.street !== "result" && b.street === "result" && b.last?.wins?.length) {
+        const w = b.last.wins, iWon = w.some((x) => x.u === me.id), first = w[0];
+        T(() => { setTimeout(() => { fxFlash(w.length > 1 ? "Банк поделили" : `${nick(first.u)} забирает ${first.amt}`, iWon ? "ok" : "");
+          sfx(iWon ? "win" : "pot"); w.forEach((x) => fxFly(document.querySelector("#gameBox .pk-pot"), fxSeat(x.u), 5)); }, nowB.length > na ? 500 : 120); });
+      }
+    }
+    if (n.status === "active" && n.turn === me.id && p.turn !== me.id) T(() => { sfx("turn", 0.2); haptic("card"); fxPulse(); });
+    if (ended) {
+      const lostD = n.kind === "durak" && b.loser === me.id, won = n.kind === "durak" ? b.loser && b.loser !== me.id : n.winner === me.id;
+      T(() => setTimeout(() => { fxFlash(n.kind === "durak" ? (b.loser ? (lostD ? "Ты — дурак 🃏" : `${nick(b.loser)} — дурак!`) : "Ничья") : (won ? "Все фишки твои!" : `Стол выиграл ${nick(n.winner)}`), won ? "ok" : lostD ? "bad" : ""); sfx(won ? "win" : "lose"); }, 500));
+    }
+    return ops;
+  };
+  const fxRun = (ops) => { (ops || []).forEach((f) => { try { f(); } catch {} }); G.dkFx = null; G.pkFresh = null; G.pkDealt = false; };
+  const fxAfterDraw = () => {
+    const t = document.querySelector("#gameBox .g-title");
+    if (t && gMulti(G.row) && !t.querySelector(".g-snd")) t.insertAdjacentHTML("beforeend", `<button class="g-snd ${SND.on ? "" : "off"}" type="button" data-gsnd aria-label="${SND.on ? "Выключить звук" : "Включить звук"}" aria-pressed="${SND.on}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4Z"/>${SND.on ? `<path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>` : `<path d="m22 9-6 6"/><path d="m16 9 6 6"/>`}</svg></button>`);
+    fxPaint();
+  };
+  // chips, exactly: what everybody has, what is in the pot, and how it changed since the start
+  const pkLedger = (r, st, ps, res) => {
+    const chips = st.chips || {}, contrib = st.contrib || {}, stack0 = +st.stack || +r.opts?.stack || 500, ids = ps.filter((u) => chips[u] != null);
+    const inPot = (u) => (res ? 0 : +contrib[u] || 0), total = (u) => (+chips[u] || 0) + inPot(u);
+    const all = ids.reduce((s, u) => s + total(u), 0), exp = ids.length * stack0;
+    const sign = (x) => (x > 0 ? `+${x}` : x < 0 ? `−${-x}` : "0");
+    return `<div class="pk-ledger"><div class="lg-h"><b>Фишки за столом</b><span>стек</span><span>в банке</span><span>с начала</span></div>
+      ${ids.map((u) => { const p = personOf(u), d = total(u) - stack0;
+        return `<div class="lg-row ${r.turn === u ? "act" : ""} ${(st.out || []).includes(u) ? "out" : ""}">${avaP({ ...p, id: u })}<b class="nm">${esc(p.nick)}${u === me.id ? " · ты" : ""}</b><span>${+chips[u] || 0}</span><span>${inPot(u) || "—"}</span><em class="${d > 0 ? "up" : d < 0 ? "down" : ""}">${sign(d)}</em></div>`; }).join("")}
+      <div class="lg-f"><span>Всего <b>${all}</b>${all === exp ? ` = ${ids.length} × ${stack0}` : ""}</span>${!res && st.sb ? `<small>Блайнды ${st.sb} и ${st.bb} ставятся в начале каждой раздачи — эти фишки лежат в банке и вернутся победителю.</small>` : ""}</div></div>`;
+  };
+  const dkAfter = () => { moveClock(); fxAfterDraw(); };
   const dkPlay = async (act, card = null, i = null) => {
     if (G.busy) return; G.busy = true;
     const { error } = await sb.rpc("durak_play", { g: G.row.id, act, card, i });
     G.busy = false; G.sel = null;
     if (error) { toast({ "rank not on table": "Подкинуть можно только карту того же достоинства", "table full": "Больше подкинуть нельзя", "does not beat": "Эта карта не бьёт", "not your turn": "Сейчас не твой ход", "you are out": "Ты уже вышел из игры" }[error.message.match(/rank not on table|table full|does not beat|not your turn|you are out/)?.[0]] || "Не получилось: " + humanErr(error)); }
-    haptic("tap"); await refreshGame(); drawGame();
+    haptic("tap"); await refreshGame(); if (error) drawGame();
   };
   const dkTapCard = (c) => {
     const r = G.row, st = r.state || {}, tbl = st.table || [], tr = st.trump;
@@ -8201,6 +8370,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const da = e.target.closest("[data-dkact]"); if (da) return dkPlay(da.dataset.dkact);
     const b = e.target.closest("button"); if (!b) return;
     if (b.dataset.pk) { if (b.dataset.pk !== "raise") return pkPlay(b.dataset.pk); const v0 = +(document.querySelector("[data-pkrange]")?.value || 0); return pkPlay(v0 >= +(document.querySelector("[data-pkrange]")?.max || 0) ? "allin" : "raise", v0); }
+    if (b.hasAttribute("data-gsnd")) { SND.on = !SND.on; try { localStorage.setItem("gameSnd", SND.on ? "1" : "0"); } catch {} b.remove(); fxAfterDraw(); if (SND.on) { sndCtx(); sfx("turn"); } return toast(SND.on ? "Звук включён" : "Звук выключен"); }
     if (b.hasAttribute("data-pkopen")) { G.pkRaise = G.pkRaise == null ? -1 : null; haptic("tap"); return drawPoker(); }
     if (b.dataset.pkset) { G.pkRaise = +b.dataset.pkset; haptic("tap"); return drawPoker(); }
     if (b.hasAttribute("data-lbstart")) { const { error } = await sb.rpc("game_start", { g: G.row.id }); if (error) return toast("Не получилось: " + humanErr(error)); haptic("card"); return refreshGame(); }
