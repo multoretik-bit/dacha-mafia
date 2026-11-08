@@ -2688,6 +2688,41 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .dk-row .dk-card.dim { filter: saturate(.5) brightness(.9); }
 .dk-row .dk-card.sel { transform: translateY(calc(var(--lift, 0) - 22px)) rotate(var(--rot, 0)) scale(1.06); box-shadow: 0 0 0 3px #FFC83D, 0 12px 18px -4px rgba(0,0,0,.45); z-index: 3; }
 @media (hover: hover) { .dk-row .dk-card:hover { z-index: 2; } }
+
+/* 08.11: one screen — map on top, dachniki by level below; Dacha balance in the top capsule */
+.crew-tabs { display: none !important; }
+#worldBox { margin-bottom: 14px; }
+#worldBox #wHead { margin-top: 12px; }
+#worldBox .w-map { height: min(50vh, 420px); }
+.top-cap .map-cap svg { width: 19px; height: 19px; }
+.top-cap .fund-pill { position: relative; }
+.top-cap .fund-pill .wal-ic { width: 18px; height: 18px; flex: none; }
+.fund-n { position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: #E5243B; color: #fff; font: 800 10px/16px var(--f-body); font-style: normal; text-align: center; }
+.bank.fund { max-height: min(88vh, 760px); overflow-y: auto; }
+.fund-card { background: linear-gradient(135deg, #0B3B9C 0%, #1F6FEB 60%, #3AA0FF 100%) !important; color: #fff; }
+.fund-card .bank-who { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.fund-edit { border: 0; background: rgba(255,255,255,.22); color: #fff; font: 800 11px/1 var(--f-body); padding: 5px 9px; border-radius: 999px; cursor: pointer; }
+.fund-acts { display: grid; gap: 8px; }
+.fund-acts.two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.fund-acts .bank-main { margin: 0; min-width: 0; }
+.fund-acts.two .bank-main { padding: 12px; gap: 10px; }
+.fund-acts.two .bank-main i { width: 38px; height: 38px; }
+.fund-acts.two .bank-main b { font-size: 16px; }
+.fund-acts.two .bank-main small { font-size: 11.5px; }
+.fund-acts .bank-main.out { background: #fff; color: #071B4D; box-shadow: 0 0 0 1.5px var(--hair), 0 10px 22px -16px rgba(15,23,42,.4); }
+.fund-acts .bank-main.out i { background: #FFF1E6; color: #C2410C; }
+.fund-row { display: grid; grid-template-columns: 38px 1fr auto; align-items: center; gap: 4px 10px; padding: 9px 2px; border-top: 1px solid var(--hair); }
+.fund-row .fr-av .ava, .fund-row .fr-av .prem { width: 38px; height: 38px; }
+.fund-row .fr-t { display: grid; gap: 2px; min-width: 0; }
+.fund-row .fr-t b { font: 800 14px/1.2 var(--f-body); color: #071B4D; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fund-row .fr-t small { font: 600 12px/1.3 var(--f-body); color: var(--muted); }
+.fund-row em { font: 800 14.5px/1 var(--f-body); font-style: normal; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fund-row em.pos { color: #15803D; } .fund-row em.neg { color: #C2410C; }
+.fund-row.rejected { opacity: .5; } .fund-row.rejected em { text-decoration: line-through; }
+.fund-row .fr-acts { grid-column: 2 / -1; display: flex; gap: 6px; }
+.fund-row .fr-acts button { border: 0; border-radius: 999px; padding: 7px 12px; font: 800 12px/1 var(--f-body); background: #E8F7EE; color: #15803D; cursor: pointer; }
+.fund-row .fr-acts button[data-fno], .fund-row .fr-acts button[data-fcancel] { background: #F1F3F8; color: #475069; }
+.fund-sec { font: 800 11px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 16px 2px 4px; }
 </style>
 </head>
 <body>
@@ -2720,8 +2755,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   <section id="vHub" class="col" hidden>
     <div class="game-on" id="gameOnHub" hidden></div>
     <div class="hub-top">
-      <div class="crew-combo"><button class="crew-btn" id="goCrew" type="button" aria-label="Дачники"><span class="crew-faces" id="crewFaces"></span><span class="crew-n" id="crewN">дачники</span></button><button class="map-btn" id="goMap" type="button" aria-label="Карта дачников"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6Z"/><path d="M9 4v14M15 6v14"/></svg></button></div>
-      <div class="top-cap"><button class="bal-pill" id="hubBal" type="button" hidden></button>
+      <div class="crew-combo"><button class="crew-btn" id="goCrew" type="button" aria-label="Дачники"><span class="crew-faces" id="crewFaces"></span><span class="crew-n" id="crewN">дачники</span></button></div>
+      <div class="top-cap"><button class="bal-pill" id="hubBal" type="button" hidden></button><button class="icon-btn bell-btn map-cap" id="goMap" type="button" aria-label="Карта дачников"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6Z"/><path d="M9 4v14M15 6v14"/></svg></button>
       <button class="icon-btn bell-btn" id="goInbox" type="button" aria-label="Уведомления"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i class="bell-n" id="bellN" hidden></i></button>
       <button class="icon-btn" id="hubMe" type="button" aria-label="Профиль"></button></div>
     </div>
@@ -2782,7 +2817,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 
   <!-- CREW: all people, social list -->
   <section id="vCrew" class="col" hidden>
-    <div class="crew-tabs" role="tablist"><button type="button" role="tab" data-ctab="list" aria-selected="true">Дачники</button><button type="button" role="tab" data-ctab="map" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6Z"/><path d="M9 4v14M15 6v14"/></svg>Карта</button></div>
+    <div class="crew-tabs" role="tablist" hidden><button type="button" role="tab" data-ctab="list" aria-selected="true">Дачники</button><button type="button" role="tab" data-ctab="map" aria-selected="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6Z"/><path d="M9 4v14M15 6v14"/></svg>Карта</button></div>
     <div id="worldBox" hidden></div>
     <div class="ticket" id="crewListBox"><div class="ticket-in">
       <div class="t-body" style="padding-bottom:12px">
@@ -3180,7 +3215,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261107173638"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261108065043"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3567,7 +3602,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   };
   $("goHome").onclick = goBack;
   try { if (inTG) tg?.BackButton?.onClick(goBack); } catch {}
-  $("goCrew").onclick = () => { crewTab = "list"; me ? go("crew") : go("auth"); };
+  $("goCrew").onclick = () => { haptic("tap"); crewTab = "map"; me ? go("crew") : go("auth"); };
   $("goMap").onclick = () => { haptic("tap"); crewTab = "map"; me ? go("crew") : go("auth"); };
   $("hubMe").onclick = () => (me ? go("profile", me.id) : go("auth"));
   $("goDeck2").onclick = () => go("deck");
@@ -3737,7 +3772,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     $("profHead").innerHTML = `<div class="ph-top">${avaP({ ...row, id }, "lg")}
         <div class="ph-ach" id="phAch"></div></div>
       <div class="ph-name"><h1 class="h1">${esc(row.nick)}</h1><span class="lvl-chip" id="phLvl" hidden></span>
-        ${me ? `<button class="bal-chip" type="button" id="profBal" data-uid="${id}"><svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>баланс…</button>` : ""}
+        ${false ? `<button class="bal-chip" type="button" id="profBal" data-uid="${id}"><svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>баланс…</button>` : ""}
         <div class="ph-sub">${handle ? (row.tg_username ? `<a class="tg-line" href="https://t.me/${esc(row.tg_username)}" target="_blank" rel="noopener" data-tglink>${esc(handle)}</a>` : `<span class="tg-line">${esc(handle)}</span>`) : ""}<span class="ph-since" id="phSince"></span><span class="ph-bday" id="phBday" hidden></span></div></div>
       ${badges.length ? `<div class="prof-badges">${badges.map((b) => `<span class="cb host">${esc(b)}</span>`).join("")}</div>` : ""}
       ${isMe || canGrant ? `<div class="ph-acts" id="phActs"><button class="pill sm ghost" type="button" id="editNick">${isMe ? "ник" : "ник дачнику"}</button></div>` : ""}`;
@@ -5567,11 +5602,11 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     return (sp.board[key] = data || []);
   };
   let crewData = null;
-  let crewTab = "list";
-  const inMap = () => S.view === "crew" && crewTab === "map";
+  let crewTab = "map";
+  const inMap = () => S.view === "crew";
   const drawCrewTabs = () => {
     document.querySelectorAll("[data-ctab]").forEach((b) => b.setAttribute("aria-selected", b.dataset.ctab === crewTab));
-    $("worldBox").hidden = crewTab !== "map"; $("crewListBox").hidden = crewTab === "map";
+    $("worldBox").hidden = false; $("crewListBox").hidden = false;
   };
   document.querySelector(".crew-tabs").addEventListener("click", (e) => {
     const b = e.target.closest("[data-ctab]"); if (!b || b.dataset.ctab === crewTab) return;
@@ -5579,7 +5614,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   });
   const renderCrew = async () => {
     drawCrewTabs();
-    if (crewTab === "map") return renderWorld();
+    renderWorld().catch(() => {});
     const box = $("crewList");
     if (!sb || !me) { box.innerHTML = `<div class="empty-note">${loginPrompt()}</div>`; return; }
     if (!people.length) box.innerHTML = `<div class="empty-note"><div class="wait"><span class="pulse"></span>Загружаю дачников…</div></div>`;
@@ -5587,7 +5622,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (S.view !== "crew") return;
     const by = (list) => Object.fromEntries(list.map((x) => [x.id, x]));
     crewData = { v: by(v), f: by(f), lv: new Map((lv || []).map((r) => [r.user_id, +r.xp])) };
-    $("crewEb").textContent = `Дачники · ${people.length}`;
+    $("crewEb").textContent = `Дачники · ${people.length} · по уровню`;
     drawCrew();
   };
   const drawCrew = () => {
@@ -6316,22 +6351,140 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       .subscribe();
   };
   const checkBlock = () => {
-    const on = !!me && wal.loaded && +wal.balance <= -1000 && !["pay", "premium"].includes(S.view);
+    const on = false && !!me && wal.loaded && +wal.balance <= -1000 && !["pay", "premium"].includes(S.view);
     document.documentElement.classList.toggle("is-blocked", on);
     const b = $("blockScreen"); b.hidden = !on; if (!on) return;
     b.innerHTML = `<div class="bk-in"><div class="bk-ic">⛔</div><h1>Доступ на паузе</h1><p>На балансе <b>${money(wal.balance)}</b> — это долг за игры. С долгом от 1000 ฿ запись на игры и анонсы закрыты.</p><p>Пополни баланс — и всё сразу откроется.</p><button class="pill wide" type="button" id="bkPay">пополнить баланс</button></div>`;
     $("bkPay").onclick = () => openPay();
   };
+  /* ---------- Баланс Дачи: общая касса на завозы. Пополнить может любой (наличными или QR), вывести — только @tivishka ---------- */
+  const fund = { loaded: false, loading: false, bal: 0, stored: "", txs: [], chan: null, open: null, t: 0 };
+  const FUND_IC = `<svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5"/><path d="M10 21v-6h4v6"/></svg>`;
+  const loadFund = async () => {
+    if (!sb || !me) return;
+    const [b, st, tx] = await Promise.all([sb.rpc("fund_balance"), sb.from("fund_settings").select("stored_in").eq("id", 1).maybeSingle(),
+      sb.from("fund_tx").select("*").order("created_at", { ascending: false }).limit(80)]);
+    if (b.error) throw b.error;
+    fund.bal = +b.data || 0; fund.stored = st.data?.stored_in || ""; fund.txs = tx.data || []; fund.loaded = true;
+    if (!fund.chan) fund.chan = sb.channel("fund").on("postgres_changes", { event: "*", schema: "public", table: "fund_tx" }, () => {
+      clearTimeout(fund.t); fund.t = setTimeout(async () => { try { await loadFund(); } catch {} drawBalPill(); fund.open?.(); }, 400);
+    }).subscribe();
+  };
   const drawBalPill = () => {
     checkBlock();
     const b = $("hubBal"); if (!b) return;
-    b.hidden = !me || !wal.loaded;
-    b.className = "bal-pill" + (wal.balance < 0 ? " neg" : wal.balance > 0 ? " pos" : "");
-    b.innerHTML = `<svg class="wal-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4H5a2 2 0 0 0 0 4h14a1 1 0 0 1 1 1v3"/><path d="M3 6v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg>${money(wal.balance)}`;
-    b.setAttribute("aria-label", "Баланс " + money(wal.balance));
+    b.hidden = !me || !fund.loaded;
+    const pend = canGrant ? fund.txs.filter((t) => t.status === "pending").length : 0;
+    b.className = "bal-pill fund-pill";
+    b.innerHTML = `${FUND_IC}<span>${money(fund.bal)}</span>${pend ? `<i class="fund-n">${pend}</i>` : ""}`;
+    b.setAttribute("aria-label", `Баланс Дачи ${money(fund.bal)}${pend ? `, ждут подтверждения: ${pend}` : ""}`);
+    if (me && !fund.loaded && !fund.loading) { fund.loading = true; loadFund().then(() => drawBalPill()).catch(() => {}).finally(() => { fund.loading = false; }); }
   };
-  $("hubBal").onclick = () => openBank();
-  const openBank = async (mode, toId) => {
+  const openFund = async () => {
+    if (!me) return go("auth");
+    haptic("tap");
+    const v = document.createElement("div"); v.className = "veil bank-veil";
+    let tab = "main", m = "qr", amt = "";
+    const day = (d) => new Date(d).toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
+    const row = (t) => {
+      const p = personOf(t.user_id), out = t.amount < 0;
+      const st = t.status === "pending" ? " · ⏳ ждёт подтверждения" : t.status === "rejected" ? " · ✕ не пришло" : "";
+      const how = t.method === "qr" ? "QR" : t.method === "cash" ? "наличными" : "";
+      const acts = t.status !== "pending" ? ""
+        : canGrant ? `<span class="fr-acts"><button type="button" data-fok="${t.id}">✓ деньги пришли</button><button type="button" data-fno="${t.id}">✕ не пришли</button></span>`
+        : t.user_id === me.id ? `<span class="fr-acts"><button type="button" data-fcancel="${t.id}">отменить</button></span>` : "";
+      return `<div class="fund-row ${t.status}"><span class="fr-av">${avaP({ ...p, id: t.user_id })}</span>
+        <span class="fr-t"><b>${out ? "↗ " + esc(t.note || "Вывод") : esc(p.nick) + (t.user_id === me.id ? " · ты" : "")}</b><small>${out ? `вывел ${esc(p.nick)}` : how + (t.note ? " · " + esc(t.note) : "")} · ${day(t.created_at)}${st}</small></span>
+        <em class="${out ? "neg" : "pos"}">${out ? "−" : "+"}${money(Math.abs(t.amount))}</em>${acts}</div>`;
+    };
+    const draw = () => {
+      const pend = fund.txs.filter((t) => t.status === "pending"), done = fund.txs.filter((t) => t.status !== "pending");
+      const q = qrFor(null);
+      v.innerHTML = `<div class="bank fund" role="dialog" aria-modal="true" aria-label="Баланс Дачи">
+        <div class="bank-card fund-card"><div class="bank-top"><span class="pm-mark">DACHA <b>КАССА</b></span></div>
+          <small>Баланс Дачи · деньги на завозы</small><b>${money(fund.bal)}</b>
+          <div class="bank-who"><span>💼 ${fund.stored ? "Хранится: " + esc(fund.stored) : "Где хранится — пока не указано"}</span>${canGrant ? `<button class="fund-edit" type="button" data-f="store">изменить</button>` : ""}</div></div>
+        ${tab === "main" ? `
+          <div class="fund-acts ${canGrant ? "two" : ""}">
+            <button class="bank-main" type="button" data-f="in"><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></i><span><b>Пополнить</b><small>наличными или QR</small></span></button>
+            ${canGrant ? `<button class="bank-main out" type="button" data-f="out"><i><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg></i><span><b>Вывести</b><small>на завоз</small></span></button>` : ""}
+          </div>
+          ${pend.length ? `<div class="fund-sec">Ждут подтверждения</div>${pend.map(row).join("")}` : ""}
+          <div class="fund-sec">История</div>
+          ${done.length ? done.map(row).join("") : `<p class="bio-meta" style="margin:4px 2px 0">Пока ни одного движения денег.</p>`}`
+        : tab === "in" ? `<form class="bank-send" data-fin>
+            <div class="eyebrow">Пополнить баланс Дачи</div>
+            <label class="amt-row"><input class="amt" name="a" type="number" inputmode="numeric" min="1" max="1000000" step="1" value="${esc(amt)}" placeholder="0" required aria-label="Сумма"><span>฿</span></label>
+            <div class="amt-chips">${[100, 300, 500, 1000].map((c) => `<button type="button" class="chip" data-famt="${c}" aria-pressed="${+amt === c}">${c} ฿</button>`).join("")}</div>
+            <div class="pm-tiles" role="group" aria-label="Способ оплаты">
+              <button type="button" data-fm="qr" aria-pressed="${m === "qr"}"><span>📱</span><b>QR-перевод</b><small>из приложения банка</small></button>
+              <button type="button" data-fm="cash" aria-pressed="${m === "cash"}"><span>💵</span><b>Наличными</b><small>лично @tivishka</small></button>
+            </div>
+            ${m === "qr" ? (q?.url ? `<div class="qr-card"><img src="${esc(q.url)}" alt="QR-код для перевода"><p>Отсканируй в приложении банка и переведи сумму, потом нажми кнопку ниже.</p></div>` : `<p class="lead">QR-код ещё не загружен — пока можно наличными.</p>`) : `<p class="lead">Отдай деньги лично @tivishka и нажми кнопку ниже.</p>`}
+            <input class="field" name="n" maxlength="140" placeholder="Комментарий (можно пусто)">
+            <p class="bio-meta" style="margin:0">${canGrant ? "Твоё пополнение зачислится сразу." : "Деньги появятся на балансе Дачи, когда @tivishka подтвердит, что получил."}</p>
+            <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="submit">${m === "qr" ? "я перевёл" : "отдам наличными"}</button><button class="pill sm ghost" type="button" data-f="main">назад</button></div>
+          </form>`
+        : tab === "out" ? `<form class="bank-send" data-fout>
+            <div class="eyebrow">Вывести с баланса Дачи</div>
+            <label class="amt-row"><input class="amt" name="a" type="number" inputmode="numeric" min="1" max="${Math.max(fund.bal, 0)}" step="1" placeholder="0" required aria-label="Сумма"><span>฿</span></label>
+            <input class="field" name="n" maxlength="140" required placeholder="На что: завоз воды, газ, продукты…">
+            <p class="bio-meta" style="margin:0">В кассе ${money(fund.bal)}. Все дачники увидят вывод и на что он.</p>
+            <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="submit">вывести</button><button class="pill sm ghost" type="button" data-f="main">назад</button></div>
+          </form>`
+        : `<form class="bank-send" data-fstore>
+            <div class="eyebrow">В чём хранится баланс Дачи</div>
+            <input class="field" name="t" maxlength="200" value="${esc(fund.stored)}" placeholder="Например: наличные баты у @tivishka">
+            <div class="row-btns" style="justify-content:flex-start"><button class="pill sm" type="submit">сохранить</button><button class="pill sm ghost" type="button" data-f="main">назад</button></div>
+          </form>`}
+        <button class="bank-x" type="button" data-close aria-label="Закрыть">×</button>
+      </div>`;
+    };
+    const close = () => { fund.open = null; v.remove(); };
+    fund.open = () => { if (v.isConnected && tab === "main") draw(); };
+    try { await Promise.all([fund.loaded ? null : loadFund(), people.length ? null : loadPeople(), loadQRs()]); } catch {}
+    draw(); document.body.append(v);
+    v.addEventListener("click", async (e) => {
+      if (e.target === v || e.target.closest("[data-close]")) return close();
+      const b = e.target.closest("button"); if (!b) return;
+      const keep = () => { const x = v.querySelector("[data-fin] [name=a]"); if (x) amt = x.value; };
+      if (b.dataset.f) { keep(); tab = b.dataset.f; haptic("tap"); return draw(); }
+      if (b.dataset.famt) { amt = b.dataset.famt; haptic("tap"); return draw(); }
+      if (b.dataset.fm) { keep(); m = b.dataset.fm; haptic("tap"); return draw(); }
+      const tx = b.dataset.fok || b.dataset.fno;
+      if (tx) { const { error } = await sb.rpc("fund_decide", { tx, ok: !!b.dataset.fok }); if (error) return toast("Не получилось: " + humanErr(error));
+        haptic("card"); toast(b.dataset.fok ? "Зачислено в кассу Дачи ✓" : "Отмечено: деньги не пришли"); await loadFund(); drawBalPill(); return draw(); }
+      if (b.dataset.fcancel) { const { error } = await sb.rpc("fund_cancel", { tx: b.dataset.fcancel }); if (error) return toast("Не получилось: " + humanErr(error));
+        await loadFund(); drawBalPill(); return draw(); }
+    });
+    v.addEventListener("submit", async (e) => {
+      e.preventDefault(); const f = e.target;
+      if (f.matches("[data-fin]")) {
+        const a = parseInt(f.elements.a.value, 10); if (!(a >= 1)) return toast("Укажи сумму");
+        const { error } = await sb.rpc("fund_topup", { a, m, n: f.elements.n.value.trim() || null });
+        if (error) return toast(/too many/.test(error.message) ? "У тебя уже 3 пополнения ждут подтверждения" : "Не получилось: " + humanErr(error));
+        if (!canGrant) sb.functions.invoke("tg", { body: { action: "fund_notify" } }).catch(() => {});
+        haptic("card"); toast(canGrant ? `+${money(a)} в кассу Дачи` : "Отправлено. Зачислится, когда @tivishka подтвердит");
+        amt = ""; tab = "main"; await loadFund(); drawBalPill(); return draw();
+      }
+      if (f.matches("[data-fout]")) {
+        const a = parseInt(f.elements.a.value, 10), n = f.elements.n.value.trim();
+        if (!(a >= 1)) return toast("Укажи сумму"); if (!n) return toast("Напиши, на что");
+        if (a > fund.bal) return toast(`В кассе только ${money(fund.bal)}`);
+        return sheet({ eyebrow: "Касса Дачи", title: `Вывести ${money(a)}?`, text: `На что: ${n}. Все дачники увидят это в истории.`, ok: "вывести", onOk: async () => {
+          const { error } = await sb.rpc("fund_withdraw", { a, n }); if (error) return toast("Не получилось: " + humanErr(error));
+          haptic("card"); toast(`Выведено ${money(a)}`); tab = "main"; await loadFund(); drawBalPill(); draw();
+        } });
+      }
+      if (f.matches("[data-fstore]")) {
+        const { error } = await sb.rpc("fund_set_stored", { t: f.elements.t.value.trim() }); if (error) return toast("Не получилось: " + humanErr(error));
+        haptic("tap"); toast("Сохранено"); tab = "main"; await loadFund(); return draw();
+      }
+    });
+  };
+  $("hubBal").onclick = () => openFund();
+  const openBank = () => openFund();
+  const openBankOld = async (mode, toId) => {
     if (!me) return go("auth");
     haptic("tap");
     const v = document.createElement("div"); v.className = "veil bank-veil";
@@ -6498,7 +6651,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (e) { for (const h of (e.hosts || []).map((x) => x.user_id)) if (qrs.get(h)) return qrPack(h); return null; }
     const o = ownerId(); return o && qrs.get(o) ? qrPack(o) : null;
   };
-  const openPay = (kind, id) => { haptic("tap"); payCtx = kind && id ? { kind, id } : null; payAmt = null; go("pay"); };
+  const openPay = (kind, id) => { if (!(kind && id)) return openFund(); haptic("tap"); payCtx = kind && id ? { kind, id } : null; payAmt = null; go("pay"); };
   document.addEventListener("input", (ev2) => {
     if (ev2.target.id !== "payAmt" || payCur === "thb" || ctxEvent()) return;
     const b = parseInt(ev2.target.value, 10) || 0;
@@ -6508,6 +6661,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   const ctxEvent = () => (!payCtx ? null : payCtx.kind === "mafia" ? ev.list.find((x) => x.id === payCtx.id) : sp.events.find((x) => x.id === payCtx.id)) || null;
   const evTitle = (game, id, day) => { const M = meta(game || "mafia"); const e = id && (ev.list.find((x) => x.id === id) || sp.events.find((x) => x.id === id)); const d = e?.day || day; return `${M.emoji} ${game ? M.name : "Пополнение"}${d ? " · " + dayLabel(d) : ""}`; };
   const renderPay = async () => {
+    // topping up a personal balance is gone: without a game to pay for, the Dacha balance opens instead
+    if (!payCtx) { go("hub"); setTimeout(() => openFund(), 300); return; }
     if (!sb || !me) { $("payTop").innerHTML = loginPrompt(); $("payBody").innerHTML = $("payHist").innerHTML = $("payHost").innerHTML = ""; return; }
     if (!wal.loaded) $("payTop").innerHTML = `<div class="ticket"><div class="ticket-in"><div class="t-body"><div class="wait"><span class="pulse"></span>Считаю баланс…</div></div></div></div>`;
     else drawPay();
@@ -6533,7 +6688,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     const pend = wal.txs.filter((t) => t.status === "pending");
     void pend;
     const canBal = e && !st && avail() >= e.price && myRoleOn(e) === "player";
-    const balOpt = e && !st && myRoleOn(e) === "player";
+    const balOpt = false;
     const pm = payMethod === "bal" && !balOpt ? "qr" : payMethod;
     $("payBody").innerHTML = `
       <div class="ticket"><div class="ticket-in"><div class="t-body" style="gap:12px">
@@ -6687,8 +6842,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         <h1>${on ? "У тебя PREMIUM" : "Стань PREMIUM-дачником"}</h1>
         <p>${on ? (forever ? "Навсегда. Спасибо, что поддерживаешь дачу." : until ? `Активен до ${new Date(until).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}. Можно продлить заранее — месяц добавится.` : "Активен.") : "Поддержи дачу и получи особый статус среди своих."}</p>
         <ul class="pm-list">
-          <li><i>◆</i><span><b>+200 ฿ на счёт каждый месяц</b>трать как угодно: игры, переводы друзьям</span></li>
-          <li><i>◆</i><span><b>+50 🍅 помидоров каждый месяц</b>бросай в друзей сколько хочешь</span></li>
+                    <li><i>◆</i><span><b>+50 🍅 помидоров каждый месяц</b>бросай в друзей сколько хочешь</span></li>
           <li><i>◆</i><span><b>Без рекламы</b>ни баннеров, ни всплывающих плашек</span></li>
           <li><i>◆</i><span><b>Своя иконка</b>на аватарке во всех списках и в профиле</span></li>
           <li><i>◆</i><span><b>Тёмный премиум-профиль</b>и знак PREMIUM рядом с ником</span></li>
@@ -6708,7 +6862,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         <div class="eyebrow">${on ? "Продлить на месяц" : "Купить на месяц"}</div>
         <div class="pm-cur" role="group" aria-label="Валюта">${Object.keys(PREM_PRICE).map((c) => `<button type="button" data-pmcur="${c}" aria-pressed="${c === pmCur}"><b>${PREM_PRICE[c]} ${CUR[c]}</b><small>${c === "THB" ? "бат" : c === "RUB" ? "рубли" : "доллары"}</small></button>`).join("")}</div>
         ${pmCur === "THB" ? `
-          ${avail() >= PREM_PRICE.THB ? `<button class="pill wide pm-btn" type="button" data-pmbal>оплатить с баланса · ${money(PREM_PRICE.THB)}</button><p class="bio-meta" style="margin:0;text-align:center">или переводом / наличными:</p>` : ""}
+          ${false ? `<button class="pill wide pm-btn" type="button" data-pmbal>оплатить с баланса · ${money(PREM_PRICE.THB)}</button><p class="bio-meta" style="margin:0;text-align:center">или переводом / наличными:</p>` : ""}
           <div class="pm-tiles" role="group" aria-label="Способ оплаты">
             <button type="button" data-pmm="qr" aria-pressed="${pmMethod === "qr"}"><span>📱</span><b>QR-перевод</b><small>из приложения банка</small></button>
             <button type="button" data-pmm="cash" aria-pressed="${pmMethod === "cash"}"><span>💵</span><b>Наличными</b><small>лично @tivishka</small></button>
@@ -6719,7 +6873,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         : `<p class="lead">Оплата в ${pmCur === "RUB" ? "рублях" : "долларах"} — переводом. Напиши @tivishka, он пришлёт реквизиты, а после перевода нажми «я оплатил».</p>
           <a class="pill wide ghost" href="${tg2}" target="_blank" rel="noopener" data-tglink>написать @tivishka</a>
           <button class="pill wide pm-btn" type="button" data-pmsend="transfer">я оплатил ${PREM_PRICE[pmCur]} ${CUR[pmCur]}</button>`}
-        <p class="bio-meta" style="margin:0">PREMIUM включится, когда @tivishka подтвердит оплату, и сразу придут +200 ฿ на счёт и 50 🍅.</p>
+        <p class="bio-meta" style="margin:0">PREMIUM включится, когда @tivishka подтвердит оплату, и сразу придут 50 🍅.</p>
       </div></div></div>`;
   };
   $("vPremium").addEventListener("click", async (e) => {
@@ -7037,9 +7191,9 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
       box.innerHTML = `<div class="sec-title" style="margin:2px 2px 4px">Выбери свою дачу</div><p class="bio-meta" style="margin:0 2px 12px">Выбирается один раз — сменить можно в настройках профиля.</p>${dachaPickerHTML(null)}`;
       return;
     }
-    box.innerHTML = `<div id="wHead"></div><div class="w-mapwrap"><div id="wMap" class="w-map"></div>
+    box.innerHTML = `<div class="w-mapwrap"><div id="wMap" class="w-map"></div>
         <div class="w-mapbar"><span class="w-chip">Dacha Phuket · <b id="wOnline">0</b> на карте</span></div>
-        <button class="w-locate" type="button" data-wlocate aria-label="Показать меня"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12Z"/><circle cx="12" cy="9" r="2.6"/></svg></button></div>
+        <button class="w-locate" type="button" data-wlocate aria-label="Показать меня"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12Z"/><circle cx="12" cy="9" r="2.6"/></svg></button></div><div id="wHead"></div>
       `;
     try { await Promise.all([loadWorld(), loadLeaflet(), null]); } catch { toast("Карта не загрузилась — проверь интернет"); }
     if (!inMap() || !W.dacha) return;
@@ -7049,7 +7203,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
         const i = W.pres.findIndex((x) => x.user_id === n.user_id); if (i >= 0) W.pres[i] = n; else W.pres.push(n);
         if (inMap() && W.dacha) drawWorldMap();
       }).on("postgres_changes", { event: "*", schema: "public", table: "world_chars" }, worldAgain).on("postgres_changes", { event: "*", schema: "public", table: "world_games" }, worldAgain).subscribe();
-    clearInterval(W.timer); W.timer = setInterval(() => { if (!inMap()) return clearInterval(W.timer); if (W.sharing && W.watch == null) shareLocation(true); drawWorldMap(); }, 60000);
+    clearInterval(W.timer); W.timer = setInterval(() => { if (!inMap()) return clearInterval(W.timer); drawWorldMap(); }, 60000);
   };
   let worldT = 0;
   const worldAgain = () => { clearTimeout(worldT); worldT = setTimeout(async () => { if (S.view === "game") return refreshGame(); if (S.view === "hub" || S.view === "online" || S.view === "inbox") return drawHubOnline(); if (!inMap() || !W.dacha) return; await loadWorld(); drawWorldMap(); }, 400); };
@@ -8870,7 +9024,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     ev.list = []; ev.loaded = false;
     if (sp.chan) { sb.removeChannel(sp.chan); sp.chan = null; }
     if (wal.chan) { sb.removeChannel(wal.chan); wal.chan = null; }
-    Object.assign(wal, { loaded: false, balance: 0, pending: 0, txs: [], charges: [] }); drawBalPill();
+    Object.assign(wal, { loaded: false, balance: 0, pending: 0, txs: [], charges: [] }); fund.loaded = false; if (fund.chan) { sb.removeChannel(fund.chan); fund.chan = null; } drawBalPill();
     sp.events = []; sp.hosts = []; sp.loaded = false; sp.board = {};
     my.seat = null; people = []; S.on.gameId = null; stopLive(); renderMeBtn(); $("cardDot").hidden = true; save();
   };
@@ -8893,7 +9047,8 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     if (deep === "card") startView = "card";
     if (deep === "events") startView = "events";
     if (deep === "mafia") startView = "home";
-    if (deep === "pay" || deep === "premium" || deep === "requests") startView = deep;
+    if (deep === "premium" || deep === "requests") startView = deep;
+    if (deep === "fund" || deep === "pay") { const t0 = Date.now(); const soon = () => (me ? openFund() : Date.now() - t0 < 15000 && setTimeout(soon, 500)); setTimeout(soon, 1200); }
     if (deep === "cevent") { const qe = new URLSearchParams(location.search).get("e"); if (qe) { startView = "cevent"; ceId = qe; } }
     if (SPORTS[deep]) { startView = "sport"; sportId = deep; }
     if (deep === "game") { const qg = new URLSearchParams(location.search).get("g"); if (qg) { startView = "game"; gameId = qg; } }

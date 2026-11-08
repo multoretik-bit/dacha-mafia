@@ -279,6 +279,23 @@ const pollKeys = (p: any, mine: number | null) => p.closed_at ? { inline_keyboar
   : { inline_keyboard: p.options.map((o: string, i: number) => [{ text: (mine === i ? "✔️ " : "") + o, callback_data: `pv:${p.id}:${i}` }]) };
 
 // a player says "I paid for PREMIUM": tell @tivishka in the bot, with a button to the payments screen
+// Баланс Дачи: дачник пополнил кассу (наличными / QR) — @tivishka подтверждает в приложении
+async function fundNotify(req: Request, _body: any) {
+  const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const { data: { user } } = await admin.auth.getUser(jwt);
+  if (!user) return json({ error: "Нужно войти" }, 401);
+  const { data: tx } = await admin.from("fund_tx").select("amount,method,note").eq("user_id", user.id).eq("status", "pending").order("created_at", { ascending: false }).limit(1).maybeSingle();
+  if (!tx) return json({ ok: false });
+  const { data: who } = await admin.from("profiles").select("nick,tg_username").eq("id", user.id).maybeSingle();
+  const { data: own } = await admin.from("profiles").select("tg_id").ilike("tg_username", "tivishka").maybeSingle();
+  if (!own?.tg_id) return json({ ok: false });
+  await tgApi("sendMessage", { chat_id: own.tg_id, text: `🏡 Баланс Дачи
+${who?.nick || "Дачник"}${who?.tg_username ? " (@" + who.tg_username + ")" : ""} пополняет кассу на ${tx.amount} ฿ · ${tx.method === "qr" ? "перевод по QR" : "наличными тебе"}.${tx.note ? "\nКомментарий: " + tx.note : ""}
+Проверь, что деньги пришли, и подтверди в приложении.`,
+    reply_markup: { inline_keyboard: [[{ text: "Открыть кассу Дачи", web_app: { url: APP + "?v=fund" } }]] } });
+  return json({ ok: true });
+}
+
 async function premiumNotify(req: Request, body: any) {
   const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
   const { data: { user } } = await admin.auth.getUser(jwt);
@@ -705,6 +722,7 @@ Deno.serve(async (req) => {
   if (body.action === "notify") return notify(req, body.game_id);
   if (body.action === "broadcast") return broadcast(req, body);
   if (body.action === "premium_notify") return premiumNotify(req, body);
+  if (body.action === "fund_notify") return fundNotify(req, body);
   if (body.action === "cevent_submitted") return ceventSubmitted(req, body);
   if (body.action === "cevent_decide") return ceventDecide(req, body);
   if (body.action === "wallet_notify") return walletNotify(req, body);
