@@ -2697,7 +2697,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .top-cap .map-cap svg { width: 19px; height: 19px; }
 .top-cap .fund-pill { position: relative; }
 .top-cap .fund-pill .wal-ic { width: 18px; height: 18px; flex: none; }
-.fund-n { position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: #E5243B; color: #fff; font: 800 10px/16px var(--f-body); font-style: normal; text-align: center; }
+.fund-n { position: absolute; top: -6px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: #E5243B; color: #fff; font: 800 10px/16px var(--f-body); font-style: normal; text-align: center; }
 .bank.fund { max-height: min(88vh, 760px); overflow-y: auto; }
 .fund-card { background: linear-gradient(135deg, #0B3B9C 0%, #1F6FEB 60%, #3AA0FF 100%) !important; color: #fff; }
 .fund-card .bank-who { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
@@ -2723,6 +2723,14 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 .fund-row .fr-acts button { border: 0; border-radius: 999px; padding: 7px 12px; font: 800 12px/1 var(--f-body); background: #E8F7EE; color: #15803D; cursor: pointer; }
 .fund-row .fr-acts button[data-fno], .fund-row .fr-acts button[data-fcancel] { background: #F1F3F8; color: #475069; }
 .fund-sec { font: 800 11px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 16px 2px 4px; }
+
+/* 08.11: top bar — dachniki pill on the left, one tidy capsule on the right (Dacha balance · bell · me) */
+.hub-top { display: flex !important; justify-content: space-between; align-items: center; gap: 10px !important; }
+.hub-top .crew-combo { flex: 0 1 auto; min-width: 0; }
+.hub-top .top-cap { flex: none; margin-left: auto; gap: 4px; padding: 3px; }
+.top-cap .fund-pill { min-height: 36px !important; padding: 0 12px 0 10px !important; border-radius: 999px; background: #F1F3F8 !important; gap: 6px; font-size: 13.5px; }
+.top-cap .fund-pill .wal-ic { color: #0B3B9C; }
+.top-cap #hubMe { margin-left: 0; }
 </style>
 </head>
 <body>
@@ -2756,7 +2764,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
     <div class="game-on" id="gameOnHub" hidden></div>
     <div class="hub-top">
       <div class="crew-combo"><button class="crew-btn" id="goCrew" type="button" aria-label="Дачники"><span class="crew-faces" id="crewFaces"></span><span class="crew-n" id="crewN">дачники</span></button></div>
-      <div class="top-cap"><button class="bal-pill" id="hubBal" type="button" hidden></button><button class="icon-btn bell-btn map-cap" id="goMap" type="button" aria-label="Карта дачников"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6Z"/><path d="M9 4v14M15 6v14"/></svg></button>
+      <div class="top-cap"><button class="bal-pill" id="hubBal" type="button" hidden></button>
       <button class="icon-btn bell-btn" id="goInbox" type="button" aria-label="Уведомления"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i class="bell-n" id="bellN" hidden></i></button>
       <button class="icon-btn" id="hubMe" type="button" aria-label="Профиль"></button></div>
     </div>
@@ -3215,7 +3223,7 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
 <script>
 (() => {
   const KEY = "dachaMafia.v1";
-  const BUILD = "20261108065043"; // set on every commit by .githooks/pre-commit
+  const BUILD = "20261108065412"; // set on every commit by .githooks/pre-commit
   const SB_URL = "https://uiaxlwlllrbulirhtdlo.supabase.co";
   const SB_KEY = "sb_publishable_5KvuUsrQBMTHYfwibw0Dxg_n645biRf";
   const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "dachaMafia.auth" } }) : null;
@@ -3603,7 +3611,6 @@ body.pdark .topbar .title, body.pdark .topbar h1, body.pdark .top-title { color:
   $("goHome").onclick = goBack;
   try { if (inTG) tg?.BackButton?.onClick(goBack); } catch {}
   $("goCrew").onclick = () => { haptic("tap"); crewTab = "map"; me ? go("crew") : go("auth"); };
-  $("goMap").onclick = () => { haptic("tap"); crewTab = "map"; me ? go("crew") : go("auth"); };
   $("hubMe").onclick = () => (me ? go("profile", me.id) : go("auth"));
   $("goDeck2").onclick = () => go("deck");
   $("goHost").onclick = () => go("host");
